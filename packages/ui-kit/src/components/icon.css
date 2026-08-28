@@ -9,3 +9,14 @@
   stroke-width: var(--zds-icon-stroke);
   fill: none;
 }
+
+/*
+ * The CAD glyphs are filled shapes, not linework.
+ *
+ * They come from the existing app's set, drawn to read at 20px with solid fills,
+ * so stroking them would double every edge.
+ */
+.zds-icon--filled {
+  stroke: none;
+  fill: currentColor;
+}

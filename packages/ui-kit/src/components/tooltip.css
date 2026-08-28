@@ -1,3 +1,10 @@
+/*
+ * One tooltip, two sizes.
+ *
+ * Naming a control is a row: label and shortcut side by side, as small as it can
+ * be. Explaining one is a small card, so the expanded form switches to a grid —
+ * the name and its shortcut on the first line, the description under both.
+ */
 .zds-tooltip {
   position: fixed;
   inset-block-start: 0;
@@ -32,4 +39,20 @@
   border: var(--zds-size-hairline) solid var(--zds-border-subtle);
   border-radius: var(--zds-radius-content);
   white-space: nowrap;
+}
+
+.zds-tooltip[data-expanded="true"] {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--zds-space-1) var(--zds-space-2);
+  max-inline-size: 260px;
+  padding: var(--zds-space-2);
+}
+
+.zds-tooltip__description {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--zds-text-secondary);
+  text-wrap: pretty;
 }

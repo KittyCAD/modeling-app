@@ -10,6 +10,18 @@ export interface TooltipOptions {
   placement?: TooltipPlacement
   /** Delay before showing on hover. Focus always shows immediately. */
   delay?: number
+  /**
+   * What the thing does, shown only after a longer dwell.
+   *
+   * Two phases, because the two questions are asked at different speeds. Someone
+   * sweeping a toolbar wants the *name*, instantly and out of the way; someone
+   * who has stopped on a button wants to know what it does, and by then they are
+   * reading rather than scanning. One tooltip carrying both would either be slow
+   * to name things or a paragraph in the way.
+   */
+  description?: string
+  /** How long the pointer must rest before the description appears. */
+  descriptionDelay?: number
 }
 
 /**
@@ -23,7 +35,9 @@ export interface TooltipOptions {
 let host: HTMLElement | null = null
 let labelNode: HTMLElement | null = null
 let shortcutNode: HTMLElement | null = null
+let descriptionNode: HTMLElement | null = null
 let showTimer: number | undefined
+let describeTimer: number | undefined
 
 function ensureHost(): HTMLElement {
   if (host?.isConnected) return host
@@ -34,11 +48,15 @@ function ensureHost(): HTMLElement {
   shortcutNode = document.createElement('kbd')
   shortcutNode.className = 'zds-tooltip__shortcut'
 
+  descriptionNode = document.createElement('p')
+  descriptionNode.className = 'zds-tooltip__description'
+  descriptionNode.hidden = true
+
   host = document.createElement('div')
   host.className = 'zds-tooltip'
   host.setAttribute('role', 'tooltip')
   host.dataset.visible = 'false'
-  host.append(labelNode, shortcutNode)
+  host.append(labelNode, shortcutNode, descriptionNode)
   document.body.appendChild(host)
 
   return host
@@ -112,14 +130,39 @@ function showTooltip(anchor: Element, options: TooltipOptions) {
     shortcutNode.textContent = options.shortcut ?? ''
     shortcutNode.hidden = !options.shortcut
   }
+  // The name arrives on its own. Anything longer has to be waited for.
+  if (descriptionNode) {
+    descriptionNode.textContent = ''
+    descriptionNode.hidden = true
+  }
+  element.dataset.expanded = 'false'
 
   element.dataset.visible = 'true'
   position(anchor, options.placement ?? 'bottom')
 }
 
+/** Grow the tooltip into the fuller answer, in place. */
+function describeTooltip(anchor: Element, options: TooltipOptions) {
+  const element = ensureHost()
+  if (element.dataset.visible !== 'true' || !options.description) return
+
+  if (descriptionNode) {
+    descriptionNode.textContent = options.description
+    descriptionNode.hidden = false
+  }
+  element.dataset.expanded = 'true'
+  // Re-measured, because it just got taller: the same placement rules, against
+  // a different box.
+  position(anchor, options.placement ?? 'bottom')
+}
+
 function hideTooltip() {
   window.clearTimeout(showTimer)
-  if (host) host.dataset.visible = 'false'
+  window.clearTimeout(describeTimer)
+  if (host) {
+    host.dataset.visible = 'false'
+    host.dataset.expanded = 'false'
+  }
 }
 
 /**
@@ -133,10 +176,25 @@ export function attachTooltip(
   options: TooltipOptions
 ): () => void {
   const delay = options.delay ?? 350
+  const describeDelay = options.descriptionDelay ?? 900
+
+  const describeLater = () => {
+    if (!options.description) return
+    window.clearTimeout(describeTimer)
+    describeTimer = window.setTimeout(
+      () => describeTooltip(element, options),
+      describeDelay
+    )
+  }
 
   const onEnter = () => {
     window.clearTimeout(showTimer)
-    showTimer = window.setTimeout(() => showTooltip(element, options), delay)
+    showTimer = window.setTimeout(() => {
+      showTooltip(element, options)
+      // Timed from when the name appeared, not from when the pointer arrived, so
+      // the two delays add up the way they read: a name, then a beat, then more.
+      describeLater()
+    }, delay)
   }
 
   const onLeave = () => {
@@ -146,7 +204,10 @@ export function attachTooltip(
 
   const onFocus = () => {
     // Keyboard users have no hover intent to read, so skip the delay.
-    if (element.matches(':focus-visible')) showTooltip(element, options)
+    if (element.matches(':focus-visible')) {
+      showTooltip(element, options)
+      describeLater()
+    }
   }
 
   const onKeyDown = (event: KeyboardEvent) => {
@@ -185,12 +246,21 @@ export function useTooltip<T extends HTMLElement>(
   const shortcut = options?.shortcut
   const placement = options?.placement
   const delay = options?.delay
+  const description = options?.description
+  const descriptionDelay = options?.descriptionDelay
 
   useEffect(() => {
     const element = ref.current
     if (!element || !content) return
-    return attachTooltip(element, { content, shortcut, placement, delay })
-  }, [content, shortcut, placement, delay])
+    return attachTooltip(element, {
+      content,
+      shortcut,
+      placement,
+      delay,
+      description,
+      descriptionDelay,
+    })
+  }, [content, shortcut, placement, delay, description, descriptionDelay])
 
   return ref
 }

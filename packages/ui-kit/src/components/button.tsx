@@ -37,6 +37,14 @@ export interface ButtonProps extends BaseProps {
   /** Keyboard hint shown in the tooltip, e.g. `⌘K`. */
   shortcut?: string
   /**
+   * What the button does, added to the tooltip after a longer dwell.
+   *
+   * For an icon-only button whose glyph carries the whole meaning: the name
+   * appears at hover speed and the explanation follows for whoever stops to
+   * read.
+   */
+  description?: string
+  /**
    * Access to the underlying element.
    *
    * A callback rather than a ref object, so a caller can forward it straight
@@ -59,6 +67,7 @@ export function Button({
   onClick,
   iconOnly = false,
   shortcut,
+  description,
   elementRef,
   children,
   class: className,
@@ -66,8 +75,8 @@ export function Button({
 }: ButtonProps) {
   const accessibleName = typeof label === 'string' ? label : undefined
   const tooltipRef = useTooltip<HTMLButtonElement>(
-    accessibleName && (iconOnly || shortcut)
-      ? { content: accessibleName, shortcut }
+    accessibleName && (iconOnly || shortcut || description)
+      ? { content: accessibleName, shortcut, description }
       : undefined
   )
 

@@ -1,5 +1,7 @@
+import { type GlyphName, glyphNames } from './glyphs'
+
 /**
- * Icon set.
+ * The chassis icon set.
  *
  * Drawn on a 16px grid, stroked rather than filled, at a deliberately thin
  * 1.25px weight so the glyphs read like drafting linework next to the hairline
@@ -7,6 +9,11 @@
  *
  * Paths only — the renderer lives in `components/icon.ts` — so this module
  * stays free of DOM concerns and can be consumed by anything.
+ *
+ * The other half of the set is `glyphs.ts`: the CAD vocabulary, filled, ported
+ * from the existing app. Anything a CAD app names — extrude, fillet, a geometric
+ * characteristic — is drawn there, and `IconName` is the union of the two, so a
+ * caller never has to know which family a name belongs to.
  */
 
 export const iconPaths = {
@@ -32,10 +39,7 @@ export const iconPaths = {
   // Modeling
   cube: 'M8 2 14 5.25v5.5L8 14 2 10.75v-5.5zM2 5.25 8 8.5l6-3.25M8 8.5V14',
   layers: 'M8 2 14 5.25 8 8.5 2 5.25zM2 8.25 8 11.5l6-3.25',
-  sketch:
-    'M3 13 13 3M3 13h.01M13 3h.01M3.5 13a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M13.5 3a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0',
   grid: 'M2.5 2.5h11v11h-11zM2.5 6.167h11M2.5 9.833h11M6.167 2.5v11M9.833 2.5v11',
-  dimension: 'M2 8h12M2 5.5v5M14 5.5v5',
 
   // Actions
   plus: 'M8 3.5v9M3.5 8h9',
@@ -74,6 +78,18 @@ export const iconPaths = {
   monitor: 'M2.5 3h11v7.5h-11zM6 13.5h4M8 10.5v3',
 } as const
 
-export type IconName = keyof typeof iconPaths
+/** The names this file draws. `IconName` also covers the CAD glyphs. */
+export type StrokedIconName = keyof typeof iconPaths
 
-export const iconNames = Object.keys(iconPaths) as IconName[]
+export const strokedIconNames = Object.keys(iconPaths) as StrokedIconName[]
+
+/**
+ * Every icon in the design system, from both families.
+ *
+ * One union rather than two, because a caller placing an icon should not have to
+ * know how it was drawn — and because the two sets are disjoint by construction:
+ * a name means one glyph, and a test fails the build if that stops being true.
+ */
+export type IconName = StrokedIconName | GlyphName
+
+export const iconNames = [...strokedIconNames, ...glyphNames] as IconName[]
