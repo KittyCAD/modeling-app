@@ -682,7 +682,7 @@ uses without either of them knowing about the other.
 `base` is contributed like any other scope, and is always active and always
 weakest.
 
-### Bare keys belong to whoever is typing
+### Text-editing chords belong to whoever is typing
 
 `textEntry` on a scope says "while this is active, an unmodified key is a
 character". A chord carrying Mod, Ctrl or Alt always dispatches, as does the
@@ -692,6 +692,13 @@ only to a form control or to a content-editable under a `textEntry` scope.
 This replaced a blanket "ignore everything while focus is in a text field", which
 silently killed every binding that had not opted out — `⌘1` included — the moment
 the code editor had focus, because CodeMirror's content *is* a content-editable.
+
+One exception, and it is a list rather than a rule: the chords the platform edits
+text with — undo, redo, cut, copy, paste, select-all — go to the field even though
+they carry Mod. That is what lets `⌘Z` mean "undo my document" in the app and
+"undo my typing" in a rename field with no scope having to know which, and it is
+what makes an app-level `Mod+Z` safe to bind at `base` at all. Without it, binding
+the undo command app-wide would take `⌘Z` away from every input in the app.
 
 ### The user's keymap
 

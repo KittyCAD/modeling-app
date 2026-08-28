@@ -328,6 +328,65 @@ describe('yieldsToTextEntry', () => {
     ).toBe(true)
   })
 
+  /**
+   * The chords the platform edits text with go to the field. Without this, an
+   * app-level `⌘Z` would undo the document while someone was typing a filename.
+   */
+  it('gives the platform’s editing chords to a focused field', () => {
+    const withMod = { altKey: false, ctrlKey: true, metaKey: false }
+
+    for (const chord of ['mod+z', 'mod+shift+z', 'mod+x', 'mod+a']) {
+      expect(
+        yieldsToTextEntry({ ...withMod, target: input() }, { ...quiet, chord })
+      ).toBe(true)
+    }
+  })
+
+  it('keeps every other modified chord for the app', () => {
+    const withMod = { altKey: false, ctrlKey: true, metaKey: false }
+
+    expect(
+      yieldsToTextEntry(
+        { ...withMod, target: input() },
+        { ...quiet, chord: 'mod+1' }
+      )
+    ).toBe(false)
+  })
+
+  it('gives an editing chord to the code editor too', () => {
+    // Content-editable, and a scope saying it is taking text: CodeMirror's own
+    // history keymap handles it, which is what it is there for.
+    expect(
+      yieldsToTextEntry(
+        { altKey: false, ctrlKey: true, metaKey: false, target: editable() },
+        { hasPending: false, textEntryScopeActive: true, chord: 'mod+z' }
+      )
+    ).toBe(true)
+  })
+
+  it('takes an editing chord when nothing is holding text', () => {
+    expect(
+      yieldsToTextEntry(
+        {
+          altKey: false,
+          ctrlKey: true,
+          metaKey: false,
+          target: document.createElement('div'),
+        },
+        { ...quiet, chord: 'mod+z' }
+      )
+    ).toBe(false)
+  })
+
+  it('never yields an editing chord mid-sequence', () => {
+    expect(
+      yieldsToTextEntry(
+        { altKey: false, ctrlKey: true, metaKey: false, target: input() },
+        { ...quiet, hasPending: true, chord: 'mod+z' }
+      )
+    ).toBe(false)
+  })
+
   it('has nothing to yield to when nothing is focused', () => {
     expect(yieldsToTextEntry({ ...bare, target: null }, quiet)).toBe(false)
   })

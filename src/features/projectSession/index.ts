@@ -10,6 +10,7 @@ import {
   editorThemesValueSpec,
 } from '@src/contracts/buffers'
 import { commandsValueSpec } from '@src/contracts/commands'
+import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { fileWatcherService } from '@src/contracts/fileWatcher'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
@@ -136,6 +137,28 @@ export default defineRegistryItemFactory((ctx) => {
             buffer?.runCommand(undo)
           },
         }),
+        /**
+         * The bindings the palette has been advertising all along.
+         *
+         * Until now `buffer.undo` printed `⌘Z` and nothing bound it: undo worked
+         * only because CodeMirror's own `historyKeymap` is in the baseline
+         * capability, so it worked with the editor focused and nowhere else.
+         *
+         * Base scope, and safe there: the keymap hands the platform's editing
+         * chords to whatever is holding text, so `⌘Z` in a rename field or in the
+         * code editor still means "undo my typing", and this applies everywhere
+         * else — the tree, the viewport, a panel — where the app's undo is the
+         * only undo there is.
+         */
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Mod+Z'],
+          commandId: 'buffer.undo',
+        }),
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Mod+Shift+Z'],
+          commandId: 'buffer.redo',
+        }),
+
         provide(commandsValueSpec, {
           id: 'buffer.redo',
           title: 'Redo',

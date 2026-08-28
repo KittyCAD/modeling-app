@@ -275,6 +275,27 @@ describe('keymap dispatcher', () => {
       expect(ran).toEqual(['view.front'])
     })
 
+    /** The regression the native-editing exception exists to prevent. */
+    it('leaves undo to the field someone is typing in', () => {
+      const { dispatcher, ran } = setup([
+        { keystrokes: ['Mod+Z'], commandId: 'buffer.undo' },
+      ])
+
+      const typed = mod('z', { target: input() })
+      expect(dispatcher.handleKeyDown(typed.event)).toBe(false)
+      expect(ran).toEqual([])
+      expect(typed.calls.prevented).toBe(0)
+    })
+
+    it('takes undo when nothing is holding text', () => {
+      const { dispatcher, ran } = setup([
+        { keystrokes: ['Mod+Z'], commandId: 'buffer.undo' },
+      ])
+
+      dispatcher.handleKeyDown(mod('z').event)
+      expect(ran).toEqual(['buffer.undo'])
+    })
+
     it('only yields a content-editable to a scope that says it takes text', () => {
       const { dispatcher, ran } = setup()
 

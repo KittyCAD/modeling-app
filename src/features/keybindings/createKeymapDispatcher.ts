@@ -104,6 +104,7 @@ export function createKeymapDispatcher({
 
     if (
       yieldsToTextEntry(event, {
+        chord,
         hasPending: held.length > 0,
         textEntryScopeActive: hasTextEntryScope(
           activeScopes.value,

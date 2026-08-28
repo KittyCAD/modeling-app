@@ -273,6 +273,28 @@ export function hasTextEntryScope(
 }
 
 /**
+ * Chords the platform already means something by, inside a text field.
+ *
+ * Undo, redo, cut, copy, paste, select-all. These carry Mod, so the rule below
+ * would otherwise hand them to the app — and an app that takes `⌘Z` away from
+ * the field you are typing in is broken in a way people notice immediately.
+ * Every one of them belongs to whatever is holding the text; the app's version
+ * applies everywhere else.
+ *
+ * `Mod` resolves per platform before this is consulted, so this covers `⌘Z` and
+ * `Ctrl+Z` with one entry.
+ */
+const NATIVE_EDITING_CHORDS = new Set([
+  'mod+z',
+  'mod+shift+z',
+  'mod+y',
+  'mod+x',
+  'mod+c',
+  'mod+v',
+  'mod+a',
+])
+
+/**
  * Whether a keystroke belongs to whatever has focus rather than to the keymap.
  *
  * A chord carrying Mod, Ctrl or Alt is never typing, and neither is the second
@@ -280,17 +302,35 @@ export function hasTextEntryScope(
  * bare key, though, is a character as far as an input is concerned, and taking
  * it would make the field drop letters.
  *
- * This replaces a blanket "ignore everything while focus is in a text field",
- * which quietly killed every unflagged binding — `⌘1` included — the moment the
- * code editor had focus.
+ * The exception is the handful of chords the platform itself uses for editing
+ * text: those go to the field, and the app's binding for the same chord applies
+ * everywhere else. That is what lets `⌘Z` mean "undo my document" in the app and
+ * "undo my typing" in a rename field, with no scope having to know.
+ *
+ * All of this replaces a blanket "ignore everything while focus is in a text
+ * field", which quietly killed every unflagged binding — `⌘1` included — the
+ * moment the code editor had focus.
  */
 export function yieldsToTextEntry(
   event: Pick<KeyboardEvent, 'altKey' | 'ctrlKey' | 'metaKey'> & {
     target: EventTarget | null
   },
-  options: { hasPending: boolean; textEntryScopeActive: boolean }
+  options: {
+    hasPending: boolean
+    textEntryScopeActive: boolean
+    /** The normalised chord, so the native-editing exception can be applied. */
+    chord?: string
+  }
 ): boolean {
-  if (event.metaKey || event.ctrlKey || event.altKey || options.hasPending) {
+  const native = options.chord
+    ? NATIVE_EDITING_CHORDS.has(options.chord)
+    : false
+
+  // A sequence in progress wins outright: the second keystroke of `v 1` is not
+  // typing, whatever it happens to be.
+  if (options.hasPending) return false
+
+  if (!native && (event.metaKey || event.ctrlKey || event.altKey)) {
     return false
   }
 
