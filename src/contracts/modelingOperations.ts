@@ -49,6 +49,22 @@ export interface ResolvedArgument {
   source: string
   /** For the operation's label, when the source text is not what to say. */
   label?: string
+  /**
+   * Edits that make `source` valid, elsewhere in the same file.
+   *
+   * Most answers need none: a name already in the program, a number typed in.
+   * Some references cannot exist without one — naming an unnamed segment so a
+   * region can refer to it, or binding a generated expression above the
+   * statement that uses it. That edit belongs to whoever produced the reference,
+   * because the operation must not learn how its argument was picked.
+   *
+   * Measured against the same original document as everything else, and applied
+   * in the same transaction: so it composes with the operation's own statement
+   * without position mapping, and the whole thing is one undo entry. It is
+   * never applied at selection time — clicking must not edit the file, and
+   * cancelling must leave nothing behind.
+   */
+  prerequisites?: readonly TextEdit[]
 }
 
 export type ResolvedInputs = Readonly<Record<string, ResolvedArgument>>
@@ -91,19 +107,33 @@ export interface ResolveRequest {
  * component, and the resolver never sees a DOM node.
  *
  * Contributed, which is the whole point. When selection lands it contributes a
- * resolver for `Sketch | Face | Solid` and no operation changes.
+ * resolver for `Sketch | Face | Solid` and no operation changes — it becomes one
+ * more method for an argument that already had one.
  */
 export interface ArgumentResolver {
   id: string
-  /** Lower wins when two resolvers both claim an argument. */
+  /**
+   * How this way of answering is offered, when an argument has more than one.
+   *
+   * "Pick a sketch" and "click a region in the scene" both answer a `Sketch`
+   * argument, and the user chooses between them — so a resolver is a *method*,
+   * not just a handler.
+   */
+  label: string
+  /** Lower sorts earlier in the list of methods. */
   order?: number
   handles: (input: DerivedInput) => boolean
   prompt: (request: ResolveRequest) => ArgumentPrompt | Promise<ArgumentPrompt>
   /**
-   * Turn the answer into KCL source. Defaults to the answer itself, which is
-   * right for a choice whose values are already names.
+   * Turn the answer into an argument.
+   *
+   * Defaults to the answer as source text, which is right for a choice whose
+   * values are already names. A resolver that produces a reference which does
+   * not exist yet answers with the prerequisites that make it valid — which is
+   * the only way `prerequisites` can be produced, and why this returns an
+   * argument rather than a string.
    */
-  toSource?: (answer: string, request: ResolveRequest) => string
+  toArgument?: (answer: string, request: ResolveRequest) => ResolvedArgument
 }
 
 export interface PlanContext {

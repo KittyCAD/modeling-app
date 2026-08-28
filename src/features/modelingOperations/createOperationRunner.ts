@@ -8,10 +8,12 @@ import type {
   ProjectEdit,
   ResolvedArgument,
   ResolvedInputs,
+  TextEdit,
 } from '@src/contracts/modelingOperations'
 import type { ProjectSession } from '@src/contracts/projectSession'
 import type { DerivedInput } from '@src/lib/kclStdlib/shapes'
 import { derivedInputs, stdLibCommand } from '@src/lib/kclStdlib/shapes'
+import { mergeTextEdits } from '@src/features/modelingOperations/mergeEdits'
 
 /**
  * An operation part way through being asked about.
@@ -27,6 +29,16 @@ export interface PendingOperation {
   inputs: readonly DerivedInput[]
   /** Which input is being asked about. */
   index: number
+  /**
+   * The ways this argument can be answered.
+   *
+   * More than one is the normal case for anything geometric: a `Sketch` can be
+   * an existing binding or a region picked in the scene, and which to use is the
+   * user's choice rather than the first matching resolver's.
+   */
+  methods: readonly { id: string; label: string }[]
+  /** The method being offered. One of `methods`. */
+  method: string
   prompt: ArgumentPrompt
   resolved: ResolvedInputs
   program: ParsedProgram
@@ -51,6 +63,8 @@ export interface OperationRunner {
   start(operationId: string): Promise<void>
   /** Answer the current argument. Empty skips an optional one. */
   answer(value: string): Promise<void>
+  /** Offer this argument a different way. */
+  chooseMethod(resolverId: string): Promise<void>
   cancel(): void
 }
 
@@ -87,10 +101,14 @@ export function createOperationRunner(
     activeKclBuffer() ? operations.value : []
   )
 
-  const resolverFor = (input: DerivedInput) =>
+  /** Every way of answering this argument, in the order they are offered. */
+  const resolversFor = (input: DerivedInput) =>
     [...resolvers.value]
+      .filter((resolver) => resolver.handles(input))
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      .find((resolver) => resolver.handles(input))
+
+  const resolverById = (id: string) =>
+    resolvers.value.find((resolver) => resolver.id === id)
 
   /**
    * Move to the next argument, or finish.
@@ -99,45 +117,82 @@ export function createOperationRunner(
    * than shown empty — a choice with no options is a dead end, and for an
    * optional argument it is simply not applicable here.
    */
+  const askWith = async (
+    resolver: ArgumentResolver,
+    state: PendingOperation,
+    index: number
+  ) => {
+    const input = state.inputs[index]
+    const methods = resolversFor(input).map((candidate) => ({
+      id: candidate.id,
+      label: candidate.label,
+    }))
+
+    const prompt = await resolver.prompt({
+      input,
+      program: state.program,
+      resolved: state.resolved,
+    })
+
+    return { ...state, index, methods, method: resolver.id, prompt }
+  }
+
+  /**
+   * Move to the next argument, or finish.
+   *
+   * An argument may have several methods, and the first is offered — but a method
+   * with nothing to offer is skipped in favour of the next one, so "no sketch in
+   * this file" falls through to picking one in the scene rather than dead-ending
+   * on an empty list. Only when every method is empty is an optional argument
+   * skipped and a required one reported.
+   */
   const advance = async (state: PendingOperation): Promise<void> => {
     for (let index = state.index; index < state.inputs.length; index += 1) {
       const input = state.inputs[index]
-      const resolver = resolverFor(input)
+      const candidates = resolversFor(input)
 
-      if (!resolver) {
-        if (input.required) {
-          pending.value = {
-            ...state,
-            index,
-            error: `Nothing knows how to supply ${input.name}.`,
-            busy: false,
-          }
-          return
+      if (candidates.length === 0) {
+        if (!input.required) continue
+        pending.value = {
+          ...state,
+          index,
+          methods: [],
+          error: `Nothing knows how to supply ${input.name}.`,
+          busy: false,
         }
-        continue
+        return
       }
 
-      const prompt = await resolver.prompt({
-        input,
-        program: state.program,
-        resolved: state.resolved,
-      })
+      let lastEmpty: PendingOperation | null = null
 
-      if (prompt.kind === 'choice' && prompt.options.length === 0) {
-        if (input.required) {
-          pending.value = {
-            ...state,
-            index,
-            prompt,
-            error: prompt.empty ?? `There is no ${input.name} to choose.`,
-            busy: false,
-          }
-          return
+      for (const resolver of candidates) {
+        const asked = await askWith(resolver, state, index)
+
+        if (
+          asked.prompt.kind === 'choice' &&
+          asked.prompt.options.length === 0
+        ) {
+          lastEmpty = asked
+          continue
         }
-        continue
+
+        pending.value = { ...asked, error: null, busy: false }
+        return
       }
 
-      pending.value = { ...state, index, prompt, error: null, busy: false }
+      // Every method had nothing. For an optional argument that means "not
+      // applicable here"; for a required one it is worth saying why.
+      if (!input.required) continue
+
+      pending.value = {
+        ...(lastEmpty ?? state),
+        index,
+        error:
+          (lastEmpty?.prompt.kind === 'choice'
+            ? lastEmpty.prompt.empty
+            : null) ?? `There is no ${input.name} to choose.`,
+        busy: false,
+      }
       return
     }
 
@@ -162,7 +217,27 @@ export function createOperationRunner(
         path: state.path,
       })
 
-      for (const [path, edits] of Object.entries(edit.changes)) {
+      /*
+       * Prerequisites land with the operation, not before it.
+       *
+       * A reference that needs a segment named carries that edit as data, so
+       * clicking never touched the file and cancelling left nothing behind. They
+       * apply to the file being edited, in the same transaction as the
+       * operation's own statement — one undo entry for the whole intention.
+       */
+      const prerequisites = Object.values(state.resolved).flatMap(
+        (argument) => argument.prerequisites ?? []
+      )
+
+      const changes: Record<string, readonly TextEdit[]> = {
+        ...edit.changes,
+        [state.path]: mergeTextEdits([
+          ...prerequisites,
+          ...(edit.changes[state.path] ?? []),
+        ]),
+      }
+
+      for (const [path, edits] of Object.entries(changes)) {
         const buffer = target.session.bufferForPath(path)
         if (!buffer) {
           // Only open buffers for now. Editing a file nobody has open means
@@ -219,7 +294,10 @@ export function createOperationRunner(
         command,
         inputs,
         index: 0,
-        // Replaced immediately by `advance`; a prompt is never shown from here.
+        // All three are replaced immediately by `advance`; nothing is ever shown
+        // from here.
+        methods: [],
+        method: '',
         prompt: { kind: 'expression' },
         resolved: {},
         program,
@@ -246,18 +324,18 @@ export function createOperationRunner(
         return
       }
 
-      const resolver = resolverFor(input)
-      const source = resolver?.toSource
-        ? resolver.toSource(trimmed, {
+      const resolver = resolverById(state.method)
+      const argument = resolver?.toArgument
+        ? resolver.toArgument(trimmed, {
             input,
             program: state.program,
             resolved: state.resolved,
           })
-        : trimmed
+        : { source: trimmed }
 
       const resolved: Record<string, ResolvedArgument> = {
         ...state.resolved,
-        [input.name]: { source },
+        [input.name]: argument,
       }
 
       await advance({
@@ -266,6 +344,24 @@ export function createOperationRunner(
         resolved,
         error: null,
       })
+    },
+
+    /**
+     * Offer the current argument a different way.
+     *
+     * Re-asks rather than converting: a method that yields the same argument by
+     * a different route has its own prompt, and whatever was typed for the last
+     * one was an answer to a different question.
+     */
+    async chooseMethod(resolverId) {
+      const state = pending.value
+      if (!state || state.busy) return
+
+      const resolver = resolverById(resolverId)
+      if (!resolver || !resolver.handles(state.inputs[state.index])) return
+
+      const asked = await askWith(resolver, state, state.index)
+      pending.value = { ...asked, error: null, busy: false }
     },
 
     cancel() {

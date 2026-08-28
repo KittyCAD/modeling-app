@@ -456,10 +456,42 @@ what stdlib functions return, and which bindings hold one comes from what each
 binding's initialiser called. A new sketch-producing function becomes selectable
 with no change anywhere.
 
+**One argument can have several methods.** A `Sketch` is answerable from a name
+in the file *or* by picking a region in the scene, and which to use is the user's
+choice rather than the first matching resolver's — so every resolver that claims
+an argument is offered, and a method with nothing to offer falls through to the
+next. "No sketch in this file" reaches "pick one in the scene" instead of
+dead-ending on an empty list.
+
 This is where selection lands. Picking a face in the viewport answers the same
-question a different way, so it arrives as a resolver claiming `Sketch | Face |
-Solid` and nothing else moves. That is why selection was not a prerequisite:
-`extrude`'s special argument can be answered from the program today.
+question a different way, so it arrives as one more method for an argument that
+already had one. That is why selection was not a prerequisite: `extrude`'s special
+argument can be answered from the program today.
+
+### A reference that does not exist yet
+
+Some answers cannot be expressed without changing the file elsewhere. A `region`
+traced from segments has to name them, and in V2 a segment is a binding inside a
+sketch block — so picking an unnamed one means naming it. The KCL docs offer a
+fallback that needs no such edit (`region(point = [x, y], sketch = …)`), which is
+why a scene-click region can ship before any of this machinery is exercised; but
+the preferred `segments` form needs it.
+
+So a resolver answers with an argument, not a string: source text plus any
+`prerequisites` that make it valid. Three properties hold that together:
+
+- **Selection is read-only.** The edit travels as *data* with the answer.
+  Clicking never touches the file, and cancelling leaves nothing behind.
+- **Everything composes without mapping**, because every offset is measured
+  against the same original document and applied in one transaction. A
+  prerequisite at offset 120 and a statement appended at the end coexist.
+- **One transaction is one undo entry.** Naming two segments and extruding them
+  is one step, not three.
+
+`mergeTextEdits` is the guard: identical prerequisites collapse — two arguments
+needing the same segment named would each ask for it — and anything genuinely
+overlapping is refused with a message about the text rather than CodeMirror's
+about ranges.
 
 **An operation returns an edit and never applies one.** `ProjectEdit` is keyed by
 path and holds offsets and text — plain data, because the same edit has to survive
@@ -474,6 +506,14 @@ The AST says what is bound and what each binding produces. The edit is text at a
 offset. Parse-mutate-recast would rewrite the whole file, so a one-line insertion
 would arrive as a diff touching every line the formatter disagrees with — and the
 user's formatting would lose an argument it never entered.
+
+### The prompt is docked, not modal
+
+It began as a dialog with a scrim, which was the wrong shape for this app: the
+next argument type to arrive is "click a region in the scene", and a sheet over
+the viewport cannot be answered. So it docks at the bottom of the frame with
+`pointer-events` off except on itself, the scene and the editor stay live behind
+it, and Escape dismisses it.
 
 ### There is no modelling mode
 

@@ -35,6 +35,7 @@ const REFERENCEABLE = [
  */
 export const bindingResolver: ArgumentResolver = {
   id: 'modeling.resolver.binding',
+  label: 'Existing value',
   order: 0,
 
   handles: (input) =>
@@ -77,6 +78,7 @@ export const bindingResolver: ArgumentResolver = {
  */
 export const expressionResolver: ArgumentResolver = {
   id: 'modeling.resolver.expression',
+  label: 'Expression',
   order: 10,
 
   handles: (input) => input.type.kind === 'number',
@@ -91,6 +93,7 @@ export const expressionResolver: ArgumentResolver = {
 /** A flag. Its source text is the word, which is all KCL wants. */
 export const booleanResolver: ArgumentResolver = {
   id: 'modeling.resolver.boolean',
+  label: 'Flag',
   order: 10,
 
   handles: (input) => input.type.kind === 'named' && input.type.name === 'bool',

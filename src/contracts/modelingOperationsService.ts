@@ -16,6 +16,8 @@ export interface ModelingOperationsService {
   readonly available: ReadonlySignal<readonly ModelingOperation[]>
   start(operationId: string): Promise<void>
   answer(value: string): Promise<void>
+  /** Offer the current argument a different way. */
+  chooseMethod(resolverId: string): Promise<void>
   cancel(): void
 }
 

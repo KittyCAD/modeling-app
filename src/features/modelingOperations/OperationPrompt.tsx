@@ -14,9 +14,12 @@ import './modelingOperations.css'
  * before. Picking geometry in the viewport will be that; a new stdlib function
  * will not.
  *
- * This is the layer a command bar's argument step would sit in. It is a dialog
- * for now because the palette has no argument phase yet, and moving it there
- * changes this file and nothing behind it.
+ * **Not modal.** It began as a dialog with a scrim, which was wrong for the app
+ * it is in: the next argument type to arrive is "click a region in the scene",
+ * and a sheet over the viewport cannot be answered. So it docks at the bottom of
+ * the frame, the scene and the editor stay live behind it, and Escape is what
+ * dismisses it. That also fixes something the old version got wrong on its own
+ * terms — it claimed to keep the code in view and then covered it.
  */
 export function OperationPrompt() {
   const modeling = useService(modelingOperationsService)
@@ -55,17 +58,11 @@ export function OperationPrompt() {
 
   return (
     <div class="zds-operation">
-      <button
-        type="button"
-        class="zds-operation__scrim"
-        aria-label={`Cancel ${pending.operation.title}`}
-        onClick={() => modeling.cancel()}
-      />
-
+      {/* No scrim and no `aria-modal`: the viewport behind this has to stay
+          clickable, because that is how a geometric argument gets answered. */}
       <div
         class="zds-operation__sheet"
-        role="dialog"
-        aria-modal="true"
+        role="group"
         aria-label={pending.operation.title}
       >
         <header class="zds-operation__header">
@@ -74,6 +71,30 @@ export function OperationPrompt() {
             {index + 1} of {pending.inputs.length}
           </p>
         </header>
+
+        {/*
+          How to answer, when there is more than one way.
+          A `Sketch` can be a name in the file or a region picked in the scene;
+          which one is the user's choice, not the first resolver's.
+        */}
+        {pending.methods.length > 1 ? (
+          <div
+            class="zds-operation__methods"
+            role="group"
+            aria-label="How to choose"
+          >
+            {pending.methods.map((method) => (
+              <Button
+                key={method.id}
+                size="small"
+                variant="ghost"
+                label={method.label}
+                pressed={method.id === pending.method}
+                onClick={() => void modeling.chooseMethod(method.id)}
+              />
+            ))}
+          </div>
+        ) : null}
 
         <div class="zds-operation__field">
           <p class="zds-operation__name">

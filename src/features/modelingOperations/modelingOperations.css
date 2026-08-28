@@ -1,26 +1,27 @@
 /* The operation prompt: one dialog for every argument of every operation. */
 
+/*
+ * Docked, not modal.
+ *
+ * `pointer-events: none` on the container with the sheet opting back in: the
+ * viewport behind stays clickable, which is the whole reason this is not a
+ * dialog. Answering "click a region in the scene" through a scrim is not
+ * possible, and a modelling prompt that hides the model is the wrong shape for
+ * this app whatever the argument.
+ */
 .zds-operation {
   position: fixed;
-  inset: 0;
+  inset-inline: 0;
+  inset-block-end: var(--zds-space-4);
   z-index: var(--zds-z-overlay);
   display: grid;
-  /* Above the middle, so the code the operation is about to change stays in
-     view while its arguments are being answered. */
-  place-items: start center;
-  padding-block-start: 12vh;
-}
-
-.zds-operation__scrim {
-  position: absolute;
-  inset: 0;
-  background: var(--zds-surface-scrim);
-  border: none;
-  cursor: default;
+  justify-items: center;
+  pointer-events: none;
 }
 
 .zds-operation__sheet {
   position: relative;
+  pointer-events: auto;
   display: grid;
   gap: var(--zds-space-3);
   inline-size: min(28rem, calc(100vw - var(--zds-space-6)));
@@ -70,6 +71,14 @@
 .zds-operation__error {
   color: var(--zds-text-fault);
   font-size: var(--zds-font-size-small);
+}
+
+/* The ways this argument can be answered. Quiet until one is chosen. */
+.zds-operation__methods {
+  display: flex;
+  gap: var(--zds-space-1);
+  padding-block-end: var(--zds-space-1);
+  border-block-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
 }
 
 .zds-operation__actions {

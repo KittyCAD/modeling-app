@@ -12,6 +12,7 @@ import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTex
 import { createOperationRunner } from '@src/features/modelingOperations/createOperationRunner'
 import { extrudeOperation } from '@src/features/modelingOperations/operations/extrude'
 import { builtInResolvers } from '@src/features/modelingOperations/resolvers'
+import { namedTypesIn } from '@src/lib/kclStdlib/types'
 
 /**
  * A program with the bindings a test cares about.
@@ -231,5 +232,185 @@ describe('running a modelling operation', () => {
     expect(buffer.text.value).toBe(
       'profile001 = startProfile(XY, at = [0, 0])\nextrude001 = extrude(profile001, length = 3)\n'
     )
+  })
+
+  it('offers every way of answering, and says which is showing', async () => {
+    const { runner } = setup()
+    await runner.start('modeling.extrude')
+
+    const state = runner.pending.value
+    expect(state?.methods.map((method) => method.label)).toEqual([
+      'Existing value',
+    ])
+    expect(state?.method).toBe('modeling.resolver.binding')
+  })
+})
+
+/**
+ * A second way to answer a `Sketch`, standing in for the region resolver that
+ * arrives with selection.
+ *
+ * It produces a reference that does not exist in the program yet, so it carries
+ * the edit that makes it valid — a segment named at an offset the operation knows
+ * nothing about.
+ */
+const NAME_A_SEGMENT = { from: 10, to: 10, insert: ' /* named */' }
+
+const regionLike: ArgumentResolver = {
+  id: 'test.resolver.region',
+  label: 'Region in the scene',
+  order: 5,
+  handles: (input) => namedTypesIn(input.type).includes('Sketch'),
+  prompt: () => ({
+    kind: 'choice',
+    options: [{ value: 'front', label: 'Front face' }],
+  }),
+  toArgument: () => ({
+    source: 'region001',
+    prerequisites: [NAME_A_SEGMENT],
+  }),
+}
+
+describe('several ways to answer one argument', () => {
+  it('lists both methods and offers the first', async () => {
+    const { runner } = setup({
+      resolvers: [...builtInResolvers, regionLike],
+    })
+
+    await runner.start('modeling.extrude')
+
+    const state = runner.pending.value
+    expect(state?.methods.map((method) => method.id)).toEqual([
+      'modeling.resolver.binding',
+      'test.resolver.region',
+    ])
+    expect(state?.method).toBe('modeling.resolver.binding')
+  })
+
+  it('switches to another method on request, with its own prompt', async () => {
+    const { runner } = setup({
+      resolvers: [...builtInResolvers, regionLike],
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.chooseMethod('test.resolver.region')
+
+    const state = runner.pending.value
+    expect(state?.method).toBe('test.resolver.region')
+    expect(state?.prompt).toMatchObject({
+      kind: 'choice',
+      options: [{ value: 'front', label: 'Front face' }],
+    })
+  })
+
+  /**
+   * "No sketch in this file" should fall through to picking one in the scene
+   * rather than dead-ending on an empty list.
+   */
+  it('falls through a method with nothing to offer', async () => {
+    const { runner } = setup({
+      bindings: [],
+      resolvers: [...builtInResolvers, regionLike],
+    })
+
+    await runner.start('modeling.extrude')
+
+    expect(runner.pending.value?.method).toBe('test.resolver.region')
+    expect(runner.pending.value?.error).toBeNull()
+  })
+
+  it('uses the chosen method to turn the answer into source', async () => {
+    const { runner, buffer } = setup({
+      resolvers: [...builtInResolvers, regionLike],
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.chooseMethod('test.resolver.region')
+    await runner.answer('front')
+    await runner.answer('4')
+
+    expect(buffer.text.value).toContain('extrude(region001, length = 4)')
+  })
+
+  it('ignores a method that cannot answer this argument', async () => {
+    const { runner } = setup({
+      resolvers: [...builtInResolvers, regionLike],
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.chooseMethod('modeling.resolver.boolean')
+
+    expect(runner.pending.value?.method).toBe('modeling.resolver.binding')
+  })
+
+  /**
+   * The reference and the edit that makes it valid land together, in one
+   * transaction — so it is one undo entry, and clicking never touched the file.
+   */
+  it('applies a prerequisite with the operation, not before it', async () => {
+    const { runner, buffer } = setup({
+      source: 'profile001 = startProfile(XY)\n',
+      resolvers: [...builtInResolvers, regionLike],
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.chooseMethod('test.resolver.region')
+
+    // Nothing has been written yet: the answer is data until the operation is
+    // applied.
+    expect(buffer.text.value).toBe('profile001 = startProfile(XY)\n')
+
+    await runner.answer('front')
+    await runner.answer('7')
+
+    expect(buffer.text.value).toBe(
+      'profile001 /* named */ = startProfile(XY)\nextrude001 = extrude(region001, length = 7)\n'
+    )
+    // One transaction, so one undo step for the whole intention.
+    expect(buffer.version.value).toBe(1)
+  })
+
+  it('leaves nothing behind when a prerequisite is cancelled', async () => {
+    const { runner, buffer } = setup({
+      resolvers: [...builtInResolvers, regionLike],
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.chooseMethod('test.resolver.region')
+    await runner.answer('front')
+    runner.cancel()
+
+    expect(buffer.text.value).not.toContain('named')
+    expect(buffer.text.value).not.toContain('extrude')
+  })
+
+  /** Two arguments wanting the same prerequisite must not conflict. */
+  it('collapses a prerequisite asked for twice', async () => {
+    const twice: ArgumentResolver = {
+      ...regionLike,
+      id: 'test.resolver.twice',
+      handles: () => true,
+      prompt: () => ({
+        kind: 'choice',
+        options: [{ value: 'front', label: 'Front face' }],
+      }),
+      toArgument: () => ({
+        source: 'region001',
+        prerequisites: [NAME_A_SEGMENT],
+      }),
+    }
+
+    const { runner, buffer } = setup({
+      source: 'profile001 = startProfile(XY)\n',
+      // Claims both arguments, so both answers carry the same prerequisite.
+      resolvers: [twice],
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.answer('front')
+    await runner.answer('front')
+
+    // Once, not twice, and no throw about overlapping ranges.
+    expect(buffer.text.value.match(/named/g)).toHaveLength(1)
   })
 })
