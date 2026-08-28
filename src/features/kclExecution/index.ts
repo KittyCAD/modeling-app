@@ -7,15 +7,22 @@ import { effect } from '@preact/signals'
 import { engineConnectionService } from '@src/contracts/engine'
 import { type Executor, executorsValueSpec } from '@src/contracts/execution'
 import { projectSessionService } from '@src/contracts/projectSession'
-import { bufferOrigin, requestExecution } from '@src/lib/buffers/annotations'
+import { settingsService } from '@src/contracts/settings'
 import {
-  type KclSceneGraphDelta,
+  enableSsaoSetting,
+  highlightEdgesSetting,
+  showScaleGridSetting,
+} from '@src/features/engine/settings'
+import type { KclCompilationIssue } from '@src/features/kclAnalysis/diagnostics'
+import { createKclContextOwner } from '@src/features/kclExecution/createKclContext'
+import {
   diagnosticsFromFailure,
   diagnosticsFromOutcome,
+  type KclSceneGraphDelta,
   summarize,
 } from '@src/features/kclExecution/execOutcome'
-import { createKclContextOwner } from '@src/features/kclExecution/createKclContext'
-import type { KclCompilationIssue } from '@src/features/kclAnalysis/diagnostics'
+import { executorSettingsJson } from '@src/features/kclExecution/executorSettings'
+import { bufferOrigin, requestExecution } from '@src/lib/buffers/annotations'
 
 /**
  * Executes KCL against the engine.
@@ -33,6 +40,7 @@ import type { KclCompilationIssue } from '@src/features/kclAnalysis/diagnostics'
 export default defineRegistryItemFactory((ctx) => {
   const engine = () => ctx.services.get(engineConnectionService)
   const sessions = () => ctx.services.get(projectSessionService)
+  const settings = () => ctx.services.get(settingsService)
   let owner: ReturnType<typeof createKclContextOwner> | null = null
 
   const contextOwner = () => {
@@ -84,7 +92,7 @@ export default defineRegistryItemFactory((ctx) => {
       engine().state.peek().status === 'connected',
 
     async run(request) {
-      const { context, wasm, settingsJson } = await contextOwner().get()
+      const { context, wasm, defaultSettings } = await contextOwner().get()
       if (request.signal.aborted) {
         return { requestId: request.requestId, diagnostics: [] }
       }
@@ -123,10 +131,17 @@ export default defineRegistryItemFactory((ctx) => {
       }
 
       try {
+        // Read per run, not per context: the settings that reach the executor
+        // are whatever they are at the moment the program is executed.
+        const resolved = settings()
         const delta = (await context.execute(
           JSON.stringify(ast),
           request.path ?? undefined,
-          settingsJson
+          executorSettingsJson(defaultSettings, {
+            highlightEdges: resolved.read(highlightEdgesSetting),
+            enableSsao: resolved.read(enableSsaoSetting),
+            showScaleGrid: resolved.read(showScaleGridSetting),
+          })
         )) as KclSceneGraphDelta
 
         const outcome = delta?.exec_outcome ?? {}

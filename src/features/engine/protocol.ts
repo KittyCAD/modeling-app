@@ -65,13 +65,21 @@ export function engineWebSocketUrl(input: {
   baseUrl: string
   width: number
   height: number
+  /**
+   * Ambient occlusion.
+   *
+   * Chosen when the socket opens, because the engine builds its render pipeline
+   * for the session — which is why turning it off takes a reconnect rather than
+   * a command, and why the setting says so.
+   */
+  ssao?: boolean
 }): string {
   const separator = input.baseUrl.includes('?') ? '&' : '?'
   const query = new URLSearchParams({
     video_res_width: String(clampDimension(input.width)),
     video_res_height: String(clampDimension(input.height)),
-    post_effect: 'ssao',
   })
+  if (input.ssao !== false) query.set('post_effect', 'ssao')
   return `${input.baseUrl}${separator}${query.toString()}`
 }
 

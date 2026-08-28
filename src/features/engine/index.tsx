@@ -4,8 +4,8 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { computed, effect, useComputed } from '@preact/signals'
 import { StatusDot } from '@kittycad/ui-kit'
+import { computed, effect, useComputed } from '@preact/signals'
 import { useService } from '@src/app/context'
 import { authService } from '@src/contracts/auth'
 import { commandService, commandsValueSpec } from '@src/contracts/commands'
@@ -13,8 +13,15 @@ import {
   type EngineConnectionState,
   engineConnectionService,
 } from '@src/contracts/engine'
+import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { statusBarItemsValueSpec } from '@src/contracts/shell'
 import { createEngineConnection } from '@src/features/engine/createEngineConnection'
+import {
+  cameraProjectionSetting,
+  enableSsaoSetting,
+  highlightEdgesSetting,
+  modelingSettings,
+} from '@src/features/engine/settings'
 import { setWasmEngineTransport } from '@src/wasm/bridge'
 
 /**
@@ -111,9 +118,63 @@ function EngineField() {
  * runtime sends through this connection.
  */
 export default defineRegistryItemFactory((ctx) => {
+  const settings = () => ctx.services.get(settingsService)
+
   const connection = createEngineConnection({
     baseUrl: engineBaseUrl(),
     token: () => ctx.services.get(authService).token.peek(),
+    ssao: () => settings().read(enableSsaoSetting),
+  })
+
+  /** One modelling command with a fresh id, fired and forgotten. */
+  const fire = (cmd: Record<string, unknown>) => {
+    const commandId = crypto.randomUUID()
+    try {
+      connection.fire({
+        id: commandId,
+        sourceRange: [0, 0, 0],
+        command: { type: 'modeling_cmd_req', cmd_id: commandId, cmd },
+        idToSourceRange: {},
+      })
+    } catch (caught) {
+      // The socket can close between the status signal and this send. A
+      // preference that failed to reach the engine is not worth breaking the
+      // effect that carries every other one.
+      console.warn('engine: could not apply a setting', caught)
+    }
+  }
+
+  /**
+   * Keep the engine's scene in step with the settings that describe it.
+   *
+   * Reapplied on every connect, not only on change: the engine starts each
+   * session from its own defaults, so a preference set three sessions ago has to
+   * be restated. Watching the connection status is what makes one effect cover
+   * both cases.
+   *
+   * Ambient occlusion is absent here on purpose — it is chosen when the socket
+   * opens and cannot be changed by a command, which is why its description
+   * promises the next connection rather than this one.
+   */
+  let stopApplying = () => {}
+  queueMicrotask(() => {
+    stopApplying = effect(() => {
+      const projection = settings().value(cameraProjectionSetting).value
+      const highlightEdges = settings().value(highlightEdgesSetting).value
+      if (connection.state.value.status !== 'connected') return
+
+      fire(
+        projection === 'orthographic'
+          ? { type: 'default_camera_set_orthographic' }
+          : {
+              type: 'default_camera_set_perspective',
+              // The engine wants a field of view with the perspective camera;
+              // 45 degrees is what the existing app uses.
+              parameters: { fov_y: 45 },
+            }
+      )
+      fire({ type: 'edge_lines_visible', hidden: !highlightEdges })
+    })
   })
 
   /**
@@ -176,11 +237,15 @@ export default defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine',
       dispose: () => {
+        stopApplying()
         releaseTransport()
         connection.dispose()
       },
       providesServices: [provideService(engineConnectionService, connection)],
       provides: [
+        ...modelingSettings.map((setting) =>
+          provide(settingsValueSpec, setting)
+        ),
         provide(statusBarItemsValueSpec, {
           id: 'engine.status',
           zone: 'end',

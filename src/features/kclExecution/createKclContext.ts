@@ -23,8 +23,14 @@ export interface KclContext {
 export interface KclContextHandle {
   context: KclContext
   wasm: KclWasmModule
-  /** Default app settings, serialised once. */
-  settingsJson: string
+  /**
+   * `kcl-lib`'s own defaults, parsed.
+   *
+   * Kept as the base for each execution's settings rather than serialised once:
+   * a preference can change between two runs, and fields this app has no setting
+   * for should keep whatever the library considers correct.
+   */
+  defaultSettings: unknown
   dispose: () => void
 }
 
@@ -75,9 +81,7 @@ export function createKclContextOwner(engine: EngineConnection) {
     return {
       context,
       wasm,
-      // Defaults for now. User settings would be threaded through here once a
-      // settings service exists.
-      settingsJson: JSON.stringify(wasm.default_app_settings()),
+      defaultSettings: wasm.default_app_settings(),
       dispose: () => {
         releaseResponses?.()
         releaseResponses = null

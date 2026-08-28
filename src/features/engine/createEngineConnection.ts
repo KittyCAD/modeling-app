@@ -8,16 +8,16 @@ import type {
   EngineConnectionStage,
   EngineConnectionState,
 } from '@src/contracts/engine'
-import type { ModelingCommandRequest } from '@src/wasm/bridge'
 import {
-  type EngineServerMessage,
   clampDimension,
+  type EngineServerMessage,
   engineWebSocketUrl,
   errorFromMessage,
   isAuthError,
   peerConfiguration,
   toSessionDescription,
 } from '@src/features/engine/protocol'
+import type { ModelingCommandRequest } from '@src/wasm/bridge'
 
 const PING_INTERVAL_MS = 1_000
 /** Long enough for a cold engine to start; short enough to not look hung. */
@@ -52,6 +52,13 @@ export interface EngineConnectionOptions {
   baseUrl: string
   /** Bearer token, read at connect time so a later sign-in is picked up. */
   token: () => string | null
+  /**
+   * Whether to ask for ambient occlusion, read at connect time.
+   *
+   * A function rather than a value because the setting can change between one
+   * connection and the next, and the connection is created once at startup.
+   */
+  ssao?: () => boolean
 }
 
 /**
@@ -484,6 +491,7 @@ export function createEngineConnection(
             baseUrl: options.baseUrl,
             width: size.width,
             height: size.height,
+            ssao: options.ssao?.() ?? true,
           })
         )
         socket.binaryType = 'arraybuffer'

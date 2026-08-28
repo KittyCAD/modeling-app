@@ -4,41 +4,52 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { computed, effect, signal } from '@preact/signals'
 import {
   type ThemeName,
   themeAttribute,
   themeNames,
 } from '@kittycad/ui-kit/tokens'
+import { computed, effect, signal } from '@preact/signals'
 import { commandsValueSpec } from '@src/contracts/commands'
+import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { type ThemeSetting, themeService } from '@src/contracts/theme'
+import { themeSetting } from '@src/features/theme/settings'
 
-const STORAGE_KEY = 'zds.theme'
+/**
+ * Last applied theme, cached for the first paint.
+ *
+ * Not the source of truth — that is the setting — but the settings file is read
+ * asynchronously, and a light-theme user should not watch the app load dark
+ * first. Written on every change, read once at boot.
+ */
+const PAINT_CACHE_KEY = 'zds.theme.applied'
 
-const settings: ThemeSetting[] = ['dark', 'light', 'system']
+const order: ThemeSetting[] = ['dark', 'light', 'system']
 
-function readStored(): ThemeSetting {
+function readPaintCache(): ThemeName | null {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored && settings.includes(stored as ThemeSetting)) {
-      return stored as ThemeSetting
-    }
+    const stored = localStorage.getItem(PAINT_CACHE_KEY)
+    return stored && themeNames.includes(stored as ThemeName)
+      ? (stored as ThemeName)
+      : null
   } catch {
-    // Private browsing and locked-down desktop profiles can both refuse
-    // storage. A theme is not worth failing a boot over.
+    // Private browsing and locked-down desktop profiles both refuse storage.
+    // A first paint is not worth failing a boot over.
+    return null
   }
-  return 'system'
 }
 
 /**
  * Resolves and applies the colour theme.
  *
- * The resolved theme is written to one attribute on the root element, which is
- * the only hook the token set needs. No component subscribes to the theme, and
+ * The choice lives in the settings cascade like every other preference; this
+ * feature only turns it into one attribute on the root element, which is the
+ * only hook the token set needs. No component subscribes to the theme and
  * nothing re-renders when it changes — the cascade does all the work.
  */
-export default defineRegistryItemFactory(() => {
-  const setting = signal<ThemeSetting>(readStored())
+export default defineRegistryItemFactory((ctx) => {
+  const settings = () => ctx.services.get(settingsService)
+
   const systemPrefersDark =
     typeof window !== 'undefined' && 'matchMedia' in window
       ? window.matchMedia('(prefers-color-scheme: dark)')
@@ -50,27 +61,42 @@ export default defineRegistryItemFactory(() => {
   }
   systemPrefersDark?.addEventListener('change', onSystemChange)
 
+  const setting = computed<ThemeSetting>(
+    () => settings().value(themeSetting).value
+  )
+
   const resolved = computed<ThemeName>(() => {
     if (setting.value !== 'system') return setting.value
     return systemDark.value ? 'dark' : 'light'
   })
 
-  const stopApplying = effect(() => {
-    document.documentElement.setAttribute(themeAttribute, resolved.value)
+  // The cached theme paints immediately; the resolved one takes over as soon as
+  // the settings file has been read.
+  const cached = readPaintCache()
+  if (cached) document.documentElement.setAttribute(themeAttribute, cached)
+
+  let stopApplying = () => {}
+  // Deferred: this reads the settings service, and resolving a service while
+  // the registry graph is still being flattened is a cycle.
+  queueMicrotask(() => {
+    stopApplying = effect(() => {
+      const next = resolved.value
+      document.documentElement.setAttribute(themeAttribute, next)
+      try {
+        localStorage.setItem(PAINT_CACHE_KEY, next)
+      } catch {
+        // Best effort; the session still gets the theme.
+      }
+    })
   })
 
   const set = (next: ThemeSetting) => {
-    setting.value = next
-    try {
-      localStorage.setItem(STORAGE_KEY, next)
-    } catch {
-      // Persisting is best-effort; the session still gets the theme.
-    }
+    settings().set(themeSetting, 'user', next)
   }
 
   const cycle = () => {
-    const index = settings.indexOf(setting.peek())
-    set(settings[(index + 1) % settings.length])
+    const index = order.indexOf(setting.peek())
+    set(order[(index + 1) % order.length])
   }
 
   return {
@@ -81,14 +107,10 @@ export default defineRegistryItemFactory(() => {
         systemPrefersDark?.removeEventListener('change', onSystemChange)
       },
       providesServices: [
-        provideService(themeService, {
-          setting: computed(() => setting.value),
-          resolved,
-          set,
-          cycle,
-        }),
+        provideService(themeService, { setting, resolved, set, cycle }),
       ],
       provides: [
+        provide(settingsValueSpec, themeSetting),
         provide(commandsValueSpec, {
           id: 'theme.cycle',
           title: 'Switch theme',

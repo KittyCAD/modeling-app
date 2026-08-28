@@ -257,7 +257,87 @@ from the menu, the palette, and a keybinding, and inherits the command's
 `enabled` state and shortcut.
 
 The theme control lives here, not in the status bar: the status bar reports state
-the app observes, the menu holds preferences someone sets.
+the app observes, the menu holds preferences someone sets. Both it and the
+settings dialog write the same user-level setting, so neither is the real one.
+
+## Settings
+
+Three layers, resolved in one direction: the app's compiled defaults, then the
+user's overrides, then the open project's. Nothing merges downward and nothing
+writes to a lower layer, so "why is this value what it is" always has a
+three-line answer — which the dialog prints under every row.
+
+A setting is **data contributed by the feature whose behaviour it changes**
+(`src/contracts/settings.ts`). The engine owns the camera settings, the theme
+owns the theme; the settings feature owns no setting at all, only the cascade and
+the surface that draws it. Adding a preference never touches
+`src/features/settings/`.
+
+```ts
+export const highlightEdgesSetting = booleanSetting({
+  id: 'modeling.highlightEdges',
+  section: 'modeling',
+  title: 'Highlight edges',
+  defaultValue: true,
+  toml: ['settings', 'modeling', 'highlight_edges'],
+})
+```
+
+The handle is both the contribution and the accessor: `provide(settingsValueSpec,
+highlightEdgesSetting)` registers it, `settings.value(highlightEdgesSetting)`
+reads it as a typed signal. A consumer in another feature imports the handle, so
+a rename is a compile error rather than a silently dead string key. KCL execution
+does exactly that with two of them — the same preference reaches the engine as a
+command and the executor as a config field, declared once.
+
+Definitions are static and never mutated. The only state is two override maps,
+one per level, and every value is a `computed` over them. That is the difference
+from `main`, where a settings tree of stateful `Setting` objects keeps the current
+value and its declaration in the same place and every consumer needs the whole
+tree.
+
+### Levels come from the schema, not from taste
+
+`levels: ['user']` means a project cannot override it. That is not a UI
+preference: `rust/kcl-lib/src/settings/types` has no project field for the camera
+projection or the theme, so an override there would write a key nothing reads.
+Files are not allowed to promise what the app will not honour, so a project-level
+value for a user-only setting is ignored on read as well as hidden on write.
+
+The same reasoning fixes the section list: a section with no settings at the
+current level is dropped from the sidebar rather than shown empty, because an
+"Appearance" group with nothing in it on the project tab reads as a bug.
+
+### The files are the ones the schema describes
+
+Each setting declares its TOML path, matching the Rust schema — `user.toml` in
+the app's configuration directory, `project.toml` at the project root. Writes
+round-trip through the existing file, so keys this app does not own (a project
+title, cloud metadata, a field a newer release added) survive. Comments do not:
+a TOML parser drops them, which the generated header says out loud.
+
+Refusing to write is deliberate when the existing file will not parse. Losing
+someone's half-finished hand edit is worse than failing to save, and the value
+stays live for the session either way.
+
+`project.toml` is now shared between the settings cascade and the project title,
+so writing the title merges rather than replaces. Before, a rename would have
+silently reset the project's preferences.
+
+### The dialog is a route, not a screen
+
+`/settings/:section` is addressable, and the location source sits at the front of
+the queue while the dialog is open — a copied URL reopens the dialog, not the
+screen behind it. Closing it steps out of the way and the underlying screen owns
+the URL again.
+
+Its route is also ordered ahead of every other one, because it has to notice URLs
+that are *not* settings: a Back out of the dialog arrives as a plain URL, and
+something has to close what the URL no longer describes. It closes, returns
+false, and the real route claims it.
+
+The level being edited is *not* in the URL. A link to settings should open
+settings someone can act on, not resume a tab they were poking at.
 
 ## Execution
 
@@ -380,16 +460,23 @@ should recede behind the geometry:
 Theme is one attribute on the root element. Nothing subscribes to it and nothing
 re-renders when it changes.
 
+Controls stay native where the platform already gets the behaviour right:
+`Select` is a real `<select>` with our chevron over it, and `Switch` is a
+visually-hidden checkbox under a styled track. The only thing a bespoke popup or
+a `div role="switch"` would buy is the chance to get keyboard, touch, and screen
+readers wrong.
+
 ## What is not built yet
 
 - CodeMirror buffers, the dispatch boundary, and editor capabilities (#6836)
 - The modelling engine connection and the 3D scene
 - Point-and-click tools as LSP or kcl-lib macro actions (principle 6)
-- Settings and cloud sync — settings will be signals plus a registry-composed
-  schema, not a state machine
+- Cloud sync
 - Token storage on desktop uses browser storage; the existing app uses a
   per-environment config file, which survives a cleared profile and supports
-  environment switching
+  environment switching. Settings already write one, so the mechanism exists
+- Settings are re-read only when a project opens; nothing watches `user.toml` or
+  `project.toml`, so an external edit needs a reload
 - An engine-idle signal, so the view can be framed automatically after execution
 - Selection, camera controls, and the feature tree: the viewport is a video
   stream with no interaction wired to it yet
@@ -462,6 +549,11 @@ The trust boundary:
 - every filesystem channel is confined to the projects directory by
   `resolveInsideProjects`, which validates the resolved path *and* what it
   really points at, so neither `..` nor a symlink can leave the tree
+- the settings channels are the exception, and deliberately so: they serve one
+  pinned path in the app's configuration directory, which is not a granted root.
+  The renderer cannot name the file, only ask for the one file it is allowed
+- `user.toml` is written to a temporary file and renamed, so a crash mid-write
+  leaves the previous settings intact rather than a truncated file
 - `openExternal` accepts only http(s)
 - deletes go to the OS trash, not `unlink`
 - the preload exposes named methods, never `ipcRenderer` or a caller-chosen
