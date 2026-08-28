@@ -1,6 +1,7 @@
 import { type ReadonlySignal, computed, effect } from '@preact/signals'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { EngineConnection } from '@src/contracts/engine'
+import { toStreamWindow } from '@src/features/engineScene/streamWindow'
 import type {
   CameraDriver,
   CameraGesture,
@@ -61,17 +62,9 @@ export function createEngineCameraDriver(
   let timer: number | undefined
   let projection: CameraProjectionType | null = null
 
-  /** Element pixels to the engine's pixels. */
-  const toStreamWindow = (at: ScenePoint) => {
-    if (at.viewport.width === 0 || at.viewport.height === 0) {
-      return { x: 0, y: 0 }
-    }
-    const stream = getConnection().viewportSize.peek()
-    return {
-      x: Math.round((at.x / at.viewport.width) * stream.width),
-      y: Math.round((at.y / at.viewport.height) * stream.height),
-    }
-  }
+  /** Element pixels to the engine's pixels. Shared with the picker. */
+  const windowFor = (at: ScenePoint) =>
+    toStreamWindow(at, getConnection().viewportSize.peek())
 
   const commandFor = (gesture: CameraGesture) => ({
     type:
@@ -81,7 +74,7 @@ export function createEngineCameraDriver(
           ? 'camera_drag_move'
           : 'camera_drag_end',
     interaction: gesture.kind,
-    window: toStreamWindow(gesture.at),
+    window: windowFor(gesture.at),
   })
 
   const flush = () => {

@@ -430,6 +430,53 @@ Three flows, contributed, because which are possible depends on the platform:
 | Web redirect | browser | A full navigation, since that is what makes the site's cookie readable here. |
 | Paste a token | everywhere | The fallback. Ordered last: it asks the most of the user. |
 
+## Selection
+
+Clicking the model, and what that means. It sits beside the camera on the same
+seam: both are contributed scene interactions over whatever surface the scene is
+drawn on, and neither knows the other exists. The camera claims drags — under all
+seven gesture conventions a drag is what moves the view — and selection claims
+clicks, which is a press and a release within a few pixels. Without that distance
+check the last frame of an orbit selects whatever the pointer ended up over.
+
+**What is selected is renderer-independent.** `SelectionService` holds entity ids
+plus whatever the artifact graph says about them, and never learns how a pick was
+made. Only the picking is engine-specific, behind `scenePickerService` — the same
+split as `cameraDriverService`, for the same reason: *that* a click selects is
+true of any renderer, and asking a websocket what a ray hit is not.
+
+`select_with_point` is the engine's own selection command: it answers with a uuid
+*and* highlights the entity, so nothing here renders a highlight. The mode always
+travels to the engine as `replace` and the whole set is restated, because the
+engine owns what is lit up — a local-only notion of "added to the selection"
+would show one thing and mean another.
+
+This is also the first thing in the app to *read* an engine response rather than
+fire and forget. The connection decodes each message to route it and re-encodes
+for the Rust side, which needs msgpack, so a TS caller decodes once more.
+
+### From an entity to a line of KCL
+
+The artifact graph is the only thing that can say which code drew what, and five
+of its 23 variants carry no code of their own. `sourceRangeFor` walks, in order of
+*specificity* rather than graph shape: a wall answers with the segment that drew
+it before the extrude that raised it, because the line is what you would edit.
+
+Three states are all normal, and the tests say so: an entity the graph can name, an
+entity it cannot — a click on geometry from a run that has since failed, which is
+still a selection because the engine is still highlighting it — and no graph at
+all, before KCL has run.
+
+Two decisions worth keeping:
+
+- **Resolved eagerly.** What an entity *is* is read from the graph at the moment
+  it is selected, so a later run cannot silently change the meaning of a
+  selection made against the old scene. A stale selection beats one that quietly
+  means something else.
+- **A plain click on nothing clears; a shift-click on nothing does not.**
+  Building up a selection and missing is a miss, not an instruction to start
+  again.
+
 ## Modelling operations
 
 An operation is derived from KCL's standard library, asked about through

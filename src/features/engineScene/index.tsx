@@ -8,6 +8,7 @@ import { computed, effect } from '@preact/signals'
 import { engineConnectionService } from '@src/contracts/engine'
 import { streamParamsValueSpec } from '@src/contracts/engineScene'
 import { cameraDriverService } from '@src/contracts/scene'
+import { scenePickerService } from '@src/contracts/selection'
 import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { themeService } from '@src/contracts/theme'
 import {
@@ -18,6 +19,7 @@ import {
   systemColorFor,
 } from '@src/features/engineScene/engineColors'
 import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
+import { createEngineScenePicker } from '@src/features/engineScene/createEngineScenePicker'
 import {
   backfaceColorSetting,
   enableSsaoSetting,
@@ -65,6 +67,14 @@ export default defineRegistryItemFactory((ctx) => {
    * feature never learns which one it got.
    */
   const cameraDriver = createEngineCameraDriver(engine)
+
+  /**
+   * What is under a point, for whoever is selecting.
+   *
+   * Beside the camera driver and for the same reason: *that* a click selects is
+   * true of any renderer, and asking a websocket what a ray hit is not.
+   */
+  const picker = createEngineScenePicker(engine)
 
   let stopApplying = () => {}
   queueMicrotask(() => {
@@ -116,7 +126,10 @@ export default defineRegistryItemFactory((ctx) => {
         stopApplying()
         cameraDriver.dispose()
       },
-      providesServices: [provideService(cameraDriverService, cameraDriver)],
+      providesServices: [
+        provideService(cameraDriverService, cameraDriver),
+        provideService(scenePickerService, picker),
+      ],
       provides: [
         ...sceneSettings.map((setting) => provide(settingsValueSpec, setting)),
 
