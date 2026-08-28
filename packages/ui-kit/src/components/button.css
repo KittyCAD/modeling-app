@@ -78,6 +78,18 @@
 .zds-button--icon-only {
   --zds-button-padding: 0px;
   inline-size: var(--zds-button-height);
+  /*
+   * Square against whatever height it ends up with.
+   *
+   * The chassis variant's height is a percentage so it fills its strip, and a
+   * percentage *width* resolves against the container instead — which made an
+   * icon-only chassis button as wide as whatever it sat in.
+   */
+  aspect-ratio: 1;
+}
+
+.zds-button--chassis.zds-button--icon-only {
+  inline-size: auto;
 }
 
 /* Variants --------------------------------------------------------- */

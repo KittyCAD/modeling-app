@@ -41,6 +41,11 @@ export {
   uniqueId,
 } from './components/shared'
 export {
+  Select,
+  type SelectOption,
+  type SelectProps,
+} from './components/select'
+export {
   Split,
   type SplitOrientation,
   type SplitPane,
@@ -52,6 +57,7 @@ export {
   type StatusDotProps,
   type StatusTone,
 } from './components/statusDot'
+export { Switch, type SwitchProps } from './components/switch'
 export { TextField, type TextFieldProps } from './components/textField'
 export {
   type TooltipOptions,

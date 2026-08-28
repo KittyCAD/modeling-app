@@ -1,0 +1,67 @@
+.zds-select {
+  --zds-select-height: var(--zds-size-control-md);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+  min-inline-size: 0;
+}
+
+.zds-select--small {
+  --zds-select-height: var(--zds-size-control-sm);
+}
+
+.zds-select--large {
+  --zds-select-height: var(--zds-size-control-lg);
+}
+
+.zds-select__label {
+  color: var(--zds-text-tertiary);
+}
+
+.zds-select__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  block-size: var(--zds-select-height);
+  background: var(--zds-surface-sunken);
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content);
+  transition: border-color var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-select__control:focus-within {
+  border-color: var(--zds-border-focus);
+}
+
+.zds-select__input {
+  appearance: none;
+  flex: 1;
+  min-inline-size: 0;
+  block-size: 100%;
+  /* Room for the chevron, which sits over the control rather than in flow. */
+  padding-inline: var(--zds-space-2) var(--zds-space-6);
+  font-family: var(--zds-font-sans);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.zds-select__input:focus-visible {
+  outline: none;
+}
+
+.zds-select__input:disabled {
+  color: var(--zds-text-disabled);
+  cursor: not-allowed;
+}
+
+/* The native menu is the platform's; only the affordance is ours. */
+.zds-select__chevron {
+  position: absolute;
+  inset-inline-end: var(--zds-space-2);
+  color: var(--zds-text-tertiary);
+  pointer-events: none;
+}

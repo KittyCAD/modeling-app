@@ -1,0 +1,100 @@
+.zds-switch {
+  --zds-switch-width: 30px;
+  --zds-switch-height: 16px;
+  --zds-switch-inset: 2px;
+
+  position: relative;
+  display: flex;
+  min-inline-size: 0;
+}
+
+.zds-switch__input {
+  /* Hidden, not absent: the label, the focus ring, and Space still belong to it. */
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.zds-switch__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-primary);
+  cursor: pointer;
+}
+
+.zds-switch__track {
+  position: relative;
+  flex: none;
+  inline-size: var(--zds-switch-width);
+  block-size: var(--zds-switch-height);
+  background: var(--zds-surface-sunken);
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  /* The one place a pill radius is allowed: the shape is the affordance. */
+  border-radius: calc(var(--zds-switch-height) / 2);
+  transition:
+    background var(--zds-motion-fast) var(--zds-motion-ease),
+    border-color var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-switch__thumb {
+  position: absolute;
+  inset-block-start: var(--zds-switch-inset);
+  inset-inline-start: var(--zds-switch-inset);
+  inline-size: calc(
+    var(--zds-switch-height) -
+    var(--zds-switch-inset) *
+    2 -
+    2px
+  );
+  block-size: calc(
+    var(--zds-switch-height) -
+    var(--zds-switch-inset) *
+    2 -
+    2px
+  );
+  background: var(--zds-text-tertiary);
+  border-radius: 50%;
+  transition:
+    transform var(--zds-motion-fast) var(--zds-motion-ease),
+    background var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-switch__input:checked + .zds-switch__label .zds-switch__track {
+  background: var(--zds-accent-muted);
+  border-color: var(--zds-accent);
+}
+
+.zds-switch__input:checked + .zds-switch__label .zds-switch__thumb {
+  background: var(--zds-accent);
+  transform: translateX(
+    calc(var(--zds-switch-width) - var(--zds-switch-height))
+  );
+}
+
+.zds-switch__input:focus-visible + .zds-switch__label .zds-switch__track {
+  outline: var(--zds-size-hairline) solid var(--zds-border-focus);
+  outline-offset: 2px;
+}
+
+.zds-switch__input:disabled + .zds-switch__label {
+  color: var(--zds-text-disabled);
+  cursor: not-allowed;
+}
+
+.zds-switch__input:disabled + .zds-switch__label .zds-switch__thumb {
+  background: var(--zds-text-disabled);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zds-switch__track,
+  .zds-switch__thumb {
+    transition: none;
+  }
+}
