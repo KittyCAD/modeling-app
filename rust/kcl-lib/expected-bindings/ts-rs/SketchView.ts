@@ -7,4 +7,4 @@ import type { ProfileClosedView } from "./ProfileClosedView";
 import type { SketchSurfaceView } from "./SketchSurfaceView";
 import type { TagIdentifierView } from "./TagIdentifierView";
 
-export type SketchView = { id: string, originalId: string, paths: Array<PathView>, innerPaths?: Array<PathView>, on: SketchSurfaceView, start: BasePathView, tags?: { [key in string]: TagIdentifierView }, artifactId: ArtifactId, units: UnitLength, isClosed: ProfileClosedView, };
+export type SketchView = { type: "Sketch", id: string, originalId: string, paths: Array<PathView>, innerPaths?: Array<PathView>, on: SketchSurfaceView, start: BasePathView, tags?: { [key in string]: TagIdentifierView }, artifactId: ArtifactId, units: UnitLength, isClosed: ProfileClosedView, };

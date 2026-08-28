@@ -6,7 +6,7 @@ import type { UnitLength } from "./ModelingCmd";
 import type { SolidCreatorView } from "./SolidCreatorView";
 import type { TagIdentifierView } from "./TagIdentifierView";
 
-export type SolidView = { id: string, originalId: string, topologyId: string, artifactId: ArtifactId, 
+export type SolidView = { type: "Solid", id: string, originalId: string, topologyId: string, artifactId: ArtifactId, 
 /**
  * Surface summaries are retained for the debug memory pane.
  */

@@ -181,6 +181,7 @@ fn profile_closed_view(closed: runtime::ProfileClosed) -> ProfileClosedView {
 
 fn sketch_view(sketch: runtime::Sketch) -> SketchView {
     SketchView {
+        type_: SketchViewType::Sketch,
         id: sketch.id,
         original_id: sketch.original_id,
         paths: sketch.paths.into_iter().map(path_view).collect(),
@@ -258,6 +259,7 @@ fn solid_view(solid: runtime::Solid) -> SolidView {
     let original_id = solid.original_id();
     let topology_id = solid.topology_id();
     SolidView {
+        type_: SolidViewType::Solid,
         id: solid.id,
         original_id,
         topology_id,

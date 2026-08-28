@@ -11,6 +11,8 @@ description: Variables in memory after executing cube.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -46,6 +48,7 @@ description: Variables in memory after executing cube.kcl
         "creatorType": "sketch",
         "type": "Sketch",
         "id": "[uuid]",
+        "originalId": "[uuid]",
         "paths": [
           {
             "__geoMeta": {
@@ -117,17 +120,17 @@ description: Variables in memory after executing cube.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
+          "type": "plane",
           "id": "[uuid]",
-          "kind": "XY",
+          "artifactId": "[uuid]",
           "objectId": 0,
+          "kind": "XY",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -164,8 +167,8 @@ description: Variables in memory after executing cube.kcl
           }
         },
         "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",

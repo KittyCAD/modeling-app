@@ -334,10 +334,19 @@ pub enum ProfileClosedView {
     Explicitly,
 }
 
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
+pub enum SketchViewType {
+    #[default]
+    Sketch,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export, rename = "SketchView")]
 #[serde(rename_all = "camelCase")]
 pub struct SketchView {
+    #[serde(rename = "type")]
+    #[ts(rename = "type", type = "\"Sketch\"")]
+    pub type_: SketchViewType,
     pub id: uuid::Uuid,
     pub original_id: uuid::Uuid,
     pub paths: Vec<PathView>,
@@ -405,10 +414,19 @@ pub enum SolidCreatorView {
     Procedural,
 }
 
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq, JsonSchema)]
+pub enum SolidViewType {
+    #[default]
+    Solid,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export, rename = "SolidView")]
 #[serde(rename_all = "camelCase")]
 pub struct SolidView {
+    #[serde(rename = "type")]
+    #[ts(rename = "type", type = "\"Solid\"")]
+    pub type_: SolidViewType,
     pub id: uuid::Uuid,
     pub original_id: uuid::Uuid,
     pub topology_id: uuid::Uuid,
