@@ -11,6 +11,7 @@ import {
   pointAt,
   segmentAt,
   segmentsOf,
+  sketchIdAt,
 } from '@src/lib/sketch/sceneGraph'
 
 const at = (id: number, kind: ApiObject['kind']): ApiObject => ({
@@ -179,5 +180,52 @@ describe('reading a sketch', () => {
 
   it('reads the constraints too', () => {
     expect(constraintsOf(graph, 5).map((c) => c.id)).toEqual([6])
+  })
+})
+
+/*
+ * The two ways this app names a sketch: our side has a text range, the frontend
+ * has an object id, and every object carries the source it came from.
+ */
+describe('finding a sketch by where it is written', () => {
+  const sketchAt = (id: number, from: number, to: number): ApiObject => ({
+    ...at(id, {
+      type: 'Sketch',
+      args: { on: { default: 'XY' } },
+      plane: 99,
+      segments: [],
+      constraints: [],
+    } as never),
+    source: { type: 'Simple', range: [from, to, 0], node_path: null } as never,
+  })
+
+  const written = graphOf([sketchAt(0, 10, 60), sketchAt(1, 100, 160)])
+
+  it('names the sketch the offset is inside', () => {
+    expect(sketchIdAt(written, 30)).toBe(0)
+    expect(sketchIdAt(written, 120)).toBe(1)
+  })
+
+  it('counts the whole statement, ends included', () => {
+    expect(sketchIdAt(written, 10)).toBe(0)
+    expect(sketchIdAt(written, 60)).toBe(0)
+  })
+
+  it('is nothing between them', () => {
+    expect(sketchIdAt(written, 80)).toBeNull()
+  })
+
+  /* The smallest range containing the offset is the one the cursor is in. */
+  it('prefers the innermost when ranges nest', () => {
+    const nested = graphOf([sketchAt(0, 0, 200), sketchAt(1, 20, 40)])
+
+    expect(sketchIdAt(nested, 30)).toBe(1)
+  })
+
+  it('ignores objects that are not sketches', () => {
+    // The segments and constraints of the base graph all sit at offset zero.
+    const noSketches = graphOf([point(0, 0, 0), line(1, 0, 0)])
+
+    expect(sketchIdAt(noSketches, 0)).toBeNull()
   })
 })

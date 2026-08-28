@@ -170,6 +170,37 @@ export function segmentsOf(
   })
 }
 
+/**
+ * The frontend's id for the sketch written at an offset.
+ *
+ * The bridge between the two ways this app names the same sketch: our side knows
+ * a *text range* — the cursor is inside `s = sketch(on = XY) { … }` — and the
+ * frontend knows an object id. Every object carries the source it came from, so
+ * the crossing is a containment test rather than a second bookkeeping table.
+ *
+ * The innermost match wins, which matters once sketches can nest inside anything:
+ * the smallest range containing the offset is the one the cursor is actually in.
+ */
+export function sketchIdAt(
+  graph: SceneGraph,
+  offset: number
+): ApiObjectId | null {
+  let found: { id: ApiObjectId; width: number } | null = null
+
+  for (const object of graph.objects) {
+    if (object?.kind.type !== 'Sketch') continue
+    if (object.source.type !== 'Simple') continue
+
+    const [from, to] = object.source.range
+    if (offset < from || offset > to) continue
+
+    const width = to - from
+    if (!found || width < found.width) found = { id: object.id, width }
+  }
+
+  return found?.id ?? null
+}
+
 /** The constraints a sketch holds, for drawing them and for asking about them. */
 export function constraintsOf(
   graph: SceneGraph,

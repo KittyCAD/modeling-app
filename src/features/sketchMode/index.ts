@@ -2,21 +2,27 @@ import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
+  provideService,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import { commandsValueSpec } from '@src/contracts/commands'
+import { kclFrontendService } from '@src/contracts/kclFrontend'
 import { kclSceneService } from '@src/contracts/kclScene'
 import { projectSessionService } from '@src/contracts/projectSession'
 import {
   sceneModeGatesValueSpec,
   sceneModeService,
+  toolbarItemsValueSpec,
 } from '@src/contracts/sceneModes'
+import { sketchSessionService } from '@src/contracts/sketchSession'
 import { selectionService } from '@src/contracts/selection'
 import { SKETCHING_MODE } from '@src/features/sceneToolbar/modes'
 import {
   autoEnterSketchMode,
   isTypingOutsideTheEditor,
 } from '@src/features/sketchMode/autoEnterSketchMode'
+import { createSketchSession } from '@src/features/sketchMode/createSketchSession'
 import { sketchContextAt } from '@src/features/sketchMode/sketchContext'
 
 /**
@@ -34,6 +40,10 @@ import { sketchContextAt } from '@src/features/sketchMode/sketchContext'
  * all need.
  */
 export default defineRegistryItemFactory((ctx) => {
+  /** The open project, which owns the buffers a sketch is written into. */
+  const currentSession = () =>
+    ctx.services.optional(projectSessionService)?.current.value ?? null
+
   /**
    * Where the user is, in the program the last run read.
    *
@@ -89,15 +99,73 @@ export default defineRegistryItemFactory((ctx) => {
     })
   })
 
+  /**
+   * Editing one sketch, as opposed to being in the mode that shows its tools.
+   *
+   * Built here because this is where "which sketch is the user in" already
+   * lives, and the session needs exactly that answer to know what to open.
+   */
+  const session = createSketchSession({
+    frontend: () => ctx.services.optional(kclFrontendService),
+    sketch,
+    buffer: () => currentSession()?.executingBuffer.value ?? null,
+    path: () => {
+      const open = currentSession()
+      const buffer = open?.executingBuffer.value
+      return open && buffer ? open.relativePathFor(buffer) : null
+    },
+    program: () =>
+      ctx.services.optional(kclSceneService)?.program.value?.ast ?? null,
+  })
+
   return {
-    model: { sketch },
+    model: { sketch, session },
     item: defineRuntimeRegistryItem({
       id: 'sketchMode',
+      providesServices: [provideService(sketchSessionService, session)],
       dispose: () => {
         disposed = true
         stopFollowing?.()
       },
       provides: [
+        /**
+         * Opening and leaving are both deliberate acts, so both are commands.
+         *
+         * Opening costs a real execution — it is what produces the object ids a
+         * sketch is solved against — and leaving costs another, to get what was
+         * drawn rendered. Neither should happen because a selection moved.
+         */
+        provide(commandsValueSpec, {
+          id: 'sketch.enter',
+          title: 'Edit sketch',
+          category: 'Sketch',
+          icon: 'sketch',
+          description:
+            'Open the sketch the cursor is in, and draw in it without rebuilding the model.',
+          enabled: session.canEnter,
+          run: () => void session.enter(),
+        }),
+
+        provide(commandsValueSpec, {
+          id: 'sketch.exit',
+          title: 'Finish sketch',
+          category: 'Sketch',
+          icon: 'checkmark',
+          description:
+            'Write the sketch back to the file and rebuild the model from it.',
+          enabled: computed(() => session.open.value !== null),
+          run: () => void session.exit(),
+        }),
+
+        provide(toolbarItemsValueSpec, {
+          kind: 'command',
+          id: 'sketch.finish',
+          mode: SKETCHING_MODE,
+          section: 'session',
+          order: 100,
+          commandId: 'sketch.exit',
+        }),
+
         /**
          * Sketching is reachable only from inside a sketch.
          *

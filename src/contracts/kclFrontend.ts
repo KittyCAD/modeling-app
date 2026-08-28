@@ -55,6 +55,15 @@ export interface KclFrontendService {
    */
   sync(path: string, text: string): Promise<void>
 
+  /**
+   * Build a scene from a program, so there is something to name a sketch with.
+   *
+   * The one call here that reaches the engine, and the reason opening a sketch
+   * costs a run: a sketch is solved against object ids only a real execution
+   * produces. Answers null when the program could not be executed.
+   */
+  setProgram(programAst: unknown): Promise<SceneGraph | null>
+
   /** Open a sketch for editing. The graph reports it as the active one. */
   editSketch(sketchId: ApiObjectId): Promise<SketchOutcome>
   /** Close it, answering with the text to write back. */

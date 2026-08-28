@@ -34,6 +34,15 @@ export interface KclWasmContext {
    * Arguments are JSON strings because wasm-bindgen takes `&str`; the shapes are
    * generated in `@rust/kcl-lib/bindings/FrontendApi`.
    */
+  /**
+   * Hand the frontend a program and let it build a scene from it.
+   *
+   * Unlike the sketch calls this one *does* reach the engine, which is why it
+   * happens when a sketch is opened rather than on every run: it is the price of
+   * the object ids a sketch is solved against. kcl-lib marks it a temporary hack
+   * pending the frontend owning execution outright.
+   */
+  hack_set_program(programAstJson: string, settings: string): Promise<unknown>
   open_project(project: number, files: string, openFile: number): Promise<void>
   update_file(project: number, file: number, text: string): Promise<void>
   edit_sketch(

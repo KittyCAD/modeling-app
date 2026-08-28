@@ -126,6 +126,26 @@ export function createKclFrontend(
       await available.wasm.update_file(PROJECT, FILE, text)
     },
 
+    async setProgram(programAst) {
+      const available = await ready()
+      if (!available) return null
+
+      const raw = (await available.wasm.hack_set_program(
+        JSON.stringify(programAst),
+        available.settings
+      )) as { type?: string; sceneGraph?: SceneGraph } | null
+
+      /*
+       * An outcome that is not a success carries no scene. Reporting null rather
+       * than throwing keeps "the program does not run yet" an ordinary answer —
+       * it is the same thing the execution status already says out loud.
+       */
+      const graph = raw?.type === 'Success' ? (raw.sceneGraph ?? null) : null
+      if (graph) sceneGraph.value = graph
+
+      return graph
+    },
+
     async editSketch(sketchId) {
       const available = await ready()
       if (!available) throw new Error('KCL is not loaded yet.')
