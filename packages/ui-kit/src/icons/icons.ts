@@ -22,6 +22,9 @@ export const iconPaths = {
   folder:
     'M2 4.5A1 1 0 0 1 3 3.5h3l1.2 1.5H13a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z',
   file: 'M4 2.5h4.5L12 6v7.5H4zM8.5 2.5V6H12',
+  filePlus: 'M4 2.5h4.5L12 6v7.5H4zM8.5 2.5V6H12M8 8.5v3M6.5 10h3',
+  folderPlus:
+    'M2 4.5A1 1 0 0 1 3 3.5h3l1.2 1.5H13a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zM8 7.5v4M6 9.5h4',
   fileCode:
     'M4 2.5h4.5L12 6v7.5H4zM8.5 2.5V6H12M6.5 9 5.5 10.5l1 1.5M9.5 9l1 1.5-1 1.5',
   sheet: 'M3 2.5h10v11H3zM3 10.5h10M9.5 10.5v3',
@@ -44,6 +47,8 @@ export const iconPaths = {
   trash: 'M3.5 5h9M6 5V3.5h4V5M4.5 5l.5 8.5h6l.5-8.5',
   pencil: 'M11 3l2 2-7.5 7.5-2.5.5.5-2.5z',
   refresh: 'M13 8a5 5 0 1 1-1.6-3.7M13 3v2.5h-2.5',
+  // Chevrons pointing inward: the tree folding up, not a pane closing.
+  collapse: 'M4.5 3 8 6.5 11.5 3M4.5 13 8 9.5 11.5 13',
   play: 'M5.5 3.5l7 4.5-7 4.5z',
   command:
     'M5.5 3.5a1.5 1.5 0 1 0 1.5 1.5v6a1.5 1.5 0 1 0 1.5-1.5H5a1.5 1.5 0 1 1 1.5 1.5V5A1.5 1.5 0 1 1 5 6.5h6',

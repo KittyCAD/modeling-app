@@ -27,6 +27,13 @@ export interface TextFieldProps extends BaseProps {
   /** Fires on every keystroke, with the current value. */
   onValueInput?: (value: string) => void
   onKeyDown?: JSX.KeyboardEventHandler<HTMLInputElement>
+  /**
+   * Fires when focus leaves the input.
+   *
+   * For fields where clicking away is an answer — an inline rename commits or
+   * abandons rather than sitting there once you have looked elsewhere.
+   */
+  onBlur?: JSX.FocusEventHandler<HTMLInputElement>
   /** Fires on Enter, with the current value. */
   onSubmit?: (value: string) => void
 }
@@ -51,6 +58,7 @@ export function TextField({
   inputRef,
   onValueInput,
   onKeyDown,
+  onBlur,
   onSubmit,
   class: className,
   id,
@@ -97,6 +105,7 @@ export function TextField({
               onSubmit((event.target as HTMLInputElement).value)
             }
           }}
+          onBlur={onBlur}
         />
       </div>
     </div>
