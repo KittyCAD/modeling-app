@@ -2,6 +2,7 @@ import { type ReadonlySignal, computed, signal } from '@preact/signals'
 import type { KclSceneService } from '@src/contracts/kclScene'
 import type { ScenePoint } from '@src/contracts/scene'
 import type {
+  PickedRegion,
   ScenePicker,
   SelectedEntity,
   SelectionMode,
@@ -36,12 +37,16 @@ export function createSelectionService(
   const entities = signal<readonly SelectedEntity[]>([])
   const picking = signal(false)
 
-  const describe = (entityId: string): SelectedEntity => {
+  const describe = (
+    entityId: string,
+    region: PickedRegion | null = null
+  ): SelectedEntity => {
     const graph = scene()
     return {
       entityId,
       kind: graph?.artifactFor(entityId)?.type ?? null,
       sourceRange: graph?.sourceRangeFor(entityId) ?? null,
+      region,
     }
   }
 
@@ -50,7 +55,7 @@ export function createSelectionService(
     mode: SelectionMode = 'replace'
   ) => {
     if (mode === 'replace') {
-      entities.value = entityIds.map(describe)
+      entities.value = entityIds.map((id) => describe(id))
       return
     }
 
@@ -65,7 +70,7 @@ export function createSelectionService(
     const held = new Set(entities.value.map((entity) => entity.entityId))
     entities.value = [
       ...entities.value,
-      ...entityIds.filter((id) => !held.has(id)).map(describe),
+      ...entityIds.filter((id) => !held.has(id)).map((id) => describe(id)),
     ]
   }
 
@@ -94,7 +99,39 @@ export function createSelectionService(
           return
         }
 
-        select([entityId], mode)
+        /*
+         * An entity the graph cannot name might be a region.
+         *
+         * A region is the V2 way to name an area to extrude and it has no
+         * artifact, because it does not exist until it is written into the file.
+         * So the absence of an artifact is the signal to ask the engine how the
+         * area *would* be written — and asking only then means a click on a face
+         * the graph already knows does not pay for a question with a known
+         * answer.
+         */
+        const known = scene()?.artifactFor(entityId)
+        const region = known
+          ? null
+          : await available.describeRegion(entityId).catch(() => null)
+
+        if (mode === 'remove') {
+          entities.value = entities.value.filter(
+            (candidate) => candidate.entityId !== entityId
+          )
+          return
+        }
+
+        const entity = describe(entityId, region)
+
+        if (mode === 'add') {
+          const held = entities.value.some(
+            (candidate) => candidate.entityId === entityId
+          )
+          if (!held) entities.value = [...entities.value, entity]
+          return
+        }
+
+        entities.value = [entity]
       } catch (error) {
         // A pick that failed is not a selection change. The engine may have gone
         // away mid-click, which the connection already reports.

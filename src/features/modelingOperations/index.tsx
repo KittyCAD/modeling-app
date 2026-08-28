@@ -12,6 +12,7 @@ import {
 } from '@src/contracts/modelingOperations'
 import { modelingOperationsService } from '@src/contracts/modelingOperationsService'
 import { projectSessionService } from '@src/contracts/projectSession'
+import { kclSceneService } from '@src/contracts/kclScene'
 import { selectionService } from '@src/contracts/selection'
 import { overlaysValueSpec } from '@src/contracts/shell'
 import { loadKclWasm } from '@src/features/kclAnalysis/wasmModule'
@@ -82,7 +83,10 @@ export default defineRegistryItemFactory((ctx) => {
          */
         provide(
           argumentResolversValueSpec,
-          createSelectionResolver(() => ctx.services.optional(selectionService))
+          createSelectionResolver(
+            () => ctx.services.optional(selectionService),
+            () => ctx.services.optional(kclSceneService)
+          )
         ),
 
         /**

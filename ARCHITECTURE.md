@@ -499,10 +499,49 @@ something is already selected that is almost certainly what the operation is
 about. And it is why the prompt is docked rather than modal: the answer arrives by
 clicking the model.
 
-Geometry inside no top-level binding contributes nothing — there is nothing to
-refer to yet. That is exactly the prerequisite-edit case: naming it is the edit
-that would make the reference possible, and the machinery for that is already in
-place.
+### A region has no artifact
+
+This is the V2 case and the one worth understanding. A region is how V2 names an
+area to extrude, and it has **no artifact in the graph** — it does not exist until
+it is written into the file. So "click the area and extrude it" cannot work by
+looking up a source range; there is nothing to look up.
+
+What the engine *can* answer, for an area under the cursor, is
+`region_get_resolvable_intersection_info`: the two curves bordering it, which
+crossing of them bounds it, and whether the area is inside the clockwise turn.
+That is `region`'s argument list in the engine's vocabulary. Those curves *are*
+segments in the file, so:
+
+```kcl
+triangle = sketch(on = XY) { line1 = line(…) ; line2 = line(…) }
+region001 = region(segments = [triangle.line1, triangle.line2])
+extrude001 = extrude(region001, length = 5)
+```
+
+The middle line is a **prerequisite edit**. It travels as data with the answer,
+lands in the same transaction as the extrude, and is one undo entry — so clicking
+never wrote anything and cancelling leaves nothing behind. This is what that
+machinery was built for.
+
+Three details that are behaviour rather than tidiness:
+
+- **`triangle.line1`, not `line1`.** V2 refers to a segment from outside its
+  block by path, which is why `referenceAt` walks two levels: a sketch block holds
+  segments, and nothing holds a block but the program.
+- **Duplicate segments collapse to one.** "For a single closed segment such as a
+  circle, pass only that segment" — and a circle is exactly where the engine's
+  walking curve and its intersecting curve are the same one. Writing it twice
+  would be wrong KCL.
+- **`intersectionIndex` and `direction` are omitted when they restate a
+  default.** The docs say they are unnecessary for a single loop, and writing them
+  anyway makes generated KCL look machine-made.
+
+Asked only when the artifact graph cannot name the entity, because that absence is
+the signal — a click on a face the graph knows should not pay for a question with a
+known answer.
+
+Geometry that is neither in the graph nor describable as a region contributes
+nothing, and the argument is refused rather than written empty.
 
 ## Modelling operations
 

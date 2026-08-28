@@ -4,6 +4,7 @@ import {
   bindingsProducing,
   boundNames,
   freeName,
+  referenceAt,
 } from '@src/lib/kclStdlib/program'
 
 const node = { start: 0, end: 0, moduleId: 0, commentStart: 0 }
@@ -122,5 +123,86 @@ describe('naming a result', () => {
       declare('extrude002', call('extrude'), 40)
     )
     expect(freeName(body, 'extrude')).toBe('extrude003')
+  })
+})
+
+describe('referring to what is at an offset', () => {
+  it('names a top-level binding', () => {
+    const body = program(declare('profile001', call('startProfile')))
+    expect(referenceAt(body, 10)).toBe('profile001')
+  })
+
+  /**
+   * How V2 refers to a segment from outside its sketch block, and what a
+   * region's `segments` argument is made of.
+   */
+  it('names a segment inside a sketch block by its path', () => {
+    const inner = (name: string, start: number, end: number) => ({
+      ...node,
+      type: 'VariableDeclaration',
+      start,
+      end,
+      kind: 'const',
+      declaration: {
+        ...node,
+        type: 'VariableDeclarator',
+        id: { ...node, type: 'Identifier', name },
+        init: call('line'),
+      },
+    })
+
+    const body = program({
+      ...node,
+      type: 'VariableDeclaration',
+      start: 0,
+      end: 100,
+      kind: 'const',
+      declaration: {
+        ...node,
+        type: 'VariableDeclarator',
+        id: { ...node, type: 'Identifier', name: 'triangle' },
+        init: {
+          ...node,
+          type: 'SketchBlock',
+          arguments: [],
+          body: {
+            ...node,
+            type: 'Block',
+            items: [inner('line1', 30, 60), inner('line2', 61, 95)],
+          },
+        },
+      },
+    })
+
+    expect(referenceAt(body, 45)).toBe('triangle.line1')
+    expect(referenceAt(body, 70)).toBe('triangle.line2')
+  })
+
+  it('names the block itself for something between its bindings', () => {
+    const body = program({
+      ...node,
+      type: 'VariableDeclaration',
+      start: 0,
+      end: 100,
+      kind: 'const',
+      declaration: {
+        ...node,
+        type: 'VariableDeclarator',
+        id: { ...node, type: 'Identifier', name: 'triangle' },
+        init: {
+          ...node,
+          type: 'SketchBlock',
+          arguments: [],
+          body: { ...node, type: 'Block', items: [] },
+        },
+      },
+    })
+
+    // A constraint, or the block's own arguments: the block is the honest answer.
+    expect(referenceAt(body, 20)).toBe('triangle')
+  })
+
+  it('has nothing to say about an offset in no binding', () => {
+    expect(referenceAt(program(), 10)).toBeNull()
   })
 })

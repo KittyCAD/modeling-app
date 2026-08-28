@@ -3,7 +3,7 @@ import { computed, signal } from '@preact/signals'
 import { describe, expect, it, vi } from 'vitest'
 import type { KclSceneService } from '@src/contracts/kclScene'
 import type { ScenePoint } from '@src/contracts/scene'
-import type { ScenePicker } from '@src/contracts/selection'
+import type { PickedRegion, ScenePicker } from '@src/contracts/selection'
 import { createSelectionService } from '@src/features/selection/createSelectionService'
 import { artifactsFrom, sourceRangeFor } from '@src/lib/kcl/artifacts'
 
@@ -36,10 +36,12 @@ function setup(
     ready?: boolean
     scene?: boolean
     fail?: boolean
+    region?: PickedRegion | null
   } = {}
 ) {
   const queue = [...(options.picks ?? ['wall'])]
   const asked: ScenePoint[] = []
+  const described: string[] = []
 
   const picker: ScenePicker = {
     id: 'fake',
@@ -48,6 +50,10 @@ function setup(
       asked.push(point)
       if (options.fail) throw new Error('the engine went away')
       return queue.shift() ?? null
+    },
+    describeRegion: async (entityId) => {
+      described.push(entityId)
+      return options.region ?? null
     },
   }
 
@@ -62,7 +68,7 @@ function setup(
     scene: () => (options.scene === false ? undefined : scene),
   })
 
-  return { selection, asked }
+  return { selection, asked, described }
 }
 
 describe('selecting by clicking', () => {
@@ -74,7 +80,12 @@ describe('selecting by clicking', () => {
     expect(selection.entities.value).toEqual([
       // The wall carries no code of its own, so the answer is the segment that
       // drew it.
-      { entityId: 'wall', kind: 'wall', sourceRange: [40, 70, 0] },
+      {
+        entityId: 'wall',
+        kind: 'wall',
+        sourceRange: [40, 70, 0],
+        region: null,
+      },
     ])
   })
 
@@ -88,7 +99,7 @@ describe('selecting by clicking', () => {
     await selection.selectAt(at)
 
     expect(selection.entities.value).toEqual([
-      { entityId: 'mystery', kind: null, sourceRange: null },
+      { entityId: 'mystery', kind: null, sourceRange: null, region: null },
     ])
   })
 
@@ -98,7 +109,7 @@ describe('selecting by clicking', () => {
     await selection.selectAt(at)
 
     expect(selection.entities.value).toEqual([
-      { entityId: 'wall', kind: null, sourceRange: null },
+      { entityId: 'wall', kind: null, sourceRange: null, region: null },
     ])
   })
 
@@ -195,7 +206,12 @@ describe('selecting by clicking', () => {
 
     selection.select(['seg'])
     expect(selection.entities.value).toEqual([
-      { entityId: 'seg', kind: 'segment', sourceRange: [40, 70, 0] },
+      {
+        entityId: 'seg',
+        kind: 'segment',
+        sourceRange: [40, 70, 0],
+        region: null,
+      },
     ])
 
     selection.clear()

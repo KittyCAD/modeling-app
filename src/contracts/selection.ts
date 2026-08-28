@@ -17,6 +17,25 @@ export interface SelectedEntity {
   entityId: string
   kind: Artifact['type'] | null
   sourceRange: SourceRange | null
+  /**
+   * How to write this as a `region`, when it has no artifact.
+   *
+   * A region is the V2 way to name an area to extrude, and it has none: it does
+   * not exist until it is written into the file. What the engine can say about
+   * the area under the cursor is which two curves border it and how they meet,
+   * which is what `region` takes — so a selection can be a *pending* region,
+   * carrying what it would take to write it.
+   */
+  region: PickedRegion | null
+}
+
+/** What the engine knows about an area that is not in the file yet. */
+export interface PickedRegion {
+  /** Engine ids of the two bordering curves, walking curve first. */
+  segmentIds: readonly string[]
+  intersectionIndex: number
+  intersectionCount: number
+  clockwise: boolean
 }
 
 /** Whether a new pick replaces the selection, joins it, or leaves it. */
@@ -40,6 +59,14 @@ export interface ScenePicker {
   readonly ready: ReadonlySignal<boolean>
   /** The entity under a point, or null for empty space. */
   pick(at: ScenePoint): Promise<string | null>
+  /**
+   * How to write this entity as a region, if it is one.
+   *
+   * Asked only when the artifact graph cannot name the entity, because that is
+   * the situation a region is in — it has no artifact. Null for anything that is
+   * not a region, which includes every entity the graph *could* name.
+   */
+  describeRegion(entityId: string): Promise<PickedRegion | null>
 }
 
 /**

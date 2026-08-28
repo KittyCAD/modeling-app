@@ -129,6 +129,41 @@ export function bindingContaining(
   return null
 }
 
+/**
+ * The KCL expression that names whatever is at an offset.
+ *
+ * `profile001` for a top-level binding, and `triangle.line1` for a segment
+ * inside a sketch block — which is how V2 refers to segments from outside the
+ * block, and what `region(segments = [triangle.line1, triangle.line2])` is made
+ * of.
+ *
+ * Two levels only, because that is how deep the language goes here: a sketch
+ * block holds segments, and nothing holds a sketch block but the program.
+ */
+export function referenceAt(program: Program, offset: number): string | null {
+  const outer = program.body.find(
+    (item) =>
+      item.type === 'VariableDeclaration' &&
+      offset >= item.start &&
+      offset <= item.end
+  )
+  if (!outer || outer.type !== 'VariableDeclaration') return null
+
+  const name = outer.declaration.id.name
+  const init = outer.declaration.init
+  if (init.type !== 'SketchBlock') return name
+
+  for (const item of init.body.items) {
+    if (item.type !== 'VariableDeclaration') continue
+    if (offset < item.start || offset > item.end) continue
+    return `${name}.${item.declaration.id.name}`
+  }
+
+  // Inside the block but not inside any of its bindings — a constraint, or the
+  // block's own arguments. The block itself is the honest answer.
+  return name
+}
+
 /** Every name bound at the top level, for choosing one that is free. */
 export function boundNames(program: Program): ReadonlySet<string> {
   const names = new Set<string>()

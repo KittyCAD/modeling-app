@@ -60,5 +60,64 @@ export function createEngineScenePicker(
       // way of saying the ray hit no geometry.
       return response.data?.entity_id ?? null
     },
+
+    /**
+     * Ask the engine how an area would be written as a region.
+     *
+     * `region_get_resolvable_intersection_info` answers with the two curves that
+     * border the area and how they meet — the walking curve, the curve that
+     * crosses it, which crossing, and whether the area is inside the clockwise
+     * turn. That is `region`'s argument list, in the engine's vocabulary.
+     *
+     * A failure is an answer: the command rejects for an entity that is not a
+     * region, and asking is how we find out. Which is why this is only called
+     * when the artifact graph could not name the entity — otherwise every click
+     * on a face would pay for a question with a known answer.
+     */
+    async describeRegion(entityId: string) {
+      if (!ready.peek()) return null
+
+      try {
+        const bytes = await getConnection().sendCommand({
+          type: 'region_get_resolvable_intersection_info',
+          region_id: entityId,
+        })
+
+        const message = msgpackDecode(bytes) as {
+          resp?: {
+            data?: {
+              modeling_response?: {
+                type?: string
+                data?: {
+                  segment?: string
+                  intersection_segment?: string
+                  intersection_index?: number
+                  intersection_count?: number
+                  curve_clockwise?: boolean
+                }
+              }
+            }
+          }
+        }
+
+        const response = message.resp?.data?.modeling_response
+        if (response?.type !== 'region_get_resolvable_intersection_info') {
+          return null
+        }
+
+        const data = response.data
+        if (!data?.segment || !data.intersection_segment) return null
+
+        return {
+          segmentIds: [data.segment, data.intersection_segment],
+          intersectionIndex: data.intersection_index ?? 0,
+          intersectionCount: data.intersection_count ?? 1,
+          clockwise: data.curve_clockwise ?? false,
+        }
+      } catch {
+        // Not a region. Nothing is wrong; the question simply does not apply.
+        return null
+      }
+    },
   }
 }

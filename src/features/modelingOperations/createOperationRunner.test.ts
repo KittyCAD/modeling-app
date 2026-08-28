@@ -3,10 +3,12 @@ import { computed, signal } from '@preact/signals'
 import { describe, expect, it } from 'vitest'
 import { combineCapabilities } from '@src/contracts/buffers'
 import type { FileBackedTextBuffer } from '@src/contracts/buffers'
+import type { KclSceneService } from '@src/contracts/kclScene'
 import type {
   ArgumentResolver,
   ModelingOperation,
 } from '@src/contracts/modelingOperations'
+import type { SelectedEntity, SelectionService } from '@src/contracts/selection'
 import type { ProjectSession } from '@src/contracts/projectSession'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
 import { createOperationRunner } from '@src/features/modelingOperations/createOperationRunner'
@@ -22,6 +24,69 @@ import { namedTypesIn } from '@src/lib/kclStdlib/types'
  * dependency precisely so a test does not need fifteen megabytes of WebAssembly
  * to answer a question about argument order.
  */
+/**
+ * A sketch block with named segments, as V2 writes them.
+ *
+ * `triangle = sketch(on = XY) { line1 = line(...) }` — which is what makes
+ * `triangle.line1` the way to refer to a segment from outside the block, and so
+ * what a region's `segments` argument is made of.
+ */
+function sketchBlockProgram(): Program {
+  const node = { start: 0, end: 0, moduleId: 0, commentStart: 0 }
+  const declare = (name: string, start: number, end: number) => ({
+    ...node,
+    type: 'VariableDeclaration',
+    start,
+    end,
+    kind: 'const',
+    declaration: {
+      ...node,
+      type: 'VariableDeclarator',
+      id: { ...node, type: 'Identifier', name },
+      init: {
+        ...node,
+        type: 'CallExpressionKw',
+        unlabeled: null,
+        arguments: [],
+        callee: {
+          ...node,
+          type: 'Name',
+          abs_path: false,
+          path: [],
+          name: { ...node, type: 'Identifier', name: 'line' },
+        },
+      },
+    },
+  })
+
+  return {
+    body: [
+      {
+        ...node,
+        type: 'VariableDeclaration',
+        start: 0,
+        end: 120,
+        kind: 'const',
+        declaration: {
+          ...node,
+          type: 'VariableDeclarator',
+          id: { ...node, type: 'Identifier', name: 'triangle' },
+          init: {
+            ...node,
+            type: 'SketchBlock',
+            arguments: [],
+            body: {
+              ...node,
+              type: 'Block',
+              items: [declare('line1', 30, 60), declare('line2', 61, 95)],
+            },
+          },
+        },
+      },
+    ],
+  } as unknown as Program
+}
+
 function programWith(bindings: { name: string; via: string }[]): Program {
   const node = { start: 0, end: 0, moduleId: 0, commentStart: 0 }
 
@@ -61,6 +126,8 @@ function setup(
     languageId?: string
     operations?: ModelingOperation[]
     resolvers?: ArgumentResolver[]
+    /** A V2 sketch block instead of the flat program. */
+    sketchBlock?: boolean
   } = {}
 ) {
   const source =
@@ -87,9 +154,11 @@ function setup(
     session: () => session,
     parse: async (text) => ({
       source: text,
-      ast: programWith(
-        options.bindings ?? [{ name: 'profile001', via: 'startProfile' }]
-      ),
+      ast: options.sketchBlock
+        ? sketchBlockProgram()
+        : programWith(
+            options.bindings ?? [{ name: 'profile001', via: 'startProfile' }]
+          ),
     }),
   })
 
@@ -418,31 +487,53 @@ describe('several ways to answer one argument', () => {
 
 /**
  * The chain the selection resolver exists for: an entity the engine reported, a
- * source range from the artifact graph, and the binding that contains it.
+ * source range from the artifact graph, and the reference that names it.
  */
 describe('answering from the scene', () => {
-  const selection = {
-    entities: computed(() => [
-      {
-        entityId: 'wall',
-        kind: 'wall' as const,
-        sourceRange: [5, 20, 1] as [number, number, number],
-      },
-    ]),
+  const entity = (
+    over: Partial<SelectedEntity> & { entityId: string }
+  ): SelectedEntity => ({
+    kind: null,
+    sourceRange: null,
+    region: null,
+    ...over,
+  })
+
+  const selectionOf = (entities: SelectedEntity[]): SelectionService => ({
+    entities: computed(() => entities),
     picking: computed(() => false),
     select: () => {},
     selectAt: async () => {},
     clear: () => {},
-  }
+  })
+
+  /** A graph that can place the segments a region borders. */
+  const sceneWith = (
+    ranges: Record<string, [number, number, number]> = {}
+  ): KclSceneService => ({
+    artifacts: computed(() => new Map()),
+    artifactFor: () => undefined,
+    sourceRangeFor: (id) => ranges[id] ?? null,
+  })
+
+  const resolverFor = (
+    selection: SelectionService,
+    scene: KclSceneService = sceneWith()
+  ) => [
+    ...builtInResolvers,
+    createSelectionResolver(
+      () => selection,
+      () => scene
+    ),
+  ]
 
   it('refers to the binding the clicked geometry came from', async () => {
-    const { runner, buffer } = setup({
-      // The binding runs 0..39 in the fake program, so offset 5 is inside it.
-      resolvers: [
-        ...builtInResolvers,
-        createSelectionResolver(() => selection),
-      ],
-    })
+    // The binding runs 0..39 in the fake program, so offset 5 is inside it.
+    const selection = selectionOf([
+      entity({ entityId: 'wall', kind: 'wall', sourceRange: [5, 20, 1] }),
+    ])
+
+    const { runner, buffer } = setup({ resolvers: resolverFor(selection) })
 
     await runner.start('modeling.extrude')
     expect(runner.pending.value?.method).toBe('modeling.resolver.selection')
@@ -458,27 +549,145 @@ describe('answering from the scene', () => {
     expect(buffer.text.value).toContain('extrude(profile001, length = 9)')
   })
 
-  it('contributes nothing for an entity outside every binding', async () => {
-    const nowhere = {
-      ...selection,
-      entities: computed(() => [
-        {
-          entityId: 'wall',
-          kind: 'wall' as const,
-          sourceRange: [9000, 9010, 1] as [number, number, number],
+  /**
+   * The V2 case, and the one this was missing. A region has no artifact — it does
+   * not exist until it is written — so the answer is a new binding *and* a
+   * reference to it, both landing with the extrude.
+   */
+  it('writes a region binding for an area that is not in the file yet', async () => {
+    const selection = selectionOf([
+      entity({
+        entityId: 'area',
+        region: {
+          segmentIds: ['segA', 'segB'],
+          intersectionIndex: 0,
+          intersectionCount: 1,
+          clockwise: false,
         },
-      ]),
-    }
+      }),
+    ])
 
-    const { runner } = setup({
-      resolvers: [...builtInResolvers, createSelectionResolver(() => nowhere)],
+    // The two bordering curves are the two segments inside the sketch block.
+    const scene = sceneWith({ segA: [40, 44, 1], segB: [70, 74, 1] })
+
+    const { runner, buffer } = setup({
+      sketchBlock: true,
+      source: 'triangle = sketch(on = XY) {}\n',
+      resolvers: resolverFor(selection, scene),
     })
+
+    await runner.start('modeling.extrude')
+    await runner.answer('area')
+    await runner.answer('5')
+
+    // The region is bound first and consumed second, in one transaction — and
+    // the segments are named the way V2 names them from outside the block.
+    expect(buffer.text.value).toBe(
+      'triangle = sketch(on = XY) {}\n' +
+        'region001 = region(segments = [triangle.line1, triangle.line2])\n' +
+        'extrude001 = extrude(region001, length = 5)\n'
+    )
+    expect(buffer.version.value).toBe(1)
+  })
+
+  /**
+   * "For a single closed segment such as a circle, pass only that segment" — and
+   * a circle is where the engine's walking curve and its intersecting curve are
+   * the same one. Writing it twice would be wrong KCL, not merely noisy.
+   */
+  it('passes one segment when both curves are the same one', async () => {
+    const selection = selectionOf([
+      entity({
+        entityId: 'area',
+        region: {
+          segmentIds: ['segA', 'segA'],
+          intersectionIndex: 0,
+          intersectionCount: 1,
+          clockwise: false,
+        },
+      }),
+    ])
+
+    const { runner, buffer } = setup({
+      sketchBlock: true,
+      resolvers: resolverFor(selection, sceneWith({ segA: [40, 44, 1] })),
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.answer('area')
+    await runner.answer('5')
+
+    expect(buffer.text.value).toContain('region(segments = [triangle.line1])')
+  })
+
+  it('carries the disambiguators only when they say something', async () => {
+    const selection = selectionOf([
+      entity({
+        entityId: 'area',
+        region: {
+          segmentIds: ['segA', 'segB'],
+          intersectionIndex: 2,
+          intersectionCount: 4,
+          clockwise: true,
+        },
+      }),
+    ])
+
+    const { runner, buffer } = setup({
+      sketchBlock: true,
+      resolvers: resolverFor(
+        selection,
+        sceneWith({ segA: [40, 44, 1], segB: [70, 74, 1] })
+      ),
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.answer('area')
+    await runner.answer('5')
+
+    expect(buffer.text.value).toContain('intersectionIndex = 2')
+    expect(buffer.text.value).toContain('direction = CW')
+  })
+
+  it('leaves nothing behind when a region is cancelled', async () => {
+    const selection = selectionOf([
+      entity({
+        entityId: 'area',
+        region: {
+          segmentIds: ['segA', 'segB'],
+          intersectionIndex: 0,
+          intersectionCount: 1,
+          clockwise: false,
+        },
+      }),
+    ])
+
+    const { runner, buffer } = setup({
+      resolvers: resolverFor(
+        selection,
+        sceneWith({ segA: [5, 9, 1], segB: [12, 16, 1] })
+      ),
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.answer('area')
+    runner.cancel()
+
+    expect(buffer.text.value).not.toContain('region')
+  })
+
+  it('contributes nothing for an entity it can neither name nor write', async () => {
+    const nowhere = selectionOf([
+      entity({ entityId: 'wall', kind: 'wall', sourceRange: [9000, 9010, 1] }),
+    ])
+
+    const { runner } = setup({ resolvers: resolverFor(nowhere) })
 
     await runner.start('modeling.extrude')
     await runner.answer('wall')
 
-    // Nothing to refer to yet, so the required argument is refused rather than
-    // written as an empty reference. Naming it is the prerequisite case.
+    // Nothing to refer to and nothing to write, so the required argument is
+    // refused rather than written as an empty reference.
     expect(runner.pending.value?.error).toMatch(/sketches is needed/)
   })
 })
