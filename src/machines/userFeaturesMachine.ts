@@ -1,5 +1,7 @@
 import { type Feature, type UserFeatureList, users } from '@kittycad/lib'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { isErr } from '@src/lib/trap'
 import { xstateEventError } from '@src/machines/utils'
@@ -204,6 +206,10 @@ export function userFeaturesContextHas(
   featureFlagId: Feature,
   defaultValue: boolean
 ): boolean {
+  if (featureFlagId === OPFS_CLOUD_FEATURE_FLAG && isPlaywright()) {
+    return true
+  }
+
   return context.featureIds.has(featureFlagId) ? true : defaultValue
 }
 

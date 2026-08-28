@@ -170,12 +170,12 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     toolbar,
     editor,
   }) => {
-    await closeOnboardingModalIfPresent(page)
-
     const sampleTitle = 'Socket Head Cap Screw'
     const sampleSlug = 'socket-head-cap-screw'
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`
     await page.goto(page.url() + queryString)
+
+    await closeOnboardingModalIfPresent(page)
 
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain(sampleTitle, { timeout: 30_000 })

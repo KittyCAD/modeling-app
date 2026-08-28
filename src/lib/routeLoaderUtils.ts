@@ -1,5 +1,4 @@
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import { isPlaywright } from '@src/lib/isPlaywright'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import {
   UserFeaturesState,
@@ -87,9 +86,8 @@ async function waitForWebHomeFeatureGate(app: WebHomeApp) {
 }
 
 export async function webHomeRouteEnabled(app: WebHomeApp) {
-  // Force every web test into the multi-project experience, which is already
-  // the default on production. The feature flag will be removed soon.
-  if (isPlaywright()) {
+  const featureContext = app.userFeatures.actor.getSnapshot().context
+  if (userFeaturesContextHas(featureContext, OPFS_CLOUD_FEATURE_FLAG, false)) {
     return true
   }
 
