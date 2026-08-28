@@ -1,3 +1,4 @@
+import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type {
   ApiObject,
   ApiObjectId,
@@ -25,6 +26,15 @@ export interface SketchPoint {
   id: ApiObjectId
   x: number
   y: number
+  /**
+   * What those numbers are measured in.
+   *
+   * Carried rather than converted, because a sketch has two audiences with
+   * different needs: a drawing wants millimetres so it can meet the engine's
+   * world, and a readout wants the unit the file was written in. Converting here
+   * would serve the first and lose the second.
+   */
+  units: NumericSuffix
   freedom: Freedom
 }
 
@@ -98,6 +108,9 @@ export function pointAt(
     id,
     x: segment.position.x.value,
     y: segment.position.y.value,
+    // Both coordinates of a point share a unit; the type allows them to differ
+    // and the solver has no way to produce that.
+    units: segment.position.x.units,
     freedom: segment.freedom,
   }
 }

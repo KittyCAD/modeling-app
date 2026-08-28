@@ -112,7 +112,15 @@ describe('the sketch being edited', () => {
 
 describe('resolving a point', () => {
   it('reads its position as plain numbers', () => {
-    expect(pointAt(graph, 1)).toEqual({ id: 1, x: 5, y: 0, freedom: 'Free' })
+    expect(pointAt(graph, 1)).toEqual({
+      id: 1,
+      x: 5,
+      y: 0,
+      // The unit travels with the numbers: a drawing needs millimetres and a
+      // readout needs whatever the file was written in.
+      units: 'Mm',
+      freedom: 'Free',
+    })
   })
 
   it('is nothing for a segment that is not a point', () => {

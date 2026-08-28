@@ -8,6 +8,7 @@ import { computed, effect } from '@preact/signals'
 import { engineConnectionService } from '@src/contracts/engine'
 import { streamParamsValueSpec } from '@src/contracts/engineScene'
 import { cameraDriverService } from '@src/contracts/scene'
+import { sceneProjectionService } from '@src/contracts/sceneProjection'
 import { scenePickerService } from '@src/contracts/selection'
 import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { themeService } from '@src/contracts/theme'
@@ -19,6 +20,7 @@ import {
   systemColorFor,
 } from '@src/features/engineScene/engineColors'
 import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
+import { createEngineProjection } from '@src/features/engineScene/createEngineProjection'
 import { createEngineScenePicker } from '@src/features/engineScene/createEngineScenePicker'
 import {
   backfaceColorSetting,
@@ -76,6 +78,16 @@ export default defineRegistryItemFactory((ctx) => {
    */
   const picker = createEngineScenePicker(engine)
 
+  /**
+   * Where things are on screen, for whoever draws over the scene.
+   *
+   * The third of the same family. Its answer is peculiar to a *remote* renderer:
+   * it follows the camera by listening to what the engine reports rather than by
+   * reading a camera it owns, which is exactly the difference a local renderer
+   * would erase.
+   */
+  const projection = createEngineProjection(engine)
+
   let stopApplying = () => {}
   queueMicrotask(() => {
     const connection = engine()
@@ -125,10 +137,12 @@ export default defineRegistryItemFactory((ctx) => {
       dispose: () => {
         stopApplying()
         cameraDriver.dispose()
+        projection.dispose()
       },
       providesServices: [
         provideService(cameraDriverService, cameraDriver),
         provideService(scenePickerService, picker),
+        provideService(sceneProjectionService, projection),
       ],
       provides: [
         ...sceneSettings.map((setting) => provide(settingsValueSpec, setting)),
