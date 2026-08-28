@@ -18,6 +18,7 @@ import type {
   FileBackedTextBuffer,
 } from '@src/contracts/buffers'
 import { hashString } from '@src/lib/hash'
+import { minimalChange } from '@src/lib/buffers/minimalChange'
 import { basename } from '@src/lib/paths'
 import { bufferOrigin } from '@src/lib/buffers/annotations'
 
@@ -359,8 +360,25 @@ export function createFileBackedTextBuffer(
 
       if (!dirty.peek()) {
         const current = stateSignal.peek()
+        /*
+         * The smallest change that gets there, not a wholesale replacement.
+         *
+         * `addToHistory.of(false)` keeps this out of the undo stack, but
+         * CodeMirror still *maps* every existing history event through it — so
+         * replacing the document outright would map the user's own history
+         * through a delete-everything, and undo afterwards would be worthless.
+         * A file that changed on disk usually changed in one place.
+         */
+        const change = minimalChange(current.doc.toString(), incoming)
+        if (change === null) {
+          baseContent.value = incoming
+          baseVersion.value = version.peek()
+          divergence.value = null
+          return { kind: 'unchanged' }
+        }
+
         dispatch({
-          changes: { from: 0, to: current.doc.length, insert: incoming },
+          changes: change,
           annotations: [
             bufferOrigin.of('reconcile'),
             // Adopting the file's version is not something the user did, so
@@ -387,8 +405,15 @@ export function createFileBackedTextBuffer(
       if (incoming === null) return
 
       const current = stateSignal.peek()
+      // Minimal here too, so the undo entry is the change and not the file, and
+      // so the cursor survives accepting a version of the document it is in.
+      const change = minimalChange(current.doc.toString(), incoming) ?? {
+        from: 0,
+        to: current.doc.length,
+        insert: incoming,
+      }
       dispatch({
-        changes: { from: 0, to: current.doc.length, insert: incoming },
+        changes: change,
         annotations: [
           // Deliberately *does* go into local history, unlike automatic
           // reconciliation. This discards work the user typed, at their

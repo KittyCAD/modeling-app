@@ -1,4 +1,4 @@
-import { history, redo, undo } from '@codemirror/commands'
+import { history, redo, undo, undoDepth } from '@codemirror/commands'
 import { EditorState } from '@codemirror/state'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -538,5 +538,53 @@ describe('a disposed buffer', () => {
     const buffer = createBuffer()
     buffer.dispose()
     expect(() => buffer.dispose()).not.toThrow()
+  })
+})
+
+describe('adopting an external change', () => {
+  /**
+   * Adopting is dispatched with `addToHistory` false, which keeps it out of the
+   * undo stack — but CodeMirror still *maps* every existing history event
+   * through the change. A wholesale replacement mapped the user's own history
+   * through a delete-everything, which dropped it.
+   */
+  it('leaves the undo history intact', () => {
+    const buffer = createBuffer()
+    append(buffer, '\nwidth = 2')
+    buffer.markSaved({
+      version: buffer.version.peek(),
+      content: buffer.text.peek(),
+    })
+    expect(undoDepth(buffer.state.peek())).toBe(1)
+
+    // Someone appended a line in another editor.
+    expect(buffer.reconcile('thickness = 4\nwidth = 2\ndepth = 9').kind).toBe(
+      'adopted'
+    )
+
+    expect(undoDepth(buffer.state.peek())).toBe(1)
+  })
+
+  it('undoes the edit and keeps what arrived', () => {
+    const buffer = createBuffer()
+    append(buffer, '\nwidth = 2')
+    buffer.markSaved({
+      version: buffer.version.peek(),
+      content: buffer.text.peek(),
+    })
+    buffer.reconcile('thickness = 4\nwidth = 2\ndepth = 9')
+
+    expect(buffer.runCommand(undo)).toBe(true)
+
+    // The typed line is gone; the line that arrived from disk is not.
+    expect(buffer.text.peek()).toBe('thickness = 4\ndepth = 9')
+  })
+
+  it('treats an identical file as nothing having happened', () => {
+    const buffer = createBuffer()
+    const version = buffer.version.peek()
+
+    expect(buffer.reconcile('thickness = 4').kind).toBe('unchanged')
+    expect(buffer.version.peek()).toBe(version)
   })
 })
