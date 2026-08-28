@@ -150,7 +150,25 @@ export function createOperationRunner(
   const advance = async (state: PendingOperation): Promise<void> => {
     for (let index = state.index; index < state.inputs.length; index += 1) {
       const input = state.inputs[index]
-      const candidates = resolversFor(input)
+
+      /*
+       * A method that can already answer is offered first.
+       *
+       * The order still decides everything else; this only lifts a method that
+       * says it has the answer in hand. It is what makes a face selected before
+       * the operation started the thing the operation opens on, rather than a
+       * list of planes with the selection one switch away.
+       */
+      const request = {
+        input,
+        program: state.program,
+        resolved: state.resolved,
+      }
+      const offered = resolversFor(input)
+      const candidates = [
+        ...offered.filter((resolver) => resolver.ready?.(request) === true),
+        ...offered.filter((resolver) => resolver.ready?.(request) !== true),
+      ]
 
       if (candidates.length === 0) {
         if (!input.required) continue

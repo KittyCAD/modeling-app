@@ -4,9 +4,18 @@ import type {
 } from '@src/contracts/modelingOperations'
 import type { KclSceneService } from '@src/contracts/kclScene'
 import type { SelectionService } from '@src/contracts/selection'
+import { faceReference } from '@src/lib/kcl/faceReferences'
 import { regionExpression } from '@src/lib/kcl/regionExpression'
 import { boundNames, referenceAt } from '@src/lib/kclStdlib/program'
 import { namedTypesIn } from '@src/lib/kclStdlib/types'
+
+/**
+ * The types that mean "a face", as opposed to the thing that made one.
+ *
+ * `Plane` is here because sketching on a face and sketching on a plane are the
+ * same argument, and a clicked face has to answer it as a face.
+ */
+const FACES = ['Face', 'TaggedFace', 'Plane']
 
 /** KCL types a click on the model could plausibly answer. */
 const GEOMETRIC = [
@@ -48,6 +57,16 @@ export function createSelectionResolver(
     handles: (input) =>
       namedTypesIn(input.type).some((name) => GEOMETRIC.includes(name)),
 
+    /*
+     * Ready when something is already selected.
+     *
+     * Deliberately not "selected *and* of the right type": what a click can
+     * answer is decided when the answer is turned into KCL, and a selection the
+     * user made a moment ago is almost certainly what the operation is about. If
+     * it turns out not to fit, the method list is right there.
+     */
+    ready: () => (selection()?.entities.value.length ?? 0) > 0,
+
     prompt: ({ input }) => ({
       kind: 'selection',
       accepts: namedTypesIn(input.type).filter((name) =>
@@ -71,7 +90,7 @@ export function createSelectionResolver(
      * data and lands in the same transaction as the operation, so clicking never
      * wrote anything and cancelling leaves nothing behind.
      */
-    toArgument: (answer, { program }) => {
+    toArgument: (answer, { input, program }) => {
       const service = selection()
       const graph = scene()
       const wanted = answer.split(/\s+/).filter(Boolean)
@@ -92,13 +111,46 @@ export function createSelectionResolver(
         return `${stem}${Date.now()}`
       }
 
+      /*
+       * What *kind* of reference the argument wants.
+       *
+       * The same click means different things to different arguments. A wall
+       * clicked for `region(segments = …)` is the segment that drew it; the same
+       * wall clicked for `sketch(on = …)` is a face, and a face is written a
+       * different way entirely. Asking the argument's declared type is what keeps
+       * one click from having to guess.
+       */
+      const asFace = namedTypesIn(input.type).some((name) =>
+        FACES.includes(name)
+      )
+
       for (const entityId of wanted) {
         const entity = service?.entities.value.find(
           (candidate) => candidate.entityId === entityId
         )
         if (!entity) continue
 
-        // Already in the file: refer to it.
+        /*
+         * A face is not the segment that made it.
+         *
+         * Naming a face is strange enough to live in one place, so this asks
+         * rather than works it out: side faces go through their swept segment or
+         * its region, caps go through a position, and imported faces cannot be
+         * named at all. When the Face API lands, that module changes and this line
+         * does not.
+         */
+        if (asFace) {
+          const face = faceReference(entityId, {
+            artifacts: graph?.artifacts.value ?? new Map(),
+            program: program.ast,
+          })
+          if (face) {
+            if (!references.includes(face.source)) references.push(face.source)
+            continue
+          }
+        }
+
+        // Already in the file under a name: refer to it.
         if (entity.sourceRange) {
           const reference = referenceAt(program.ast, entity.sourceRange[0])
           if (reference && !references.includes(reference)) {

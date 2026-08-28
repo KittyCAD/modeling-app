@@ -144,6 +144,19 @@ export interface ArgumentResolver {
   /** Lower sorts earlier in the list of methods. */
   order?: number
   handles: (input: DerivedInput) => boolean
+  /**
+   * Whether this method could answer right now.
+   *
+   * A method that can answer *already* is offered before one that cannot,
+   * whatever the order says. That is what makes a selection made before starting
+   * an operation the thing the operation opens on: clicking a face and then
+   * asking to sketch is one intention, and making the user re-pick it would be
+   * asking the same question twice.
+   *
+   * Absent means "no idea", which sorts as not ready — a method that needs
+   * nothing in particular does not benefit from claiming otherwise.
+   */
+  ready?: (request: ResolveRequest) => boolean
   prompt: (request: ResolveRequest) => ArgumentPrompt | Promise<ArgumentPrompt>
   /**
    * Turn the answer into an argument.

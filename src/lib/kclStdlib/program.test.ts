@@ -5,7 +5,9 @@ import {
   boundNames,
   freeName,
   referenceAt,
+  referencePartsAt,
   sketchBlockAt,
+  sweptRegionName,
 } from '@src/lib/kclStdlib/program'
 
 const node = { start: 0, end: 0, moduleId: 0, commentStart: 0 }
@@ -270,5 +272,129 @@ describe('finding the sketch an offset is in', () => {
 
   it('finds nothing in an empty program', () => {
     expect(sketchBlockAt(program(), 0)).toBeNull()
+  })
+})
+
+describe('the region a sweep consumed', () => {
+  const named = (value: string) => ({
+    ...node,
+    type: 'Name',
+    abs_path: false,
+    path: [],
+    name: { ...node, type: 'Identifier', name: value },
+  })
+
+  const callWith = (callee: string, unlabeled: unknown) => ({
+    ...node,
+    type: 'CallExpressionKw',
+    unlabeled,
+    arguments: [],
+    callee: named(callee),
+  })
+
+  const at = (start: number, end: number, body: unknown) => {
+    const declaration = body as { start: number; end: number }
+    declaration.start = start
+    declaration.end = end
+    return declaration
+  }
+
+  const sweepProgram = (input: unknown, regionInit?: string) =>
+    program(
+      ...(regionInit
+        ? [at(0, 50, declare('region001', callWith(regionInit, null), 0))]
+        : []),
+      at(100, 150, declare('extrude001', callWith('extrude', input), 100))
+    )
+
+  it('names a region bound to its own variable', () => {
+    expect(
+      sweptRegionName(sweepProgram(named('region001'), 'region'), 120)
+    ).toBe('region001')
+  })
+
+  it('says nothing when the swept input is a sketch rather than a region', () => {
+    expect(
+      sweptRegionName(sweepProgram(named('region001'), 'sketch'), 120)
+    ).toBeNull()
+  })
+
+  it('says nothing for an inline region, which has no name to write', () => {
+    expect(
+      sweptRegionName(sweepProgram(callWith('region', null)), 120)
+    ).toBeNull()
+  })
+
+  it('says nothing when the call is not a sweep', () => {
+    const body = program(
+      at(0, 50, declare('region001', callWith('region', null), 0)),
+      at(
+        100,
+        150,
+        declare('x', callWith('appearance', named('region001')), 100)
+      )
+    )
+
+    expect(sweptRegionName(body, 120)).toBeNull()
+  })
+
+  it('says nothing outside every binding', () => {
+    expect(
+      sweptRegionName(sweepProgram(named('region001'), 'region'), 999)
+    ).toBeNull()
+  })
+})
+
+describe('naming what is at an offset, in parts', () => {
+  it('splits a segment inside a sketch block from the block', () => {
+    const inner = (name: string, start: number, end: number) => ({
+      ...node,
+      type: 'VariableDeclaration',
+      start,
+      end,
+      kind: 'const',
+      declaration: {
+        ...node,
+        type: 'VariableDeclarator',
+        id: { ...node, type: 'Identifier', name },
+        init: call('line'),
+      },
+    })
+
+    const body = program({
+      ...node,
+      type: 'VariableDeclaration',
+      start: 0,
+      end: 100,
+      kind: 'const',
+      declaration: {
+        ...node,
+        type: 'VariableDeclarator',
+        id: { ...node, type: 'Identifier', name: 'triangle' },
+        init: {
+          ...node,
+          type: 'SketchBlock',
+          arguments: [],
+          body: {
+            ...node,
+            type: 'Block',
+            items: [inner('line1', 30, 60)],
+          },
+        },
+      },
+    })
+
+    expect(referencePartsAt(body, 40)).toEqual({
+      outer: 'triangle',
+      inner: 'line1',
+    })
+    // The joined form is what a region's `segments` list is made of.
+    expect(referenceAt(body, 40)).toBe('triangle.line1')
+  })
+
+  it('has no inner part for a plain binding', () => {
+    const body = program(declare('extrude001', call('extrude')))
+
+    expect(referencePartsAt(body, 10)).toEqual({ outer: 'extrude001' })
   })
 })

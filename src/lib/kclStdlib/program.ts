@@ -130,17 +130,29 @@ export function bindingContaining(
 }
 
 /**
- * The KCL expression that names whatever is at an offset.
+ * What names the thing at an offset, in parts.
  *
- * `profile001` for a top-level binding, and `triangle.line1` for a segment
- * inside a sketch block — which is how V2 refers to segments from outside the
- * block, and what `region(segments = [triangle.line1, triangle.line2])` is made
- * of.
+ * `{ outer: 'profile001' }` for a top-level binding, and
+ * `{ outer: 'triangle', inner: 'line1' }` for a segment inside a sketch block.
  *
  * Two levels only, because that is how deep the language goes here: a sketch
  * block holds segments, and nothing holds a sketch block but the program.
+ *
+ * Kept in parts because callers need them separately as well as joined. A
+ * region's segments are written `triangle.line1`, but a face made by sweeping
+ * that segment is written through the region's own tags — `region001.tags.line1`
+ * — which needs the segment's name without the block's.
  */
-export function referenceAt(program: Program, offset: number): string | null {
+export interface ProgramReference {
+  outer: string
+  /** The binding inside a sketch block, when the offset is in one. */
+  inner?: string
+}
+
+export function referencePartsAt(
+  program: Program,
+  offset: number
+): ProgramReference | null {
   const outer = program.body.find(
     (item) =>
       item.type === 'VariableDeclaration' &&
@@ -151,17 +163,81 @@ export function referenceAt(program: Program, offset: number): string | null {
 
   const name = outer.declaration.id.name
   const init = outer.declaration.init
-  if (init.type !== 'SketchBlock') return name
+  if (init.type !== 'SketchBlock') return { outer: name }
 
   for (const item of init.body.items) {
     if (item.type !== 'VariableDeclaration') continue
     if (offset < item.start || offset > item.end) continue
-    return `${name}.${item.declaration.id.name}`
+    return { outer: name, inner: item.declaration.id.name }
   }
 
   // Inside the block but not inside any of its bindings — a constraint, or the
   // block's own arguments. The block itself is the honest answer.
-  return name
+  return { outer: name }
+}
+
+/**
+ * The KCL expression that names whatever is at an offset.
+ *
+ * `profile001` for a top-level binding, and `triangle.line1` for a segment
+ * inside a sketch block — which is how V2 refers to segments from outside the
+ * block, and what `region(segments = [triangle.line1, triangle.line2])` is made
+ * of.
+ */
+export function referenceAt(program: Program, offset: number): string | null {
+  const parts = referencePartsAt(program, offset)
+  if (!parts) return null
+  return parts.inner ? `${parts.outer}.${parts.inner}` : parts.outer
+}
+
+/** Names a sweep takes its shape from, in the order KCL writes them. */
+const SWEEPS = ['extrude', 'revolve', 'sweep', 'loft']
+
+/**
+ * The region a sweep consumed, when it is one a name can be put on.
+ *
+ * `extrude001 = extrude(region001, length = 10)` answers `region001`, and only
+ * when `region001` is itself bound to a `region(…)` call. Anything else — an
+ * inline `region(…)`, a bare sketch, a name bound to something else — answers
+ * null, because there is no name to write.
+ *
+ * This exists because a face made by sweeping a segment is referred to through
+ * the region that consumed the segment rather than through the segment itself.
+ * kcl-lib's own frontend makes the same check, in the same order, for the same
+ * expression.
+ */
+export function sweptRegionName(
+  program: Program,
+  sweepOffset: number
+): string | null {
+  const sweep = bindingContaining(program, sweepOffset)
+  if (!sweep) return null
+
+  const declaration = program.body.find(
+    (item) =>
+      item.type === 'VariableDeclaration' &&
+      item.declaration.id.name === sweep.name
+  )
+  if (!declaration || declaration.type !== 'VariableDeclaration') return null
+
+  const call = declaration.declaration.init
+  if (call.type !== 'CallExpressionKw') return null
+  if (!SWEEPS.includes(call.callee.name.name)) return null
+
+  const input = call.unlabeled
+  if (!input || input.type !== 'Name') return null
+
+  const candidate = input.name.name
+  const bound = program.body.find(
+    (item) =>
+      item.type === 'VariableDeclaration' &&
+      item.declaration.id.name === candidate
+  )
+  if (!bound || bound.type !== 'VariableDeclaration') return null
+
+  const init = bound.declaration.init
+  if (init.type !== 'CallExpressionKw') return null
+  return init.callee.name.name === 'region' ? candidate : null
 }
 
 /** A `sketch { … }` block, and what it is bound to. */

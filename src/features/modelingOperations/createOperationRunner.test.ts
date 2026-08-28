@@ -586,6 +586,57 @@ describe('several ways to answer one argument', () => {
  * The chain the selection resolver exists for: an entity the engine reported, a
  * source range from the artifact graph, and the reference that names it.
  */
+describe('the method an operation opens on', () => {
+  const readyResolver: ArgumentResolver = {
+    id: 'test.resolver.ready',
+    label: 'Already picked',
+    // Ordered last on purpose: readiness is what lifts it, not its order.
+    order: 500,
+    handles: () => true,
+    ready: () => true,
+    prompt: () => ({ kind: 'expression' }),
+  }
+
+  const idleResolver: ArgumentResolver = {
+    ...readyResolver,
+    id: 'test.resolver.idle',
+    label: 'Nothing picked',
+    order: -500,
+    ready: () => false,
+  }
+
+  /*
+   * Clicking a face and then asking to sketch is one intention. Opening on a
+   * list of planes would be asking the same question twice.
+   */
+  it('opens on a method that says it can already answer', async () => {
+    const { runner } = setup({ resolvers: [idleResolver, readyResolver] })
+
+    await runner.start('modeling.extrude')
+
+    expect(runner.pending.value?.method).toBe('test.resolver.ready')
+  })
+
+  it('keeps the contributed order among the rest', async () => {
+    const { runner } = setup({ resolvers: [idleResolver] })
+
+    await runner.start('modeling.extrude')
+
+    expect(runner.pending.value?.method).toBe('test.resolver.idle')
+  })
+
+  it('still lists every method, whatever it opened on', async () => {
+    const { runner } = setup({ resolvers: [idleResolver, readyResolver] })
+
+    await runner.start('modeling.extrude')
+
+    expect(runner.pending.value?.methods.map((method) => method.id)).toEqual([
+      'test.resolver.idle',
+      'test.resolver.ready',
+    ])
+  })
+})
+
 describe('answering from the scene', () => {
   const entity = (
     over: Partial<SelectedEntity> & { entityId: string }
