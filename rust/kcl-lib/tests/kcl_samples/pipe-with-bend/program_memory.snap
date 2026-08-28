@@ -393,58 +393,15 @@ description: Variables in memory after executing pipe-with-bend.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 9,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 30.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 8,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 30.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 35.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 35.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -452,47 +409,94 @@ description: Variables in memory after executing pipe-with-bend.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 30.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 35.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 30.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 7,
+                    "center_object_id": 8,
                     "start_freedom": "Free",
-                    "start_object_id": 7
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 9,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerCircle"
@@ -662,58 +666,15 @@ description: Variables in memory after executing pipe-with-bend.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 30.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 3,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 30.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 40.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 40.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -721,47 +682,94 @@ description: Variables in memory after executing pipe-with-bend.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 30.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 40.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 30.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "center_object_id": 3,
                     "start_freedom": "Free",
-                    "start_object_id": 2
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerCircle"

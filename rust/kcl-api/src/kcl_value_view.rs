@@ -202,6 +202,23 @@ pub enum PlaneKindView {
 pub struct FaceView {
     pub id: uuid::Uuid,
     pub artifact_id: ArtifactId,
+    pub object_id: ObjectId,
+    pub value: String,
+    pub x_axis: Point3dView,
+    pub y_axis: Point3dView,
+    pub parent_solid: FaceParentSolidView,
+    pub units: UnitLength,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct FaceParentSolidView {
+    pub solid_id: uuid::Uuid,
+    pub creator_sketch_id: Option<uuid::Uuid>,
+    pub creator_sketch_is_closed: Option<ProfileClosedView>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub edge_cut_ids: Vec<uuid::Uuid>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -406,17 +423,30 @@ pub struct SurfaceView {
     pub geo_meta: GeoMetaView,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+pub struct NumericValueView {
+    pub n: f64,
+    pub ty: NumericType,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum EdgeCutView {
     Fillet {
         id: uuid::Uuid,
+        radius: NumericValueView,
+        #[serde(rename = "edgeId")]
+        #[ts(rename = "edgeId")]
         edge_id: uuid::Uuid,
         tag: Option<TagDeclaratorView>,
     },
     Chamfer {
         id: uuid::Uuid,
+        length: NumericValueView,
+        #[serde(rename = "edgeId")]
+        #[ts(rename = "edgeId")]
         edge_id: uuid::Uuid,
         tag: Option<TagDeclaratorView>,
     },
@@ -543,5 +573,54 @@ mod tests {
                 "value": "edge01"
             })
         );
+    }
+
+    #[test]
+    fn edge_cut_views_keep_dimensions_and_camel_case_edge_ids() {
+        let edge_id = uuid::Uuid::nil();
+        let value = EdgeCutView::Fillet {
+            id: uuid::Uuid::nil(),
+            radius: NumericValueView {
+                n: 2.0,
+                ty: NumericType::default(),
+            },
+            edge_id,
+            tag: None,
+        };
+
+        let json = serde_json::to_value(value).unwrap();
+        assert_eq!(json["radius"]["n"], 2.0);
+        assert_eq!(json["edgeId"], edge_id.to_string());
+        assert!(json.get("edge_id").is_none());
+
+        let value = EdgeCutView::Chamfer {
+            id: uuid::Uuid::nil(),
+            length: NumericValueView {
+                n: 3.0,
+                ty: NumericType::default(),
+            },
+            edge_id,
+            tag: None,
+        };
+        let json = serde_json::to_value(value).unwrap();
+        assert_eq!(json["length"]["n"], 3.0);
+        assert_eq!(json["edgeId"], edge_id.to_string());
+    }
+
+    #[test]
+    fn face_parent_solid_view_keeps_face_provenance() {
+        let solid_id = uuid::Uuid::nil();
+        let value = FaceParentSolidView {
+            solid_id,
+            creator_sketch_id: Some(solid_id),
+            creator_sketch_is_closed: Some(ProfileClosedView::Explicitly),
+            edge_cut_ids: vec![solid_id],
+        };
+
+        let json = serde_json::to_value(value).unwrap();
+        assert_eq!(json["solidId"], solid_id.to_string());
+        assert_eq!(json["creatorSketchId"], solid_id.to_string());
+        assert_eq!(json["creatorSketchIsClosed"], "explicitly");
+        assert_eq!(json["edgeCutIds"][0], solid_id.to_string());
     }
 }

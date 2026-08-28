@@ -77,58 +77,15 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 22,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 10.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 30.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 30.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 30.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 21,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -136,47 +93,94 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
                         "n": 30.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 30.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 30.0,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 10.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 30.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 20,
+                    "end_object_id": 21,
                     "start_freedom": "Free",
-                    "start_object_id": 20
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 22,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -193,58 +197,15 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 25,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 10.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 40.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 10.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 30.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 40.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 24,
                     "start": [
                       {
                         "n": 10.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -252,47 +213,94 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
                         "n": 30.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 40.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 10.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 30.0,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 10.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 40.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 23,
+                    "end_object_id": 24,
                     "start_freedom": "Free",
-                    "start_object_id": 23
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 25,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -309,58 +317,15 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 28,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 40.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 10.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 40.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 40.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 27,
                     "start": [
                       {
                         "n": 10.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -368,47 +333,94 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
                         "n": 40.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 40.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 10.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 40.0,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 40.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 26,
+                    "end_object_id": 27,
                     "start_freedom": "Free",
-                    "start_object_id": 26
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 28,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -425,58 +437,15 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 31,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 30.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 40.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 30.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 30,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -484,47 +453,94 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
                         "n": 40.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 30.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 40.0,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 30.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 29,
+                    "end_object_id": 30,
                     "start_freedom": "Free",
-                    "start_object_id": 29
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 31,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1708,58 +1724,15 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 5.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 3,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1767,47 +1740,94 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 5.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Free",
-                    "start_object_id": 2
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1824,58 +1844,15 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 7,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 5.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 5.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 5.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 6,
                     "start": [
                       {
                         "n": 5.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1883,47 +1860,94 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 5.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 5.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 5,
+                    "end_object_id": 6,
                     "start_freedom": "Free",
-                    "start_object_id": 5
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 7,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1940,58 +1964,15 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 10,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 5.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 5.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 5.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 9,
                     "start": [
                       {
                         "n": 5.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1999,47 +1980,94 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
                         "n": 5.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 5.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 8,
+                    "end_object_id": 9,
                     "start_freedom": "Free",
-                    "start_object_id": 8
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 10,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2056,58 +2084,15 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 13,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "None",
-                          "value": 5.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 12,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2115,47 +2100,94 @@ description: Variables in memory after executing named_views_hide_pattern.kcl
                         "n": 5.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        }
+                      }
+                    },
+                    "start_object_id": 11,
+                    "end_object_id": 12,
                     "start_freedom": "Free",
-                    "start_object_id": 11
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 13,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"

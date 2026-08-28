@@ -1262,58 +1262,15 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 26,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 20.0
-                        },
-                        "y": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 20.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 25,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1321,47 +1278,94 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 20.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "value": 20.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 24,
+                    "end_object_id": 25,
                     "start_freedom": "Fixed",
-                    "start_object_id": 24
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 26,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottom"
@@ -1378,58 +1382,15 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 35,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 10.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 34,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1437,47 +1398,94 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                         "n": 10.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 10.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 33,
+                    "end_object_id": 34,
                     "start_freedom": "Fixed",
-                    "start_object_id": 33
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 35,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "left"
@@ -1674,58 +1682,15 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 29,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 20.0
-                        },
-                        "y": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 10.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 20.0
-                        },
-                        "y": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 20.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 28,
                     "start": [
                       {
                         "n": 20.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1733,47 +1698,94 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 20.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "value": 20.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "value": 20.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 10.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 27,
+                    "end_object_id": 28,
                     "start_freedom": "Fixed",
-                    "start_object_id": 27
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 29,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "right"
@@ -1790,58 +1802,15 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 32,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 10.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 20.0
-                        },
-                        "y": {
-                          "type": "Number",
-                          "units": "Mm",
-                          "value": 10.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 10.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 31,
                     "start": [
                       {
                         "n": 20.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1849,47 +1818,94 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                         "n": 10.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "value": 20.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 10.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 10.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 30,
+                    "end_object_id": 31,
                     "start_freedom": "Fixed",
-                    "start_object_id": 30
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 32,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "top"
@@ -1912,58 +1928,15 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.32
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 1.02
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -5.7
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 1.02
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 2.32,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.02,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 3,
                     "start": [
                       {
                         "n": -5.7,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1971,47 +1944,94 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                         "n": 1.02,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 2.32,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.02,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -5.7,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.02,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.32,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.02,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Free",
-                    "start_object_id": 2
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2028,58 +2048,15 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 7,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.32
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.1
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.32
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 1.02
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 2.32,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 4.1,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 6,
                     "start": [
                       {
                         "n": 2.32,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2087,47 +2064,94 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                         "n": 1.02,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 2.32,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 4.1,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.32,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.02,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.32,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 4.1,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 5,
+                    "end_object_id": 6,
                     "start_freedom": "Free",
-                    "start_object_id": 5
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 7,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2144,58 +2168,15 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 10,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -5.7
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.1
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.32
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.1
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -5.7,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 4.1,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 9,
                     "start": [
                       {
                         "n": 2.32,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2203,47 +2184,94 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                         "n": 4.1,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -5.7,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 4.1,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.32,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 4.1,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -5.7,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 4.1,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 8,
+                    "end_object_id": 9,
                     "start_freedom": "Free",
-                    "start_object_id": 8
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 10,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2260,58 +2288,15 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 13,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -5.7
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 1.02
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -5.7
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.1
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -5.7,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.02,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 12,
                     "start": [
                       {
                         "n": -5.7,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2319,47 +2304,94 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
                         "n": 4.1,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -5.7,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.02,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -5.7,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 4.1,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -5.7,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.02,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 11,
+                    "end_object_id": 12,
                     "start_freedom": "Free",
-                    "start_object_id": 11
+                    "end_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 13,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"

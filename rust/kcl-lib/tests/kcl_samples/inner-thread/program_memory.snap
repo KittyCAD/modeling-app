@@ -334,58 +334,15 @@ description: Variables in memory after executing inner-thread.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 12,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 11,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 4.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -393,47 +350,94 @@ description: Variables in memory after executing inner-thread.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 10,
+                    "center_object_id": 11,
                     "start_freedom": "Fixed",
-                    "start_object_id": 10
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 12,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 8,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -931,58 +935,15 @@ description: Variables in memory after executing inner-thread.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 3,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 5.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -990,47 +951,94 @@ description: Variables in memory after executing inner-thread.kcl
                         "n": 0.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "center_object_id": 3,
                     "start_freedom": "Fixed",
-                    "start_object_id": 2
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -1429,58 +1437,15 @@ description: Variables in memory after executing inner-thread.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 20,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.3
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -0.2
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 3.7
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -0.2
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 4.2500000002,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.2500000001,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 19,
                     "start": [
                       {
                         "n": 3.75,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1488,47 +1453,94 @@ description: Variables in memory after executing inner-thread.kcl
                         "n": -0.25,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 4.2500000002,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.2500000001,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.7,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.2,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.2,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 18,
+                    "end_object_id": 19,
                     "start_freedom": "Fixed",
-                    "start_object_id": 18
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 20,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 16,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1545,58 +1557,15 @@ description: Variables in memory after executing inner-thread.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 23,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.3
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.2
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.3
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -0.2
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 4.25000000045,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.24999999954999996,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 22,
                     "start": [
                       {
                         "n": 4.25000000035,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1604,47 +1573,94 @@ description: Variables in memory after executing inner-thread.kcl
                         "n": -0.25000000025,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 4.25000000045,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.24999999954999996,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.2,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.2,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 21,
+                    "end_object_id": 22,
                     "start_freedom": "Fixed",
-                    "start_object_id": 21
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 23,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 16,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1661,58 +1677,15 @@ description: Variables in memory after executing inner-thread.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 27,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 3.7
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.2
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 4.3
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.2
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 3.7499999997,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.24999999929999997,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 26,
                     "start": [
                       {
                         "n": 4.2500000005,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1720,47 +1693,94 @@ description: Variables in memory after executing inner-thread.kcl
                         "n": 0.24999999939999998,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 3.7499999997,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.24999999929999997,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.3,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.2,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.7,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.2,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 25,
+                    "end_object_id": 26,
                     "start_freedom": "Fixed",
-                    "start_object_id": 25
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 27,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 16,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1777,58 +1797,15 @@ description: Variables in memory after executing inner-thread.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 31,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 3.7
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": -0.2
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 3.7
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.2
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 3.74999999985,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.24999999995,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 30,
                     "start": [
                       {
                         "n": 3.74999999975,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1836,47 +1813,94 @@ description: Variables in memory after executing inner-thread.kcl
                         "n": 0.24999999924999997,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 3.74999999985,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.24999999995,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.7,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.2,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.7,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.2,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 29,
+                    "end_object_id": 30,
                     "start_freedom": "Fixed",
-                    "start_object_id": 29
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 31,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 16,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"

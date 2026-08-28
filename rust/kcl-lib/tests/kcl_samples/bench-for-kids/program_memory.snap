@@ -284,7 +284,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 4.32,
+                "ty": {
+                  "type": "Default",
+                  "len": "cm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -440,7 +448,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 4.32,
+                "ty": {
+                  "type": "Default",
+                  "len": "cm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -596,7 +612,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 4.32,
+                "ty": {
+                  "type": "Default",
+                  "len": "cm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -752,7 +776,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 4.32,
+                "ty": {
+                  "type": "Default",
+                  "len": "cm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -956,7 +988,15 @@ description: Variables in memory after executing bench-for-kids.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 3.8880000000000003,
+            "ty": {
+              "type": "Default",
+              "len": "cm",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -1057,58 +1097,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 38,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Free",
-                    "center_object_id": 37,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 4.32
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 4.32,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1116,47 +1113,94 @@ description: Variables in memory after executing bench-for-kids.kcl
                         "n": 0.0,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.32,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      }
+                    },
+                    "start_object_id": 36,
+                    "center_object_id": 37,
                     "start_freedom": "Free",
-                    "start_object_id": 36
+                    "center_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 38,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 34,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -1540,7 +1584,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 3.8880000000000003,
+                "ty": {
+                  "type": "Default",
+                  "len": "cm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -1696,7 +1748,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 3.8880000000000003,
+                "ty": {
+                  "type": "Default",
+                  "len": "cm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -1854,7 +1914,15 @@ description: Variables in memory after executing bench-for-kids.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 4.32,
+            "ty": {
+              "type": "Default",
+              "len": "cm",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -2010,7 +2078,15 @@ description: Variables in memory after executing bench-for-kids.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 4.32,
+            "ty": {
+              "type": "Default",
+              "len": "cm",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -2326,58 +2402,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 25,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.000000000000000021871006120481774,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0000000000000000012740000048067155,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 24,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 7.62
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 1.54
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 4.82
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": -4.8,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2385,47 +2418,94 @@ description: Variables in memory after executing bench-for-kids.kcl
                         "n": 0.0000000000000000015679998468427628,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.000000000000000021871006120481774,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0000000000000000012740000048067155,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.82,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 7.62,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.54,
+                          "units": "Cm"
+                        }
+                      }
+                    },
+                    "start_object_id": 23,
+                    "center_object_id": 24,
                     "start_freedom": "Fixed",
-                    "start_object_id": 23
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 25,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 21,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2442,59 +2522,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 28,
                 "kind": {
                   "line": {
-                    "construction": true,
-                    "ctor": {
-                      "construction": true,
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 7.83
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.28
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.00000000000000001812201182615464,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0000000000000000009380000671682882,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 27,
                     "start": [
                       {
                         "n": -4.8,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2502,47 +2538,95 @@ description: Variables in memory after executing bench-for-kids.kcl
                         "n": 0.0000000000000000013580001960114754,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.00000000000000001812201182615464,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0000000000000000009380000671682882,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 7.83,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.28,
+                          "units": "Cm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 26,
+                    "end_object_id": 27,
                     "start_freedom": "Fixed",
-                    "start_object_id": 26
+                    "end_freedom": "Fixed",
+                    "construction": true
                   }
                 },
-                "objectId": 28,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 21,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "helperLine"
@@ -2847,88 +2931,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 5,
                 "kind": {
                   "arc": {
-                    "center": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 15.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 4,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 15.0
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": -20.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 15.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 20.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 15.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -20.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 15.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 3,
                     "start": [
                       {
                         "n": 20.0,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2936,47 +2947,126 @@ description: Variables in memory after executing bench-for-kids.kcl
                         "n": 15.0,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -20.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 15.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 15.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 20.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -20.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
+                    "center_object_id": 4,
                     "start_freedom": "Fixed",
-                    "start_object_id": 2
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 5,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -2993,59 +3083,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 14,
                 "kind": {
                   "line": {
-                    "construction": true,
-                    "ctor": {
-                      "construction": true,
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 15.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 13,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3053,47 +3099,95 @@ description: Variables in memory after executing bench-for-kids.kcl
                         "n": 15.0,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 12,
+                    "end_object_id": 13,
                     "start_freedom": "Fixed",
-                    "start_object_id": 12
+                    "end_freedom": "Fixed",
+                    "construction": true
                   }
                 },
-                "objectId": 14,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "helperLine"
@@ -3110,58 +3204,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 8,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": -20.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 15.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 20.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 15.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -20.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 15.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 7,
                     "start": [
                       {
                         "n": 20.0,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3169,47 +3220,94 @@ description: Variables in memory after executing bench-for-kids.kcl
                         "n": 15.0,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -20.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 15.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 20.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -20.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 15.0,
+                          "units": "Cm"
+                        }
+                      }
+                    },
+                    "start_object_id": 6,
+                    "end_object_id": 7,
                     "start_freedom": "Fixed",
-                    "start_object_id": 6
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 8,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3624,7 +3722,15 @@ description: Variables in memory after executing bench-for-kids.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 3.4992000000000005,
+            "ty": {
+              "type": "Default",
+              "len": "cm",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -3707,58 +3813,15 @@ description: Variables in memory after executing bench-for-kids.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 43,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "cm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Free",
-                    "center_object_id": 42,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 3.89
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Cm",
-                          "value": 0.0
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 3.89,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3766,47 +3829,94 @@ description: Variables in memory after executing bench-for-kids.kcl
                         "n": 0.0,
                         "ty": {
                           "cm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "cm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.89,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Cm"
+                        }
+                      }
+                    },
+                    "start_object_id": 41,
+                    "center_object_id": 42,
                     "start_freedom": "Free",
-                    "start_object_id": 41
+                    "center_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 43,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 39,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 360.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"

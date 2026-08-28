@@ -84,40 +84,33 @@ description: Variables in memory after executing beam_sweeps.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 100.0
+                    "start": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
                         }
                       },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
                         }
                       }
-                    },
+                    ],
                     "end": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -125,65 +118,76 @@ description: Variables in memory after executing beam_sweeps.kcl
                         "n": 100.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 3,
-                    "start": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 100.0,
+                          "units": "Inch"
                         }
                       }
-                    ],
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Fixed",
-                    "start_object_id": 2
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -200,58 +204,15 @@ description: Variables in memory after executing beam_sweeps.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 10,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 200.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 200.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 100.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 200.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 9,
                     "start": [
                       {
                         "n": 200.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -259,47 +220,94 @@ description: Variables in memory after executing beam_sweeps.kcl
                         "n": 100.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 200.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 200.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 100.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 200.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 8,
+                    "end_object_id": 9,
                     "start_freedom": "Fixed",
-                    "start_object_id": 8
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 10,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -316,58 +324,15 @@ description: Variables in memory after executing beam_sweeps.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 17,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 200.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 200.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 16,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -375,47 +340,94 @@ description: Variables in memory after executing beam_sweeps.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 200.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 200.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 15,
+                    "end_object_id": 16,
                     "start_freedom": "Fixed",
-                    "start_object_id": 15
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 17,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -432,58 +444,15 @@ description: Variables in memory after executing beam_sweeps.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 22,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 200.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 100.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 100.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 200.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 100.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 21,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -491,47 +460,94 @@ description: Variables in memory after executing beam_sweeps.kcl
                         "n": 100.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 200.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 100.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 100.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 200.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 100.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 20,
+                    "end_object_id": 21,
                     "start_freedom": "Fixed",
-                    "start_object_id": 20
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 22,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -548,58 +564,15 @@ description: Variables in memory after executing beam_sweeps.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 27,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 200.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 100.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 200.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 26,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -607,47 +580,94 @@ description: Variables in memory after executing beam_sweeps.kcl
                         "n": 100.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 200.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 100.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 200.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 25,
+                    "end_object_id": 26,
                     "start_freedom": "Fixed",
-                    "start_object_id": 25
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 27,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"

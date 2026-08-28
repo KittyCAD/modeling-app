@@ -275,13 +275,29 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 20.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "chamfer",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "length": {
+            "n": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": {
             "commentStart": 596,
             "end": 602,
@@ -294,7 +310,15 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "type": "chamfer",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "length": {
+            "n": 50.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": {
             "commentStart": 652,
             "end": 658,
@@ -466,7 +490,32 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]"
+          "artifactId": "[uuid]",
+          "objectId": 2,
+          "value": "seg03",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": null
+          },
+          "parentSolid": {
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly",
+            "edgeCutIds": [
+              "[uuid]",
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -834,7 +883,32 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]"
+        "artifactId": "[uuid]",
+        "objectId": 2,
+        "value": "seg03",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "parentSolid": {
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly",
+          "edgeCutIds": [
+            "[uuid]",
+            "[uuid]",
+            "[uuid]"
+          ]
+        },
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -971,7 +1045,32 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]"
+        "artifactId": "[uuid]",
+        "objectId": 1,
+        "value": "seg04",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "parentSolid": {
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly",
+          "edgeCutIds": [
+            "[uuid]",
+            "[uuid]",
+            "[uuid]"
+          ]
+        },
+        "units": "mm"
       },
       "start": {
         "from": [

@@ -775,19 +775,43 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 0.5,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 0.5,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 0.5,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -1356,58 +1380,15 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 5.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.00000000000000030241057775311037,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 3,
                     "start": [
                       {
                         "n": -0.00000000000000022912815726336754,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1415,47 +1396,94 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                         "n": 0.00000000000000025201671544293544,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 5.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.00000000000000030241057775311037,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Fixed",
-                    "start_object_id": 2
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1472,58 +1500,15 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 9,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.73
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.9999999999999987,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.7272727272727426,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 8,
                     "start": [
                       {
                         "n": 5.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1531,47 +1516,94 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                         "n": 0.000000000000000604819371381037,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.9999999999999987,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.7272727272727426,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.73,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 7,
+                    "end_object_id": 8,
                     "start_freedom": "Fixed",
-                    "start_object_id": 7
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 9,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1588,58 +1620,15 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 13,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.73
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.73
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 5.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.727272727272743,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 12,
                     "start": [
                       {
                         "n": 1.999999999999999,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1647,47 +1636,94 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                         "n": 2.7272727272727426,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 5.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.727272727272743,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.73,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.73,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 11,
+                    "end_object_id": 12,
                     "start_freedom": "Fixed",
-                    "start_object_id": 11
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 13,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1704,58 +1740,15 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 17,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.46
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.73
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.9999999999999987,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 5.454545454545484,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 16,
                     "start": [
                       {
                         "n": 5.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1763,47 +1756,94 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                         "n": 2.727272727272743,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.9999999999999987,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 5.454545454545484,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.73,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.46,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 15,
+                    "end_object_id": 16,
                     "start_freedom": "Fixed",
-                    "start_object_id": 15
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 17,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1820,58 +1860,15 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 21,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.46
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 2.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.46
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 5.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 5.454545454545484,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 20,
                     "start": [
                       {
                         "n": 1.999999999999999,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1879,47 +1876,94 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                         "n": 5.454545454545484,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 5.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 5.454545454545484,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.46,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.46,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 19,
+                    "end_object_id": 20,
                     "start_freedom": "Fixed",
-                    "start_object_id": 19
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 21,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1936,58 +1980,15 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 25,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 10.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 5.46
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.0000000000000002290951795724419,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 10.000000000000002,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 24,
                     "start": [
                       {
                         "n": 5.0,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1995,47 +1996,94 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                         "n": 5.454545454545484,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.0000000000000002290951795724419,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 10.000000000000002,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.46,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 10.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 23,
+                    "end_object_id": 24,
                     "start_freedom": "Fixed",
-                    "start_object_id": 23
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 25,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2052,58 +2100,15 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 30,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 10.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Mm",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.000000000000000229096531791408,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 10.000000000000002,
-                        "ty": {
-                          "mm": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 29,
                     "start": [
                       {
                         "n": -0.0000000000000006109793523865808,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2111,47 +2116,94 @@ description: Variables in memory after executing christmas_tree_mirror3d_union.k
                         "n": 0.0000000000000005040319428848841,
                         "ty": {
                           "mm": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.000000000000000229096531791408,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 10.000000000000002,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 10.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 28,
+                    "end_object_id": 29,
                     "start_freedom": "Fixed",
-                    "start_object_id": 28
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 30,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"

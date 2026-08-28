@@ -1451,58 +1451,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 114,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.05
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 43.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 3.0489331069412065,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 113,
                     "start": [
                       {
                         "n": 43.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1510,47 +1467,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 3.0489331069412065,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 43.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.05,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 112,
+                    "end_object_id": 113,
                     "start_freedom": "Fixed",
-                    "start_object_id": 112
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 114,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "neutralEdge"
@@ -1567,88 +1571,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 89,
                 "kind": {
                   "arc": {
-                    "center": [
-                      {
-                        "n": 4.154527795604477,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 3.875955087682557,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 88,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 4.15
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.88
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 4.45
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.18
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.05
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.56
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 4.453202661188654,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.1820857525051536,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 87,
                     "start": [
                       {
                         "n": 3.0489331069392986,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1656,47 +1587,126 @@ description: Variables in memory after executing propeller.kcl
                         "n": 2.5583586455162908,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 4.453202661188654,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.1820857525051536,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 4.154527795604477,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 3.875955087682557,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.05,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.56,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.45,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.18,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.15,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 3.88,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 86,
+                    "end_object_id": 87,
+                    "center_object_id": 88,
                     "start_freedom": "Fixed",
-                    "start_object_id": 86
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 89,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rootArc"
@@ -1713,58 +1723,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 119,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.05
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.56
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.05
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 3.048933106939298,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.5583586455162903,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 118,
                     "start": [
                       {
                         "n": 3.0489331069412065,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1772,47 +1739,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 3.048933106939298,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.5583586455162903,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.05,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.05,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.56,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 117,
+                    "end_object_id": 118,
                     "start_freedom": "Fixed",
-                    "start_object_id": 117
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 119,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rootEdge"
@@ -1829,88 +1843,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 103,
                 "kind": {
                   "arc": {
-                    "center": [
-                      {
-                        "n": 37.52090220505797,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.4495782107770982,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Free",
-                    "center_object_id": 102,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 37.52
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -0.45
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 37.53
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 5.05
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 43.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.01
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 37.53012573811085,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 5.048752418389949,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 101,
                     "start": [
                       {
                         "n": 43.00000000000004,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1918,47 +1859,126 @@ description: Variables in memory after executing propeller.kcl
                         "n": 0.010000000000003843,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 37.53012573811085,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 5.048752418389949,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 37.52090220505797,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.4495782107770982,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 43.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.01,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 37.53,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.05,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 37.52,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.45,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 100,
+                    "end_object_id": 101,
+                    "center_object_id": 102,
                     "start_freedom": "Fixed",
-                    "start_object_id": 100
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 103,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipArc"
@@ -1975,58 +1995,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 109,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 43.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 43.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.01
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 43.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 108,
                     "start": [
                       {
                         "n": 43.00000000000004,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2034,47 +2011,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 0.010000000000003843,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 43.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 43.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.01,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 43.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 107,
+                    "end_object_id": 108,
                     "start_freedom": "Fixed",
-                    "start_object_id": 107
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 109,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "tipDrop"
@@ -2091,88 +2115,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 96,
                 "kind": {
                   "arc": {
-                    "center": [
-                      {
-                        "n": 37.22226787699149,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -183.66077718104697,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Free",
-                    "center_object_id": 95,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 37.22
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -183.66
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 4.45
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.18
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 37.53
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 5.05
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 4.4532026611834015,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.1820857525349444,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 94,
                     "start": [
                       {
                         "n": 37.53012573811218,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2180,47 +2131,126 @@ description: Variables in memory after executing propeller.kcl
                         "n": 5.04875241916883,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 4.4532026611834015,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.1820857525349444,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 37.22226787699149,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -183.66077718104697,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 37.53,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.05,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.45,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.18,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 37.22,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -183.66,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 93,
+                    "end_object_id": 94,
+                    "center_object_id": 95,
                     "start_freedom": "Fixed",
-                    "start_object_id": 93
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 96,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "wideArc"
@@ -2864,13 +2894,51 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 162,
                 "kind": {
                   "arc": {
+                    "start": [
+                      {
+                        "n": -8.556093467170257,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.0496273075820661,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 8.556093467170257,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.0496273075820661,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "center": [
                       {
                         "n": 0.0000000000000000000005161037720034402,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2878,122 +2946,90 @@ description: Variables in memory after executing propeller.kcl
                         "n": 69.63416195918276,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 161,
-                    "construction": false,
                     "ctor": {
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
+                          "value": -8.56,
+                          "units": "Inch"
                         },
                         "y": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": 69.63
+                          "value": -0.05,
+                          "units": "Inch"
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": 8.56
+                          "value": 8.56,
+                          "units": "Inch"
                         },
                         "y": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": -0.05
+                          "value": -0.05,
+                          "units": "Inch"
                         }
                       },
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": -8.56
+                          "value": 0.0,
+                          "units": "Inch"
                         },
                         "y": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": -0.05
+                          "value": 69.63,
+                          "units": "Inch"
                         }
                       }
                     },
-                    "end": [
-                      {
-                        "n": 8.556093467170257,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.0496273075820661,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
+                    "start_object_id": 159,
                     "end_object_id": 160,
-                    "start": [
-                      {
-                        "n": -8.556093467170257,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.0496273075820661,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
+                    "center_object_id": 161,
                     "start_freedom": "Fixed",
-                    "start_object_id": 159
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 162,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": -1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerCamber"
@@ -3010,88 +3046,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 169,
                 "kind": {
                   "arc": {
-                    "center": [
-                      {
-                        "n": 8.549999999554798,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.0000000005026408908098126,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 168,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 8.55
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 8.6
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 8.56
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -0.05
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 8.600000000506691,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.0000000000003052674653932394,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 167,
                     "start": [
                       {
                         "n": 8.556093467108767,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3099,47 +3062,126 @@ description: Variables in memory after executing propeller.kcl
                         "n": -0.04962730707911994,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 8.600000000506691,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.0000000000003052674653932394,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 8.549999999554798,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.0000000005026408908098126,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 8.56,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.05,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 8.6,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 8.55,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 166,
+                    "end_object_id": 167,
+                    "center_object_id": 168,
                     "start_freedom": "Fixed",
-                    "start_object_id": 166
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 169,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": -1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerNose"
@@ -3156,88 +3198,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 155,
                 "kind": {
                   "arc": {
-                    "center": [
-                      {
-                        "n": -8.549999999554798,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.0000000005026408908132007,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 154,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -8.55
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -8.56
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -0.05
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -8.6
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -8.556093467108767,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.04962730707911994,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 153,
                     "start": [
                       {
                         "n": -8.600000000506691,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3245,47 +3214,126 @@ description: Variables in memory after executing propeller.kcl
                         "n": -0.0000000000003052674654059167,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -8.556093467108767,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.04962730707911994,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": -8.549999999554798,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.0000000005026408908132007,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -8.6,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -8.56,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.05,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -8.55,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 152,
+                    "end_object_id": 153,
+                    "center_object_id": 154,
                     "start_freedom": "Fixed",
-                    "start_object_id": 152
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 155,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": -1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerTail"
@@ -3659,13 +3707,51 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 141,
                 "kind": {
                   "arc": {
+                    "start": [
+                      {
+                        "n": 8.556093467170257,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0496273075820661,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": -8.556093467170257,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0496273075820661,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
                     "center": [
                       {
                         "n": -0.0000000000000000000005161037720034402,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3673,122 +3759,90 @@ description: Variables in memory after executing propeller.kcl
                         "n": -69.63416195918276,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 140,
-                    "construction": false,
                     "ctor": {
-                      "center": {
+                      "start": {
                         "x": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
+                          "value": 8.56,
+                          "units": "Inch"
                         },
                         "y": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": -69.63
+                          "value": 0.05,
+                          "units": "Inch"
                         }
                       },
                       "end": {
                         "x": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": -8.56
+                          "value": -8.56,
+                          "units": "Inch"
                         },
                         "y": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": 0.05
+                          "value": 0.05,
+                          "units": "Inch"
                         }
                       },
-                      "start": {
+                      "center": {
                         "x": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": 8.56
+                          "value": 0.0,
+                          "units": "Inch"
                         },
                         "y": {
                           "type": "Var",
-                          "units": "Inch",
-                          "value": 0.05
+                          "value": -69.63,
+                          "units": "Inch"
                         }
                       }
                     },
-                    "end": [
-                      {
-                        "n": -8.556093467170257,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0496273075820661,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
+                    "start_object_id": 138,
                     "end_object_id": 139,
-                    "start": [
-                      {
-                        "n": 8.556093467170257,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0496273075820661,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
+                    "center_object_id": 140,
                     "start_freedom": "Fixed",
-                    "start_object_id": 138
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 141,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": -1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperCamber"
@@ -3805,88 +3859,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 134,
                 "kind": {
                   "arc": {
-                    "center": [
-                      {
-                        "n": 8.549999999554798,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0000000005026408908132007,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 133,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 8.55
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 8.56
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.05
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 8.6
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 8.556093467108767,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.04962730707911994,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 132,
                     "start": [
                       {
                         "n": 8.600000000506691,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3894,47 +3875,126 @@ description: Variables in memory after executing propeller.kcl
                         "n": 0.0000000000003052674654059167,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 8.556093467108767,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.04962730707911994,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 8.549999999554798,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0000000005026408908132007,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 8.6,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 8.56,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.05,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 8.55,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 131,
+                    "end_object_id": 132,
+                    "center_object_id": 133,
                     "start_freedom": "Fixed",
-                    "start_object_id": 131
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 134,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": -1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperNose"
@@ -3951,88 +4011,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 148,
                 "kind": {
                   "arc": {
-                    "center": [
-                      {
-                        "n": -8.549999999554798,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0000000005026408908098126,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 147,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -8.55
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -8.6
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -8.56
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.05
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -8.600000000506691,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0000000000003052674653932394,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 146,
                     "start": [
                       {
                         "n": -8.556093467108767,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4040,47 +4027,126 @@ description: Variables in memory after executing propeller.kcl
                         "n": 0.04962730707911994,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -8.600000000506691,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0000000000003052674653932394,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": -8.549999999554798,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0000000005026408908098126,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -8.56,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.05,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -8.6,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -8.55,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 145,
+                    "end_object_id": 146,
+                    "center_object_id": 147,
                     "start_freedom": "Fixed",
-                    "start_object_id": 145
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 148,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 129,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": -1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperTail"
@@ -5665,58 +5731,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 73,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -2.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 72,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5724,47 +5747,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 2.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 71,
+                    "end_object_id": 72,
                     "start_freedom": "Fixed",
-                    "start_object_id": 71
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 73,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "axisEdge"
@@ -5781,58 +5851,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 64,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.6
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.6,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 63,
                     "start": [
                       {
                         "n": 1.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5840,47 +5867,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": -2.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.6,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.6,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 62,
+                    "end_object_id": 63,
                     "start_freedom": "Fixed",
-                    "start_object_id": 62
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 64,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boreWall"
@@ -5897,58 +5971,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 61,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -2.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 60,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5956,47 +5987,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": -2.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 59,
+                    "end_object_id": 60,
                     "start_freedom": "Fixed",
-                    "start_object_id": 59
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 61,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomRadius"
@@ -6013,58 +6091,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 67,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.4
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.6
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.4,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 66,
                     "start": [
                       {
                         "n": 1.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6072,47 +6107,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 1.6,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.4,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.6,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.4,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 65,
+                    "end_object_id": 66,
                     "start_freedom": "Fixed",
-                    "start_object_id": 65
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 67,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "chamferEdge"
@@ -6337,58 +6419,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 70,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.4
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 69,
                     "start": [
                       {
                         "n": 1.4,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6396,47 +6435,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 2.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.4,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 68,
+                    "end_object_id": 69,
                     "start_freedom": "Fixed",
-                    "start_object_id": 68
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 70,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topRadius"
@@ -7191,13 +7277,29 @@ description: Variables in memory after executing propeller.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 0.6666666666666666,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 0.6666666666666666,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -8090,58 +8192,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 126,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 125,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 4.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 4.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -8149,47 +8208,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 124,
+                    "center_object_id": 125,
                     "start_freedom": "Free",
-                    "start_object_id": 124
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 126,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 122,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hubClearanceCircle"
@@ -9412,13 +9518,29 @@ description: Variables in memory after executing propeller.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 0.6666666666666666,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 0.6666666666666666,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -9436,58 +9558,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 9,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.00000000000000020773053642125138,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.6666666666666665,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 8,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.667
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.125
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.667
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 0.12499955555792623,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9495,47 +9574,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 2.6669999988148154,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.00000000000000020773053642125138,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.6666666666666665,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.125,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.667,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.667,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 7,
+                    "center_object_id": 8,
                     "start_freedom": "Free",
-                    "start_object_id": 7
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 9,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole0"
@@ -9552,58 +9678,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 14,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": -1.5674273394465947,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.1573786516665265,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 13,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1.568
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.157
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1.443
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.157
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": -1.4424279129509858,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9611,47 +9694,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 2.157000001737265,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": -1.5674273394465947,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.1573786516665265,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.443,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.157,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.568,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.157,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 12,
+                    "center_object_id": 13,
                     "start_freedom": "Free",
-                    "start_object_id": 12
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 14,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole1"
@@ -9668,58 +9798,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 19,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": -2.5361507101204093,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.8240453183331933,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 18,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.536
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.824
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.411
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.824
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": -2.411150718335414,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9727,47 +9814,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 0.8240000000029785,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": -2.5361507101204093,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.8240453183331933,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -2.411,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.824,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -2.536,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.824,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 17,
+                    "center_object_id": 18,
                     "start_freedom": "Free",
-                    "start_object_id": 17
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 19,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole2"
@@ -9784,58 +9918,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 24,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": -2.5361507101204093,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.8240453183331939,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 23,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.536
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -0.824
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.411
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -0.824
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": -2.411150718335414,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9843,47 +9934,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": -0.8240000000029785,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": -2.5361507101204093,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.8240453183331939,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -2.411,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.824,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -2.536,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.824,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 22,
+                    "center_object_id": 23,
                     "start_freedom": "Free",
-                    "start_object_id": 22
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 24,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole3"
@@ -9900,58 +10038,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 29,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": -1.5674273394465952,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -2.157378651666526,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 28,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1.568
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.157
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1.443
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.157
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": -1.4424279129509863,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9959,47 +10054,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": -2.157000001737265,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": -1.5674273394465952,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.157378651666526,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.443,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.157,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.568,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.157,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 27,
+                    "center_object_id": 28,
                     "start_freedom": "Free",
-                    "start_object_id": 27
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 29,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole4"
@@ -10016,58 +10158,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 34,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": -0.0000000000000004454144218177136,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -2.6666666666666665,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 33,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.667
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.125
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.667
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 0.12499955555792558,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10075,47 +10174,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": -2.6669999988148154,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": -0.0000000000000004454144218177136,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.6666666666666665,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.125,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.667,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.667,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 32,
+                    "center_object_id": 33,
                     "start_freedom": "Free",
-                    "start_object_id": 32
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 34,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole5"
@@ -10132,58 +10278,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 39,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 1.5674273394465943,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -2.1573786516665265,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 38,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.568
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.157
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.693
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -2.157
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 1.6924267659422032,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10191,47 +10294,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": -2.1570000017372775,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 1.5674273394465943,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -2.1573786516665265,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.693,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.157,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.568,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -2.157,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 37,
+                    "center_object_id": 38,
                     "start_freedom": "Free",
-                    "start_object_id": 37
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 39,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole6"
@@ -10248,58 +10398,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 44,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 2.5361507101204093,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.8240453183331936,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 43,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.536
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -0.824
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.661
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -0.824
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 2.6611507019054046,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10307,47 +10414,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": -0.824000000002978,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 2.5361507101204093,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.8240453183331936,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.661,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.824,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.536,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.824,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 42,
+                    "center_object_id": 43,
                     "start_freedom": "Free",
-                    "start_object_id": 42
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 44,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole7"
@@ -10364,58 +10518,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 49,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 2.5361507101204093,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.824045318333193,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 48,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.536
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.824
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.661
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.824
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 2.6611507019054046,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10423,47 +10534,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 0.824000000002978,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 2.5361507101204093,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.824045318333193,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.661,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.824,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.536,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.824,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 47,
+                    "center_object_id": 48,
                     "start_freedom": "Free",
-                    "start_object_id": 47
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 49,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole8"
@@ -10480,58 +10638,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 54,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 1.567427339446595,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.1573786516665265,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 53,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.568
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.157
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.693
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.157
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 1.6924267659422039,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10539,47 +10654,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 2.1570000017372775,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 1.567427339446595,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.1573786516665265,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.693,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.157,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.568,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.157,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 52,
+                    "center_object_id": 53,
                     "start_freedom": "Free",
-                    "start_object_id": 52
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 54,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole9"
@@ -11208,58 +11370,15 @@ description: Variables in memory after executing propeller.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 3,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 4.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 4.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -11267,47 +11386,94 @@ description: Variables in memory after executing propeller.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "center_object_id": 3,
                     "start_freedom": "Free",
-                    "start_object_id": 2
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerCircle"

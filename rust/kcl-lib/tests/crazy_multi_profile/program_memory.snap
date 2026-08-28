@@ -278,7 +278,27 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]"
+          "artifactId": "[uuid]",
+          "objectId": 1,
+          "value": "seg01",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": null
+          },
+          "parentSolid": {
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
+          },
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -676,7 +696,27 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]"
+        "artifactId": "[uuid]",
+        "objectId": 1,
+        "value": "seg01",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "parentSolid": {
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
+        },
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -785,7 +825,27 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]"
+        "artifactId": "[uuid]",
+        "objectId": 1,
+        "value": "seg01",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "parentSolid": {
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
+        },
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -876,7 +936,27 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]"
+        "artifactId": "[uuid]",
+        "objectId": 1,
+        "value": "seg01",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "parentSolid": {
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
+        },
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -933,7 +1013,27 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]"
+        "artifactId": "[uuid]",
+        "objectId": 1,
+        "value": "seg01",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "parentSolid": {
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
+        },
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -1018,7 +1118,27 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "on": {
         "type": "face",
         "id": "[uuid]",
-        "artifactId": "[uuid]"
+        "artifactId": "[uuid]",
+        "objectId": 1,
+        "value": "seg01",
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": null
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0,
+          "units": null
+        },
+        "parentSolid": {
+          "solidId": "[uuid]",
+          "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly"
+        },
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -1683,7 +1803,27 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "on": {
           "type": "face",
           "id": "[uuid]",
-          "artifactId": "[uuid]"
+          "artifactId": "[uuid]",
+          "objectId": 1,
+          "value": "seg01",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": null
+          },
+          "parentSolid": {
+            "solidId": "[uuid]",
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
+          },
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -1905,7 +2045,27 @@ description: Variables in memory after executing crazy_multi_profile.kcl
     "type": "Face",
     "value": {
       "id": "[uuid]",
-      "artifactId": "[uuid]"
+      "artifactId": "[uuid]",
+      "objectId": 1,
+      "value": "seg01",
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      },
+      "parentSolid": {
+        "solidId": "[uuid]",
+        "creatorSketchId": "[uuid]",
+        "creatorSketchIsClosed": "explicitly"
+      },
+      "units": "mm"
     }
   },
   "sketch003": {

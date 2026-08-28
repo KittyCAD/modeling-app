@@ -555,25 +555,57 @@ description: Variables in memory after executing fun-stacker-toy.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 3.0,
+            "ty": {
+              "in": null,
+              "type": "Known",
+              "type": "Length"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 3.0,
+            "ty": {
+              "in": null,
+              "type": "Known",
+              "type": "Length"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 3.0,
+            "ty": {
+              "in": null,
+              "type": "Known",
+              "type": "Length"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "edge_id": "[uuid]",
+          "radius": {
+            "n": 3.0,
+            "ty": {
+              "in": null,
+              "type": "Known",
+              "type": "Length"
+            }
+          },
+          "edgeId": "[uuid]",
           "tag": null
         }
       ],
@@ -4252,88 +4284,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 28,
                 "kind": {
                   "arc": {
-                    "center": [
-                      {
-                        "n": 51.3299415114558,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 10.990069350215553,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 27,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 43.58
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 10.98
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.78
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 10.98
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 3.25000000000004,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.000000000000009140625241996538,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 26,
                     "start": [
                       {
                         "n": 2.0099415106358247,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4341,47 +4300,126 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 10.989930515974102,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 3.25000000000004,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.000000000000009140625241996538,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 51.3299415114558,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 10.990069350215553,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.78,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 10.98,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.25,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 43.58,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 10.98,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 25,
+                    "end_object_id": 26,
+                    "center_object_id": 27,
                     "start_freedom": "Fixed",
-                    "start_object_id": 25
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 28,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -4398,88 +4436,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 65,
                 "kind": {
                   "arc": {
-                    "center": [
-                      {
-                        "n": 1.4999415109869132,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 11.490000000094131,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 64,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.39
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 11.48
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.47
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 11.86
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.99
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 11.48
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.4999999999999467,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 11.999999999941194,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 63,
                     "start": [
                       {
                         "n": 2.0099415109529457,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4487,47 +4452,126 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 11.489930515974113,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.4999999999999467,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 11.999999999941194,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "center": [
+                      {
+                        "n": 1.4999415109869132,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 11.490000000094131,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.99,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 11.48,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.47,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 11.86,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.39,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 11.48,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 62,
+                    "end_object_id": 63,
+                    "center_object_id": 64,
                     "start_freedom": "Fixed",
-                    "start_object_id": 62
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 65,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -4544,58 +4588,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 33,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 4.053933701540574,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.0000000000000067,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 32,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 4.02
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 4.77
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.34
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 4.789654146647422,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4603,47 +4604,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 0.32271466377871777,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 4.053933701540574,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.0000000000000067,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.77,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.34,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.02,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 31,
+                    "center_object_id": 32,
                     "start_freedom": "Free",
-                    "start_object_id": 31
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 33,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -4660,58 +4708,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 37,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 3.6810224616454765,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.9649267689335828,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 36,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.58
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.95
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 4.52
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.61
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 4.603867987766742,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4719,47 +4724,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 2.5797565013291623,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 3.6810224616454765,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.9649267689335828,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.52,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.61,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.58,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.95,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 35,
+                    "center_object_id": 36,
                     "start_freedom": "Free",
-                    "start_object_id": 35
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 37,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -4776,58 +4828,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 41,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 3.3897429879178054,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 4.943602151177161,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 40,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.23
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 4.92
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 4.23
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 5.02
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 4.385503969985048,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4835,47 +4844,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 5.035580773114644,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 3.3897429879178054,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 4.943602151177161,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 4.23,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 5.02,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.23,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 4.92,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 39,
+                    "center_object_id": 40,
                     "start_freedom": "Free",
-                    "start_object_id": 39
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 41,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle3"
@@ -4892,58 +4948,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 45,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 3.18059429813933,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 6.93263629509621,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 44,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.99
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.91
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.98
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.81
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 4.170323544586792,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4951,47 +4964,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 6.789681684009845,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 3.18059429813933,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 6.93263629509621,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.98,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 6.81,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.99,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 6.91,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 43,
+                    "center_object_id": 44,
                     "start_freedom": "Free",
-                    "start_object_id": 43
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 45,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle4"
@@ -5008,58 +5068,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 49,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 3.0539347042566547,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 8.928621602504387,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 48,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 2.84
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 8.9
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.76
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 9.28
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 3.9550636659793095,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5067,47 +5084,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 9.36217274704122,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 3.0539347042566547,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 8.928621602504387,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.76,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 9.28,
+                          "units": "Inch"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.84,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 8.9,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 47,
+                    "center_object_id": 48,
                     "start_freedom": "Free",
-                    "start_object_id": 47
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 49,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle5"
@@ -5124,58 +5188,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 12.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.000000000000013330041814373163,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 11.999999999999996,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 3,
                     "start": [
                       {
                         "n": -0.0000000000000000004428880983028583,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5183,47 +5204,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 0.00000000000000000005501783810362672,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.000000000000013330041814373163,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 11.999999999999996,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 12.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Fixed",
-                    "start_object_id": 2
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5240,58 +5308,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 10,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 3.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 3.2500000000000266,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.000000000000006093769865178192,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 9,
                     "start": [
                       {
                         "n": 0.000000000000013328713150078228,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5299,47 +5324,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 0.0000000000000030469122162151693,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 3.2500000000000266,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.000000000000006093769865178192,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.25,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 8,
+                    "end_object_id": 9,
                     "start_freedom": "Fixed",
-                    "start_object_id": 8
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 10,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -5356,58 +5428,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 16,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 12.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 12.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.49999999999996,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 11.999999999999986,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 15,
                     "start": [
                       {
                         "n": -0.000000000000026659640740647972,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5415,47 +5444,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 11.999999999999995,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.49999999999996,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 11.999999999999986,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 12.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.5,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 12.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 14,
+                    "end_object_id": 15,
                     "start_freedom": "Fixed",
-                    "start_object_id": 14
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 16,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5472,58 +5548,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 22,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.78
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 10.98
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1.79
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 11.43
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 2.0099415109638232,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 10.989930515974105,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 21,
                     "start": [
                       {
                         "n": 2.0099415109641403,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5531,47 +5564,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 11.489930515974109,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 2.0099415109638232,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 10.989930515974105,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.79,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 11.43,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.78,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 10.98,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 20,
+                    "end_object_id": 21,
                     "start_freedom": "Fixed",
-                    "start_object_id": 20
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 22,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -6165,58 +6245,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 76,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -6.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -6.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -6.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 75,
                     "start": [
                       {
                         "n": -6.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6224,47 +6261,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": -6.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -6.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -6.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 6.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -6.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 74,
+                    "end_object_id": 75,
                     "start_freedom": "Fixed",
-                    "start_object_id": 74
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 76,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6281,58 +6365,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 79,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -6.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 78,
                     "start": [
                       {
                         "n": 6.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6340,47 +6381,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": -6.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 6.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -6.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 6.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 6.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 77,
+                    "end_object_id": 78,
                     "start_freedom": "Fixed",
-                    "start_object_id": 77
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 79,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -6397,58 +6485,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 82,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -6.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 81,
                     "start": [
                       {
                         "n": 6.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6456,47 +6501,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 6.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 6.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 6.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -6.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 6.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 80,
+                    "end_object_id": 81,
                     "start_freedom": "Fixed",
-                    "start_object_id": 80
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 82,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -6513,58 +6605,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 85,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -6.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -6.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -6.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 84,
                     "start": [
                       {
                         "n": -6.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6572,47 +6621,94 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 6.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -6.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 6.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -6.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -6.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 83,
+                    "end_object_id": 84,
                     "start_freedom": "Fixed",
-                    "start_object_id": 83
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 85,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -6629,59 +6725,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 99,
                 "kind": {
                   "line": {
-                    "construction": true,
-                    "ctor": {
-                      "construction": true,
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -6.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -6.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 98,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6689,47 +6741,95 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -6.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -6.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 97,
+                    "end_object_id": 98,
                     "start_freedom": "Fixed",
-                    "start_object_id": 97
+                    "end_freedom": "Fixed",
+                    "construction": true
                   }
                 },
-                "objectId": 99,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -6746,59 +6846,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 104,
                 "kind": {
                   "line": {
-                    "construction": true,
-                    "ctor": {
-                      "construction": true,
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 6.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 6.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 103,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -6806,47 +6862,95 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 6.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 6.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 102,
+                    "end_object_id": 103,
                     "start_freedom": "Fixed",
-                    "start_object_id": 102
+                    "end_freedom": "Fixed",
+                    "construction": true
                   }
                 },
-                "objectId": 104,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -7043,28 +7147,15 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 96,
                 "kind": {
                   "point": {
-                    "ctor": {
-                      "position": {
-                        "x": {
-                          "type": "Number",
-                          "units": "Inch",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Number",
-                          "units": "Inch",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "freedom": "Fixed",
                     "position": [
                       {
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7072,45 +7163,60 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                         "n": 0.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
-                    ]
+                    ],
+                    "ctor": {
+                      "position": {
+                        "x": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "freedom": "Fixed"
                   }
                 },
-                "objectId": 96,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "point1"

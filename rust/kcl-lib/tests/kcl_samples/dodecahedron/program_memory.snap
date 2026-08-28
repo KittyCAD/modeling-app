@@ -45,40 +45,33 @@ description: Variables in memory after executing dodecahedron.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1000.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1000.0
+                    "start": [
+                      {
+                        "n": -1000.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
                         }
                       },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1000.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1000.0
+                      {
+                        "n": -1000.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
                         }
                       }
-                    },
+                    ],
                     "end": [
                       {
                         "n": -1000.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -86,65 +79,76 @@ description: Variables in memory after executing dodecahedron.kcl
                         "n": 1000.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 3,
-                    "start": [
-                      {
-                        "n": -1000.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1000.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1000.0,
+                          "units": "Inch"
                         }
                       },
-                      {
-                        "n": -1000.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1000.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1000.0,
+                          "units": "Inch"
                         }
                       }
-                    ],
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Fixed",
-                    "start_object_id": 2
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -161,58 +165,15 @@ description: Variables in memory after executing dodecahedron.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 7,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1000.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1000.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1000.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1000.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1000.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1000.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 6,
                     "start": [
                       {
                         "n": -1000.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -220,47 +181,94 @@ description: Variables in memory after executing dodecahedron.kcl
                         "n": 1000.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1000.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1000.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1000.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1000.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1000.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1000.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 5,
+                    "end_object_id": 6,
                     "start_freedom": "Fixed",
-                    "start_object_id": 5
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 7,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -277,40 +285,33 @@ description: Variables in memory after executing dodecahedron.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 11,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1000.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1000.0
+                    "start": [
+                      {
+                        "n": 1000.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
                         }
                       },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1000.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1000.0
+                      {
+                        "n": 1000.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
                         }
                       }
-                    },
+                    ],
                     "end": [
                       {
                         "n": 1000.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -318,65 +319,76 @@ description: Variables in memory after executing dodecahedron.kcl
                         "n": -1000.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 10,
-                    "start": [
-                      {
-                        "n": 1000.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1000.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1000.0,
+                          "units": "Inch"
                         }
                       },
-                      {
-                        "n": 1000.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1000.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1000.0,
+                          "units": "Inch"
                         }
                       }
-                    ],
+                    },
+                    "start_object_id": 9,
+                    "end_object_id": 10,
                     "start_freedom": "Fixed",
-                    "start_object_id": 9
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 11,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -393,58 +405,15 @@ description: Variables in memory after executing dodecahedron.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 15,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1000.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1000.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": 1000.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "Inch",
-                          "value": -1000.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1000.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -1000.0,
-                        "ty": {
-                          "in": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 14,
                     "start": [
                       {
                         "n": 1000.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -452,47 +421,94 @@ description: Variables in memory after executing dodecahedron.kcl
                         "n": -1000.0,
                         "ty": {
                           "in": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1000.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -1000.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1000.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1000.0,
+                          "units": "Inch"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1000.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -1000.0,
+                          "units": "Inch"
+                        }
+                      }
+                    },
+                    "start_object_id": 13,
+                    "end_object_id": 14,
                     "start_freedom": "Fixed",
-                    "start_object_id": 13
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 15,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"

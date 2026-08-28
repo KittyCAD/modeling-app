@@ -65,6 +65,21 @@ fn face_view(face: runtime::Face) -> FaceView {
     FaceView {
         id: face.id,
         artifact_id: face.artifact_id,
+        object_id: face.object_id,
+        value: face.value,
+        x_axis: point3d_view(face.x_axis),
+        y_axis: point3d_view(face.y_axis),
+        parent_solid: face_parent_solid_view(face.parent_solid),
+        units: face.units,
+    }
+}
+
+fn face_parent_solid_view(parent: runtime::FaceParentSolid) -> FaceParentSolidView {
+    FaceParentSolidView {
+        solid_id: parent.solid_id,
+        creator_sketch_id: parent.creator_sketch_id,
+        creator_sketch_is_closed: parent.creator_sketch_is_closed.map(profile_closed_view),
+        edge_cut_ids: parent.edge_cut_ids,
     }
 }
 
@@ -253,13 +268,31 @@ fn solid_creator_view(creator: runtime::SolidCreator) -> SolidCreatorView {
 
 fn edge_cut_view(edge_cut: runtime::EdgeCut) -> EdgeCutView {
     match edge_cut {
-        runtime::EdgeCut::Fillet { id, edge_id, tag, .. } => EdgeCutView::Fillet {
+        runtime::EdgeCut::Fillet {
             id,
+            radius,
+            edge_id,
+            tag,
+        } => EdgeCutView::Fillet {
+            id,
+            radius: NumericValueView {
+                n: radius.n,
+                ty: radius.ty,
+            },
             edge_id,
             tag: (*tag).map(tag_declarator_view),
         },
-        runtime::EdgeCut::Chamfer { id, edge_id, tag, .. } => EdgeCutView::Chamfer {
+        runtime::EdgeCut::Chamfer {
             id,
+            length,
+            edge_id,
+            tag,
+        } => EdgeCutView::Chamfer {
+            id,
+            length: NumericValueView {
+                n: length.n,
+                ty: length.ty,
+            },
             edge_id,
             tag: (*tag).map(tag_declarator_view),
         },

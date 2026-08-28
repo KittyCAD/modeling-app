@@ -542,58 +542,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 101,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -1.35
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.15
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -1.85
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.15
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.35,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.15,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 100,
                     "start": [
                       {
                         "n": -1.85,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -601,47 +558,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 1.15,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.35,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.15,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.85,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.15,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.35,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.15,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 99,
+                    "end_object_id": 100,
                     "start_freedom": "Fixed",
-                    "start_object_id": 99
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 101,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -658,58 +662,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 104,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.55
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.15
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -1.35
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.15
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.55,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.15,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 103,
                     "start": [
                       {
                         "n": -1.35,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -717,47 +678,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 2.15,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.55,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.15,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.35,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.15,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.55,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.15,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 102,
+                    "end_object_id": 103,
                     "start_freedom": "Fixed",
-                    "start_object_id": 102
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 104,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -774,58 +782,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 107,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.85
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.15
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.55
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.15
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.85,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.15,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 106,
                     "start": [
                       {
                         "n": 1.55,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -833,47 +798,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 2.15,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.85,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.15,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.55,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.15,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.85,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.15,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 105,
+                    "end_object_id": 106,
                     "start_freedom": "Fixed",
-                    "start_object_id": 105
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 107,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -890,58 +902,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 110,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -1.85
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.15
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.85
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.15
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.85,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.15,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 109,
                     "start": [
                       {
                         "n": 1.85,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -949,47 +918,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 1.15,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.85,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.15,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.85,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.15,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.85,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.15,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 108,
+                    "end_object_id": 109,
                     "start_freedom": "Fixed",
-                    "start_object_id": 108
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 110,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1637,58 +1653,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 75,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.8500000006000006,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.7499999948999996,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 74,
                     "start": [
                       {
                         "n": -1.8499999959999993,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1696,47 +1669,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.7499999963999996,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.8500000006000006,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.7499999948999996,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 73,
+                    "end_object_id": 74,
                     "start_freedom": "Fixed",
-                    "start_object_id": 73
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 75,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1753,58 +1773,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 78,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.8499999963499998,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.1499999948999995,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 77,
                     "start": [
                       {
                         "n": 1.84999999805,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1812,47 +1789,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.7499999941499995,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.8499999963499998,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.1499999948999995,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 76,
+                    "end_object_id": 77,
                     "start_freedom": "Fixed",
-                    "start_object_id": 76
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 78,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1869,58 +1893,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 81,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.8499999848999984,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.1499999953499995,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 80,
                     "start": [
                       {
                         "n": 1.8499999954999997,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1928,47 +1909,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 1.1499999950499995,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.8499999848999984,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.1499999953499995,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 79,
+                    "end_object_id": 80,
                     "start_freedom": "Fixed",
-                    "start_object_id": 79
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 81,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1985,58 +2013,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 84,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.8499999904499989,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.7499999956499995,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 83,
                     "start": [
                       {
                         "n": -1.8499999867499985,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2044,47 +2029,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 1.1499999957999996,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.8499999904499989,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.7499999956499995,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 82,
+                    "end_object_id": 83,
                     "start_freedom": "Fixed",
-                    "start_object_id": 82
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 84,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -3588,58 +3620,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.950000000200001,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.3999999985999999,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 3,
                     "start": [
                       {
                         "n": -1.9499999959999994,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3647,47 +3636,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.3999999993999999,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.950000000200001,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.3999999985999999,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Fixed",
-                    "start_object_id": 2
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3704,58 +3740,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 7,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.9499999954500002,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.7500000019000002,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 6,
                     "start": [
                       {
                         "n": 1.9499999973500004,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3763,47 +3756,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.3999999981999999,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.9499999954500002,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.7500000019000002,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 5,
+                    "end_object_id": 6,
                     "start_freedom": "Fixed",
-                    "start_object_id": 5
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 7,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -3820,58 +3860,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 10,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.9499999842999984,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.7500000011500001,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 9,
                     "start": [
                       {
                         "n": 1.9499999945000002,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3879,47 +3876,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.7500000016500001,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.9499999842999984,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.7500000011500001,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 8,
+                    "end_object_id": 9,
                     "start_freedom": "Fixed",
-                    "start_object_id": 8
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 10,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3936,58 +3980,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 13,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.949999990149999,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.3999999989999999,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 12,
                     "start": [
                       {
                         "n": -1.9499999862499986,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3995,47 +3996,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.7500000004,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.949999990149999,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.3999999989999999,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 11,
+                    "end_object_id": 12,
                     "start_freedom": "Fixed",
-                    "start_object_id": 11
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 13,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5876,58 +5924,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 175,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.6749999987899999,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.95,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 174,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.1
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.95
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.2
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.95
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 0.834999998155,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -5935,47 +5940,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.95,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.6749999987899999,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.95,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.2,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.95,
+                          "units": "M"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.1,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.95,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 173,
+                    "center_object_id": 174,
                     "start_freedom": "Fixed",
-                    "start_object_id": 173
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 175,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 171,
                   "origin": {
-                    "units": "mm",
                     "x": -1850.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -7075,58 +7127,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 128,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -1.35
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.25
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -1.35
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.15
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.35,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.25,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 127,
                     "start": [
                       {
                         "n": -1.35,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7134,47 +7143,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 2.15,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.35,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.25,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.35,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.15,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.35,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.25,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 126,
+                    "end_object_id": 127,
                     "start_freedom": "Fixed",
-                    "start_object_id": 126
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 128,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -7191,58 +7247,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 131,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.55
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.25
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -1.35
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.25
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.55,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.25,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 130,
                     "start": [
                       {
                         "n": -1.35,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7250,47 +7263,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 2.25,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.55,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.25,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.35,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.25,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.55,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.25,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 129,
+                    "end_object_id": 130,
                     "start_freedom": "Fixed",
-                    "start_object_id": 129
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 131,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -7307,58 +7367,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 134,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.55
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.15
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.55
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.25
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.55,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.15,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 133,
                     "start": [
                       {
                         "n": 1.55,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7366,47 +7383,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 2.25,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.55,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.15,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.55,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.25,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.55,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.15,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 132,
+                    "end_object_id": 133,
                     "start_freedom": "Fixed",
-                    "start_object_id": 132
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 134,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7423,58 +7487,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 137,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -1.35
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.15
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.55
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.15
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.35,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.15,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 136,
                     "start": [
                       {
                         "n": 1.55,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7482,47 +7503,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 2.15,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.35,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.15,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.55,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.15,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -1.35,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 2.15,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 135,
+                    "end_object_id": 136,
                     "start_freedom": "Fixed",
-                    "start_object_id": 135
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 137,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -8766,58 +8834,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 184,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.45999998503999895,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.8299999947399995,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 183,
                     "start": [
                       {
                         "n": -0.8199999908799993,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -8825,47 +8850,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.8299999963999997,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.45999998503999895,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.8299999947399995,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 182,
+                    "end_object_id": 183,
                     "start_freedom": "Fixed",
-                    "start_object_id": 182
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 184,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 180,
                   "origin": {
-                    "units": "mm",
                     "x": 1850.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -8882,58 +8954,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 187,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.4599999777399979,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.0699999956999997,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 186,
                     "start": [
                       {
                         "n": -0.45999998065999814,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -8941,47 +8970,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.8299999939099995,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.4599999777399979,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.0699999956999997,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 185,
+                    "end_object_id": 186,
                     "start_freedom": "Fixed",
-                    "start_object_id": 185
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 187,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 180,
                   "origin": {
-                    "units": "mm",
                     "x": 1850.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -8998,58 +9074,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 190,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.8199999859599989,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.0699999959099997,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 189,
                     "start": [
                       {
                         "n": -0.4599999762799978,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9057,47 +9090,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 1.0699999957699997,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.8199999859599989,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.0699999959099997,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 188,
+                    "end_object_id": 189,
                     "start_freedom": "Fixed",
-                    "start_object_id": 188
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 190,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 180,
                   "origin": {
-                    "units": "mm",
                     "x": 1850.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -9114,58 +9194,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 193,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.8199999884199991,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.8299999955699996,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 192,
                     "start": [
                       {
                         "n": -0.819999986779999,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9173,47 +9210,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 1.0699999961199997,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.8199999884199991,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.8299999955699996,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 191,
+                    "end_object_id": 192,
                     "start_freedom": "Fixed",
-                    "start_object_id": 191
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 193,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 180,
                   "origin": {
-                    "units": "mm",
                     "x": 1850.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -9485,59 +9569,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 30,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": -0.00000000000005663826710823476,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.35,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 29,
-                    "construction": true,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "construction": true,
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 0.5250000000002312,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9545,47 +9585,95 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.3500000000000027,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": -0.00000000000005663826710823476,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.35,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 28,
+                    "center_object_id": 29,
                     "start_freedom": "Fixed",
-                    "start_object_id": 28
+                    "center_freedom": "Fixed",
+                    "construction": true
                   }
                 },
-                "objectId": 30,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -9602,58 +9690,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 33,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.8
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.2625000000002049,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.8046633388240976,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 32,
                     "start": [
                       {
                         "n": -0.5250000000003396,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9661,47 +9706,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.3500000000000106,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.2625000000002049,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.8046633388240976,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.8,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 31,
+                    "end_object_id": 32,
                     "start_freedom": "Fixed",
-                    "start_object_id": 31
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 33,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -9718,58 +9810,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 36,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.8
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.8
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.2625000000000789,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.8046633388241028,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 35,
                     "start": [
                       {
                         "n": -0.26250000000020335,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9777,47 +9826,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.8046633388240921,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.2625000000000789,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.8046633388241028,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.8,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.8,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 34,
+                    "end_object_id": 35,
                     "start_freedom": "Fixed",
-                    "start_object_id": 34
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 36,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -9834,58 +9930,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 40,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.8
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.5250000000001713,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.3500000000000027,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 39,
                     "start": [
                       {
                         "n": 0.26250000000007256,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9893,47 +9946,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.8046633388240947,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.5250000000001713,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.3500000000000027,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.8,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 38,
+                    "end_object_id": 39,
                     "start_freedom": "Fixed",
-                    "start_object_id": 38
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 40,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -9950,58 +10050,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 45,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.1
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.26250000000005214,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.10466333882410354,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 44,
                     "start": [
                       {
                         "n": 0.5250000000001132,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10009,47 +10066,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.35,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.26250000000005214,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.10466333882410354,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.1,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 43,
+                    "end_object_id": 44,
                     "start_freedom": "Fixed",
-                    "start_object_id": 43
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 45,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -10066,58 +10170,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 49,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.1
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.1
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.2625000000002379,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.10466333882409189,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 48,
                     "start": [
                       {
                         "n": 0.2625000000000506,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10125,47 +10186,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": -0.10466333882409809,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.2625000000002379,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.10466333882409189,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.1,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.1,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 47,
+                    "end_object_id": 48,
                     "start_freedom": "Fixed",
-                    "start_object_id": 47
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 49,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -10182,58 +10290,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 53,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.1
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.5250000000003412,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.35000000000000786,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 52,
                     "start": [
                       {
                         "n": -0.26250000000023155,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10241,47 +10306,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": -0.10466333882408371,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.5250000000003412,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.35000000000000786,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.1,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 51,
+                    "end_object_id": 52,
                     "start_freedom": "Fixed",
-                    "start_object_id": 51
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 53,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -10298,59 +10410,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 64,
                 "kind": {
                   "line": {
-                    "construction": true,
-                    "ctor": {
-                      "construction": true,
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.5250000000000565,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.35,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 63,
                     "start": [
                       {
                         "n": 0.00000000000000000019479435218785224,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10358,47 +10426,95 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.35,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.5250000000000565,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.35,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 62,
+                    "end_object_id": 63,
                     "start_freedom": "Fixed",
-                    "start_object_id": 62
+                    "end_freedom": "Fixed",
+                    "construction": true
                   }
                 },
-                "objectId": 64,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -12016,58 +12132,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 154,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": -0.0000000001950000057260315,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.34999999973999996,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 153,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.01
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.32
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.21
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 0.34999999977499996,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -12075,47 +12148,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.34999999959999994,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": -0.0000000001950000057260315,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.34999999973999996,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.32,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.21,
+                          "units": "M"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.01,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 152,
+                    "center_object_id": 153,
                     "start_freedom": "Fixed",
-                    "start_object_id": 152
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 154,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 150,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -12132,58 +12252,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 157,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": -0.00000000015500000415114012,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.34999999987999997,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 156,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.01
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.18
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.45
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 0.17499999984999998,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -12191,47 +12268,94 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": 0.34999999998,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": -0.00000000015500000415114012,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.34999999987999997,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.18,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.45,
+                          "units": "M"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.01,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 155,
+                    "center_object_id": 156,
                     "start_freedom": "Fixed",
-                    "start_object_id": 155
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 157,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 150,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -12248,59 +12372,15 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 161,
                 "kind": {
                   "line": {
-                    "construction": true,
-                    "ctor": {
-                      "construction": true,
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.01
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.00000000011000000042782343,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.34999999991999997,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 160,
                     "start": [
                       {
                         "n": -0.00000000005500000026275623,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -12308,47 +12388,95 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                         "n": -0.00000000004000000228586468,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.00000000011000000042782343,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.34999999991999997,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.01,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 159,
+                    "end_object_id": 160,
                     "start_freedom": "Fixed",
-                    "start_object_id": 159
+                    "end_freedom": "Fixed",
+                    "construction": true
                   }
                 },
-                "objectId": 161,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 150,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"

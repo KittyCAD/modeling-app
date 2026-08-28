@@ -542,58 +542,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 98,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.4799999999999999,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.95,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 97,
                     "start": [
                       {
                         "n": -0.98,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -601,47 +558,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 1.15,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.4799999999999999,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.95,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 96,
+                    "end_object_id": 97,
                     "start_freedom": "Fixed",
-                    "start_object_id": 96
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 98,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -658,58 +662,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 101,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.9200000000000003,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.95,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 100,
                     "start": [
                       {
                         "n": -0.4799999999999999,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -717,47 +678,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 1.95,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.9200000000000003,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.95,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 99,
+                    "end_object_id": 100,
                     "start_freedom": "Fixed",
-                    "start_object_id": 99
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 101,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -774,58 +782,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 104,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 3.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 2.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.2200000000000002,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.15,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 103,
                     "start": [
                       {
                         "n": 0.9200000000000003,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -833,47 +798,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 1.95,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.2200000000000002,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.15,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 2.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 102,
+                    "end_object_id": 103,
                     "start_freedom": "Fixed",
-                    "start_object_id": 102
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 104,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -890,58 +902,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 107,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 3.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.98,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.15,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 106,
                     "start": [
                       {
                         "n": 1.2200000000000002,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -949,47 +918,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 1.15,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.98,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.15,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 105,
+                    "end_object_id": 106,
                     "start_freedom": "Fixed",
-                    "start_object_id": 105
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 107,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1637,58 +1653,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 73,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.750000001000001,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.7499999948999996,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 72,
                     "start": [
                       {
                         "n": -1.7499999959999992,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1696,47 +1669,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.7499999963999996,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.750000001000001,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.7499999948999996,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 71,
+                    "end_object_id": 72,
                     "start_freedom": "Fixed",
-                    "start_object_id": 71
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 73,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 69,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1753,58 +1773,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 76,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.7499999972500002,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.1499999948999995,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 75,
                     "start": [
                       {
                         "n": 1.7499999987500003,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1812,47 +1789,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.7499999941499995,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.7499999972500002,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.1499999948999995,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 74,
+                    "end_object_id": 75,
                     "start_freedom": "Fixed",
-                    "start_object_id": 74
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 76,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 69,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1869,58 +1893,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 79,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.7499999854999984,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.1499999953499995,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 78,
                     "start": [
                       {
                         "n": 1.7499999965000002,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -1928,47 +1909,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 1.1499999950499995,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.7499999854999984,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.1499999953499995,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 77,
+                    "end_object_id": 78,
                     "start_freedom": "Fixed",
-                    "start_object_id": 77
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 79,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 69,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1985,58 +2013,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 82,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.7499999907499988,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.7499999956499995,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 81,
                     "start": [
                       {
                         "n": -1.7499999872499985,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -2044,47 +2029,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 1.1499999957999996,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.7499999907499988,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.7499999956499995,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 80,
+                    "end_object_id": 81,
                     "start_freedom": "Fixed",
-                    "start_object_id": 80
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 82,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 69,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -3832,58 +3864,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 4,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.8500000006000006,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.3999999985999999,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 3,
                     "start": [
                       {
                         "n": -1.8499999959999993,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -3891,47 +3880,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.3999999993999999,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.8500000006000006,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.3999999985999999,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 2,
+                    "end_object_id": 3,
                     "start_freedom": "Fixed",
-                    "start_object_id": 2
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 4,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3948,58 +3984,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 7,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 1.8499999963499998,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.7500000019000002,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 6,
                     "start": [
                       {
                         "n": 1.84999999805,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4007,47 +4000,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.3999999981999999,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 1.8499999963499998,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.7500000019000002,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 5,
+                    "end_object_id": 6,
                     "start_freedom": "Fixed",
-                    "start_object_id": 5
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 7,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4064,58 +4104,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 10,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.8499999848999984,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.7500000011500001,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 9,
                     "start": [
                       {
                         "n": 1.8499999954999997,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4123,47 +4120,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.7500000016500001,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.8499999848999984,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.7500000011500001,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 8,
+                    "end_object_id": 9,
                     "start_freedom": "Fixed",
-                    "start_object_id": 8
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 10,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4180,58 +4224,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 13,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -1.8499999904499989,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.3999999989999999,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 12,
                     "start": [
                       {
                         "n": -1.8499999867499985,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -4239,47 +4240,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.7500000004,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -1.8499999904499989,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.3999999989999999,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 11,
+                    "end_object_id": 12,
                     "start_freedom": "Fixed",
-                    "start_object_id": 11
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 13,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -7526,58 +7574,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 166,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.6749999987899999,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.95,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 165,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.1
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.95
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.2
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.95
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 0.834999998155,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -7585,47 +7590,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.95,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.6749999987899999,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.95,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.2,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.95,
+                          "units": "M"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.1,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.95,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 164,
+                    "center_object_id": 165,
                     "start_freedom": "Fixed",
-                    "start_object_id": 164
+                    "center_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 166,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 162,
                   "origin": {
-                    "units": "mm",
                     "x": -1750.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -8069,58 +8121,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 124,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.9200000000000002,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.95,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 123,
                     "start": [
                       {
                         "n": -0.48,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -8128,47 +8137,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 1.95,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.9200000000000002,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.95,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 122,
+                    "end_object_id": 123,
                     "start_freedom": "Fixed",
-                    "start_object_id": 122
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 124,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -8185,58 +8241,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 127,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.9200000000000002,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.05,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 126,
                     "start": [
                       {
                         "n": 0.9200000000000002,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -8244,47 +8257,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 1.95,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.9200000000000002,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.05,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 125,
+                    "end_object_id": 126,
                     "start_freedom": "Fixed",
-                    "start_object_id": 125
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 127,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -8301,58 +8361,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 130,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.48,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.05,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 129,
                     "start": [
                       {
                         "n": 0.9200000000000002,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -8360,47 +8377,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 2.05,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.05,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 128,
+                    "end_object_id": 129,
                     "start_freedom": "Fixed",
-                    "start_object_id": 128
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 130,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -8417,58 +8481,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 133,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.48,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.95,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 132,
                     "start": [
                       {
                         "n": -0.48,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -8476,47 +8497,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 2.05,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.48,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.95,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 131,
+                    "end_object_id": 132,
                     "start_freedom": "Fixed",
-                    "start_object_id": 131
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 133,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 120,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -9760,58 +9828,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 174,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.45999998503999895,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.8299999947399995,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 173,
                     "start": [
                       {
                         "n": -0.8199999908799993,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9819,47 +9844,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.8299999963999997,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.45999998503999895,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.8299999947399995,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 172,
+                    "end_object_id": 173,
                     "start_freedom": "Fixed",
-                    "start_object_id": 172
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 174,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 170,
                   "origin": {
-                    "units": "mm",
                     "x": 1750.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -9876,58 +9948,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 177,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.4599999777399979,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.0699999956999997,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 176,
                     "start": [
                       {
                         "n": -0.45999998065999814,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -9935,47 +9964,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.8299999939099995,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.4599999777399979,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.0699999956999997,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 175,
+                    "end_object_id": 176,
                     "start_freedom": "Fixed",
-                    "start_object_id": 175
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 177,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 170,
                   "origin": {
-                    "units": "mm",
                     "x": 1750.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -9992,58 +10068,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 180,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.8199999859599989,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 1.0699999959099997,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 179,
                     "start": [
                       {
                         "n": -0.4599999762799978,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10051,47 +10084,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 1.0699999957699997,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.8199999859599989,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.0699999959099997,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 178,
+                    "end_object_id": 179,
                     "start_freedom": "Fixed",
-                    "start_object_id": 178
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 180,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 170,
                   "origin": {
-                    "units": "mm",
                     "x": 1750.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -10108,58 +10188,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 183,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 1.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.8199999884199991,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.8299999955699996,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 182,
                     "start": [
                       {
                         "n": -0.819999986779999,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10167,47 +10204,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 1.0699999961199997,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.8199999884199991,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.8299999955699996,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 1.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 181,
+                    "end_object_id": 182,
                     "start_freedom": "Fixed",
-                    "start_object_id": 181
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 183,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 170,
                   "origin": {
-                    "units": "mm",
                     "x": 1750.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -10479,59 +10563,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 29,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": 0.000000000000000000014812878990961126,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.35,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Fixed",
-                    "center_object_id": 28,
-                    "construction": true,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "construction": true,
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 0.5250000000002878,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10539,47 +10579,95 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.3500000000000027,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": 0.000000000000000000014812878990961126,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.35,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 27,
+                    "center_object_id": 28,
                     "start_freedom": "Fixed",
-                    "start_object_id": 27
+                    "center_freedom": "Fixed",
+                    "construction": true
                   }
                 },
-                "objectId": 29,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -10596,58 +10684,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 32,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.8
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.26250000000014817,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.8046633388240976,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 31,
                     "start": [
                       {
                         "n": -0.525000000000283,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10655,47 +10700,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.35000000000001047,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.26250000000014817,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.8046633388240976,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.8,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 30,
+                    "end_object_id": 31,
                     "start_freedom": "Fixed",
-                    "start_object_id": 30
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 32,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -10712,58 +10804,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 35,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.8
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.8
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.26250000000013557,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.8046633388241029,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 34,
                     "start": [
                       {
                         "n": -0.2625000000001466,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10771,47 +10820,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.8046633388240921,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.26250000000013557,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.8046633388241029,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.8,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.8,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 33,
+                    "end_object_id": 34,
                     "start_freedom": "Fixed",
-                    "start_object_id": 33
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 35,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -10828,58 +10924,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 39,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.8
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.525000000000228,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.3500000000000027,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 38,
                     "start": [
                       {
                         "n": 0.2625000000001293,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -10887,47 +10940,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.8046633388240947,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.525000000000228,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.3500000000000027,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.8,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 37,
+                    "end_object_id": 38,
                     "start_freedom": "Fixed",
-                    "start_object_id": 37
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 39,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -10944,58 +11044,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 44,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.1
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.26250000000010876,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.10466333882410365,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 43,
                     "start": [
                       {
                         "n": 0.5250000000001698,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -11003,47 +11060,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.35,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.26250000000010876,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.10466333882410365,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.1,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 42,
+                    "end_object_id": 43,
                     "start_freedom": "Fixed",
-                    "start_object_id": 42
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 44,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -11060,58 +11164,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 48,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.1
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.1
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.26250000000018126,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": -0.10466333882409196,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 47,
                     "start": [
                       {
                         "n": 0.2625000000001072,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -11119,47 +11180,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": -0.1046633388240982,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.26250000000018126,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": -0.10466333882409196,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.1,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.1,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 46,
+                    "end_object_id": 47,
                     "start_freedom": "Fixed",
-                    "start_object_id": 46
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 48,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -11176,58 +11284,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 52,
                 "kind": {
                   "line": {
-                    "construction": false,
-                    "ctor": {
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.25
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.1
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.5250000000002846,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.35000000000000775,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 51,
                     "start": [
                       {
                         "n": -0.262500000000175,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -11235,47 +11300,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": -0.10466333882408378,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.5250000000002846,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.35000000000000775,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.25,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": -0.1,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 50,
+                    "end_object_id": 51,
                     "start_freedom": "Fixed",
-                    "start_object_id": 50
+                    "end_freedom": "Fixed",
+                    "construction": false
                   }
                 },
-                "objectId": 52,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -11292,59 +11404,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 63,
                 "kind": {
                   "line": {
-                    "construction": true,
-                    "ctor": {
-                      "construction": true,
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.5
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": 0.5250000000001132,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.35,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Fixed",
-                    "end_object_id": 62,
                     "start": [
                       {
                         "n": 0.00000000000005663856320632382,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -11352,47 +11420,95 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.35,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": 0.5250000000001132,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.35,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.5,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 61,
+                    "end_object_id": 62,
                     "start_freedom": "Fixed",
-                    "start_object_id": 61
+                    "end_freedom": "Fixed",
+                    "construction": true
                   }
                 },
-                "objectId": 63,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 25,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -13019,58 +13135,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 149,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": -0.0007138987956659997,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.35000000000000503,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Free",
-                    "center_object_id": 148,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.01
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.32
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.21
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 0.3200560503374278,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -13078,47 +13151,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.20997628856583403,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": -0.0007138987956659997,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.35000000000000503,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.32,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.21,
+                          "units": "M"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.01,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 147,
+                    "center_object_id": 148,
                     "start_freedom": "Free",
-                    "start_object_id": 147
+                    "center_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 149,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 145,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -13135,58 +13255,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 152,
                 "kind": {
                   "circle": {
-                    "center": [
-                      {
-                        "n": -0.0007138987956651704,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.35000000000000525,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "center_freedom": "Free",
-                    "center_object_id": 151,
-                    "construction": false,
-                    "ctor": {
-                      "center": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.01
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.18
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.45
-                        }
-                      }
-                    },
                     "start": [
                       {
                         "n": 0.1520856463105938,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -13194,47 +13271,94 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.43530708681476643,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "center": [
+                      {
+                        "n": -0.0007138987956651704,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.35000000000000525,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.18,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.45,
+                          "units": "M"
+                        }
+                      },
+                      "center": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.01,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      }
+                    },
+                    "start_object_id": 150,
+                    "center_object_id": 151,
                     "start_freedom": "Free",
-                    "start_object_id": 150
+                    "center_freedom": "Free",
+                    "construction": false
                   }
                 },
-                "objectId": 152,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 145,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -13251,59 +13375,15 @@ description: Variables in memory after executing stylized-car.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
+                "objectId": 156,
                 "kind": {
                   "line": {
-                    "construction": true,
-                    "ctor": {
-                      "construction": true,
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": -0.01
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.35
-                        }
-                      },
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        },
-                        "y": {
-                          "type": "Var",
-                          "units": "M",
-                          "value": 0.0
-                        }
-                      }
-                    },
-                    "end": [
-                      {
-                        "n": -0.0007138987956665543,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 0.35000000000000353,
-                        "ty": {
-                          "m": null,
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "end_freedom": "Free",
-                    "end_object_id": 155,
                     "start": [
                       {
                         "n": 0.0,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       },
@@ -13311,47 +13391,95 @@ description: Variables in memory after executing stylized-car.kcl
                         "n": 0.000000000000001765884808083222,
                         "ty": {
                           "m": null,
+                          "type": "Known",
                           "type": "Length"
                         }
                       }
                     ],
+                    "end": [
+                      {
+                        "n": -0.0007138987956665543,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.35000000000000353,
+                        "ty": {
+                          "m": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "M"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": -0.01,
+                          "units": "M"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.35,
+                          "units": "M"
+                        }
+                      },
+                      "construction": true
+                    },
+                    "start_object_id": 154,
+                    "end_object_id": 155,
                     "start_freedom": "Fixed",
-                    "start_object_id": 154
+                    "end_freedom": "Free",
+                    "construction": true
                   }
                 },
-                "objectId": 156,
-                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 145,
                   "origin": {
-                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": "mm"
                   },
                   "type": "plane",
                   "xAxis": {
-                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   },
                   "yAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0
+                    "z": 1.0,
+                    "units": null
                   },
                   "zAxis": {
-                    "units": null,
                     "x": 0.0,
                     "y": -1.0,
-                    "z": 0.0
+                    "z": 0.0,
+                    "units": null
                   }
                 },
+                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"

@@ -637,6 +637,14 @@ impl ExecState {
         self.global.deprecation_version_override = version.map(str::to_owned);
     }
 
+    #[cfg(test)]
+    pub(crate) fn program_memory_for_tests(
+        &self,
+        main_ref: EnvironmentRef,
+    ) -> Result<IndexMap<String, KclValue>, KclError> {
+        self.mod_local.variables(main_ref)
+    }
+
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.

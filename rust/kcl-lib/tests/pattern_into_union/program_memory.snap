@@ -563,7 +563,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -761,7 +769,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -959,7 +975,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -1157,7 +1181,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -1355,7 +1387,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -1553,7 +1593,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -1751,7 +1799,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -1949,7 +2005,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -2147,7 +2211,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -2345,7 +2417,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -2543,7 +2623,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -2741,7 +2829,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -2939,7 +3035,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -3137,7 +3241,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -3335,7 +3447,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -3533,7 +3653,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -3731,7 +3859,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -3929,7 +4065,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -4127,7 +4271,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -4325,7 +4477,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -4523,7 +4683,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -4726,7 +4894,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -4924,7 +5100,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -5122,7 +5306,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -5320,7 +5512,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -5518,7 +5718,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -5716,7 +5924,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -5914,7 +6130,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -6112,7 +6336,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -6310,7 +6542,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -6508,7 +6748,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -6706,7 +6954,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -6904,7 +7160,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -7102,7 +7366,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -7300,7 +7572,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -7498,7 +7778,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -7696,7 +7984,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -7894,7 +8190,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -8092,7 +8396,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -8290,7 +8602,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -8488,7 +8808,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],
@@ -8686,7 +9014,15 @@ description: Variables in memory after executing pattern_into_union.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "edge_id": "[uuid]",
+              "radius": {
+                "n": 0.1,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
+              "edgeId": "[uuid]",
               "tag": null
             }
           ],

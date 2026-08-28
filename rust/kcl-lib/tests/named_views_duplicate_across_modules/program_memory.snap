@@ -7,54 +7,54 @@ description: Variables in memory after executing named_views_duplicate_across_mo
     "type": "NamedView",
     "value": {
       "artifactId": "[uuid]",
-      "baseline": "Show",
+      "name": "Front",
       "camera": {
-        "distance": null,
         "look": {
-          "orientation": "Front",
-          "type": "oriented"
+          "type": "oriented",
+          "orientation": "Front"
         },
-        "projection": "Orthographic",
-        "target": null
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
       },
-      "exceptIds": [],
-      "name": "Front"
+      "baseline": "Show",
+      "exceptIds": []
     }
   },
   "localFront": {
     "type": "NamedView",
     "value": {
       "artifactId": "[uuid]",
-      "baseline": "Show",
+      "name": "Front",
       "camera": {
-        "distance": null,
         "look": {
-          "orientation": "Back",
-          "type": "oriented"
+          "type": "oriented",
+          "orientation": "Back"
         },
-        "projection": "Orthographic",
-        "target": null
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
       },
-      "exceptIds": [],
-      "name": "Front"
+      "baseline": "Show",
+      "exceptIds": []
     }
   },
   "panelFront": {
     "type": "NamedView",
     "value": {
       "artifactId": "[uuid]",
-      "baseline": "Show",
+      "name": "Front",
       "camera": {
-        "distance": null,
         "look": {
-          "orientation": "Front",
-          "type": "oriented"
+          "type": "oriented",
+          "orientation": "Front"
         },
-        "projection": "Orthographic",
-        "target": null
+        "target": null,
+        "distance": null,
+        "projection": "Orthographic"
       },
-      "exceptIds": [],
-      "name": "Front"
+      "baseline": "Show",
+      "exceptIds": []
     }
   }
 }
