@@ -1,4 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { LabeledArg } from '@rust/kcl-lib/bindings/LabeledArg'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
@@ -1199,7 +1200,7 @@ export function addDistanceGdt({
   artifactGraph: ArtifactGraph
   objects?: Selections
   edges?: Selections
-  tolerance: KclCommandValue
+  tolerance?: KclCommandValue
   wasmInstance: ModuleType
   precision?: KclCommandValue
   framePosition?: KclCommandValue
@@ -1282,7 +1283,7 @@ export function addDistanceGdt({
     )
   }
 
-  if ('variableName' in tolerance && tolerance.variableName) {
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
@@ -1314,17 +1315,17 @@ export function addDistanceGdt({
     return new Error('No valid edge expressions could be generated')
   }
 
-  const labeledArgs =
+  const labeledArgs: LabeledArg[] =
     edgeLengthExprs.length > 0
-      ? [
-          createLabeledArg('edges', createArrayExpression(edgeLengthExprs)),
-          createLabeledArg('tolerance', valueOrVariable(tolerance)),
-        ]
+      ? [createLabeledArg('edges', createArrayExpression(edgeLengthExprs))]
       : [
           createLabeledArg('from', targets[0].expr),
           createLabeledArg('to', targets[1].expr),
-          createLabeledArg('tolerance', valueOrVariable(tolerance)),
         ]
+
+  if (tolerance !== undefined) {
+    labeledArgs.push(createLabeledArg('tolerance', valueOrVariable(tolerance)))
+  }
 
   if (precision !== undefined) {
     labeledArgs.push(createLabeledArg('precision', valueOrVariable(precision)))
