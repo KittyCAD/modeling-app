@@ -58,10 +58,6 @@ class FakeWebSocket {
       .filter((entry): entry is string => typeof entry === 'string')
       .map((entry) => JSON.parse(entry))
   }
-
-  binarySent() {
-    return this.sent.filter((entry) => entry instanceof ArrayBuffer)
-  }
 }
 
 class FakePeerConnection {
@@ -404,21 +400,152 @@ describe('engine connection', () => {
     await completeHandshake()
     await promise
 
+    const envelope = {
+      type: 'modeling_cmd_req',
+      cmd: { type: 'zoom_to_fit' },
+      cmd_id: 'cmd-1',
+    }
     const response = connection.send({
       id: 'cmd-1',
       sourceRange: [0, 0, 0],
-      command: { type: 'zoom_to_fit' },
+      // Already a complete WebSocketRequest, as the Rust side hands it over.
+      command: envelope,
       idToSourceRange: {},
     })
 
-    const sent = msgpackDecode(
-      new Uint8Array(socket().binarySent()[0] as ArrayBuffer)
-    ) as { cmd_id: string; type: string }
-    expect(sent).toMatchObject({ type: 'modeling_cmd_req', cmd_id: 'cmd-1' })
+    // Sent as JSON text, and exactly as given: wrapping it again produces a
+    // message the engine accepts and never answers.
+    expect(socket().jsonSent().at(-1)).toEqual(envelope)
 
-    socket().binary({ request_id: 'cmd-1', success: true })
-    // Resolved with the raw bytes: the Rust side deserialises msgpack itself.
+    socket().binary({
+      request_id: 'cmd-1',
+      success: true,
+      resp: { type: 'empty' },
+    })
+    const bytes = await response
+    // Re-encoded as msgpack, since a response may have arrived as JSON and the
+    // Rust side only deserialises msgpack.
+    expect(msgpackDecode(bytes)).toMatchObject({ request_id: 'cmd-1' })
+  })
+
+  it('correlates a response by the envelope cmd_id, not the caller id', async () => {
+    const { connection, promise } = connect()
+    await completeHandshake()
+    await promise
+
+    const response = connection.send({
+      // Deliberately different from the envelope's cmd_id: the engine echoes
+      // the envelope's, so keying on this one loses the response.
+      id: 'caller-id',
+      sourceRange: [0, 0, 0],
+      command: {
+        type: 'modeling_cmd_req',
+        cmd_id: 'envelope-id',
+        cmd: { type: 'zoom_to_fit' },
+      },
+      idToSourceRange: {},
+    })
+
+    socket().server({ request_id: 'envelope-id', success: true })
     await expect(response).resolves.toBeInstanceOf(Uint8Array)
+  })
+
+  it('handles a protocol message that carries a request id', async () => {
+    const { connection, promise } = connect()
+    socket().open()
+
+    // The engine stamps a request_id on handshake responses too. Routing by id
+    // before checking the response type misroutes the whole handshake, and the
+    // connection silently never completes.
+    socket().server({
+      success: true,
+      request_id: 'engine-generated',
+      resp: {
+        type: 'ice_server_info',
+        data: { ice_servers: [{ urls: 'turn:x' }] },
+      },
+    })
+    await Promise.resolve()
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(connection.state.value.stage).toBe('negotiating')
+    expect(peer()).toBeDefined()
+
+    socket().server({
+      request_id: 'engine-generated',
+      resp: {
+        type: 'sdp_answer',
+        data: { answer: { type: 'answer', sdp: 'v=0' } },
+      },
+    })
+    await Promise.resolve()
+    peer().track()
+    await promise
+    expect(connection.state.value.status).toBe('connected')
+  })
+
+  it('routes a response that arrived as JSON, not only msgpack', async () => {
+    const { connection, promise } = connect()
+    await completeHandshake()
+    await promise
+
+    const response = connection.send({
+      id: 'cmd-2',
+      sourceRange: [0, 0, 0],
+      command: { type: 'modeling_cmd_req', cmd: {}, cmd_id: 'cmd-2' },
+      idToSourceRange: {},
+    })
+
+    socket().server({ request_id: 'cmd-2', success: true })
+    expect(msgpackDecode(await response)).toMatchObject({
+      request_id: 'cmd-2',
+    })
+  })
+
+  it('rejects a failed command with the whole failure response', async () => {
+    const { connection, promise } = connect()
+    await completeHandshake()
+    await promise
+
+    const response = connection.send({
+      id: 'cmd-3',
+      sourceRange: [0, 0, 0],
+      command: { type: 'modeling_cmd_req', cmd: {}, cmd_id: 'cmd-3' },
+      idToSourceRange: {},
+    })
+
+    socket().server({
+      request_id: 'cmd-3',
+      success: false,
+      errors: [{ error_code: 'bad_request', message: 'nope' }],
+    })
+
+    // The Rust side parses this string as a FailureWebSocketResponse to recover
+    // the engine's own message, so the whole response has to survive.
+    await expect(response).rejects.toThrow(/bad_request/)
+  })
+
+  it('does not treat a failed command as a connection failure', async () => {
+    const { connection, promise } = connect()
+    await completeHandshake()
+    await promise
+
+    const response = connection.send({
+      id: 'cmd-4',
+      sourceRange: [0, 0, 0],
+      command: { type: 'modeling_cmd_req', cmd: {}, cmd_id: 'cmd-4' },
+      idToSourceRange: {},
+    })
+    socket().server({
+      request_id: 'cmd-4',
+      success: false,
+      errors: [{ error_code: 'bad_request', message: 'nope' }],
+    })
+
+    await expect(response).rejects.toThrow()
+    // One bad command must not take the session down with it.
+    expect(connection.state.value.status).toBe('connected')
   })
 
   it('publishes a response that matches no pending request', async () => {
@@ -432,6 +559,7 @@ describe('engine connection', () => {
     // Fired commands still get answered, and KCL's runtime needs those replies.
     socket().binary({ request_id: 'not-ours', success: true })
     expect(seen).toHaveLength(1)
+    expect(msgpackDecode(seen[0])).toMatchObject({ request_id: 'not-ours' })
   })
 
   it('refuses to send while offline rather than dropping the command', () => {

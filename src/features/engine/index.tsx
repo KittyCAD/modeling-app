@@ -4,11 +4,11 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { computed, useComputed } from '@preact/signals'
+import { computed, effect, useComputed } from '@preact/signals'
 import { StatusDot } from '@kittycad/ui-kit'
 import { useService } from '@src/app/context'
 import { authService } from '@src/contracts/auth'
-import { commandsValueSpec } from '@src/contracts/commands'
+import { commandService, commandsValueSpec } from '@src/contracts/commands'
 import {
   type EngineConnectionState,
   engineConnectionService,
@@ -62,6 +62,7 @@ const labelFor = (state: EngineConnectionState) => {
 function EngineField() {
   const engine = useService(engineConnectionService)
   const auth = useService(authService)
+  const commands = useService(commandService)
 
   const state = useComputed(() => engine.state.value)
 
@@ -83,13 +84,12 @@ function EngineField() {
       class="zds-status-button"
       title={title.value}
       onClick={() => {
-        if (state.value.status === 'connected') {
-          engine.disconnect()
-          return
-        }
-        // A rejection here is already reflected in the status field, so there is
-        // nothing useful to do with it beyond not crashing.
-        void engine.connect().catch(() => {})
+        // One path for every connect affordance, so none can skip sign-in.
+        commands.run(
+          state.value.status === 'connected'
+            ? 'engine.disconnect'
+            : 'engine.connect'
+        )
       }}
     >
       <StatusDot
@@ -117,6 +117,30 @@ export default defineRegistryItemFactory((ctx) => {
   })
 
   /**
+   * Wait for auth to finish resolving a stored token.
+   *
+   * Without this, connecting during startup sees `token === null` while
+   * verification is still in flight and reports "no API token available" to
+   * someone who is, in fact, about to be signed in.
+   */
+  const whenAuthSettled = () =>
+    new Promise<void>((resolve) => {
+      const auth = ctx.services.get(authService)
+      if (auth.status.peek() !== 'checking') {
+        resolve()
+        return
+      }
+      const stop = effect(() => {
+        if (auth.status.value !== 'checking') {
+          resolve()
+          // Deferred, because disposing an effect from inside its own body is
+          // not allowed.
+          queueMicrotask(() => stop())
+        }
+      })
+    })
+
+  /**
    * Connect, asking for credentials first if there are none.
    *
    * This is where "gate only what needs the network" actually lands: the app is
@@ -125,6 +149,8 @@ export default defineRegistryItemFactory((ctx) => {
    * not look like an arbitrary demand.
    */
   const connectOrSignIn = async () => {
+    await whenAuthSettled()
+
     const auth = ctx.services.get(authService)
     if (!auth.token.peek()) {
       auth.requestSignIn(
@@ -176,6 +202,44 @@ export default defineRegistryItemFactory((ctx) => {
           icon: 'unplugged',
           enabled: connected,
           run: () => connection.disconnect(),
+        }),
+        provide(commandsValueSpec, {
+          id: 'engine.fitView',
+          title: 'Fit the model in view',
+          category: 'Model',
+          icon: 'grid',
+          enabled: connected,
+          /**
+           * Frame whatever the engine currently has.
+           *
+           * Deliberately explicit rather than automatic after execution. KCL
+           * *fires* most geometry commands without awaiting them, so
+           * `execute` resolving does not mean the engine has built the model —
+           * fitting at that moment reliably frames an empty scene. Doing this
+           * automatically needs an engine-idle signal, which is not built.
+           */
+          run: async () => {
+            const commandId = crypto.randomUUID()
+            await connection
+              .send({
+                id: commandId,
+                sourceRange: [0, 0, 0],
+                command: {
+                  type: 'modeling_cmd_req',
+                  cmd_id: commandId,
+                  cmd: {
+                    type: 'zoom_to_fit',
+                    object_ids: [],
+                    padding: 0.2,
+                    animated: false,
+                  },
+                },
+                idToSourceRange: {},
+              })
+              .catch((error) => {
+                console.warn('engine: could not fit the view', error)
+              })
+          },
         }),
         provide(commandsValueSpec, {
           id: 'engine.newSession',

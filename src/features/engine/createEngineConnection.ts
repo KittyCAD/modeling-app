@@ -26,6 +26,21 @@ const CONNECT_TIMEOUT_MS = 30_000
 const COMMAND_TIMEOUT_MS = 60_000
 const UNRELIABLE_CHANNEL = 'unreliable_modeling_cmds'
 
+/**
+ * Responses that belong to the connection rather than to a modelling command.
+ *
+ * Matched by name because the engine attaches a `request_id` to these as well,
+ * so there is no structural way to tell them apart.
+ */
+const PROTOCOL_RESPONSE_TYPES = new Set([
+  'pong',
+  'ice_server_info',
+  'sdp_answer',
+  'trickle_ice',
+  'metrics_request',
+  'modeling_session_data',
+])
+
 interface PendingCommand {
   resolve: (bytes: Uint8Array) => void
   reject: (error: Error) => void
@@ -172,32 +187,57 @@ export function createEngineConnection(
     }, PING_INTERVAL_MS)
   }
 
-  /** A binary frame is a modelling response. Route it or publish it. */
-  function handleBinaryMessage(buffer: ArrayBuffer) {
-    const bytes = new Uint8Array(buffer)
-
-    let requestId: string | undefined
-    try {
-      const decoded = msgpackDecode(bytes) as { request_id?: string }
-      requestId = decoded?.request_id
-    } catch {
-      // Undecodable frames are still forwarded: KCL's runtime may understand a
-      // shape this app does not.
-    }
-
-    const command = requestId ? pending.get(requestId) : undefined
-    if (command) {
-      window.clearTimeout(command.timer)
-      pending.delete(requestId as string)
-      // Resolved with the original bytes, not the decoded object: the Rust side
-      // deserialises msgpack itself.
-      command.resolve(bytes)
+  /**
+   * Route one decoded message.
+   *
+   * Modelling responses carry a `request_id`; protocol messages do not. The
+   * engine sends responses as msgpack binary *or* as JSON depending on the
+   * message, so both are decoded to an object first and then re-encoded as
+   * msgpack for the Rust side — which deserialises msgpack and cannot take the
+   * raw JSON text a response may have arrived as.
+   */
+  function routeMessage(
+    message: EngineServerMessage & { request_id?: string }
+  ) {
+    // Protocol messages are recognised by their response type, *before* the
+    // request-id check: the engine stamps a `request_id` on those too, so
+    // routing by id first misroutes the entire handshake and the connection
+    // simply never completes.
+    const responseType = message.resp?.type
+    if (responseType && PROTOCOL_RESPONSE_TYPES.has(responseType)) {
+      handleServerMessage(message)
       return
     }
 
+    const requestId = message.request_id
+    if (!requestId) {
+      handleServerMessage(message)
+      return
+    }
+
+    const command = pending.get(requestId)
+    const failure = message.success === false
+
+    if (command) {
+      window.clearTimeout(command.timer)
+      pending.delete(requestId)
+
+      if (failure) {
+        // Rejected with the whole failure response: the Rust side parses it as
+        // a `FailureWebSocketResponse` to recover the engine's own messages.
+        command.reject(new Error(JSON.stringify(message)))
+        return
+      }
+      command.resolve(msgpackEncode(message).slice())
+      return
+    }
+
+    // A reply to something that was fired rather than awaited. KCL's runtime is
+    // tracking those, so dropping them would leave it waiting forever.
+    const encoded = msgpackEncode(message).slice()
     for (const listener of unmatchedListeners) {
       try {
-        listener(bytes)
+        listener(encoded)
       } catch (caught) {
         console.error('engine: unmatched-response listener threw', caught)
       }
@@ -356,18 +396,28 @@ export function createEngineConnection(
   }
 
   /**
-   * The wire form of a modelling command.
+   * The id the engine will echo back as `request_id`.
    *
-   * Copied into a plain `ArrayBuffer` because msgpack may hand back a view over
-   * a pooled or shared buffer, and `WebSocket.send` will not take one.
+   * That is the envelope's `cmd_id`, not whatever the caller happened to pass
+   * alongside it. Keying the pending map on the caller's id works only while the
+   * two agree, and a response that arrives under a different id looks exactly
+   * like a command the engine never answered.
    */
-  function encodeCommand(request: ModelingCommandRequest): ArrayBuffer {
-    const encoded = msgpackEncode({
-      type: 'modeling_cmd_req',
-      cmd: request.command,
-      cmd_id: request.id,
-    })
-    return encoded.slice().buffer as ArrayBuffer
+  function correlationId(request: ModelingCommandRequest): string {
+    const envelope = request.command as { cmd_id?: unknown } | null
+    return typeof envelope?.cmd_id === 'string' ? envelope.cmd_id : request.id
+  }
+
+  /**
+   * The wire form of a modelling command: JSON text, sent as-is.
+   *
+   * `request.command` is already a complete `WebSocketRequest` — the Rust side
+   * serialises the whole envelope, not a bare command — so wrapping it again
+   * produces a message the engine accepts and then never answers, which
+   * presents as execution hanging rather than as an error.
+   */
+  function encodeCommand(request: ModelingCommandRequest): string {
+    return JSON.stringify(request.command)
   }
 
   return {
@@ -449,12 +499,12 @@ export function createEngineConnection(
         }
 
         socket.onmessage = (event) => {
-          if (event.data instanceof ArrayBuffer) {
-            handleBinaryMessage(event.data)
-            return
-          }
           try {
-            handleServerMessage(JSON.parse(String(event.data)))
+            routeMessage(
+              event.data instanceof ArrayBuffer
+                ? (msgpackDecode(new Uint8Array(event.data)) as never)
+                : JSON.parse(String(event.data))
+            )
           } catch (caught) {
             console.warn('engine: could not read a server message', caught)
           }
@@ -492,33 +542,49 @@ export function createEngineConnection(
 
     send(request) {
       const open = requireOpenSocket()
+      const id = correlationId(request)
 
       return new Promise<Uint8Array>((resolve, reject) => {
         const timer = window.setTimeout(() => {
-          pending.delete(request.id)
+          pending.delete(id)
           reject(
             new Error(
-              `The engine did not answer command ${request.id} within ${COMMAND_TIMEOUT_MS / 1000}s.`
+              `The engine did not answer command ${id} within ${COMMAND_TIMEOUT_MS / 1000}s.`
             )
           )
         }, COMMAND_TIMEOUT_MS)
 
-        pending.set(request.id, { resolve, reject, timer })
+        pending.set(id, { resolve, reject, timer })
         try {
           open.send(encodeCommand(request))
         } catch (caught) {
           window.clearTimeout(timer)
-          pending.delete(request.id)
+          pending.delete(id)
           reject(caught instanceof Error ? caught : new Error(String(caught)))
         }
       })
     },
 
     async startNewSession() {
-      // A fresh scene is what a new connection already gives, so reconnecting is
-      // both the simplest and the most reliable reset.
-      if (status.peek() === 'connected') this.disconnect()
-      await this.connect()
+      /**
+       * Clear per-session command state. Deliberately *not* a reconnect.
+       *
+       * KCL's runtime calls this at the start of every execution, so
+       * reconnecting here tore down a perfectly good connection — and, mid
+       * negotiation, killed the connection that the execution was waiting on.
+       * The scene reset belongs to the execution context; all this owes is a
+       * clean slate for command routing.
+       */
+      for (const [id, command] of pending) {
+        window.clearTimeout(command.timer)
+        command.reject(new Error('The engine session was restarted.'))
+        pending.delete(id)
+      }
+
+      // Only connect if there is nothing there; never replace what is working.
+      if (status.peek() === 'offline' || status.peek() === 'failed') {
+        await this.connect()
+      }
     },
 
     onUnmatchedResponse(listener) {
