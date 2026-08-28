@@ -53,12 +53,13 @@ export interface EngineConnectionOptions {
   /** Bearer token, read at connect time so a later sign-in is picked up. */
   token: () => string | null
   /**
-   * Whether to ask for ambient occlusion, read at connect time.
+   * Query parameters for the stream, read at connect time.
    *
-   * A function rather than a value because the setting can change between one
-   * connection and the next, and the connection is created once at startup.
+   * A function rather than a value because the scene's preferences can change
+   * between one connection and the next, and the connection is created once at
+   * startup.
    */
-  ssao?: () => boolean
+  streamParams?: () => Record<string, string>
 }
 
 /**
@@ -87,6 +88,8 @@ export function createEngineConnection(
   const error = signal<string | null>(null)
   const pingMs = signal<number | null>(null)
   const apiCallId = signal<string | null>(null)
+  /** Bumped whenever the engine begins a fresh scene. */
+  const sceneEpoch = signal(0)
   const mediaStream = signal<MediaStream | null>(null)
   /**
    * The size the next connection asks for.
@@ -363,6 +366,9 @@ export function createEngineConnection(
         mediaStream.value = event.streams[0] ?? new MediaStream([event.track])
         stage.value = 'streaming'
         status.value = 'connected'
+        // A fresh connection is a fresh scene: whatever the app had told the
+        // engine about how to draw it is gone, and has to be restated.
+        sceneEpoch.value += 1
         error.value = null
         window.clearTimeout(connectTimer)
         startPinging()
@@ -491,7 +497,7 @@ export function createEngineConnection(
             baseUrl: options.baseUrl,
             width: size.width,
             height: size.height,
-            ssao: options.ssao?.() ?? true,
+            params: options.streamParams?.(),
           })
         )
         socket.binaryType = 'arraybuffer'
@@ -541,6 +547,34 @@ export function createEngineConnection(
       error.value = null
       pingMs.value = null
       apiCallId.value = null
+    },
+
+    sceneEpoch: computed(() => sceneEpoch.value),
+
+    fireCommand(cmd) {
+      const commandId = crypto.randomUUID()
+      try {
+        this.fire({
+          id: commandId,
+          sourceRange: [0, 0, 0],
+          command: { type: 'modeling_cmd_req', cmd_id: commandId, cmd },
+          idToSourceRange: {},
+        })
+      } catch (caught) {
+        // The socket can close between a status read and this send. A scene
+        // command describes a scene that is gone, so there is nothing to report.
+        console.warn(`engine: could not send ${cmd.type}`, caught)
+      }
+    },
+
+    sendCommand(cmd) {
+      const commandId = crypto.randomUUID()
+      return this.send({
+        id: commandId,
+        sourceRange: [0, 0, 0],
+        command: { type: 'modeling_cmd_req', cmd_id: commandId, cmd },
+        idToSourceRange: {},
+      })
     },
 
     fire(request) {

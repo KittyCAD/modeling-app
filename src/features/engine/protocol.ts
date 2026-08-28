@@ -66,20 +66,26 @@ export function engineWebSocketUrl(input: {
   width: number
   height: number
   /**
-   * Ambient occlusion.
+   * Scene parameters chosen when the socket opens.
    *
-   * Chosen when the socket opens, because the engine builds its render pipeline
-   * for the session — which is why turning it off takes a reconnect rather than
-   * a command, and why the setting says so.
+   * The engine builds its render pipeline for the session, so ambient occlusion
+   * and the scale grid are decided here rather than by a command — which is why
+   * changing either takes a reconnect, and why their settings say so.
+   *
+   * Passed in rather than derived, so the connection needs to know nothing about
+   * which preferences exist.
    */
-  ssao?: boolean
+  params?: Record<string, string>
 }): string {
   const separator = input.baseUrl.includes('?') ? '&' : '?'
-  const query = new URLSearchParams({
-    video_res_width: String(clampDimension(input.width)),
-    video_res_height: String(clampDimension(input.height)),
-  })
-  if (input.ssao !== false) query.set('post_effect', 'ssao')
+  const query = new URLSearchParams(input.params ?? {})
+
+  // Written last, so a contributed parameter cannot overwrite them. A dimension
+  // the engine refuses closes the socket with no explanation, and that is not a
+  // failure mode to leave reachable from a preference.
+  query.set('video_res_width', String(clampDimension(input.width)))
+  query.set('video_res_height', String(clampDimension(input.height)))
+
   return `${input.baseUrl}${separator}${query.toString()}`
 }
 

@@ -40,7 +40,7 @@ describe('errorFromMessage', () => {
 })
 
 describe('engineWebSocketUrl', () => {
-  it('adds the stream dimensions and post effect', () => {
+  it('always carries the stream dimensions', () => {
     const url = new URL(
       engineWebSocketUrl({
         baseUrl: 'wss://api.example.dev/ws/modeling/commands',
@@ -51,7 +51,50 @@ describe('engineWebSocketUrl', () => {
 
     expect(url.searchParams.get('video_res_width')).toBe('1024')
     expect(url.searchParams.get('video_res_height')).toBe('768')
+  })
+
+  it('carries no scene parameters of its own', () => {
+    const url = new URL(
+      engineWebSocketUrl({
+        baseUrl: 'wss://api.example.dev/ws/modeling/commands',
+        width: 1024,
+        height: 768,
+      })
+    )
+
+    // Which post effects and overlays the scene wants belongs to whoever owns
+    // those preferences; the connection only carries what it is handed.
+    expect(url.searchParams.get('post_effect')).toBeNull()
+    expect(url.searchParams.get('show_grid')).toBeNull()
+  })
+
+  it('merges contributed scene parameters', () => {
+    const url = new URL(
+      engineWebSocketUrl({
+        baseUrl: 'wss://api.example.dev/ws/modeling/commands',
+        width: 1024,
+        height: 768,
+        params: { post_effect: 'ssao', show_grid: 'false' },
+      })
+    )
+
     expect(url.searchParams.get('post_effect')).toBe('ssao')
+    expect(url.searchParams.get('show_grid')).toBe('false')
+  })
+
+  it('does not let a parameter overwrite the stream dimensions', () => {
+    const url = new URL(
+      engineWebSocketUrl({
+        baseUrl: 'wss://api.example.dev/ws/modeling/commands',
+        width: 1024,
+        height: 768,
+        params: { video_res_width: '99999' },
+      })
+    )
+
+    // A dimension the engine refuses closes the socket with no explanation, so
+    // the clamped values are not something a contribution gets to override.
+    expect(url.searchParams.get('video_res_width')).toBe('1024')
   })
 
   it('appends to a base URL that already has a query', () => {

@@ -31,8 +31,27 @@ export interface EngineConnectionState {
   apiCallId: string | null
 }
 
+/**
+ * One modelling command, without the envelope.
+ *
+ * The websocket framing, the command id, and the source-range bookkeeping are
+ * the connection's business; a feature that wants the camera moved should say so
+ * and nothing else.
+ */
+export type SceneCommand = { type: string } & Record<string, unknown>
+
 export interface EngineConnection {
   readonly state: ReadonlySignal<EngineConnectionState>
+  /**
+   * Increments whenever the engine begins a fresh scene.
+   *
+   * A new connection and a restarted session both leave the engine at its own
+   * defaults, so everything the app had told it — the background colour, whether
+   * edges are drawn, which way the camera projects — has to be restated. Without
+   * a signal for it, each of those would need to know about the others' triggers;
+   * with one, each keeps a single effect keyed on this.
+   */
+  readonly sceneEpoch: ReadonlySignal<number>
   /**
    * The engine's video track, once negotiated.
    *
@@ -60,6 +79,16 @@ export interface EngineConnection {
   fire(request: ModelingCommandRequest): void
   /** Send and resolve with the engine's msgpack response bytes. */
   send(request: ModelingCommandRequest): Promise<Uint8Array>
+  /**
+   * Fire one modelling command, envelope and id supplied.
+   *
+   * Silently does nothing while there is no connection. Scene commands describe
+   * a scene that does not exist yet, so failing to send one is not an error
+   * worth propagating to whoever changed a setting.
+   */
+  fireCommand(cmd: SceneCommand): void
+  /** Send one modelling command and await the engine's response bytes. */
+  sendCommand(cmd: SceneCommand): Promise<Uint8Array>
   /** Tell the engine to start a fresh scene. */
   startNewSession(): Promise<void>
 
