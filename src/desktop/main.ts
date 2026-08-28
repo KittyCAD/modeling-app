@@ -10,17 +10,17 @@
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { BrowserWindow, app, dialog, ipcMain, session, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, session, shell } from 'electron'
 import {
   Configuration,
-  None,
   initiateDeviceAuthorization,
+  None,
   pollDeviceAuthorizationGrant,
 } from 'openid-client'
 import {
+  channels,
   type DeviceAuthorization,
   type DirectoryEntry,
-  channels,
 } from './channels'
 
 // Injected by @electron-forge/plugin-vite.
@@ -118,6 +118,17 @@ function isInside(root: string, candidate: string): boolean {
     relative === '' ||
     (!relative.startsWith('..') && !path.isAbsolute(relative))
   )
+}
+
+/**
+ * Where user-level settings live.
+ *
+ * `userData` is the per-environment configuration directory Electron gives us,
+ * so a dev build and a packaged build do not share a settings file — which is
+ * what you want the first time a dev build writes something malformed.
+ */
+function userSettingsPath(): string {
+  return path.join(app.getPath('userData'), 'user.toml')
 }
 
 /**
@@ -312,6 +323,31 @@ function registerIpcHandlers() {
   ipcMain.handle(channels.rename, async (_event, from: string, to: string) => {
     await fs.rename(await resolveGranted(from), await resolveGranted(to))
   })
+
+  ipcMain.handle(channels.userSettingsPath, () => userSettingsPath())
+
+  ipcMain.handle(channels.readUserSettings, async () => {
+    try {
+      return await fs.readFile(userSettingsPath(), 'utf8')
+    } catch (error) {
+      // No file yet is the ordinary first-run state, not a failure.
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null
+      throw error
+    }
+  })
+
+  ipcMain.handle(
+    channels.writeUserSettings,
+    async (_event, contents: string) => {
+      const target = userSettingsPath()
+      await fs.mkdir(path.dirname(target), { recursive: true })
+      // Write then rename, so a crash mid-write leaves the previous settings
+      // intact rather than a truncated file the app will refuse to parse.
+      const temporary = `${target}.tmp`
+      await fs.writeFile(temporary, contents, 'utf8')
+      await fs.rename(temporary, target)
+    }
+  )
 
   /**
    * Start a device authorization.

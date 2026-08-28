@@ -1,0 +1,259 @@
+/*
+ * The settings dialog.
+ *
+ * A large sheet rather than a screen: settings are something you come back from,
+ * and taking over the whole window loses the place you were. Two panes, one
+ * hairline between them, and no chrome of its own — the shape is a drawing
+ * sheet's title block scaled up, not a web modal.
+ */
+
+.zds-settings {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: var(--zds-z-modal);
+}
+
+.zds-settings__scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--zds-surface-scrim);
+  cursor: default;
+}
+
+.zds-settings__sheet {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  inline-size: min(880px, calc(100vw - var(--zds-space-8)));
+  block-size: min(560px, calc(100vh - var(--zds-space-12)));
+  background: var(--zds-surface-overlay);
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content-lg);
+  box-shadow: var(--zds-shadow-overlay);
+  overflow: hidden;
+}
+
+.zds-settings__sheet:focus-visible {
+  outline: none;
+}
+
+/* Header ------------------------------------------------------------------- */
+
+.zds-settings__header {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-3);
+  padding: var(--zds-space-2) var(--zds-space-3);
+  border-block-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  background: var(--zds-surface-raised);
+}
+
+.zds-settings__eyebrow {
+  flex: 1;
+  color: var(--zds-text-tertiary);
+}
+
+/* The cascade, as a segmented control. Two levels, always both shown even when
+   one cannot be written: hiding it would make the project level look like a
+   feature this app does not have. */
+.zds-settings__levels {
+  display: flex;
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content);
+  overflow: hidden;
+}
+
+.zds-settings__level {
+  padding: var(--zds-space-1) var(--zds-space-3);
+  white-space: nowrap;
+  font-family: var(--zds-font-sans);
+  font-size: var(--zds-font-size-mini);
+  color: var(--zds-text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--zds-motion-fast) var(--zds-motion-ease);
+}
+
+.zds-settings__level + .zds-settings__level {
+  border-inline-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-settings__level:hover {
+  background: var(--zds-surface-hover);
+}
+
+.zds-settings__level[aria-pressed="true"] {
+  color: var(--zds-text-primary);
+  background: var(--zds-surface-selected);
+}
+
+/* Body --------------------------------------------------------------------- */
+
+.zds-settings__body {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  min-block-size: 0;
+}
+
+.zds-settings__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-025);
+  padding: var(--zds-space-2);
+  border-inline-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  background: var(--zds-surface-sunken);
+}
+
+.zds-settings__nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  padding: var(--zds-space-1) var(--zds-space-2);
+  font-family: var(--zds-font-sans);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-secondary);
+  text-align: start;
+  background: transparent;
+  border-radius: var(--zds-radius-content);
+  cursor: pointer;
+}
+
+.zds-settings__nav-item:hover {
+  background: var(--zds-surface-hover);
+  color: var(--zds-text-primary);
+}
+
+.zds-settings__nav-item[aria-current="true"] {
+  color: var(--zds-text-primary);
+  background: var(--zds-surface-selected);
+}
+
+.zds-settings__nav-bullet {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.zds-settings__content {
+  padding: var(--zds-space-4) var(--zds-space-5);
+  min-block-size: 0;
+}
+
+.zds-settings__content-header {
+  margin-block-end: var(--zds-space-3);
+}
+
+.zds-settings__title {
+  font-family: var(--zds-font-sans);
+  font-size: var(--zds-font-size-title);
+  font-weight: 500;
+  color: var(--zds-text-primary);
+}
+
+.zds-settings__subtitle {
+  margin-block-start: var(--zds-space-05);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-tertiary);
+}
+
+.zds-settings__notice {
+  margin-block-end: var(--zds-space-3);
+  padding: var(--zds-space-2) var(--zds-space-3);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-secondary);
+  background: var(--zds-surface-sunken);
+  border-inline-start: 2px solid var(--zds-border-strong);
+  border-radius: var(--zds-radius-content);
+}
+
+/* Rows --------------------------------------------------------------------- */
+
+.zds-settings__rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.zds-setting {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: var(--zds-space-4);
+  padding-block: var(--zds-space-3);
+}
+
+.zds-setting + .zds-setting {
+  border-block-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+.zds-setting__info {
+  min-inline-size: 0;
+}
+
+.zds-setting__name {
+  font-size: var(--zds-font-size-body);
+  color: var(--zds-text-primary);
+}
+
+.zds-setting__description {
+  margin-block-start: var(--zds-space-05);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-tertiary);
+  max-inline-size: 48ch;
+}
+
+/* Where the value came from, in the metadata voice. This is the cascade made
+   visible: without it, an inherited value and a set one look identical. */
+.zds-setting__provenance {
+  margin-block-start: var(--zds-space-1);
+  color: var(--zds-text-disabled);
+}
+
+.zds-setting[data-set-here="true"] .zds-setting__provenance {
+  color: var(--zds-text-accent);
+}
+
+.zds-setting__control {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  min-inline-size: 180px;
+  justify-content: flex-end;
+}
+
+.zds-setting__control .zds-select {
+  flex: 1;
+}
+
+/* Holds the reset button's place, so a control does not shift sideways the
+   moment it is overridden. */
+.zds-setting__reset-spacer {
+  inline-size: var(--zds-size-control-sm);
+  block-size: var(--zds-size-control-sm);
+}
+
+/* Footer ------------------------------------------------------------------- */
+
+.zds-settings__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-3);
+  padding: var(--zds-space-1) var(--zds-space-3);
+  border-block-start: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  background: var(--zds-surface-raised);
+}
+
+.zds-settings__location {
+  flex: 1;
+  color: var(--zds-text-disabled);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: rtl;
+  text-align: start;
+}
+
+.zds-settings__error {
+  font-size: var(--zds-font-size-mini);
+  color: var(--zds-text-fault);
+}

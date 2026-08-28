@@ -30,6 +30,18 @@ export const channels = {
   rename: 'fs:rename',
   openExternal: 'shell:openExternal',
 
+  /**
+   * The user's settings file, in the app's configuration directory.
+   *
+   * Deliberately not reachable through the filesystem channels: those only
+   * serve directories the user has granted, and the configuration directory is
+   * not one of them. Pinning the path in the main process means the renderer
+   * cannot ask for a different file.
+   */
+  userSettingsPath: 'settings:path',
+  readUserSettings: 'settings:read',
+  writeUserSettings: 'settings:write',
+
   /** Begin an OAuth2 device authorization, returning the code to show. */
   startDeviceFlow: 'auth:startDeviceFlow',
   /** Open the verification page and poll until the user confirms. */

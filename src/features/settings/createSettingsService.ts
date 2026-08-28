@@ -1,0 +1,408 @@
+import {
+  computed,
+  effect,
+  type ReadonlySignal,
+  type Signal,
+  signal,
+} from '@preact/signals'
+import type { FileSystem } from '@src/contracts/fileSystem'
+import type { ProjectSessionService } from '@src/contracts/projectSession'
+import type { RuntimeService } from '@src/contracts/runtime'
+import {
+  type AnySetting,
+  type SettingDefinition,
+  type SettingsLevel,
+  type SettingsLevelInfo,
+  type SettingsSection,
+  type SettingsSectionView,
+  type SettingsService,
+  type SettingsStore,
+  settingsLevels,
+} from '@src/contracts/settings'
+import { joinPath } from '@src/lib/paths'
+import {
+  decodeSettingsToml,
+  encodeSettingsToml,
+  PROJECT_SETTINGS_FILE,
+} from '@src/lib/settings/settingsToml'
+
+export interface SettingsServiceDependencies {
+  definitions: ReadonlySignal<readonly AnySetting[]>
+  sections: ReadonlySignal<readonly SettingsSection[]>
+  /**
+   * Lazy accessors, because a service may not be resolved while the registry
+   * graph is still being built. Every one of these is read on demand instead.
+   */
+  userStore: () => SettingsStore | undefined
+  sessions: () => ProjectSessionService
+  fileSystem: () => FileSystem
+  runtime: () => RuntimeService
+}
+
+type Overrides = Record<string, unknown>
+
+/** "modeling" -> "Modeling", for a section nobody described. */
+const titleCase = (id: string) =>
+  id
+    .split(/[.\-_]/)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+
+/**
+ * The cascade.
+ *
+ * Three layers, resolved in one direction: the app's compiled defaults, then
+ * the user's overrides, then the open project's. Nothing merges downward and
+ * nothing writes to a lower layer, so "why is this value what it is" always has
+ * a three-line answer.
+ *
+ * Definitions are static data contributed by features and are never mutated —
+ * unlike a settings tree of stateful objects, where the current value and its
+ * declaration live in the same place and every consumer needs the whole tree.
+ * Here the only state is two override maps, and every value is derived.
+ */
+export function createSettingsService(
+  dependencies: SettingsServiceDependencies
+): SettingsService & { dispose: () => void } {
+  const { definitions, sections, userStore, sessions, fileSystem, runtime } =
+    dependencies
+
+  const overrides: Record<SettingsLevel, Signal<Overrides>> = {
+    user: signal<Overrides>({}),
+    project: signal<Overrides>({}),
+  }
+
+  /**
+   * Ids changed in this session, per level.
+   *
+   * Reading a file is slower than a click. Without this, a toggle made while
+   * `user.toml` is still being read would be overwritten by the file that did
+   * not know about it yet.
+   */
+  const touched: Record<SettingsLevel, Set<string>> = {
+    user: new Set(),
+    project: new Set(),
+  }
+
+  const hydrated = signal(false)
+  const error = signal<string | null>(null)
+  const openSection = signal<string | null>(null)
+  /** Survives a close, so reopening lands where you left off. */
+  let lastSection: string | null = null
+  const userLocation = computed(() => userStore()?.location.value ?? null)
+
+  const appliesToPlatform = (setting: AnySetting) => {
+    if (!setting.platforms) return true
+    return setting.platforms.includes(runtime().info.value.target)
+  }
+
+  const supportsLevel = (setting: AnySetting, level: SettingsLevel) =>
+    (setting.levels ?? settingsLevels).includes(level)
+
+  /**
+   * Apply what a file said, without clobbering what the person just did.
+   *
+   * A setting they have already changed this session keeps their value: the
+   * file is stale by definition, because their change is what will be written
+   * to it.
+   */
+  const applyDecoded = (level: SettingsLevel, decoded: Overrides) => {
+    const local = overrides[level].peek()
+    const next: Overrides = { ...decoded }
+    for (const id of touched[level]) {
+      if (local[id] === undefined) delete next[id]
+      else next[id] = local[id]
+    }
+    overrides[level].value = next
+  }
+
+  const reportRejected = (source: string, rejected: readonly string[]) => {
+    if (rejected.length === 0) return
+    error.value = `${rejected.length} setting${
+      rejected.length === 1 ? '' : 's'
+    } in ${source} could not be read: ${rejected.join(', ')}`
+  }
+
+  // ---------------------------------------------------------------- user level
+
+  const loadUser = async () => {
+    const store = userStore()
+    if (!store) {
+      hydrated.value = true
+      return
+    }
+    try {
+      const text = await store.read()
+      if (text) {
+        const decoded = decodeSettingsToml(text, definitions.value)
+        applyDecoded('user', decoded.overrides)
+        reportRejected(store.location.peek(), decoded.rejected)
+      }
+    } catch (caught) {
+      error.value = `Could not read ${store.location.peek()}: ${String(caught)}`
+    } finally {
+      hydrated.value = true
+    }
+  }
+
+  const userHydration = loadUser()
+
+  // ------------------------------------------------------------- project level
+
+  const projectPath = () => sessions().current.value?.project.value.path ?? null
+
+  const projectSettingsPath = computed(() => {
+    const path = projectPath()
+    return path ? joinPath(path, PROJECT_SETTINGS_FILE) : null
+  })
+
+  const loadProject = async (path: string | null) => {
+    touched.project.clear()
+    if (!path) {
+      overrides.project.value = {}
+      return
+    }
+    try {
+      const exists = await fileSystem().exists(path)
+      if (!exists) {
+        overrides.project.value = {}
+        return
+      }
+      const text = await fileSystem().readTextFile(path)
+      const decoded = decodeSettingsToml(text, definitions.value)
+      applyDecoded('project', decoded.overrides)
+      reportRejected(PROJECT_SETTINGS_FILE, decoded.rejected)
+    } catch (caught) {
+      // A project whose settings file is unreadable still opens; it just has no
+      // project-level overrides, which is the same as not having the file.
+      console.warn('settings: could not read project settings', caught)
+      overrides.project.value = {}
+    }
+  }
+
+  let stopWatchingProject = () => {}
+  // Deferred: an effect that reads a value spec while the registry graph is
+  // still being flattened is a cycle, and this one reaches the session service.
+  queueMicrotask(() => {
+    stopWatchingProject = effect(() => {
+      const path = projectSettingsPath.value
+      void loadProject(path)
+    })
+  })
+
+  // ----------------------------------------------------------------- persisting
+
+  /** One write at a time per level, so two quick toggles cannot interleave. */
+  const writeQueues: Record<SettingsLevel, Promise<void>> = {
+    user: Promise.resolve(),
+    project: Promise.resolve(),
+  }
+
+  const writeUser = async () => {
+    const store = userStore()
+    if (!store) return
+    await userHydration
+    // Re-read rather than remembering the text: someone may have edited the
+    // file since, and their keys are not ours to drop.
+    const existing = await store.read()
+    await store.write(
+      encodeSettingsToml(existing, definitions.value, overrides.user.peek())
+    )
+  }
+
+  const writeProject = async () => {
+    const path = projectSettingsPath.peek()
+    if (!path) return
+    const fs = fileSystem()
+    const existing = (await fs.exists(path))
+      ? await fs.readTextFile(path)
+      : null
+    await fs.writeTextFile(
+      path,
+      encodeSettingsToml(existing, definitions.value, overrides.project.peek())
+    )
+  }
+
+  const persist = (level: SettingsLevel) => {
+    writeQueues[level] = writeQueues[level]
+      .then(level === 'user' ? writeUser : writeProject)
+      .then(
+        () => {
+          error.value = null
+        },
+        (caught) => {
+          error.value = `Could not save settings: ${
+            caught instanceof Error ? caught.message : String(caught)
+          }`
+        }
+      )
+  }
+
+  // -------------------------------------------------------------------- reading
+
+  const valueCache = new Map<string, ReadonlySignal<unknown>>()
+
+  const resolve = <T>(setting: SettingDefinition<T>): ReadonlySignal<T> => {
+    const cached = valueCache.get(setting.id)
+    if (cached) return cached as ReadonlySignal<T>
+
+    const created = computed<T>(() => {
+      // Highest precedence first. A level the setting does not support is
+      // skipped even when a file sets it, so the file cannot promise something
+      // the app will not honour.
+      for (const level of ['project', 'user'] as const) {
+        if (!supportsLevel(setting, level)) continue
+        const stored = overrides[level].value[setting.id]
+        if (stored !== undefined) return stored as T
+      }
+      return setting.defaultValue
+    })
+
+    valueCache.set(setting.id, created)
+    return created
+  }
+
+  const overrideAt = <T>(
+    setting: SettingDefinition<T>,
+    level: SettingsLevel
+  ): ReadonlySignal<T | undefined> =>
+    computed(() =>
+      supportsLevel(setting, level)
+        ? (overrides[level].value[setting.id] as T | undefined)
+        : undefined
+    )
+
+  const inheritedAt = <T>(
+    setting: SettingDefinition<T>,
+    level: SettingsLevel
+  ): ReadonlySignal<T> =>
+    computed(() => {
+      // Everything below the given level, in the same precedence order.
+      const below = settingsLevels.slice(0, settingsLevels.indexOf(level))
+      for (const candidate of [...below].reverse()) {
+        if (!supportsLevel(setting, candidate)) continue
+        const stored = overrides[candidate].value[setting.id]
+        if (stored !== undefined) return stored as T
+      }
+      return setting.defaultValue
+    })
+
+  // ------------------------------------------------------------------- writing
+
+  const set = <T>(
+    setting: SettingDefinition<T>,
+    level: SettingsLevel,
+    value: T
+  ) => {
+    if (!supportsLevel(setting, level)) {
+      console.warn(
+        `settings: ${setting.id} cannot be set at the ${level} level`
+      )
+      return
+    }
+    const parsed = setting.parse(value)
+    if (parsed === undefined) {
+      error.value = `${setting.title} does not accept that value.`
+      return
+    }
+    touched[level].add(setting.id)
+    overrides[level].value = {
+      ...overrides[level].peek(),
+      [setting.id]: parsed,
+    }
+    persist(level)
+  }
+
+  const clear = (setting: AnySetting, level: SettingsLevel) => {
+    touched[level].add(setting.id)
+    const next = { ...overrides[level].peek() }
+    delete next[setting.id]
+    overrides[level].value = next
+    persist(level)
+  }
+
+  // ------------------------------------------------------------------ sections
+
+  const sectionViews = computed<readonly SettingsSectionView[]>(() => {
+    const applicable = definitions.value.filter(appliesToPlatform)
+    const declared = new Map(
+      sections.value.map((section) => [section.id, section])
+    )
+
+    const grouped = new Map<string, AnySetting[]>()
+    for (const setting of applicable) {
+      const list = grouped.get(setting.section)
+      if (list) list.push(setting)
+      else grouped.set(setting.section, [setting])
+    }
+
+    return [...grouped.entries()]
+      .map(([id, settingsInSection]) => {
+        // A setting whose section nobody declared still gets a home, named
+        // after its id. Losing a setting because a section contribution is
+        // missing would be the worse failure.
+        const section = declared.get(id) ?? { id, title: titleCase(id) }
+        return { ...section, settings: settingsInSection }
+      })
+      .sort(
+        (a, b) =>
+          (a.order ?? 0) - (b.order ?? 0) || a.title.localeCompare(b.title)
+      )
+  })
+
+  const levels: readonly SettingsLevelInfo[] = [
+    {
+      level: 'user',
+      label: 'You',
+      location: computed(() => userLocation.value),
+      unavailableReason: computed(() =>
+        userStore()
+          ? null
+          : 'This build has nowhere to store your settings, so they last for this session only.'
+      ),
+    },
+    {
+      level: 'project',
+      label: 'This project',
+      location: computed(() => projectSettingsPath.value),
+      unavailableReason: computed(() =>
+        projectSettingsPath.value
+          ? null
+          : 'Open a project to override settings just for it.'
+      ),
+    },
+  ]
+
+  return {
+    sections: sectionViews,
+    hydrated: computed(() => hydrated.value),
+    error: computed(() => error.value),
+    levels,
+
+    value: resolve,
+    read: (setting) => resolve(setting).peek(),
+    overrideAt,
+    inheritedAt,
+    set,
+    clear,
+    supportsLevel: (setting, level) =>
+      supportsLevel(setting, level) && appliesToPlatform(setting),
+
+    openSection: computed(() => openSection.value),
+    open: (sectionId) => {
+      // Reopening returns to the group you were last in. Someone adjusting one
+      // setting usually comes back for its neighbour, not for the first group
+      // in the list.
+      const next = sectionId ?? lastSection ?? sectionViews.value.at(0)?.id
+      if (next) lastSection = next
+      openSection.value = next ?? null
+    },
+    close: () => {
+      openSection.value = null
+    },
+
+    dispose: () => {
+      stopWatchingProject()
+    },
+  }
+}

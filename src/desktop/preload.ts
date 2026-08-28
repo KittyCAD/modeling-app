@@ -8,10 +8,10 @@
 
 import { contextBridge, ipcRenderer } from 'electron'
 import {
+  channels,
   type DeviceAuthorization,
   type DirectoryEntry,
   type FileStatResult,
-  channels,
 } from './channels'
 
 const desktop = {
@@ -71,6 +71,17 @@ const desktop = {
 
   openExternal: (url: string): Promise<void> =>
     ipcRenderer.invoke(channels.openExternal, url),
+
+  /** Absolute path of `user.toml`, shown so someone can go and edit it. */
+  userSettingsPath: (): Promise<string> =>
+    ipcRenderer.invoke(channels.userSettingsPath),
+
+  /** TOML text of the user's settings, or null if the file does not exist. */
+  readUserSettings: (): Promise<string | null> =>
+    ipcRenderer.invoke(channels.readUserSettings),
+
+  writeUserSettings: (contents: string): Promise<void> =>
+    ipcRenderer.invoke(channels.writeUserSettings, contents),
 
   /** Begin signing in. Returns the code for the user to enter. */
   startDeviceFlow: (host: string): Promise<DeviceAuthorization> =>
