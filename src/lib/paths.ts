@@ -70,9 +70,20 @@ export function isPathInside(root: string, candidate: string): boolean {
   if (!normalizedRoot) return false
   return (
     normalizedCandidate === normalizedRoot ||
-    normalizedCandidate.startsWith(`${normalizedRoot}/`)
+    normalizedCandidate.startsWith(childPrefix(normalizedRoot))
   )
 }
+
+/**
+ * What a path beneath this root starts with.
+ *
+ * `/` already ends in its own separator, so appending one asks for `//` and no
+ * path starts with that — the filesystem root would contain nothing. A library
+ * rooted at `/` is not the default anywhere, but a directory picker can produce
+ * one, and it would have discovered no projects at all.
+ */
+const childPrefix = (normalizedRoot: string) =>
+  normalizedRoot === '/' ? '/' : `${normalizedRoot}/`
 
 /** `candidate` expressed relative to `root`, or null when it is not inside. */
 export function relativePath(root: string, candidate: string): string | null {
@@ -80,7 +91,7 @@ export function relativePath(root: string, candidate: string): string | null {
   const normalizedRoot = normalizePath(root)
   const normalizedCandidate = normalizePath(candidate)
   if (normalizedCandidate === normalizedRoot) return ''
-  return normalizedCandidate.slice(normalizedRoot.length + 1)
+  return normalizedCandidate.slice(childPrefix(normalizedRoot).length)
 }
 
 /**
@@ -96,9 +107,14 @@ export function toDirectoryName(title: string, fallback = 'untitled'): string {
     .replaceAll(/[^a-z0-9._-]+/g, '-')
     .replaceAll(/-{2,}/g, '-')
     .replace(/^[-.]+/, '')
-    .replace(/[-.]+$/, '')
 
-  return cleaned.length > 0 ? cleaned.slice(0, 64) : fallback
+  // Cut to length *before* trimming the tail, not after. A title longer than
+  // this ends up cut mid-separator, and a folder name ending in `.` is not the
+  // folder Windows creates — Win32 strips trailing dots, so the app would
+  // record a project at a path that does not exist.
+  const truncated = cleaned.slice(0, 64).replace(/[-.]+$/, '')
+
+  return truncated.length > 0 ? truncated : fallback
 }
 
 /**

@@ -1302,6 +1302,9 @@ of it for every input, which is a different job and worth having both:
   as bytes.
 - `src/features/kclLsp/uris.properties.test.ts` — path to URI and back is exact,
   and never gives two paths one URI.
+- `src/lib/paths.properties.test.ts` — normalising is idempotent, containment is
+  reflexive and transitive, and a folder name derived from a title is always
+  usable.
 - `src/features/keybindings/keymap.properties.test.ts` — every spelling of a
   chord has one normal form, `Mod` resolves to the same chord on both platforms,
   and the strongest active scope takes a contested sequence.
@@ -1325,6 +1328,17 @@ Case count is one number for the whole suite, set in `src/test/setup.ts`. Raise
 it to hunt something: `FC_NUM_RUNS=20000 npm run test:properties`. A failure
 prints the shrunk counterexample and the seed that found it, and that seed
 replays the run exactly.
+
+Two bugs found writing the first set, both in `src/lib/paths.ts`, both invisible
+to an example test:
+
+- `toDirectoryName` trimmed the trailing `-` and `.` off a folder name and *then*
+  cut it to 64 characters, so any title longer than that could end in a
+  separator. A folder name ending in `.` is not the folder Windows creates.
+- `isPathInside` built its prefix as `` `${root}/` ``, which is `//` when the root
+  is `/` — so the filesystem root contained nothing. Not a default root anywhere,
+  but a directory picker can produce one, and that library would have discovered
+  no projects at all.
 
 ## Running it
 
