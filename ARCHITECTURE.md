@@ -547,6 +547,41 @@ known answer.
 Geometry that is neither in the graph nor describable as a region contributes
 nothing, and the argument is refused rather than written empty.
 
+### A face is not the segment that made it
+
+Referring to a face in KCL is strange, and the strangeness is temporary. A side
+face has no name of its own: it is addressed through the sketch segment that was
+swept to make it, or through the region that consumed that segment. An end cap is
+addressed by a position instead. An imported face has nothing but an engine index.
+None of that is a fact about faces — it is the current engine plumbing, and the
+[Face API](https://github.com/KittyCAD/modeling-app/issues/11727) being built
+upstream replaces all of it.
+
+So it has exactly one address: `src/lib/kcl/faceReferences.ts` is the only module
+that knows any of those rules, and it is the module that changes when stable
+topological references land. The rules and the expressions are kcl-lib's own, read
+out of what its frontend does when it puts a sketch on a face:
+
+```
+faceOf(extrude001, face = END)                      // a cap is a position
+faceOf(extrude001, face = region001.tags.line1)     // through the region
+faceOf(extrude001, face = triangle.line1)           // the segment, swept directly
+```
+
+Each answer records *which* route produced it, so a disagreement with the engine
+is diagnosable rather than mysterious. The brittle route is deliberately not
+taken: `faceId(solid, index = 3)` resolves to a different face as soon as the model
+changes, and a reference that silently means something else later is worse than one
+that was never written — so an imported face reports that it cannot be named yet.
+
+**Which kind of reference a click produces is the argument's decision, not the
+click's.** A wall clicked for `region(segments = …)` is the segment that drew it;
+the same wall clicked for `sketch(on = …)` is a face. Reading the argument's
+declared type is what keeps one click from having to guess, and it is the same
+shape the upstream issue asks for — `resolveFaceSelectors` beside
+`resolveBodySelectors`, hiding whether an answer came from the artifact graph, a
+tag, or a topological reference.
+
 ## Modelling operations
 
 An operation is derived from KCL's standard library, asked about through
