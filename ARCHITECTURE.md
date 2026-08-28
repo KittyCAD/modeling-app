@@ -175,6 +175,30 @@ a hidden dependency of every subsystem.
 Opening a project opens no buffer: "no active buffer" is a state the UI must
 handle anyway, so it is where you land.
 
+## The engine connection
+
+The scene is rendered on the engine and streamed back, so this owns a websocket
+(commands and WebRTC signalling) and a peer connection (the video track).
+
+Three constraints the server enforces by disconnecting rather than explaining,
+all of which cost time to find:
+
+- A `success: false` message is **not always a rejection**. The engine sends
+  "please send Authorization" the moment the socket opens, before processing the
+  headers already in flight. Only auth failures are fatal.
+- Stream dimensions must be **multiples of 4**, within [256, 2160]. Merely even
+  is not enough.
+- The engine **allocates its render target at connect time**, so the viewport
+  size must be reported before connecting. A resize needs a reconnect.
+
+State is a status signal plus a *stage* signal rather than a state machine: every
+transition is driven by an inbound message, and the stage is what makes a stall
+diagnosable — websocket, authenticating, negotiating, or streaming.
+
+Auth is a development stand-in (`src/features/auth/`): it reads a token from the
+environment and is the only place in the app that does, so a real sign-in flow
+replaces one file.
+
 ## Execution
 
 The coordinator owns everything asynchronous; the adapter is a capability; the
@@ -217,11 +241,15 @@ Shipped: the coordinator, the adapter, and one real executor — `kcl.analysis`,
 which runs `parse_wasm` and produces diagnostics. Live KCL errors in the gutter,
 entirely offline.
 
-**Not shipped: the engine.** "Execution" in #6836 means submitting to the
-modelling engine and getting geometry. That needs the websocket transport, auth,
-and a stream, and `src/wasm/connectionManager.ts` is the seam it plugs into —
-its transport provider is still unregistered, which is why the viewport says
-"not connected".
+**The engine connection is built** (`src/features/engine/`). It authenticates,
+negotiates WebRTC, streams the engine's video into the viewport, and is
+registered as the WASM engine transport — so `EngineCommandManager` carries KCL's
+modelling commands.
+
+**What is still missing is the KCL execution path**: nothing submits a program to
+the engine, so the scene is empty. That needs the WASM `Context`
+(`new Context(engineManager, fsManager)` then `context.execute(ast, path,
+settings)`), plus routing unmatched responses into `context.sendResponse`.
 
 Also outstanding:
 
