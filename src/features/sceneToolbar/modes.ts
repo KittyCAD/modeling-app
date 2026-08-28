@@ -58,3 +58,12 @@ export const builtInModes: readonly SceneMode[] = [
     empty: 'No annotation tools are installed.',
   },
 ]
+
+/**
+ * The keymap scope a mode makes live.
+ *
+ * Exported so a feature contributing a *binding* to a mode does not have to
+ * hardcode the scope name next to the mode name and keep the two in step.
+ */
+export const scopeForMode = (modeId: string): string | undefined =>
+  builtInModes.find((mode) => mode.id === modeId)?.keymapScope

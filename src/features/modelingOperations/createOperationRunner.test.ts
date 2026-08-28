@@ -12,7 +12,7 @@ import type { SelectedEntity, SelectionService } from '@src/contracts/selection'
 import type { ProjectSession } from '@src/contracts/projectSession'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
 import { createOperationRunner } from '@src/features/modelingOperations/createOperationRunner'
-import { extrudeOperation } from '@src/features/modelingOperations/operations/extrude'
+import { operationFor } from '@src/features/modelingOperations/operations/catalog'
 import { builtInResolvers } from '@src/features/modelingOperations/resolvers'
 import { createSelectionResolver } from '@src/features/modelingOperations/selectionResolver'
 import { namedTypesIn } from '@src/lib/kclStdlib/types'
@@ -324,6 +324,8 @@ describe('running a modelling operation', () => {
  * the edit that makes it valid — a segment named at an offset the operation knows
  * nothing about.
  */
+const extrudeOperation = operationFor('extrude')
+
 const NAME_A_SEGMENT = { from: 10, to: 10, insert: ' /* named */' }
 
 const regionLike: ArgumentResolver = {

@@ -6,6 +6,8 @@ import {
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
 import { commandsValueSpec } from '@src/contracts/commands'
+import { keybindingsValueSpec } from '@src/contracts/keybindings'
+import { toolbarItemsValueSpec } from '@src/contracts/sceneModes'
 import {
   argumentResolversValueSpec,
   modelingOperationsValueSpec,
@@ -19,7 +21,14 @@ import { loadKclWasm } from '@src/features/kclAnalysis/wasmModule'
 import { OperationPrompt } from '@src/features/modelingOperations/OperationPrompt'
 import { createOperationRunner } from '@src/features/modelingOperations/createOperationRunner'
 import { createSelectionResolver } from '@src/features/modelingOperations/selectionResolver'
-import { extrudeOperation } from '@src/features/modelingOperations/operations/extrude'
+import {
+  MODELING_TOOLS,
+  TOOL_GROUPS,
+  modelingOperations,
+  toolbarItemsFor,
+} from '@src/features/modelingOperations/operations/catalog'
+import { operationIdFor } from '@src/features/modelingOperations/operations/derive'
+import { scopeForMode } from '@src/features/sceneToolbar/modes'
 import { builtInResolvers } from '@src/features/modelingOperations/resolvers'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
@@ -69,7 +78,9 @@ export default defineRegistryItemFactory((ctx) => {
       id: 'modelingOperations',
       providesServices: [provideService(modelingOperationsService, runner)],
       provides: [
-        provide(modelingOperationsValueSpec, extrudeOperation),
+        ...modelingOperations.map((operation) =>
+          provide(modelingOperationsValueSpec, operation)
+        ),
         ...builtInResolvers.map((resolver) =>
           provide(argumentResolversValueSpec, resolver)
         ),
@@ -90,26 +101,60 @@ export default defineRegistryItemFactory((ctx) => {
         ),
 
         /**
-         * One command per operation, contributed from the operations themselves.
+         * One command per tool, contributed from the same list as everything
+         * else.
          *
          * `enabled` is the runner's answer rather than a guess: an operation
          * needs a KCL buffer to write into, and the palette should say so by
          * disabling the row rather than by failing after it is chosen.
          */
-        ...[extrudeOperation].map((operation) =>
+        ...MODELING_TOOLS.map((tool) =>
           provide(commandsValueSpec, {
-            id: operation.id,
-            title: operation.title,
-            category: operation.category ?? 'Model',
-            icon: 'cube' as const,
+            id: operationIdFor(tool.stdlib),
+            title: tool.title,
+            category: tool.category ?? 'Model',
+            icon: tool.icon,
             enabled: computed(() =>
               runner.available.value.some(
-                (candidate) => candidate.id === operation.id
+                (candidate) => candidate.id === operationIdFor(tool.stdlib)
               )
             ),
-            run: () => void runner.start(operation.id),
+            run: () => void runner.start(operationIdFor(tool.stdlib)),
           })
         ),
+
+        /**
+         * A button per tool, and a rule between sections.
+         *
+         * Derived from the same list, so a tool cannot appear in the palette and
+         * be missing from the toolbar. The toolbar itself is contributed to
+         * rather than owned: this feature says where its tools go, and knows
+         * nothing about how a strip is drawn.
+         */
+        ...toolbarItemsFor(MODELING_TOOLS, TOOL_GROUPS).map((item) =>
+          provide(toolbarItemsValueSpec, item)
+        ),
+
+        /**
+         * A bare letter per tool, live only inside its mode.
+         *
+         * `e` extrudes in Modeling and means nothing in Annotating, because the
+         * binding is scoped to the mode and only one mode's scope is applied.
+         * That is the whole of modal keys — the keymap learns nothing about
+         * modes, and this learns nothing about keymaps.
+         */
+        ...MODELING_TOOLS.flatMap((tool) => {
+          const scope = tool.key ? scopeForMode(tool.mode) : undefined
+          if (!tool.key || !scope) return []
+
+          return [
+            provide(keybindingsValueSpec, {
+              keystrokes: [tool.key],
+              commandId: operationIdFor(tool.stdlib),
+              scopes: [scope],
+            }),
+          ]
+        }),
 
         provide(overlaysValueSpec, {
           id: 'modeling.operationPrompt',
