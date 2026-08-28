@@ -279,12 +279,7 @@ impl ExecOutcome {
     /// Render the issue against the module source its range points into,
     /// falling back to the top-level source captured at execution time.
     fn render_issue(&self, issue: kcl_lib::CompilationIssue) -> String {
-        kcl_lib::render_compilation_issue_miette_with_sources(
-            &self.filename,
-            &self.code,
-            &self.inner.source_files,
-            issue,
-        )
+        kcl_lib::render_compilation_issue_miette(&self.filename, &self.code, &self.inner.source_files, issue)
     }
 }
 
@@ -411,7 +406,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
             let mut report: SketchConstraintReport = outcome.sketch_constraint_report().into();
             add_execution_issues(&mut report, outcome.issues, |issue| {
-                kcl_lib::render_compilation_issue_miette_with_sources(&filename, &code, &outcome.source_files, issue)
+                kcl_lib::render_compilation_issue_miette(&filename, &code, &outcome.source_files, issue)
             });
             Ok(report)
         }
@@ -422,7 +417,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
             let error_text = render_miette(err.clone(), &code);
             let mut report: SketchConstraintReport = err.sketch_constraint_report().into();
             add_execution_issues(&mut report, err.non_fatal, |issue| {
-                kcl_lib::render_compilation_issue_miette_with_sources(&filename, &code, &err.source_files, issue)
+                kcl_lib::render_compilation_issue_miette(&filename, &code, &err.source_files, issue)
             });
             report.is_complete = false;
             report.kcl_error = Some(KclErrorInfo {

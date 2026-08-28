@@ -105,7 +105,6 @@ pub use errors::KclErrorWithOutputs;
 pub use errors::Report;
 pub use errors::ReportWithOutputs;
 pub use errors::render_compilation_issue_miette;
-pub use errors::render_compilation_issue_miette_with_sources;
 pub use execution::ConstraintKind;
 pub use execution::EdgeRefactorMeta;
 pub use execution::EnvironmentRef;
