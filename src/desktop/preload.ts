@@ -51,6 +51,9 @@ const desktop = {
   readTextFileIfPresent: (path: string): Promise<string | null> =>
     ipcRenderer.invoke(channels.readTextFileIfPresent, path),
 
+  writeFile: (path: string, contents: Uint8Array): Promise<void> =>
+    ipcRenderer.invoke(channels.writeFile, path, Array.from(contents)),
+
   writeTextFile: (path: string, contents: string): Promise<void> =>
     ipcRenderer.invoke(channels.writeTextFile, path, contents),
 

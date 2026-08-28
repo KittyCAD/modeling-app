@@ -27,6 +27,7 @@ export const channels = {
    * in the call rather than in the caller.
    */
   readTextFileIfPresent: 'fs:readTextFileIfPresent',
+  writeFile: 'fs:writeFile',
   writeTextFile: 'fs:writeTextFile',
   exists: 'fs:exists',
   /** Immediate children of a directory, with their kind. */

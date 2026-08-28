@@ -16,6 +16,8 @@ import { isPathInside, normalizePath } from '@src/lib/paths'
 export type ProjectLibraryType = string
 
 export const DIRECTORY_LIBRARY_TYPE = 'directory'
+export const CLOUD_LIBRARY_TYPE = 'cloud'
+export const PERSONAL_CLOUD_LIBRARY_TITLE = 'Personal Cloud'
 export const DEFAULT_LIBRARY_ID = 'default-project-directory'
 export const DEFAULT_LIBRARY_TITLE = 'Local Projects'
 export const NEW_LIBRARY_TITLE = 'Project Library'

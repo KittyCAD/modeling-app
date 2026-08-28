@@ -28,6 +28,7 @@ export function createFakeFileSystem(
     ])
   )
   const directories = new Set<string>()
+  const binaryFiles = new Map<string, Uint8Array>()
   const modifiedTimes = new Map<string, number>(
     Object.entries(options.modifiedTimes ?? {}).map(([path, time]) => [
       normalizePath(path),
@@ -69,7 +70,10 @@ export function createFakeFileSystem(
       if (files.has(normalized)) {
         return {
           kind: 'file',
-          size: files.get(normalized)?.length ?? 0,
+          size:
+            binaryFiles.get(normalized)?.byteLength ??
+            files.get(normalized)?.length ??
+            0,
           modifiedAt: modifiedTimes.get(normalized) ?? 1_000,
         }
       }
@@ -122,11 +126,25 @@ export function createFakeFileSystem(
     },
 
     async readFile(path) {
-      return new TextEncoder().encode(await this.readTextFile(path))
+      const normalized = normalizePath(path)
+      const bytes = binaryFiles.get(normalized)
+      return bytes
+        ? Uint8Array.from(bytes)
+        : new TextEncoder().encode(await this.readTextFile(path))
+    },
+
+    async writeFile(path, contents) {
+      // The fake exposes text for convenient assertions. Latin-1 is a lossless
+      // one-byte representation, so arbitrary fixtures still round-trip.
+      const normalized = normalizePath(path)
+      binaryFiles.set(normalized, Uint8Array.from(contents))
+      files.set(normalized, new TextDecoder().decode(contents))
     },
 
     async writeTextFile(path, contents) {
-      files.set(normalizePath(path), contents)
+      const normalized = normalizePath(path)
+      binaryFiles.delete(normalized)
+      files.set(normalized, contents)
     },
 
     async makeDirectory(path) {
@@ -136,10 +154,14 @@ export function createFakeFileSystem(
     async remove(path) {
       const normalized = normalizePath(path)
       files.delete(normalized)
+      binaryFiles.delete(normalized)
       directories.delete(normalized)
       const prefix = `${normalized}/`
       for (const filePath of [...files.keys()]) {
-        if (filePath.startsWith(prefix)) files.delete(filePath)
+        if (filePath.startsWith(prefix)) {
+          files.delete(filePath)
+          binaryFiles.delete(filePath)
+        }
       }
       for (const directory of [...directories]) {
         if (directory.startsWith(prefix)) directories.delete(directory)
@@ -152,7 +174,10 @@ export function createFakeFileSystem(
 
       if (files.has(normalizedFrom)) {
         files.set(normalizedTo, files.get(normalizedFrom) ?? '')
+        const bytes = binaryFiles.get(normalizedFrom)
+        if (bytes) binaryFiles.set(normalizedTo, bytes)
         files.delete(normalizedFrom)
+        binaryFiles.delete(normalizedFrom)
         return
       }
 
@@ -163,7 +188,15 @@ export function createFakeFileSystem(
           `${normalizedTo}/${filePath.slice(prefix.length)}`,
           files.get(filePath) ?? ''
         )
+        const bytes = binaryFiles.get(filePath)
+        if (bytes) {
+          binaryFiles.set(
+            `${normalizedTo}/${filePath.slice(prefix.length)}`,
+            bytes
+          )
+        }
         files.delete(filePath)
+        binaryFiles.delete(filePath)
       }
       directories.delete(normalizedFrom)
       directories.add(normalizedTo)

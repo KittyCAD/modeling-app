@@ -56,6 +56,8 @@ export interface FileSystem {
    */
   readTextFileIfPresent(path: string): Promise<string | null>
   readFile(path: string): Promise<Uint8Array>
+  /** Write bytes verbatim, creating parent directories as needed. */
+  writeFile(path: string, contents: Uint8Array): Promise<void>
   writeTextFile(path: string, contents: string): Promise<void>
   makeDirectory(path: string): Promise<void>
   /** Recursive. Moves to the OS trash where the platform has one. */

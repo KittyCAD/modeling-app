@@ -486,6 +486,15 @@ function registerIpcHandlers() {
   )
 
   ipcMain.handle(
+    channels.writeFile,
+    async (_event, target: string, contents: number[]) => {
+      const file = await resolveGranted(target)
+      await fs.mkdir(path.dirname(file), { recursive: true })
+      await fs.writeFile(file, Uint8Array.from(contents))
+    }
+  )
+
+  ipcMain.handle(
     channels.writeTextFile,
     async (_event, target: string, contents: string) => {
       const file = await resolveGranted(target)

@@ -1,4 +1,4 @@
-import { type ReadonlySignal, computed, signal } from '@preact/signals'
+import { computed, type ReadonlySignal, signal } from '@preact/signals'
 import type {
   DirectoryEntry,
   FileStat,
@@ -155,6 +155,20 @@ export function createOpfsFileSystem(): FileSystem {
       }
     },
 
+    async writeFile(path, contents) {
+      const handle = await fileHandle(path, true)
+      const writable = await handle.createWritable()
+      try {
+        // Copy into an ArrayBuffer-backed view accepted by every browser's
+        // FileSystemWritableFileStream typing, including TS's stricter DOM lib.
+        const copy = new Uint8Array(contents.byteLength)
+        copy.set(contents)
+        await writable.write(copy)
+      } finally {
+        await writable.close()
+      }
+    },
+
     async makeDirectory(path) {
       await directoryHandle(path, true)
     },
@@ -170,7 +184,7 @@ export function createOpfsFileSystem(): FileSystem {
       const stat = await this.stat(from)
 
       if (stat.kind === 'file') {
-        await this.writeTextFile(to, await this.readTextFile(from))
+        await this.writeFile(to, await this.readFile(from))
         await this.remove(from)
         return
       }
@@ -183,10 +197,7 @@ export function createOpfsFileSystem(): FileSystem {
           if (entry.kind === 'directory') {
             await copyDirectory(childSource, childTarget)
           } else {
-            await this.writeTextFile(
-              childTarget,
-              await this.readTextFile(childSource)
-            )
+            await this.writeFile(childTarget, await this.readFile(childSource))
           }
         }
       }
