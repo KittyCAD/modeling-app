@@ -9,6 +9,7 @@ import {
 } from '@src/lang/create'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import { addRevolve } from '@src/lang/modifyAst/sweeps'
+import type * as QueryAst from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
@@ -23,7 +24,7 @@ vi.mock('@src/lib/commandBarConfigs/modelingCommandStdLibCommands', () => ({
 }))
 
 vi.mock('@src/lang/queryAst', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@src/lang/queryAst')>()
+  const original = await importOriginal<typeof QueryAst>()
   return {
     ...original,
     getVariableExprsFromSelection,
@@ -102,7 +103,7 @@ describe('edge-axis edit propagation', () => {
         _wasm,
         nodeToEdit
       ) => {
-        if (selection.graphSelections[0]?.artifact.type === 'sweepEdge') {
+        if (selection.graphSelections[0]?.artifact?.type === 'sweepEdge') {
           return nodeToEdit
             ? {
                 exprs: [createMemberExpression('body001', 'axisEdge')],
@@ -136,7 +137,12 @@ describe('edge-axis edit propagation', () => {
     if (edited.type !== 'VariableDeclaration') {
       throw new Error('Expected Helix')
     }
-    expect(edited.declaration.init.arguments).toContainEqual(
+    const init = edited.declaration.init
+    expect(init.type).toBe('CallExpressionKw')
+    if (init.type !== 'CallExpressionKw') {
+      throw new Error('Expected Helix call')
+    }
+    expect(init.arguments).toContainEqual(
       createLabeledArg('axis', createMemberExpression('body001', 'axisEdge'))
     )
   })
@@ -162,7 +168,12 @@ describe('edge-axis edit propagation', () => {
     if (edited.type !== 'VariableDeclaration') {
       throw new Error('Expected Revolve')
     }
-    expect(edited.declaration.init.arguments).toContainEqual(
+    const init = edited.declaration.init
+    expect(init.type).toBe('CallExpressionKw')
+    if (init.type !== 'CallExpressionKw') {
+      throw new Error('Expected Revolve call')
+    }
+    expect(init.arguments).toContainEqual(
       createLabeledArg('axis', createMemberExpression('body001', 'axisEdge'))
     )
   })
