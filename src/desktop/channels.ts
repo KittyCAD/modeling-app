@@ -29,6 +29,12 @@ export const channels = {
   remove: 'fs:remove',
   rename: 'fs:rename',
   openExternal: 'shell:openExternal',
+
+  /** Begin an OAuth2 device authorization, returning the code to show. */
+  startDeviceFlow: 'auth:startDeviceFlow',
+  /** Open the verification page and poll until the user confirms. */
+  completeDeviceFlow: 'auth:completeDeviceFlow',
+  cancelDeviceFlow: 'auth:cancelDeviceFlow',
 } as const
 
 export type Channel = (typeof channels)[keyof typeof channels]
@@ -36,6 +42,11 @@ export type Channel = (typeof channels)[keyof typeof channels]
 export interface DirectoryEntry {
   name: string
   kind: 'file' | 'directory'
+}
+
+export interface DeviceAuthorization {
+  userCode: string
+  verificationUri: string
 }
 
 export interface FileStatResult {

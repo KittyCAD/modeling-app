@@ -3,6 +3,8 @@ import type { ComponentChildren } from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
 import { Button, EmptyState, Spinner } from '@kittycad/ui-kit'
 import { useService } from '@src/app/context'
+import { authService } from '@src/contracts/auth'
+import { commandService } from '@src/contracts/commands'
 import { engineConnectionService } from '@src/contracts/engine'
 import { executionCoordinatorService } from '@src/contracts/execution'
 import { idleExecutionState } from '@src/contracts/execution'
@@ -39,6 +41,11 @@ function ViewportFrame({
   grid?: boolean
 }) {
   const engine = useService(engineConnectionService)
+  const auth = useService(authService)
+  const commands = useService(commandService)
+
+  /** One path for every "connect" affordance, so sign-in is never skipped. */
+  const connect = () => commands.run('engine.connect')
   const host = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -68,6 +75,11 @@ export function ViewportArea() {
   const sessions = useService(projectSessionService)
   const coordinator = useService(executionCoordinatorService)
   const engine = useService(engineConnectionService)
+  const auth = useService(authService)
+  const commands = useService(commandService)
+
+  /** One path for every "connect" affordance, so sign-in is never skipped. */
+  const connect = () => commands.run('engine.connect')
 
   const session = useComputed(() => sessions.current.value)
   const executing = useComputed(
@@ -203,13 +215,7 @@ export function ViewportArea() {
           title="Could not reach the modeling engine"
           description={engineState.value.error ?? 'The connection failed.'}
           actions={
-            <Button
-              icon="refresh"
-              label="Try again"
-              onClick={() => {
-                void engine.connect().catch(() => {})
-              }}
-            />
+            <Button icon="refresh" label="Try again" onClick={connect} />
           }
         />
       </ViewportFrame>
@@ -232,10 +238,10 @@ export function ViewportArea() {
           <Button
             variant="primary"
             icon="play"
-            label="Connect to the engine"
-            onClick={() => {
-              void engine.connect().catch(() => {})
-            }}
+            label={
+              auth.token.value ? 'Connect to the engine' : 'Sign in to connect'
+            }
+            onClick={connect}
           />
         }
       />

@@ -7,7 +7,12 @@
  */
 
 import { contextBridge, ipcRenderer } from 'electron'
-import { type DirectoryEntry, type FileStatResult, channels } from './channels'
+import {
+  type DeviceAuthorization,
+  type DirectoryEntry,
+  type FileStatResult,
+  channels,
+} from './channels'
 
 const desktop = {
   platform: process.platform,
@@ -66,6 +71,23 @@ const desktop = {
 
   openExternal: (url: string): Promise<void> =>
     ipcRenderer.invoke(channels.openExternal, url),
+
+  /** Begin signing in. Returns the code for the user to enter. */
+  startDeviceFlow: (host: string): Promise<DeviceAuthorization> =>
+    ipcRenderer.invoke(channels.startDeviceFlow, host),
+
+  /**
+   * Open the verification page and wait for confirmation.
+   *
+   * Resolves with an access token, or null if the provider declined. The token
+   * exchange happens in the main process; the renderer never sees the device
+   * code secret.
+   */
+  completeDeviceFlow: (): Promise<string | null> =>
+    ipcRenderer.invoke(channels.completeDeviceFlow),
+
+  cancelDeviceFlow: (): Promise<void> =>
+    ipcRenderer.invoke(channels.cancelDeviceFlow),
 }
 
 export type DesktopBridge = typeof desktop

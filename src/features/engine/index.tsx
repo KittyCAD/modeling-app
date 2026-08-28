@@ -116,6 +116,25 @@ export default defineRegistryItemFactory((ctx) => {
     token: () => ctx.services.get(authService).token.peek(),
   })
 
+  /**
+   * Connect, asking for credentials first if there are none.
+   *
+   * This is where "gate only what needs the network" actually lands: the app is
+   * fully usable signed out, and the sign-in screen appears at the moment
+   * something genuinely needs an account — with the reason attached, so it does
+   * not look like an arbitrary demand.
+   */
+  const connectOrSignIn = async () => {
+    const auth = ctx.services.get(authService)
+    if (!auth.token.peek()) {
+      auth.requestSignIn(
+        'The modeling engine renders your geometry on Zoo, so it needs an account.'
+      )
+      return
+    }
+    await connection.connect()
+  }
+
   const releaseTransport = setWasmEngineTransport({
     fireModelingCommand: (request) => connection.fire(request),
     sendModelingCommand: (request) => connection.send(request),
@@ -148,7 +167,7 @@ export default defineRegistryItemFactory((ctx) => {
           category: 'Model',
           icon: 'play',
           enabled: computed(() => !connected.value),
-          run: () => connection.connect(),
+          run: connectOrSignIn,
         }),
         provide(commandsValueSpec, {
           id: 'engine.disconnect',

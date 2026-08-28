@@ -11,7 +11,17 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { BrowserWindow, app, dialog, ipcMain, session, shell } from 'electron'
-import { type DirectoryEntry, channels } from './channels'
+import {
+  Configuration,
+  None,
+  initiateDeviceAuthorization,
+  pollDeviceAuthorizationGrant,
+} from 'openid-client'
+import {
+  type DeviceAuthorization,
+  type DirectoryEntry,
+  channels,
+} from './channels'
 
 // Injected by @electron-forge/plugin-vite.
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string | undefined
@@ -31,7 +41,10 @@ const contentSecurityPolicy = [
   "script-src 'self' 'wasm-unsafe-eval'",
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self'",
-  "img-src 'self' blob: data:",
+  // Profile images come from whichever identity provider the account uses —
+  // Google, GitHub, Zoo's own storage — so `self` is not enough. Restricted to
+  // https so a downgraded request cannot be substituted.
+  "img-src 'self' https: blob: data:",
   "connect-src 'self' https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev",
   "object-src 'none'",
   "frame-src 'none'",
@@ -143,6 +156,38 @@ async function resolveGranted(requested: string): Promise<string> {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
     return resolved
   }
+}
+
+// ---------------------------------------------------------------------------
+// OAuth2 device flow
+// ---------------------------------------------------------------------------
+
+/**
+ * The device-flow client id.
+ *
+ * Public by design: a device-flow client cannot keep a secret, which is the
+ * whole reason the flow exists.
+ */
+const DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
+
+interface DeviceFlowSession {
+  abort: () => void
+  poll: () => Promise<{ access_token?: string }>
+  verificationUri: string
+}
+
+/**
+ * Device flows in progress, one per window.
+ *
+ * Scoped to the window because that is what the user is looking at: closing it
+ * must abort its polling rather than leave a request running against the
+ * identity provider forever.
+ */
+const deviceFlows = new Map<number, DeviceFlowSession>()
+
+function abortDeviceFlow(windowId: number) {
+  deviceFlows.get(windowId)?.abort()
+  deviceFlows.delete(windowId)
 }
 
 // ---------------------------------------------------------------------------
@@ -268,6 +313,97 @@ function registerIpcHandlers() {
     await fs.rename(await resolveGranted(from), await resolveGranted(to))
   })
 
+  /**
+   * Start a device authorization.
+   *
+   * Runs in the main process because the token exchange must not be reachable
+   * from the renderer: the renderer gets a user code to display and nothing
+   * else, and the access token is only ever returned once the user has
+   * confirmed out of band.
+   */
+  ipcMain.handle(
+    channels.startDeviceFlow,
+    async (event, host: string): Promise<DeviceAuthorization> => {
+      const window = BrowserWindow.fromWebContents(event.sender)
+      if (!window) throw new Error('No window is available for signing in.')
+
+      abortDeviceFlow(window.id)
+
+      const configuration = new Configuration(
+        {
+          issuer: host,
+          device_authorization_endpoint: `${host}/oauth2/device/auth`,
+          token_endpoint: `${host}/oauth2/device/token`,
+        },
+        DEVICE_CLIENT_ID,
+        undefined,
+        // A device-flow client is public, so there is no client authentication.
+        None()
+      )
+
+      const authorization = await initiateDeviceAuthorization(configuration, {})
+      const verificationUri =
+        authorization.verification_uri_complete ??
+        authorization.verification_uri
+      if (!verificationUri) {
+        throw new Error('The identity provider returned no verification URL.')
+      }
+
+      const controller = new AbortController()
+      deviceFlows.set(window.id, {
+        abort: () => controller.abort(),
+        verificationUri,
+        poll: () =>
+          pollDeviceAuthorizationGrant(
+            configuration,
+            authorization,
+            {},
+            {
+              signal: controller.signal,
+            }
+          ),
+      })
+
+      return {
+        userCode: authorization.user_code ?? '',
+        verificationUri,
+      }
+    }
+  )
+
+  /** Open the verification page, then wait for the user to confirm. */
+  ipcMain.handle(
+    channels.completeDeviceFlow,
+    async (event): Promise<string | null> => {
+      const window = BrowserWindow.fromWebContents(event.sender)
+      const session = window ? deviceFlows.get(window.id) : undefined
+      if (!window || !session) {
+        throw new Error('No sign-in is in progress.')
+      }
+
+      const target = new URL(session.verificationUri)
+      if (target.protocol !== 'https:' && target.protocol !== 'http:') {
+        throw new Error('Refusing to open a non-web verification URL.')
+      }
+      await shell.openExternal(target.toString())
+
+      try {
+        const tokens = await session.poll()
+        return tokens.access_token ?? null
+      } finally {
+        // Whether it succeeded, failed, or was aborted, this attempt is over.
+        if (deviceFlows.get(window.id) === session) {
+          deviceFlows.delete(window.id)
+        }
+      }
+    }
+  )
+
+  ipcMain.handle(channels.cancelDeviceFlow, (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender)
+    if (window) abortDeviceFlow(window.id)
+  })
+
   ipcMain.handle(channels.openExternal, async (_event, url: string) => {
     const parsed = new URL(url)
     // Only http(s) ever reaches the OS. Other schemes can launch a local
@@ -304,6 +440,10 @@ function createWindow() {
 
   // Show only once there is something to look at.
   window.once('ready-to-show', () => window.show())
+
+  // Window-scoped work must die with the window, or polling outlives the UI
+  // that started it.
+  window.on('closed', () => abortDeviceFlow(window.id))
 
   // External links go to the OS browser; this window never navigates away from
   // the app.
