@@ -4,7 +4,6 @@ import { useService, useValueSpec } from '@src/app/context'
 import type { Command } from '@src/contracts/commands'
 import { commandService } from '@src/contracts/commands'
 import { keybindingService } from '@src/contracts/keybindings'
-import type { SceneMode } from '@src/contracts/sceneModes'
 import {
   sceneModeService,
   toolbarItemsValueSpec,
@@ -17,38 +16,63 @@ import { resolveToolbar } from '@src/features/sceneToolbar/resolveToolbar'
 import './sceneToolbar.css'
 
 /**
- * Which mode the scene is in.
+ * Which mode the scene is in, and how to change it.
  *
- * Text rather than icons, because a mode is a noun and there are three of them.
- * An unavailable mode stays visible and disabled with the reason on it: a mode
- * that vanishes teaches nobody that it exists.
+ * A dropdown rather than a row of buttons. The modes are mutually exclusive and
+ * there will be more of them than fit next to the tools — spending three buttons
+ * on a one-of-three choice takes room from the thing the toolbar is for, and the
+ * active mode is the only one worth showing at rest.
+ *
+ * A mode that cannot be entered stays listed and disabled with its reason: a mode
+ * that vanishes teaches nobody that it exists, which matters most for the one
+ * that appears when you are somewhere specific.
  */
 function ModeSwitcher() {
   const modes = useService(sceneModeService)
-  const active = useComputed(() => modes.active.value?.id ?? null)
+  const keys = useService(keybindingService)
 
-  const enterable = (mode: SceneMode) => mode.available?.value ?? true
+  const active = modes.active.value
+  if (!active) return null
 
   return (
-    <div class="zds-scene-toolbar__modes" role="group" aria-label="Scene mode">
-      {modes.modes.value.map((mode) => (
+    <Menu
+      align="start"
+      label="Scene mode"
+      sections={[
+        {
+          id: 'modes',
+          label: 'Mode',
+          items: modes.modes.value.map((mode) => {
+            const { available, reason } = modes.availability(mode.id)
+
+            return {
+              id: mode.id,
+              label: mode.title,
+              icon: mode.icon,
+              // The reason takes the shortcut's place on a mode you cannot
+              // enter: which key would have worked is not the useful answer.
+              shortcut: available
+                ? keys.displayFor(`scene.mode.${mode.id}`)
+                : (reason ?? 'Not available here'),
+              disabled: !available,
+              onSelect: () => modes.enter(mode.id),
+            }
+          }),
+        },
+      ]}
+      trigger={({ open, toggle, ref }) => (
         <Button
-          key={mode.id}
           variant="ghost"
           size="small"
-          label={mode.title}
-          icon={mode.icon}
-          pressed={active.value === mode.id}
-          disabled={!enterable(mode)}
-          shortcut={
-            enterable(mode)
-              ? undefined
-              : (mode.unavailableReason ?? 'Not available yet')
-          }
-          onClick={() => modes.enter(mode.id)}
+          icon={active.icon}
+          iconEnd="chevronDown"
+          label={active.title}
+          pressed={open}
+          elementRef={ref}
+          onClick={toggle}
         />
-      ))}
-    </div>
+      )}
+    />
   )
 }
 

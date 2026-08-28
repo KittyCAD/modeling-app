@@ -164,6 +164,49 @@ export function referenceAt(program: Program, offset: number): string | null {
   return name
 }
 
+/** A `sketch { … }` block, and what it is bound to. */
+export interface SketchBlockRange {
+  /** The name the block is bound to: `triangle`. */
+  name: string
+  from: number
+  to: number
+}
+
+/**
+ * The sketch block an offset falls inside, if any.
+ *
+ * What makes sketching a *place* rather than a state somebody has to remember
+ * being in: a cursor or a selection is either inside a `sketch { … }` block or it
+ * is not, and the file says which. Nothing has to record that a sketch was
+ * entered, so nothing can disagree about whether it was left.
+ *
+ * The whole statement counts, not just the block's braces — a cursor on
+ * `triangle = sketch(XY) {` is in the sketch by any useful definition.
+ *
+ * Top level only, like everything else here. A sketch block nested inside a
+ * function definition is a real thing to support and a different question: what
+ * "the sketch you are in" means when the function has three callers is not
+ * answered by the offset.
+ */
+export function sketchBlockAt(
+  program: Program,
+  offset: number
+): SketchBlockRange | null {
+  for (const item of program.body) {
+    if (item.type !== 'VariableDeclaration') continue
+    if (item.declaration.init.type !== 'SketchBlock') continue
+    if (offset < item.start || offset > item.end) continue
+
+    return {
+      name: item.declaration.id.name,
+      from: item.start,
+      to: item.end,
+    }
+  }
+
+  return null
+}
+
 /** Every name bound at the top level, for choosing one that is free. */
 export function boundNames(program: Program): ReadonlySet<string> {
   const names = new Set<string>()

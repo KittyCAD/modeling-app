@@ -1,4 +1,5 @@
 import {
+  appendValueSpec,
   defineContract,
   defineService,
   defineValueSpec,
@@ -91,10 +92,34 @@ export interface ToolbarGroupItem extends ToolbarItemBase {
 
 export type ToolbarItem = ToolbarCommandItem | ToolbarGroupItem
 
+/**
+ * A reason a mode cannot be entered right now.
+ *
+ * Contributed rather than declared on the mode, because whoever *ships* a mode
+ * rarely knows when it applies: sketching is a mode of the scene, and whether
+ * you are in a sketch is a fact about the KCL file. So the mode says what it is
+ * and a gate says when — and a second feature can gate the same mode without
+ * either of them meeting.
+ *
+ * Every gate for a mode has to agree before it can be entered. That direction is
+ * deliberate: a gate can only ever take a mode away, so adding one cannot make an
+ * unavailable mode reachable by accident.
+ */
+export interface SceneModeGate {
+  id: string
+  /** The mode this gates. */
+  mode: string
+  available: ReadonlySignal<boolean>
+  /** Said on the disabled mode: "Select something inside a sketch." */
+  reason?: string
+}
+
 export interface SceneModeService {
   readonly modes: ReadonlySignal<readonly SceneMode[]>
   /** Null only before the first mode is contributed. */
   readonly active: ReadonlySignal<SceneMode | null>
+  /** Whether a mode can be entered, and why not. */
+  availability(modeId: string): { available: boolean; reason?: string }
   /**
    * Which command each group ran last, keyed by group id.
    *
@@ -127,8 +152,13 @@ export const sceneModesContract = defineContract({
     defaultValue: [],
     combine: (inputs) => byOrder(dedupeById(inputs)),
   }),
+  sceneModeGatesValueSpec: appendValueSpec<SceneModeGate>('scene.modeGates'),
   sceneModeService: defineService<SceneModeService>('scene.modes.service'),
 })
 
-export const { sceneModesValueSpec, toolbarItemsValueSpec, sceneModeService } =
-  sceneModesContract
+export const {
+  sceneModesValueSpec,
+  toolbarItemsValueSpec,
+  sceneModeGatesValueSpec,
+  sceneModeService,
+} = sceneModesContract

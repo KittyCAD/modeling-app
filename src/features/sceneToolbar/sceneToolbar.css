@@ -18,12 +18,6 @@
   overflow-x: auto;
 }
 
-.zds-scene-toolbar__modes {
-  display: flex;
-  align-items: center;
-  gap: var(--zds-space-1);
-}
-
 /* A run of tools. The rule between runs is what a divider is here. */
 .zds-scene-toolbar__section {
   display: flex;
@@ -31,9 +25,9 @@
   gap: var(--zds-space-1);
 }
 
-.zds-scene-toolbar__modes + .zds-scene-toolbar__section,
+.zds-menu + .zds-scene-toolbar__section,
 .zds-scene-toolbar__section + .zds-scene-toolbar__section,
-.zds-scene-toolbar__modes + .zds-scene-toolbar__empty {
+.zds-menu + .zds-scene-toolbar__empty {
   padding-inline-start: var(--zds-space-2);
   margin-inline-start: var(--zds-space-1);
   border-inline-start: var(--zds-size-hairline) solid var(--zds-border-subtle);

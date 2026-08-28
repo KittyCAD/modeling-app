@@ -516,6 +516,9 @@ describe('answering from the scene', () => {
     artifacts: computed(() => new Map()),
     artifactFor: () => undefined,
     sourceRangeFor: (id) => ranges[id] ?? null,
+    // Nothing here asks what the last run read; the resolver works from the
+    // program it was handed.
+    program: computed(() => null),
   })
 
   const resolverFor = (

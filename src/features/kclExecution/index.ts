@@ -6,7 +6,12 @@ import {
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals'
 import { engineConnectionService } from '@src/contracts/engine'
-import { type KclSceneService, kclSceneService } from '@src/contracts/kclScene'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
+import {
+  type ExecutedProgram,
+  type KclSceneService,
+  kclSceneService,
+} from '@src/contracts/kclScene'
 import { type Executor, executorsValueSpec } from '@src/contracts/execution'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { settingsService } from '@src/contracts/settings'
@@ -58,6 +63,7 @@ export default defineRegistryItemFactory((ctx) => {
    * name entities the engine no longer has.
    */
   const artifacts = signal<ArtifactMap>(new Map())
+  const program = signal<ExecutedProgram | null>(null)
 
   const contextOwner = () => {
     owner ??= createKclContextOwner(engine())
@@ -135,6 +141,15 @@ export default defineRegistryItemFactory((ctx) => {
           }
         }
         ast = parsed
+
+        /*
+         * Published as soon as it parses, before execution.
+         *
+         * A program that parses but fails to execute is still the right answer to
+         * "which sketch is my cursor in" — the file is what it is, whatever the
+         * engine made of it.
+         */
+        program.value = { source: request.contents, ast: parsed as Program }
       } catch (thrown) {
         return {
           requestId: request.requestId,
@@ -192,6 +207,7 @@ export default defineRegistryItemFactory((ctx) => {
     artifacts: computed(() => artifacts.value),
     artifactFor: (entityId) => artifacts.value.get(entityId),
     sourceRangeFor: (entityId) => sourceRangeFor(artifacts.value, entityId),
+    program: computed(() => program.value),
   }
 
   return {

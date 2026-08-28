@@ -1,11 +1,15 @@
 import { type ReadonlySignal, computed, signal } from '@preact/signals'
-import type { SceneMode, SceneModeService } from '@src/contracts/sceneModes'
+import type {
+  SceneMode,
+  SceneModeGate,
+  SceneModeService,
+} from '@src/contracts/sceneModes'
 
 export interface SceneModeServiceDependencies {
   modes: ReadonlySignal<readonly SceneMode[]>
+  /** Contributed reasons a mode cannot be entered. */
+  gates: ReadonlySignal<readonly SceneModeGate[]>
 }
-
-const isAvailable = (mode: SceneMode) => mode.available?.value ?? true
 
 /**
  * Which mode the scene is in.
@@ -20,7 +24,29 @@ const isAvailable = (mode: SceneMode) => mode.available?.value ?? true
 export function createSceneModeService(
   dependencies: SceneModeServiceDependencies
 ): SceneModeService {
-  const { modes } = dependencies
+  const { modes, gates } = dependencies
+
+  /**
+   * Whether a mode can be entered, and the first reason it cannot.
+   *
+   * Every gate has to agree. One reason is reported rather than all of them,
+   * because a disabled control has room for one and the first is the one to fix.
+   */
+  const availability = (mode: SceneMode) => {
+    if (!(mode.available?.value ?? true)) {
+      return { available: false, reason: mode.unavailableReason }
+    }
+
+    const closed = gates.value.find(
+      (gate) => gate.mode === mode.id && !gate.available.value
+    )
+
+    return closed
+      ? { available: false, reason: closed.reason ?? mode.unavailableReason }
+      : { available: true }
+  }
+
+  const isAvailable = (mode: SceneMode) => availability(mode).available
 
   const requested = signal<string | null>(null)
   const lastUsed = signal<ReadonlyMap<string, string>>(new Map())
@@ -46,6 +72,14 @@ export function createSceneModeService(
   return {
     modes,
     active,
+
+    availability(modeId) {
+      const mode = modes.value.find((candidate) => candidate.id === modeId)
+      // A mode that does not exist cannot be entered, and saying "no such mode"
+      // to a user would be reporting our problem as theirs.
+      if (!mode) return { available: false }
+      return availability(mode)
+    },
     lastUsed: computed(() => lastUsed.value),
 
     enter(modeId) {

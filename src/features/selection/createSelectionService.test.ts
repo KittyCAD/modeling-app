@@ -61,6 +61,8 @@ function setup(
     artifacts: computed(() => artifacts),
     artifactFor: (id) => artifacts.get(id),
     sourceRangeFor: (id) => sourceRangeFor(artifacts, id),
+    // Selection reads the graph, not the program.
+    program: computed(() => null),
   }
 
   const selection = createSelectionService({

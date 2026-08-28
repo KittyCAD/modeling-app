@@ -13,6 +13,7 @@ import {
 } from '@src/contracts/keybindings'
 import { sceneItemsValueSpec } from '@src/contracts/scene'
 import {
+  sceneModeGatesValueSpec,
   sceneModeService,
   sceneModesValueSpec,
 } from '@src/contracts/sceneModes'
@@ -43,6 +44,7 @@ const MODE_KEYSTROKES: Readonly<Record<string, string>> = {
 export default defineRegistryItemFactory((ctx) => {
   const modes = createSceneModeService({
     modes: computed(() => ctx.valueSpecs.get(sceneModesValueSpec)),
+    gates: computed(() => ctx.valueSpecs.get(sceneModeGatesValueSpec)),
   })
 
   /**
@@ -107,7 +109,9 @@ export default defineRegistryItemFactory((ctx) => {
             title: `${mode.title} mode`,
             category: 'Scene',
             icon: mode.icon,
-            enabled: computed(() => mode.available?.value ?? true),
+            // Gates included: the palette must not offer a mode the switcher
+            // shows as unavailable, or the two disagree about the same fact.
+            enabled: computed(() => modes.availability(mode.id).available),
             run: () => modes.enter(mode.id),
           }),
 

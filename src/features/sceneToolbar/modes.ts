@@ -40,12 +40,11 @@ export const builtInModes: readonly SceneMode[] = [
     order: 20,
     keymapScope: SKETCHING_SCOPE,
     /*
-     * Enterable on purpose, even with nothing in it.
+     * Reachable only from inside a sketch, which is gated elsewhere.
      *
-     * A mode that cannot be entered demonstrates nothing and hides the fact that
-     * sketching is a first-class mode rather than a state of the modelling one.
-     * Saying what is missing is more useful than a disabled button: this is a
-     * rebuild, and "not built yet" is the honest answer.
+     * The mode is declared here because it is part of the vocabulary; *when* it
+     * applies is a fact about the KCL file, contributed by the feature that knows
+     * what a sketch is. This file would otherwise have to learn.
      */
     empty: 'Sketch tools are not built yet — sketch V2 edits inside a block.',
   },

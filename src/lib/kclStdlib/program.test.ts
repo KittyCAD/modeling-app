@@ -5,6 +5,7 @@ import {
   boundNames,
   freeName,
   referenceAt,
+  sketchBlockAt,
 } from '@src/lib/kclStdlib/program'
 
 const node = { start: 0, end: 0, moduleId: 0, commentStart: 0 }
@@ -204,5 +205,70 @@ describe('referring to what is at an offset', () => {
 
   it('has nothing to say about an offset in no binding', () => {
     expect(referenceAt(program(), 10)).toBeNull()
+  })
+})
+
+describe('finding the sketch an offset is in', () => {
+  const sketchBlock = (name: string, start: number, end: number) =>
+    ({
+      ...node,
+      type: 'VariableDeclaration',
+      start,
+      end,
+      kind: 'const',
+      declaration: {
+        ...node,
+        type: 'VariableDeclarator',
+        id: { ...node, type: 'Identifier', name },
+        init: {
+          ...node,
+          type: 'SketchBlock',
+          arguments: [],
+          body: { ...node, type: 'Block', items: [] },
+        },
+      },
+    }) as unknown
+
+  it('names the sketch block containing the offset', () => {
+    const body = program(sketchBlock('triangle', 0, 100))
+
+    expect(sketchBlockAt(body, 40)).toEqual({
+      name: 'triangle',
+      from: 0,
+      to: 100,
+    })
+  })
+
+  /* A cursor on `triangle = sketch(XY) {` is in the sketch by any useful test. */
+  it('counts the whole statement, not only the braces', () => {
+    const body = program(sketchBlock('triangle', 10, 100))
+
+    expect(sketchBlockAt(body, 10)?.name).toBe('triangle')
+    expect(sketchBlockAt(body, 100)?.name).toBe('triangle')
+  })
+
+  it('finds nothing outside every block', () => {
+    const body = program(sketchBlock('triangle', 0, 100))
+
+    expect(sketchBlockAt(body, 101)).toBeNull()
+  })
+
+  it('ignores a binding that is not a sketch block', () => {
+    const body = program(declare('extrude001', call('extrude'), 0))
+
+    expect(sketchBlockAt(body, 10)).toBeNull()
+  })
+
+  it('picks the right one of several', () => {
+    const body = program(
+      sketchBlock('first', 0, 50),
+      sketchBlock('second', 51, 120)
+    )
+
+    expect(sketchBlockAt(body, 60)?.name).toBe('second')
+  })
+
+  it('finds nothing in an empty program', () => {
+    expect(sketchBlockAt(program(), 0)).toBeNull()
   })
 })
