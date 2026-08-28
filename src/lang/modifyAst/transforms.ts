@@ -525,6 +525,7 @@ function addObjectTransform({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
+    pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl,
     wasmInstance,
   })
