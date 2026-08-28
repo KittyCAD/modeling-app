@@ -225,3 +225,36 @@
 .zds-info__dirty {
   color: var(--zds-text-flag);
 }
+
+/* The engine stream ------------------------------------------------- */
+
+/*
+ * `contain` rather than `cover`: the engine renders at the size it was asked
+ * for, and cropping the scene to fill the panel would hide geometry the user
+ * placed near the edge.
+ */
+.zds-viewport__stream {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+  background: var(--zds-surface-viewport);
+}
+
+/*
+ * A message over a live viewport, not instead of it. Anchored to the bottom so
+ * it never covers the middle of the scene, where the model is.
+ */
+.zds-viewport__notice {
+  position: absolute;
+  inset-inline: var(--zds-space-3);
+  inset-block-end: var(--zds-space-3);
+  padding: var(--zds-space-2) var(--zds-space-3);
+  border: var(--zds-size-hairline) solid var(--zds-border-default);
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-overlay);
+  box-shadow: var(--zds-shadow-overlay);
+  color: var(--zds-text-fault);
+  font-size: var(--zds-font-size-small);
+}

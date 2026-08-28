@@ -3,6 +3,8 @@ import { render } from 'preact'
 import { AppProvider } from '@src/app/context'
 import { createApp } from '@src/app/createApp'
 import { navigationService } from '@src/contracts/navigation'
+import { authService } from '@src/contracts/auth'
+import { engineConnectionService } from '@src/contracts/engine'
 import { executionCoordinatorService } from '@src/contracts/execution'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
 import { projectSessionService } from '@src/contracts/projectSession'
@@ -57,6 +59,12 @@ if (import.meta.env.DEV) {
       },
       get execution() {
         return app.registry.get(executionCoordinatorService)
+      },
+      get engine() {
+        return app.registry.get(engineConnectionService)
+      },
+      get auth() {
+        return app.registry.get(authService)
       },
     },
   })
