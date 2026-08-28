@@ -9,6 +9,7 @@ import {
   createVariableDeclaration,
 } from '@src/lang/create'
 import { pathsReferToSamePipe, replaceCallInPlace } from '@src/lang/modifyAst'
+import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
@@ -29,7 +30,11 @@ import type {
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/commandBarConfigs/modelingCommandStdLibCommands', () => ({
+  STD_LIB_COMMANDS: {},
+}))
 
 describe('editing calls in place', () => {
   const commandValue = (
@@ -735,5 +740,126 @@ describe('editing calls in place', () => {
     expect(editedCall.unlabeled).not.toEqual(createLocalName('pattern002'))
     expect(editedCall.arguments[0].arg).toEqual(createLiteral(4, wasmInstance))
     expect(editedCall.arguments[1].arg).toEqual(createLocalName('Y'))
+  })
+
+  it('preserves the cylinder input when editing an upstream helix with a later pattern child', () => {
+    const wasmInstance = {} as ModuleType
+    const extrudePath: PathToNode = [
+      ['body', ''],
+      [0, 'index'],
+    ]
+    const helixPath: PathToNode = [
+      ['body', ''],
+      [1, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+    ]
+    const patternPath: PathToNode = [
+      ['body', ''],
+      [2, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+    ]
+    const extrudeRange: [number, number, number] = [0, 10, 0]
+    const patternRange: [number, number, number] = [80, 130, 0]
+
+    const ast: Node<Program> = {
+      start: 0,
+      end: 0,
+      moduleId: 0,
+      outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
+      body: [
+        createVariableDeclaration('extrude001', createLiteral(0, wasmInstance)),
+        createVariableDeclaration(
+          'helix001',
+          createCallExpressionStdLibKw('helix', null, [
+            createLabeledArg('revolutions', createLiteral(3, wasmInstance)),
+            createLabeledArg('angleStart', createLiteral(0, wasmInstance)),
+            createLabeledArg('cylinder', createLocalName('extrude001')),
+          ])
+        ),
+        createVariableDeclaration(
+          'pattern001',
+          createCallExpressionStdLibKw(
+            'patternLinear3d',
+            createLocalName('extrude001'),
+            []
+          )
+        ),
+      ],
+      nonCodeMeta: {
+        nonCodeNodes: {},
+        startNodes: [],
+      },
+    }
+    const extrude: Extract<Artifact, { type: 'sweep' }> = {
+      type: 'sweep',
+      id: 'extrude-id',
+      subType: 'extrusion',
+      pathId: 'path-id',
+      surfaceIds: [],
+      edgeIds: [],
+      codeRef: {
+        range: extrudeRange,
+        pathToNode: extrudePath,
+        nodePath: { steps: [] },
+      },
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+      patternIds: ['pattern-id'],
+    }
+    const pattern: Extract<Artifact, { type: 'pattern' }> = {
+      type: 'pattern',
+      id: 'pattern-id',
+      subType: 'linear',
+      sourceId: extrude.id,
+      copyIds: [],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: patternRange,
+        pathToNode: patternPath,
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
+      [extrude.id, extrude],
+      [pattern.id, pattern],
+    ])
+
+    const result = addHelix({
+      ast,
+      artifactGraph,
+      cylinder: {
+        graphSelections: [{ artifact: extrude, codeRef: extrude.codeRef }],
+        otherSelections: [],
+      },
+      revolutions: commandValue(wasmInstance, 4),
+      angleStart: commandValue(wasmInstance, 15),
+      nodeToEdit: helixPath,
+      wasmInstance,
+    })
+    if (err(result)) {
+      throw result
+    }
+
+    const editedStatement = result.modifiedAst.body[1]
+    expect(editedStatement.type).toBe('VariableDeclaration')
+    if (editedStatement.type !== 'VariableDeclaration') {
+      throw new Error('Expected edited helix variable declaration')
+    }
+    const editedCall = editedStatement.declaration.init
+    expect(editedCall.type).toBe('CallExpressionKw')
+    if (editedCall.type !== 'CallExpressionKw') {
+      throw new Error('Expected edited helix call')
+    }
+    const cylinderArg = editedCall.arguments.find(
+      (argument) => argument.label.name === 'cylinder'
+    )
+    expect(cylinderArg?.arg).toEqual(createLocalName('extrude001'))
+    expect(cylinderArg?.arg).not.toEqual(createLocalName('pattern001'))
   })
 })

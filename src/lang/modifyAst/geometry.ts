@@ -84,7 +84,7 @@ export function addHelix({
       wasmInstance,
       mNodeToEdit,
       {
-        lastChildLookup: true,
+        lastChildLookup: !mNodeToEdit,
       }
     )
     if (err(vars)) {
@@ -230,7 +230,9 @@ export function getAxisExpression(
       wasmInstance,
       nodeToEdit
     )
-    if (err(bodyData)) return bodyData
+    if (err(bodyData)) {
+      return bodyData
+    }
     let bodies = bodyData.bodies
     modifiedAst = bodyData.modifiedAst
 
@@ -244,7 +246,9 @@ export function getAxisExpression(
           artifactGraph,
           wasmInstance,
         })
-      if (err(primitiveEdgeResult)) return primitiveEdgeResult
+      if (err(primitiveEdgeResult)) {
+        return primitiveEdgeResult
+      }
       bodies = primitiveEdgeResult.bodies
     }
     if (bodies.size !== 1) {
