@@ -11,6 +11,7 @@ import {
   channels,
   type DeviceAuthorization,
   type DirectoryEntry,
+  type FileChangesPayload,
   type FileStatResult,
 } from './channels'
 
@@ -82,6 +83,40 @@ const desktop = {
 
   writeUserSettings: (contents: string): Promise<void> =>
     ipcRenderer.invoke(channels.writeUserSettings, contents),
+
+  /**
+   * Listen for settings edits made outside the app.
+   *
+   * Only fires for edits the main process did not make itself, so the renderer
+   * never has to tell its own save apart from someone's text editor. Returns an
+   * unsubscribe function: a listener the renderer cannot remove is a leak it
+   * cannot fix.
+   */
+  onUserSettingsChanged: (
+    listener: (contents: string | null) => void
+  ): (() => void) => {
+    const handler = (_event: unknown, contents: string | null) =>
+      listener(contents)
+    ipcRenderer.on(channels.userSettingsChanged, handler)
+    return () => ipcRenderer.off(channels.userSettingsChanged, handler)
+  },
+
+  /** Begin watching a directory tree. Resolves with a subscription id. */
+  watchDirectory: (path: string): Promise<number> =>
+    ipcRenderer.invoke(channels.watchDirectory, path),
+
+  unwatchDirectory: (subscriptionId: number): Promise<void> =>
+    ipcRenderer.invoke(channels.unwatchDirectory, subscriptionId),
+
+  /** Coalesced batches of filesystem changes, for every active subscription. */
+  onFileChanges: (
+    listener: (payload: FileChangesPayload) => void
+  ): (() => void) => {
+    const handler = (_event: unknown, payload: FileChangesPayload) =>
+      listener(payload)
+    ipcRenderer.on(channels.fileChanges, handler)
+    return () => ipcRenderer.off(channels.fileChanges, handler)
+  },
 
   /** Begin signing in. Returns the code for the user to enter. */
   startDeviceFlow: (host: string): Promise<DeviceAuthorization> =>

@@ -41,6 +41,20 @@ export const channels = {
   userSettingsPath: 'settings:path',
   readUserSettings: 'settings:read',
   writeUserSettings: 'settings:write',
+  /**
+   * Pushed when the settings file changes underneath us.
+   *
+   * Main -> renderer, and only for edits main did not make itself: it knows what
+   * it last wrote, so it can tell an external edit from its own echo before the
+   * renderer ever hears about it.
+   */
+  userSettingsChanged: 'settings:changed',
+
+  /** Begin watching a directory tree. Resolves with a subscription id. */
+  watchDirectory: 'fs:watch',
+  unwatchDirectory: 'fs:unwatch',
+  /** Main -> renderer: a coalesced batch of changes for one subscription. */
+  fileChanges: 'fs:changed',
 
   /** Begin an OAuth2 device authorization, returning the code to show. */
   startDeviceFlow: 'auth:startDeviceFlow',
@@ -59,6 +73,18 @@ export interface DirectoryEntry {
 export interface DeviceAuthorization {
   userCode: string
   verificationUri: string
+}
+
+export type FileChangeKind = 'created' | 'changed' | 'removed'
+
+export interface WatchedFileChange {
+  path: string
+  kind: FileChangeKind
+}
+
+export interface FileChangesPayload {
+  subscriptionId: number
+  changes: WatchedFileChange[]
 }
 
 export interface FileStatResult {

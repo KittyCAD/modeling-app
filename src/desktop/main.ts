@@ -7,6 +7,7 @@
  * becomes a capability no feature can see or replace.
  */
 
+import { type FSWatcher, watch as watchPath } from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
@@ -21,6 +22,8 @@ import {
   channels,
   type DeviceAuthorization,
   type DirectoryEntry,
+  type FileChangeKind,
+  type WatchedFileChange,
 } from './channels'
 
 // Injected by @electron-forge/plugin-vite.
@@ -202,6 +205,214 @@ function abortDeviceFlow(windowId: number) {
 }
 
 // ---------------------------------------------------------------------------
+// Watching
+// ---------------------------------------------------------------------------
+
+/**
+ * How long to gather raw events before reporting them.
+ *
+ * One save from another editor can produce a create, a rename and two writes,
+ * and the file is not readable at every point in between. Waiting for the burst
+ * to end and then reporting once is the difference between reconciling a
+ * document and reconciling a half-written one.
+ */
+const WATCH_COALESCE_MS = 120
+
+/** Never worth reporting: churn, or our own atomic-write scratch files. */
+const IGNORED_SEGMENTS = new Set(['.git', 'node_modules', '.DS_Store'])
+
+function isIgnoredWatchTarget(relativePath: string): boolean {
+  if (relativePath.endsWith('.tmp')) return true
+  return relativePath
+    .split(path.sep)
+    .some((segment) => IGNORED_SEGMENTS.has(segment))
+}
+
+interface Subscription {
+  id: number
+  root: string
+  webContentsId: number
+  watcher: FSWatcher | null
+  /** Coalescing buffer: path -> whether a rename was seen for it. */
+  pending: Map<string, boolean>
+  timer: NodeJS.Timeout | null
+}
+
+const subscriptions = new Map<number, Subscription>()
+let nextSubscriptionId = 1
+
+/**
+ * Decide what actually happened, once the burst has settled.
+ *
+ * `fs.watch` reports 'rename' for both creation and deletion and 'change' for
+ * writes, so the event alone cannot say which. Statting at flush time can: the
+ * answer is about the file's state now, not about the sequence of syscalls that
+ * got it there.
+ */
+async function resolveChangeKind(
+  absolutePath: string,
+  sawRename: boolean
+): Promise<FileChangeKind | null> {
+  try {
+    await fs.stat(absolutePath)
+    return sawRename ? 'created' : 'changed'
+  } catch {
+    // Only a rename can mean removal; a failed stat after a plain write is a
+    // race we should stay quiet about.
+    return sawRename ? 'removed' : null
+  }
+}
+
+async function flushSubscription(subscription: Subscription) {
+  subscription.timer = null
+  const batch = [...subscription.pending.entries()]
+  subscription.pending.clear()
+
+  const changes: WatchedFileChange[] = []
+  for (const [absolutePath, sawRename] of batch) {
+    const kind = await resolveChangeKind(absolutePath, sawRename)
+    if (kind) changes.push({ path: absolutePath, kind })
+  }
+  if (changes.length === 0) return
+
+  const target = BrowserWindow.getAllWindows().find(
+    (window) => window.webContents.id === subscription.webContentsId
+  )
+  if (!target || target.isDestroyed()) return
+
+  target.webContents.send(channels.fileChanges, {
+    subscriptionId: subscription.id,
+    changes,
+  })
+}
+
+function stopSubscription(id: number) {
+  const subscription = subscriptions.get(id)
+  if (!subscription) return
+  if (subscription.timer) clearTimeout(subscription.timer)
+  subscription.watcher?.close()
+  subscriptions.delete(id)
+}
+
+function stopSubscriptionsFor(webContentsId: number) {
+  for (const [id, subscription] of subscriptions) {
+    if (subscription.webContentsId === webContentsId) stopSubscription(id)
+  }
+}
+
+/**
+ * Watch a granted directory tree for one renderer.
+ *
+ * Recursive where the platform supports it, and a single non-recursive watch
+ * otherwise. A subscription is still handed back if the watch cannot be
+ * established at all, so the renderer has something to dispose and does not
+ * have to model "watching failed" as a separate state.
+ */
+async function startSubscription(
+  webContentsId: number,
+  requested: string
+): Promise<number> {
+  const root = await resolveGranted(requested)
+  const subscription: Subscription = {
+    id: nextSubscriptionId,
+    root,
+    webContentsId,
+    watcher: null,
+    pending: new Map(),
+    timer: null,
+  }
+  nextSubscriptionId += 1
+  subscriptions.set(subscription.id, subscription)
+
+  const onEvent = (eventType: string, filename: string | null) => {
+    if (!filename) return
+    if (isIgnoredWatchTarget(filename)) return
+
+    const absolutePath = path.resolve(root, filename)
+    const sawRename =
+      (subscription.pending.get(absolutePath) ?? false) ||
+      eventType === 'rename'
+    subscription.pending.set(absolutePath, sawRename)
+
+    if (subscription.timer) clearTimeout(subscription.timer)
+    subscription.timer = setTimeout(() => {
+      void flushSubscription(subscription)
+    }, WATCH_COALESCE_MS)
+  }
+
+  try {
+    subscription.watcher = watchPath(root, { recursive: true }, onEvent)
+  } catch {
+    try {
+      subscription.watcher = watchPath(root, onEvent)
+    } catch (error) {
+      console.warn(`watch: could not watch ${root}`, error)
+      return subscription.id
+    }
+  }
+
+  // A watch on a directory that goes away should not take the process with it.
+  subscription.watcher.on('error', (error) => {
+    console.warn(`watch: ${root} failed`, error)
+    stopSubscription(subscription.id)
+  })
+
+  return subscription.id
+}
+
+/**
+ * Watch the user's settings file.
+ *
+ * The directory is watched rather than the file, because an atomic write
+ * replaces the inode and a watch on the old one goes deaf. Main compares the
+ * result against what it last wrote and stays quiet when they match, so the
+ * renderer only ever hears about edits it did not cause.
+ */
+let lastWrittenUserSettings: string | null = null
+let userSettingsWatcher: FSWatcher | null = null
+
+function startUserSettingsWatch() {
+  if (userSettingsWatcher) return
+  const target = userSettingsPath()
+  const directory = path.dirname(target)
+
+  let timer: NodeJS.Timeout | null = null
+  const check = async () => {
+    timer = null
+    let contents: string | null = null
+    try {
+      contents = await fs.readFile(target, 'utf8')
+    } catch {
+      contents = null
+    }
+    if (contents === lastWrittenUserSettings) return
+    lastWrittenUserSettings = contents
+
+    for (const window of BrowserWindow.getAllWindows()) {
+      if (!window.isDestroyed()) {
+        window.webContents.send(channels.userSettingsChanged, contents)
+      }
+    }
+  }
+
+  try {
+    userSettingsWatcher = watchPath(directory, (_event, filename) => {
+      if (filename !== path.basename(target)) return
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => void check(), WATCH_COALESCE_MS)
+    })
+    userSettingsWatcher.on('error', (error) => {
+      console.warn('watch: user settings failed', error)
+      userSettingsWatcher = null
+    })
+  } catch (error) {
+    // The configuration directory always exists in practice, but a build that
+    // cannot watch it should still run.
+    console.warn('watch: could not watch the settings directory', error)
+  }
+}
+
+// ---------------------------------------------------------------------------
 // IPC
 // ---------------------------------------------------------------------------
 
@@ -328,7 +539,9 @@ function registerIpcHandlers() {
 
   ipcMain.handle(channels.readUserSettings, async () => {
     try {
-      return await fs.readFile(userSettingsPath(), 'utf8')
+      const contents = await fs.readFile(userSettingsPath(), 'utf8')
+      lastWrittenUserSettings = contents
+      return contents
     } catch (error) {
       // No file yet is the ordinary first-run state, not a failure.
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null
@@ -341,6 +554,9 @@ function registerIpcHandlers() {
     async (_event, contents: string) => {
       const target = userSettingsPath()
       await fs.mkdir(path.dirname(target), { recursive: true })
+      // Recorded before the write, so the watcher recognises the result as ours
+      // however quickly it fires.
+      lastWrittenUserSettings = contents
       // Write then rename, so a crash mid-write leaves the previous settings
       // intact rather than a truncated file the app will refuse to parse.
       const temporary = `${target}.tmp`
@@ -348,6 +564,18 @@ function registerIpcHandlers() {
       await fs.rename(temporary, target)
     }
   )
+
+  ipcMain.handle(
+    channels.watchDirectory,
+    async (event, target: string) =>
+      await startSubscription(event.sender.id, target)
+  )
+
+  ipcMain.handle(channels.unwatchDirectory, (event, id: number) => {
+    const subscription = subscriptions.get(id)
+    // A renderer may only stop a watch it started.
+    if (subscription?.webContentsId === event.sender.id) stopSubscription(id)
+  })
 
   /**
    * Start a device authorization.
@@ -479,7 +707,10 @@ function createWindow() {
 
   // Window-scoped work must die with the window, or polling outlives the UI
   // that started it.
-  window.on('closed', () => abortDeviceFlow(window.id))
+  window.on('closed', () => {
+    abortDeviceFlow(window.id)
+    stopSubscriptionsFor(window.webContents.id)
+  })
 
   // External links go to the OS browser; this window never navigates away from
   // the app.
@@ -520,6 +751,7 @@ app.whenReady().then(
 
     void loadGrantedRoots()
     registerIpcHandlers()
+    startUserSettingsWatch()
     createWindow()
 
     app.on('activate', () => {
@@ -535,4 +767,16 @@ app.whenReady().then(
 app.on('window-all-closed', () => {
   // macOS convention is to keep the app running with no windows open.
   if (os.platform() !== 'darwin') app.quit()
+})
+
+/**
+ * Release every watch on the way out.
+ *
+ * An open `fs.watch` handle keeps the event loop alive, so a quit with watches
+ * still running is a process that lingers after its window has gone.
+ */
+app.on('will-quit', () => {
+  userSettingsWatcher?.close()
+  userSettingsWatcher = null
+  for (const id of [...subscriptions.keys()]) stopSubscription(id)
 })
