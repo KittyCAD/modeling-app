@@ -37,9 +37,7 @@ packages/
 src/
   app/               Composition root, app context hooks
   contracts/         ValueSpecs and Services only. No implementations
-  features/          One directory per capability, discovered by glob.
-                     One level of nesting is also discovered, for a sub-feature
-                     owned by another feature (engineScene/camera)
+  features/          One directory per capability, discovered by glob
   lib/               Small shared helpers
 ```
 
@@ -182,7 +180,7 @@ handle anyway, so it is where you land.
 The scene is rendered on the engine and streamed back, so this owns a websocket
 (commands and WebRTC signalling) and a peer connection (the video track).
 
-### The scene, and its camera
+### The scene
 
 The connection owns a socket; `engineScene` owns what is on the other end of it.
 The split matters because the engine starts every scene at its own defaults, so
@@ -190,42 +188,13 @@ the app's preferences are not configuration passed once — they are statements
 that have to be made again on each new scene.
 
 `sceneEpoch` on the connection is what makes that expressible. It increments
-whenever the engine begins a fresh scene, and each feature keeps one effect keyed
+whenever the engine begins a fresh scene, and each consumer keeps one effect keyed
 on it plus the values it cares about. Nothing has to know about anyone else's
 triggers, and reconnecting restates everything.
 
 The effects are deliberately narrow about what they read. Keying on the whole
 connection state re-ran them on every ping, which meant re-sending every scene
 command every few seconds forever; they read a `connected` computed instead.
-
-**The camera is a sub-feature**, at `features/engineScene/camera/`. It owns three
-settings and every pointer event that reaches the viewport, and nothing else in
-the app wants either. It is separate from the scene because the scene's job is
-finished once the engine knows how to draw, while the camera's is a live
-translation of input — no shared state, and one of them is worth testing without
-the other.
-
-There is no local camera. A drag is a message and the answer is a video frame, so
-this is much smaller than a client-side orbit control — no matrix maths at all —
-but every gesture has to be mapped into the engine's coordinate space, which is
-the *stream's* pixels rather than the element's. The panel is almost never the
-size the engine renders at.
-
-Two details that are not obvious:
-
-- **Throttled to 15 moves a second.** The engine re-renders and re-streams a
-  frame per move, so sending every pointer event buys nothing a viewer can see
-  and costs a queue that runs behind the pointer. The trailing edge still fires,
-  so a gesture ends where the pointer actually stopped.
-- **The guard table is the preference.** "Camera controls" is a choice between
-  seven other CAD packages' conventions, and the table of predicates is its
-  entire content. Someone switching to this app wants the muscle memory they
-  have, not our idea of a better default.
-
-The system is named by its stored id (`trackpad_friendly`) with the display name
-in the table. The existing app keeps the display name as the value and converts
-at the file boundary, which needs two mapping functions and a comment about where
-the underscores went.
 
 ### The stream follows the panel
 
@@ -263,11 +232,14 @@ produces "ResizeObserver loop completed with undelivered notifications".
 
 ### Interaction is contributed
 
-The stream element is the only surface the model can be touched through: the
-camera wants drags and the wheel, selection will want clicks, a measurement tool
-will want hovers. `sceneInteractionsValueSpec` is that seam, so each of those can
-be built, tested, and turned off on its own — and the stream component stays what
-it is, which is a video with a size.
+Whatever the scene is drawn on is the only surface the model can be touched
+through: the camera wants drags and the wheel, selection will want clicks, a
+measurement tool will want hovers. `sceneInteractionsValueSpec` is that seam, so
+each of those can be built, tested, and turned off on its own — and the stream
+component stays what it is, which is a video with a size.
+
+The contract says nothing about *what* the surface is, which is deliberate; see
+[The camera](#the-camera) for what that buys.
 
 ### Which settings reach the engine, and how
 
@@ -325,6 +297,66 @@ transition is driven by an inbound message, and the stage is what makes a stall
 diagnosable — websocket, authenticating, negotiating, or streaming.
 
 Auth is real — see below.
+
+## The camera
+
+The camera is **not** part of the engine scene, and the reason is worth stating
+because the first version got it wrong. It began as `engineScene/camera/`, on the
+grounds that the camera moves the engine's camera. But that put the engine's
+command envelope, the engine's pixel space, and the engine's rate limit inside
+the gesture recogniser — so a second renderer would have had to reimplement the
+guard table to get a camera at all.
+
+`bevy-zoo` is the concrete case: a Bevy client that still uses the cloud engine to
+execute KCL, but renders the resulting glTF locally, native or in a canvas. Every
+one of those three couplings is wrong for it. Its camera is in-process, so a
+gesture needs no round trip and can be applied every frame. Its canvas is the
+size of the element, so there is no second pixel space. And it does not forget its
+scene, so there is nothing to restate.
+
+So the split is by *what changes when the renderer changes*:
+
+| Renderer-independent (`features/camera/`) | Renderer-specific (`CameraDriver`) |
+| --- | --- |
+| Which gesture a button and modifier mean | The command envelope |
+| The three preferences | The pixel space |
+| Pointer capture through a drag | How often a move can be sent |
+| Touch as a one-finger orbit | Whether the scene forgets |
+| Suppressing the context menu | |
+
+`cameraDriverService` is the seam. The recogniser reports gestures in the
+element's own pixels, with the element's size travelling alongside so a driver can
+map into whatever space it needs. The driver is resolved **optionally** and
+gestures are dropped while there is none: a viewport with nothing rendering in it
+is not broken.
+
+Two consequences that read as design rather than accident:
+
+- **The rate limit lives in the engine driver, not the camera.** Fifteen moves a
+  second is the streamed engine's number — each one costs a re-render *and* a
+  re-stream. Throttling in the recogniser would impose that cost on a renderer
+  that does not have it.
+- **Restating is the driver's job.** The camera states the projection preference
+  once, and the engine driver re-sends it on `sceneEpoch` because only it knows
+  the engine begins each scene blank. A local renderer would simply never
+  restate, without the camera feature changing.
+
+The guard table itself is ported from the existing app. "Camera controls" is a
+choice between seven other CAD packages' conventions, and the table of predicates
+is its entire content — someone switching to this app wants the muscle memory
+they have, not our idea of a better default. The gestures appear under the control
+in the settings dialog, because "Solidworks" tells you nothing until it tells you
+pan is Ctrl and a right drag.
+
+A system is named by its stored id (`trackpad_friendly`) with the display name in
+the table. The existing app keeps the display name as the value and converts at
+the file boundary, which needs two mapping functions and a comment about where the
+underscores went.
+
+`sceneInteractionsValueSpec` lives in `contracts/scene.ts` for the same reason —
+input over the surface the scene is drawn on is not a fact about video. Only
+`streamParamsValueSpec` stayed in `contracts/engineScene.ts`, because query
+parameters on a stream URL genuinely are.
 
 ## Authentication, and what "protected" means here
 

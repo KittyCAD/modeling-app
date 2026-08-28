@@ -1,11 +1,11 @@
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import { optionsSetting } from '@src/contracts/settings'
-import type { CameraSystem } from '@src/features/engineScene/camera/mouseGuards'
+import type { CameraSystem } from '@src/features/camera/mouseGuards'
 import {
   cameraMouseGuards,
   cameraSystems,
-} from '@src/features/engineScene/camera/mouseGuards'
+} from '@src/features/camera/mouseGuards'
 
 /**
  * The guard table for this machine.

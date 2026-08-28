@@ -3,72 +3,65 @@ import {
   defineRuntimeRegistryItem,
   provide,
 } from '@kittycad/registry'
-import { computed, effect } from '@preact/signals'
+import { effect } from '@preact/signals'
 import { commandsValueSpec } from '@src/contracts/commands'
-import { engineConnectionService } from '@src/contracts/engine'
-import { sceneInteractionsValueSpec } from '@src/contracts/engineScene'
+import {
+  cameraDriverService,
+  sceneInteractionsValueSpec,
+} from '@src/contracts/scene'
 import {
   settingsSectionsValueSpec,
   settingsService,
   settingsValueSpec,
 } from '@src/contracts/settings'
-import { createCameraInteraction } from '@src/features/engineScene/camera/createCameraInteraction'
-import { cameraMouseGuards } from '@src/features/engineScene/camera/mouseGuards'
+import { createGestureRecogniser } from '@src/features/camera/createGestureRecogniser'
+import { cameraMouseGuards } from '@src/features/camera/mouseGuards'
 import {
   cameraControlsSetting,
   cameraOrbitSetting,
   cameraProjectionSetting,
   cameraSettings,
-} from '@src/features/engineScene/camera/settings'
+} from '@src/features/camera/settings'
 
 /**
- * The camera, as a sub-feature of the scene.
+ * The camera, independent of whatever is drawing.
  *
  * It owns three preferences and every pointer event that reaches the viewport,
- * and nothing else in the app needs either. Separating it from the scene is not
- * tidiness: the scene's job is finished once the engine knows how to draw, while
- * this one is a live translation of input, and the two have no shared state.
+ * and none of that is a property of the renderer. What the renderer owns is on
+ * the other side of `cameraDriverService`: the pixel space, the cost of a
+ * message, and whether the scene forgets.
  *
- * There is no local camera here at all. The engine holds the scene and the
- * viewport is a video of it, so a drag is a message and the answer is a frame.
+ * This used to sit under the engine scene, which was wrong — not because of the
+ * directory but because the gesture recogniser had the engine's command
+ * envelope, pixel space, and rate limit built into it. A second renderer would
+ * have had to reimplement the guard table to get a camera.
+ *
+ * The driver is resolved optionally, and gestures are dropped while there is
+ * none. A viewport with nothing rendering in it is not broken.
  */
 export default defineRegistryItemFactory((ctx) => {
-  const engine = () => ctx.services.get(engineConnectionService)
   const settings = () => ctx.services.get(settingsService)
+  const driver = () => ctx.services.optional(cameraDriverService)
 
   /**
-   * Keep the engine's projection in step.
+   * State the projection preference; the driver keeps it true.
    *
-   * Restated on a new scene, like everything else the engine forgets. Perspective
-   * needs a field of view; 45 degrees is what the existing app uses.
+   * Deliberately not keyed on anything about the renderer's lifecycle. A
+   * renderer that loses its scene is the only thing that knows it happened, so
+   * restating is its job, not this effect's.
    */
-  let stopApplying = () => {}
+  let stopStating = () => {}
   queueMicrotask(() => {
-    const connection = engine()
-    const connected = computed(
-      () => connection.state.value.status === 'connected'
-    )
-
-    stopApplying = effect(() => {
+    stopStating = effect(() => {
       const projection = settings().value(cameraProjectionSetting).value
-      void connection.sceneEpoch.value
-      if (!connected.value) return
-
-      connection.fireCommand(
-        projection === 'orthographic'
-          ? { type: 'default_camera_set_orthographic' }
-          : {
-              type: 'default_camera_set_perspective',
-              parameters: { fov_y: 45 },
-            }
-      )
+      driver()?.setProjection(projection)
     })
   })
 
   return {
     item: defineRuntimeRegistryItem({
-      id: 'engineScene.camera',
-      dispose: () => stopApplying(),
+      id: 'camera',
+      dispose: () => stopStating(),
       provides: [
         ...cameraSettings.map((setting) => provide(settingsValueSpec, setting)),
 
@@ -81,7 +74,7 @@ export default defineRegistryItemFactory((ctx) => {
         }),
 
         /**
-         * Pointer handling, attached to whatever element the stream is drawn on.
+         * Pointer handling, attached to whatever the scene is drawn on.
          *
          * The guard table and the orbit type are read per event rather than
          * captured, so changing either takes effect on the next gesture instead
@@ -90,9 +83,9 @@ export default defineRegistryItemFactory((ctx) => {
         provide(sceneInteractionsValueSpec, {
           id: 'camera',
           order: 100,
-          attach: (element) =>
-            createCameraInteraction(element, {
-              connection: engine(),
+          attach: (element: HTMLElement) =>
+            createGestureRecogniser(element, {
+              driver,
               guard: () => {
                 const system = settings().read(cameraControlsSetting)
                 const guards = cameraMouseGuards(
@@ -121,4 +114,4 @@ export default defineRegistryItemFactory((ctx) => {
       ],
     }),
   }
-}, 'engineScene.camera')
+}, 'camera')

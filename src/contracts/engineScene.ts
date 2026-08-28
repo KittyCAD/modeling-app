@@ -1,34 +1,14 @@
 import { appendValueSpec, defineContract } from '@kittycad/registry'
 
 /**
- * Something that reacts to input over the engine's video.
+ * What the streamed engine needs that a renderer in general does not.
  *
- * The scene is rendered on the engine and streamed back, so the viewport is a
- * `<video>` element and every interaction with the model is a message to the
- * engine. That makes the element a shared surface: the camera wants drags and
- * the wheel, selection will want clicks, a measurement tool will want hovers.
- *
- * They are contributions rather than code inside the stream component so that
- * each one can be built, tested, and turned off on its own — and so the
- * component stays what it is, which is a video with a size.
+ * The scene surface and its camera live in `scene.ts`, because a local renderer
+ * has both. This file is only for the parts that exist because the scene is
+ * rendered somewhere else and arrives as video.
  */
-export interface SceneInteraction {
-  id: string
-  /** Lower attaches earlier, so an interaction can see events first. */
-  order?: number
-  /**
-   * Bind to the element the stream is drawn on. Returns a disposer.
-   *
-   * Called again if the element is replaced, and disposed when the viewport
-   * unmounts — an interaction must not assume it outlives the view.
-   */
-  attach: (element: HTMLElement) => (() => void) | void
-}
 
 export const engineSceneContract = defineContract({
-  sceneInteractionsValueSpec: appendValueSpec<SceneInteraction>(
-    'engineScene.interactions'
-  ),
   /**
    * Query parameters for the stream URL.
    *
@@ -45,5 +25,4 @@ export const engineSceneContract = defineContract({
   ),
 })
 
-export const { sceneInteractionsValueSpec, streamParamsValueSpec } =
-  engineSceneContract
+export const { streamParamsValueSpec } = engineSceneContract

@@ -4,7 +4,7 @@ import {
   cameraMouseGuards,
   cameraSystems,
   interactionFor,
-} from '@src/features/engineScene/camera/mouseGuards'
+} from '@src/features/camera/mouseGuards'
 
 const guards = cameraMouseGuards('MacIntel')
 

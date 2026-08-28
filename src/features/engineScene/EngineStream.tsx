@@ -2,7 +2,7 @@ import { useSignalEffect } from '@preact/signals'
 import { useEffect, useRef } from 'preact/hooks'
 import { useValueSpec } from '@src/app/context'
 import type { EngineConnection } from '@src/contracts/engine'
-import { sceneInteractionsValueSpec } from '@src/contracts/engineScene'
+import { sceneInteractionsValueSpec } from '@src/contracts/scene'
 import './engineScene.css'
 
 /**

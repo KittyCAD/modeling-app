@@ -2,10 +2,12 @@ import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
+  provideService,
 } from '@kittycad/registry'
 import { computed, effect } from '@preact/signals'
 import { engineConnectionService } from '@src/contracts/engine'
 import { streamParamsValueSpec } from '@src/contracts/engineScene'
+import { cameraDriverService } from '@src/contracts/scene'
 import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { themeService } from '@src/contracts/theme'
 import {
@@ -15,6 +17,7 @@ import {
   parseHexColor,
   systemColorFor,
 } from '@src/features/engineScene/engineColors'
+import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
 import {
   backfaceColorSetting,
   enableSsaoSetting,
@@ -52,6 +55,15 @@ export default defineRegistryItemFactory((ctx) => {
    * connection state, which changes on every ping. Reading the latter meant
    * re-sending every scene command every few seconds, forever.
    */
+  /**
+   * The camera driver for this renderer.
+   *
+   * What it contributes is the answer to "how does a gesture become camera
+   * motion here". A different renderer answers differently, and the camera
+   * feature never learns which one it got.
+   */
+  const cameraDriver = createEngineCameraDriver(engine)
+
   let stopApplying = () => {}
   queueMicrotask(() => {
     const connection = engine()
@@ -98,7 +110,11 @@ export default defineRegistryItemFactory((ctx) => {
   return {
     item: defineRuntimeRegistryItem({
       id: 'engineScene',
-      dispose: () => stopApplying(),
+      dispose: () => {
+        stopApplying()
+        cameraDriver.dispose()
+      },
+      providesServices: [provideService(cameraDriverService, cameraDriver)],
       provides: [
         ...sceneSettings.map((setting) => provide(settingsValueSpec, setting)),
 
