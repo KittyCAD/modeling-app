@@ -1,6 +1,10 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 
 test.describe('Snap to Grid', { tag: '@desktop' }, () => {
+  // These sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+
   test('draws a line with snap to grid turned on', async ({
     page,
     homePage,
