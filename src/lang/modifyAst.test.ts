@@ -857,7 +857,7 @@ describe('editing calls in place', () => {
       throw new Error('Expected edited helix call')
     }
     const cylinderArg = editedCall.arguments.find(
-      (argument) => argument.label.name === 'cylinder'
+      (argument) => argument.label?.name === 'cylinder'
     )
     expect(cylinderArg?.arg).toEqual(createLocalName('extrude001'))
     expect(cylinderArg?.arg).not.toEqual(createLocalName('pattern001'))
