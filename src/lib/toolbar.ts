@@ -1631,10 +1631,10 @@ export function buildToolbarConfig(
                   data: { name: 'GDT Distance', groupId: 'modeling' },
                 }),
               status: 'available',
-              title: 'Distance',
+              title: 'Dimension',
               icon: 'dimension',
               description:
-                'Adds distance annotations to edge lengths or between two entities.',
+                'Adds dimensions to lengths, circular features, or between two entities.',
               links: [
                 {
                   label: 'KCL docs',

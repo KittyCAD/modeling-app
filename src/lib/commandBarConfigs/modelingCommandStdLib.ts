@@ -451,10 +451,12 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'gdt::distance',
     editFlow: true,
     flowArgOrder: ['objects', 'tolerance'],
+    omittedStdLibArgs: ['diameter', 'radius'],
     argAliases: {
       from: 'objects',
       to: 'objects',
       edges: 'objects',
+      faces: 'objects',
     },
   },
   'GDT Perpendicularity': {

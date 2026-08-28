@@ -1979,7 +1979,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'GDT Distance': {
     description:
-      'Add an MBD distance annotation to an edge length or between two faces or edges.',
+      'Add an MBD dimension to a length, circular feature, or distance between two faces or edges.',
     icon: 'dimension',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(

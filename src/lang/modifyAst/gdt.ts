@@ -6,6 +6,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createMemberExpression,
 } from '@src/lang/create'
 import {
   createPoint2dExpression,
@@ -15,9 +16,22 @@ import {
 } from '@src/lang/modifyAst'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { traverse } from '@src/lang/queryAst'
-import { valueOrVariable } from '@src/lang/queryAst'
-import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
+import {
+  getNodeFromPath,
+  getSketchSegmentName,
+  getSketchVariableNameForSegment,
+  traverse,
+  valueOrVariable,
+} from '@src/lang/queryAst'
+import { getOriginalSegmentArtifact } from '@src/lang/std/artifactGraph'
+import type {
+  Artifact,
+  ArtifactGraph,
+  CallExpressionKw,
+  Expr,
+  PathToNode,
+  Program,
+} from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
@@ -38,6 +52,114 @@ function modelingStdLibCallWithModulePath(
   return {
     name: stdLibCall.name,
     modulePath: stdLibCall.path.map(createIdentifier),
+  }
+}
+
+type CircularDimension = {
+  argName: 'diameter' | 'radius'
+  segmentExpr: Expr
+}
+
+function getCircularSourceSegment(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+) {
+  if (artifact.type === 'segment') {
+    return getOriginalSegmentArtifact(artifact.id, artifactGraph)
+  }
+  if (artifact.type === 'sweepEdge' || artifact.type === 'wall') {
+    return getOriginalSegmentArtifact(artifact.segId, artifactGraph)
+  }
+  if (artifact.type !== 'cap') {
+    return undefined
+  }
+
+  const sweep = artifactGraph.get(artifact.sweepId)
+  if (sweep?.type !== 'sweep') {
+    return undefined
+  }
+  const path = artifactGraph.get(sweep.pathId)
+  if (path?.type !== 'path') {
+    return undefined
+  }
+  const sourceSegments = path.segIds.map((segmentId) =>
+    getOriginalSegmentArtifact(segmentId, artifactGraph)
+  )
+  if (sourceSegments.some((segment) => segment === undefined)) {
+    return undefined
+  }
+  const resolvedSourceSegments = sourceSegments.filter(
+    (segment) => segment !== undefined
+  )
+  const uniqueSourceSegments = [
+    ...new Map(
+      resolvedSourceSegments.map((segment) => [segment.id, segment])
+    ).values(),
+  ]
+  return uniqueSourceSegments.length === 1 ? uniqueSourceSegments[0] : undefined
+}
+
+function getCircularDimension(
+  ast: Node<Program>,
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): CircularDimension | null {
+  const segment = getCircularSourceSegment(artifact, artifactGraph)
+  if (!segment) {
+    return null
+  }
+
+  const segmentCall = getNodeFromPath<CallExpressionKw>(
+    ast,
+    segment.codeRef.pathToNode,
+    wasmInstance,
+    'CallExpressionKw'
+  )
+  if (err(segmentCall) || segmentCall.node.type !== 'CallExpressionKw') {
+    return null
+  }
+
+  const callName = segmentCall.node.callee.name.name
+  const argName = (() => {
+    if (callName === 'circle' || callName === 'circleThreePoint') {
+      return 'diameter'
+    }
+    if (
+      callName === 'arc' ||
+      callName === 'arcTo' ||
+      callName === 'tangentialArc' ||
+      callName === 'tangentialArcTo'
+    ) {
+      return 'radius'
+    }
+    return null
+  })()
+  if (!argName) {
+    return null
+  }
+
+  const segmentName = getSketchSegmentName(
+    ast,
+    segment.id,
+    artifactGraph,
+    wasmInstance
+  )
+  if (!segmentName) {
+    return null
+  }
+  const sketchName = getSketchVariableNameForSegment(
+    ast,
+    segment.id,
+    artifactGraph,
+    wasmInstance
+  )
+  if (!sketchName) {
+    return null
+  }
+  return {
+    argName,
+    segmentExpr: createMemberExpression(sketchName, segmentName),
   }
 }
 
@@ -1229,6 +1351,16 @@ export function addDistanceGdt({
     )
   }
 
+  const circularDimension =
+    targetSelections.length === 1 && targetSelections[0].artifact
+      ? getCircularDimension(
+          ast,
+          targetSelections[0].artifact,
+          artifactGraph,
+          wasmInstance
+        )
+      : null
+
   const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = []
   for (const selection of targetSelections) {
     const tagResult = modifyAstWithTagsForSelection(
@@ -1268,7 +1400,11 @@ export function addDistanceGdt({
     return new Error('No valid distance targets could be generated')
   }
 
-  if (targets.length === 1 && targets[0].kind !== 'edge') {
+  if (
+    targets.length === 1 &&
+    targets[0].kind !== 'edge' &&
+    !circularDimension
+  ) {
     return new Error(
       'A single distance selection must be an edge. Select two faces or edges to measure between entities.'
     )
@@ -1303,19 +1439,31 @@ export function addDistanceGdt({
   }
 
   const edgeLengthExprs =
-    targets.length === 1 || targets.length > 2
+    !circularDimension && (targets.length === 1 || targets.length > 2)
       ? deduplicateFaceExprs(targets.map((target) => target.expr))
       : []
 
   if (
+    !circularDimension &&
     (targets.length === 1 || targets.length > 2) &&
     edgeLengthExprs.length === 0
   ) {
     return new Error('No valid edge expressions could be generated')
   }
 
-  const labeledArgs =
-    edgeLengthExprs.length > 0
+  const labeledArgs = circularDimension
+    ? [
+        createLabeledArg(
+          targets[0].kind === 'face' ? 'faces' : 'edges',
+          createArrayExpression([targets[0].expr])
+        ),
+        createLabeledArg(
+          circularDimension.argName,
+          circularDimension.segmentExpr
+        ),
+        createLabeledArg('tolerance', valueOrVariable(tolerance)),
+      ]
+    : edgeLengthExprs.length > 0
       ? [
           createLabeledArg('edges', createArrayExpression(edgeLengthExprs)),
           createLabeledArg('tolerance', valueOrVariable(tolerance)),

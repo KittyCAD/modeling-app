@@ -2558,6 +2558,36 @@ export default {
         "deprecatedSince": null
       },
       {
+        "name": "faces",
+        "ty": "[TaggedFace; 1]",
+        "docs": "The circular face targeted by a diameter or radius dimension. Exactly one face or edge must be supplied when using `diameter` or `radius`.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "diameter",
+        "ty": "Segment",
+        "docs": "A circular sketch segment whose diameter should be displayed. Cannot be combined with `radius`.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "radius",
+        "ty": "Segment",
+        "docs": "A circular sketch segment whose radius should be displayed. Cannot be combined with `diameter`.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
         "name": "precision",
         "ty": "number(_)",
         "docs": "The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.",
