@@ -1,5 +1,9 @@
 import { computed, signal } from '@preact/signals'
-import type { ProjectLibraryTypeContribution } from '@src/contracts/projectLibraries'
+import type { AuthStatus } from '@src/contracts/auth'
+import type {
+  ProjectLibraryContext,
+  ProjectLibraryTypeContribution,
+} from '@src/contracts/projectLibraries'
 import { readDirectoryLibraryRealizations } from '@src/features/directoryLibrary/directoryScanner'
 import { createDirectoryLibraryOperations } from '@src/features/directoryLibrary/operations'
 import { createProjectLibrariesService } from '@src/features/projectLibraries/createProjectLibrariesService'
@@ -69,7 +73,10 @@ function createHarness(
   }
 }
 
-function createBrowserHarness(stored: readonly ProjectLibrarySetting[]) {
+function createBrowserHarness(
+  stored: readonly ProjectLibrarySetting[],
+  initialAuthStatus: AuthStatus = 'signedIn'
+) {
   localStorage.setItem('zds.libraries', JSON.stringify(stored))
   const fileSystem = createFakeFileSystem() as FakeFileSystem & {
     defaultRoot: ReturnType<typeof computed<string>>
@@ -85,7 +92,14 @@ function createBrowserHarness(stored: readonly ProjectLibrarySetting[]) {
     icon: 'folder',
     description: 'On this device.',
     locationLabel: 'Folder',
-    platforms: ['desktop'],
+    platforms: ['desktop', 'web'],
+    isAvailable: ({ isAuthenticated }) => !isAuthenticated,
+    maximumInstances: { web: 1 },
+    normalizeSetting: (setting, context) => ({
+      ...setting,
+      path: context.defaultRoot,
+      source: undefined,
+    }),
   }
   const cloudType: ProjectLibraryTypeContribution = {
     type: CLOUD_LIBRARY_TYPE,
@@ -94,6 +108,7 @@ function createBrowserHarness(stored: readonly ProjectLibrarySetting[]) {
     description: 'Personal Cloud.',
     locationLabel: 'Local storage',
     platforms: ['desktop', 'web'],
+    isAvailable: ({ isAuthenticated }) => isAuthenticated,
     maximumInstances: { web: 1 },
     normalizeSetting: (setting, context) => ({
       ...setting,
@@ -109,15 +124,34 @@ function createBrowserHarness(stored: readonly ProjectLibrarySetting[]) {
       ])
   )
   const defaults = computed(() => [
-    () => [
-      {
-        title: 'Personal Cloud',
-        path: BROWSER_ROOT,
-        type: CLOUD_LIBRARY_TYPE,
-      },
-    ],
+    (context: ProjectLibraryContext) =>
+      context.isAuthenticated
+        ? [
+            {
+              title: 'Personal Cloud',
+              path: BROWSER_ROOT,
+              type: CLOUD_LIBRARY_TYPE,
+            },
+          ]
+        : [
+            {
+              title: 'Local Projects',
+              path: BROWSER_ROOT,
+              type: DIRECTORY_LIBRARY_TYPE,
+            },
+          ],
   ])
-  return createProjectLibrariesService(fileSystem, types, defaults, 'web')
+  const authStatus = signal<AuthStatus>(initialAuthStatus)
+  return {
+    authStatus,
+    service: createProjectLibrariesService(
+      fileSystem,
+      types,
+      defaults,
+      'web',
+      authStatus
+    ),
+  }
 }
 
 describe('project libraries service', () => {
@@ -253,7 +287,7 @@ describe('project libraries service', () => {
   })
 
   it('migrates the legacy browser directory to Personal Cloud in place', async () => {
-    const service = createBrowserHarness([
+    const { service } = createBrowserHarness([
       {
         title: 'Local Projects',
         path: BROWSER_ROOT,
@@ -277,7 +311,7 @@ describe('project libraries service', () => {
   })
 
   it('enforces one Cloud library and rejects Folder libraries on web', () => {
-    const service = createBrowserHarness([
+    const { service } = createBrowserHarness([
       {
         title: 'First Cloud',
         path: '/old/cloud',
@@ -306,6 +340,81 @@ describe('project libraries service', () => {
         type: CLOUD_LIBRARY_TYPE,
       })
     ).toBeUndefined()
+    service.dispose()
+  })
+
+  it('boots signed-out web users into one local Folder library', () => {
+    const { service } = createBrowserHarness([], 'signedOut')
+
+    expect([...service.types.value.keys()]).toEqual([DIRECTORY_LIBRARY_TYPE])
+    expect(service.settings.value).toEqual([
+      {
+        title: 'Local Projects',
+        path: BROWSER_ROOT,
+        type: DIRECTORY_LIBRARY_TYPE,
+      },
+    ])
+    expect(
+      service.addLibrary({
+        title: 'Cloud',
+        path: BROWSER_ROOT,
+        type: CLOUD_LIBRARY_TYPE,
+      })
+    ).toBeUndefined()
+    service.dispose()
+  })
+
+  it('does not persist a provider migration while authentication is checking', async () => {
+    const stored = [
+      {
+        title: 'Personal Cloud',
+        path: BROWSER_ROOT,
+        type: CLOUD_LIBRARY_TYPE,
+      },
+    ]
+    const { service } = createBrowserHarness(stored, 'checking')
+
+    // Local storage remains usable during token resolution, but this temporary
+    // interpretation must not overwrite the authenticated durable setting.
+    expect(service.libraries.value[0].type).toBe(DIRECTORY_LIBRARY_TYPE)
+    await Promise.resolve()
+    expect(JSON.parse(localStorage.getItem('zds.libraries') ?? '[]')).toEqual(
+      stored
+    )
+    service.dispose()
+  })
+
+  it('promotes and demotes the browser library in place with authentication', async () => {
+    const { authStatus, service } = createBrowserHarness(
+      [
+        {
+          title: 'Local Projects',
+          path: BROWSER_ROOT,
+          type: DIRECTORY_LIBRARY_TYPE,
+        },
+      ],
+      'signedOut'
+    )
+
+    authStatus.value = 'signedIn'
+    expect(service.libraries.value).toHaveLength(1)
+    expect(service.libraries.value[0]).toMatchObject({
+      path: BROWSER_ROOT,
+      title: 'Personal Cloud',
+      type: CLOUD_LIBRARY_TYPE,
+    })
+
+    authStatus.value = 'signedOut'
+    expect(service.libraries.value).toHaveLength(1)
+    expect(service.libraries.value[0]).toMatchObject({
+      path: BROWSER_ROOT,
+      title: 'Local Projects',
+      type: DIRECTORY_LIBRARY_TYPE,
+    })
+    await Promise.resolve()
+    expect(JSON.parse(localStorage.getItem('zds.libraries') ?? '[]')).toEqual(
+      service.settings.value
+    )
     service.dispose()
   })
 

@@ -1,6 +1,7 @@
 import { Button, Icon, TextField } from '@kittycad/ui-kit'
 import { useComputed, useSignal } from '@preact/signals'
 import { useService } from '@src/app/context'
+import { authService } from '@src/contracts/auth'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
 import { runtimeService } from '@src/contracts/runtime'
@@ -90,6 +91,7 @@ export function AddLibraryControl() {
   const libraries = useService(projectLibrariesService)
   const fileSystem = useService(fileSystemService)
   const runtime = useService(runtimeService)
+  const auth = useService(authService)
   const naming = useSignal(false)
   const draftName = useSignal('')
 
@@ -118,6 +120,8 @@ export function AddLibraryControl() {
     const base = type.value?.newLibrarySetting?.({
       defaultRoot: fileSystem.defaultRoot.value,
       defaultCloudRoot: fileSystem.defaultCloudRoot.value,
+      authStatus: auth.status.value,
+      isAuthenticated: auth.status.value === 'signedIn',
       ...runtime.info.value,
     })
     if (!base) return

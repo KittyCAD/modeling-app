@@ -91,6 +91,7 @@ const cloudSyncBehavior = defineRegistryItemFactory((ctx) => {
     const libraries = ctx.services.get(projectLibrariesService)
     const fileSystem = ctx.services.get(fileSystemService)
     const runtime = ctx.services.get(runtimeService)
+    const auth = ctx.services.get(authService)
     stop = effect(() => {
       if (
         libraries.libraries.value.some(
@@ -103,6 +104,8 @@ const cloudSyncBehavior = defineRegistryItemFactory((ctx) => {
       const setting = cloud?.newLibrarySetting?.({
         defaultRoot: fileSystem.defaultRoot.value,
         defaultCloudRoot: fileSystem.defaultCloudRoot.value,
+        authStatus: auth.status.value,
+        isAuthenticated: auth.status.value === 'signedIn',
         ...runtime.info.value,
       })
       if (!setting?.path) return

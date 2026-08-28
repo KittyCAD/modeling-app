@@ -1,6 +1,7 @@
 import { Button, Icon, Select, TextField } from '@kittycad/ui-kit'
 import { useComputed, useSignal } from '@preact/signals'
 import { useService } from '@src/app/context'
+import { authService } from '@src/contracts/auth'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
 import { runtimeService } from '@src/contracts/runtime'
@@ -24,10 +25,13 @@ export function ProjectLibrariesSettings() {
   const libraries = useService(projectLibrariesService)
   const fileSystem = useService(fileSystemService)
   const runtime = useService(runtimeService)
+  const auth = useService(authService)
   const selectedType = useSignal<ProjectLibraryType>('')
   const libraryContext = {
     defaultRoot: fileSystem.defaultRoot.value,
     defaultCloudRoot: fileSystem.defaultCloudRoot.value,
+    authStatus: auth.status.value,
+    isAuthenticated: auth.status.value === 'signedIn',
     ...runtime.info.value,
   }
 
@@ -138,6 +142,7 @@ function LibrarySettingsRow({
   const libraries = useService(projectLibrariesService)
   const fileSystem = useService(fileSystemService)
   const runtime = useService(runtimeService)
+  const auth = useService(authService)
   const type = libraries.type(library.type)
   const Details = type?.settingsDetails
   const typeOptions = Array.from(libraries.types.value.values())
@@ -168,6 +173,8 @@ function LibrarySettingsRow({
     const template = contribution?.newLibrarySetting?.({
       defaultRoot: fileSystem.defaultRoot.value,
       defaultCloudRoot: fileSystem.defaultCloudRoot.value,
+      authStatus: auth.status.value,
+      isAuthenticated: auth.status.value === 'signedIn',
       ...runtime.info.value,
     })
     if (!template) return

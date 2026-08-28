@@ -5,6 +5,7 @@ import {
 } from '@kittycad/registry'
 import type { IconName } from '@kittycad/ui-kit'
 import type { ReadonlySignal } from '@preact/signals'
+import type { AuthStatus } from '@src/contracts/auth'
 import type { RuntimeTarget } from '@src/contracts/runtime'
 import type {
   ProjectLibrary,
@@ -101,6 +102,8 @@ export interface ProjectLibraryContext {
   target: RuntimeTarget
   isDesktop: boolean
   isWeb: boolean
+  authStatus: AuthStatus
+  isAuthenticated: boolean
 }
 
 /**
@@ -121,6 +124,8 @@ export interface ProjectLibraryTypeContribution {
   locationLabel: string
   /** Platforms on which this storage provider can be configured. */
   platforms?: readonly RuntimeTarget[]
+  /** Runtime eligibility beyond platform, such as account requirements. */
+  isAvailable?: (context: ProjectLibraryContext) => boolean
   /** Per-platform cap. Omitted means the provider permits any number. */
   maximumInstances?: Partial<Record<RuntimeTarget, number>>
   /** Template for a newly added library of this type. */

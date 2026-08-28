@@ -43,6 +43,8 @@ export default defineRegistryItemFactory((ctx) => {
           description: 'Projects in this library sync with your Zoo account.',
           locationLabel: 'Local storage',
           platforms: ['desktop', 'web'],
+          isAvailable: ({ isDesktop, isAuthenticated }) =>
+            isDesktop || isAuthenticated,
           maximumInstances: { web: 1 },
           removable: false,
           userCreatable: false,
@@ -127,7 +129,7 @@ export default defineRegistryItemFactory((ctx) => {
           },
         }),
         provide(projectLibraryDefaultsValueSpec, (context) =>
-          context.isWeb
+          context.isWeb && context.isAuthenticated
             ? [
                 {
                   title: PERSONAL_CLOUD_LIBRARY_TITLE,

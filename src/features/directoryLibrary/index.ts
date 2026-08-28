@@ -41,13 +41,25 @@ export default defineRegistryItemFactory((ctx) => {
           order: 0,
           description: 'Projects in this library are stored on this device.',
           locationLabel: 'Folder',
-          platforms: ['desktop'],
+          platforms: ['desktop', 'web'],
+          isAvailable: ({ isDesktop, isAuthenticated }) =>
+            isDesktop || !isAuthenticated,
+          maximumInstances: { web: 1 },
           settingsDetails: DirectoryLibrarySettingsDetails,
           newLibrarySetting: ({ defaultRoot }) => ({
             title: NEW_LIBRARY_TITLE,
             path: defaultRoot,
             type: DIRECTORY_LIBRARY_TYPE,
           }),
+          normalizeSetting: (setting, { defaultRoot, isWeb }) =>
+            isWeb
+              ? {
+                  ...setting,
+                  path: defaultRoot,
+                  source: undefined,
+                  type: DIRECTORY_LIBRARY_TYPE,
+                }
+              : setting,
           operations: createDirectoryLibraryOperations(getFileSystem),
           readRealizations: ({ library, signal, excludePaths }) =>
             readDirectoryLibraryRealizations({
@@ -62,8 +74,8 @@ export default defineRegistryItemFactory((ctx) => {
         // in the service, so a build could ship a different starting set.
         provide(
           projectLibraryDefaultsValueSpec,
-          ({ defaultRoot, isDesktop }) =>
-            isDesktop
+          ({ defaultRoot, isDesktop, isAuthenticated }) =>
+            isDesktop || !isAuthenticated
               ? [
                   {
                     title: DEFAULT_LIBRARY_TITLE,

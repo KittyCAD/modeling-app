@@ -1,4 +1,5 @@
 import { computed, effect, type ReadonlySignal, signal } from '@preact/signals'
+import type { AuthStatus } from '@src/contracts/auth'
 import type { FileSystem } from '@src/contracts/fileSystem'
 import type {
   LibraryLoadState,
@@ -59,7 +60,8 @@ export function createProjectLibrariesService(
       input: ProjectLibraryContext
     ) => readonly ProjectLibrarySetting[])[]
   >,
-  target: RuntimeTarget = fileSystem.id === 'opfs' ? 'web' : 'desktop'
+  target: RuntimeTarget = fileSystem.id === 'opfs' ? 'web' : 'desktop',
+  authStatus: ReadonlySignal<AuthStatus> = computed(() => 'signedIn')
 ): ProjectLibrariesService & { dispose: () => void } {
   const stored = signal<readonly ProjectLibrarySetting[]>(readStoredSettings())
   const seeded = signal(stored.value.length > 0)
@@ -89,14 +91,18 @@ export function createProjectLibrariesService(
     target,
     isDesktop: target === 'desktop',
     isWeb: target === 'web',
+    authStatus: authStatus.value,
+    isAuthenticated: authStatus.value === 'signedIn',
   }))
 
   /** Only providers valid for this runtime are visible or addressable. */
   const types = computed<TypeMap>(
     () =>
       new Map(
-        Array.from(typesSignal.value.entries()).filter(([, contribution]) =>
-          (contribution.platforms ?? ['desktop', 'web']).includes(target)
+        Array.from(typesSignal.value.entries()).filter(
+          ([, contribution]) =>
+            (contribution.platforms ?? ['desktop', 'web']).includes(target) &&
+            (contribution.isAvailable?.(context.value) ?? true)
         )
       )
   )
@@ -192,6 +198,9 @@ export function createProjectLibrariesService(
     if (disposed) return
     stopNormalization = effect(() => {
       if (!seeded.value || types.value.size === 0) return
+      // Do not rewrite durable configuration while a stored token is still
+      // being resolved. The settled auth state owns migration policy.
+      if (context.value.authStatus === 'checking') return
       const normalized = settings.value
       if (normalized.length === 0) return
       if (JSON.stringify(normalized) === JSON.stringify(stored.value)) return

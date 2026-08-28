@@ -5,6 +5,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
+import { authService } from '@src/contracts/auth'
 import { commandsValueSpec } from '@src/contracts/commands'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import {
@@ -38,7 +39,8 @@ export default defineRegistryItemFactory((ctx) => {
       ctx.services.get(fileSystemService),
       types,
       defaults,
-      ctx.services.get(runtimeService).info.value.target
+      ctx.services.get(runtimeService).info.value.target,
+      ctx.services.get(authService).status
     )
     return service
   }

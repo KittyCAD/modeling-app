@@ -984,7 +984,8 @@ user-level boolean setting and a `PluginActivationContribution` connecting that
 setting to the controller. The always-on `pluginManagement` feature performs
 the synchronization, so disabling a plugin cannot disable the mechanism that
 would turn it back on. A platform may force a plugin active while hiding its
-toggle; Cloud sync does this on web, where it is storage infrastructure.
+toggle; Cloud sync does this on web, where it becomes storage infrastructure as
+soon as an account is authenticated.
 
 ## Execution
 
@@ -1416,12 +1417,15 @@ after a Cloud library has been seen, and when a hidden tab becomes visible. A
 failed upload leaves both the local project and its recorded base in place, so a
 later run can retry from durable state.
 
-Library-provider policy is enforced in the service, not only in Settings. Folder
-is desktop-only. Web exposes exactly one Cloud library and normalizes it to
-`/documents/zoo-design-studio-projects`, replacing a persisted legacy default
-Folder entry without moving its OPFS bytes. Desktop starts Folder at
-`Documents/zoo-design-studio-projects`; Personal Cloud materializes at
-`~/Library/CloudStorage/Zoo/personal` on macOS and `~/Zoo/personal` elsewhere.
+Library-provider policy is enforced in the service, not only in Settings. Web
+always exposes exactly one library at
+`/documents/zoo-design-studio-projects`: Folder while unauthenticated, Personal
+Cloud while authenticated. An auth transition promotes or demotes the provider
+in place, so files never move and a persisted legacy Folder entry becomes Cloud
+only after sign-in has settled. Desktop Folder remains available regardless of
+authentication. It starts at `Documents/zoo-design-studio-projects`; Personal
+Cloud materializes at `~/Library/CloudStorage/Zoo/personal` on macOS and
+`~/Zoo/personal` elsewhere.
 
 ## Filesystem
 
