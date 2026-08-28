@@ -127,15 +127,9 @@ export class HomePageFixture {
     await projectCard.click()
   }
 
-  /** Returns the project name in case caller has used the default and needs it */
-  goToModelingScene = async (name = 'testDefault') => {
-    // On web this is a no-op. There is no project view.
-    if (process.env.TARGET === 'web') return ''
-
+  goToModelingScene = async (name = 'test-project') => {
     await this.createAndGoToProject(name)
     await closeOnboardingModalIfPresent(this.page)
-
-    return name
   }
 
   isNativeFileMenuCreated = async () => {
