@@ -2,6 +2,7 @@ import type {
   ApiConstraint,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { OnClickCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import {
   ORIGIN_TARGET,
@@ -18,6 +19,8 @@ import {
   getDimensionDistanceType,
 } from '@src/machines/sketchSolve/tools/dimensionTool'
 import {
+  createArcApiObject,
+  createCircleApiObject,
   createLineApiObject,
   createMockKclManager,
   createMockRustContext,
@@ -25,6 +28,7 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { Vector2, Vector3 } from 'three'
 import { describe, expect, it, vi } from 'vitest'
 import { assign, createActor, setup, waitFor } from 'xstate'
 
@@ -68,19 +72,21 @@ function createConstraintObject({
 function createMouseEvent(
   point: Coords2d,
   { shiftKey = false }: { shiftKey?: boolean } = {}
-) {
+): OnClickCallbackArgs & {
+  intersectionPoint: NonNullable<OnClickCallbackArgs['intersectionPoint']>
+} {
   return {
     mouseEvent: {
       which: 1,
       detail: 1,
       shiftKey,
-    },
+    } as MouseEvent,
     intersectionPoint: {
-      twoD: {
-        x: point[0],
-        y: point[1],
-      },
+      twoD: new Vector2(point[0], point[1]),
+      threeD: new Vector3(point[0], point[1]),
     },
+    intersects: [],
+    wasmInstance: {} as never,
   }
 }
 
@@ -100,19 +106,23 @@ function createParentHarness(
   let nextConstraintId = 30
   let currentObjects = [...objects]
 
-  rustContext.addConstraint = vi.fn(async (_version, _sketchId, constraint) => {
-    const constraintId = nextConstraintId++
-    currentObjects = [
-      ...currentObjects,
-      createConstraintObject({ id: constraintId, constraint }),
-    ]
+  const addConstraintMock = vi.fn(
+    async (...args: Parameters<typeof rustContext.addConstraint>) => {
+      const constraint = args[2]
+      const constraintId = nextConstraintId++
+      currentObjects = [
+        ...currentObjects,
+        createConstraintObject({ id: constraintId, constraint }),
+      ]
 
-    return {
-      kclSource: { text: '' },
-      sceneGraphDelta: createSceneGraphDelta(currentObjects, [constraintId]),
-      checkpointId: null,
+      return {
+        kclSource: { text: '' },
+        sceneGraphDelta: createSceneGraphDelta(currentObjects, [constraintId]),
+        checkpointId: null,
+      }
     }
-  }) as typeof rustContext.addConstraint
+  )
+  rustContext.addConstraint = addConstraintMock
   rustContext.editAngleConstraint = vi.fn(
     async (_version, _sketchId, constraintId, constraint) => {
       currentObjects = currentObjects.map((object) =>
@@ -228,6 +238,7 @@ function createParentHarness(
     actor,
     sceneInfra,
     rustContext,
+    addConstraintMock,
     events,
   }
 }
@@ -450,6 +461,59 @@ describe('dimensionTool distance selection', () => {
 })
 
 describe('dimensionTool', () => {
+  it.each([
+    {
+      name: 'circle',
+      segment: createCircleApiObject({ id: 10, center: 1, start: 2 }),
+      expectedConstraint: {
+        type: 'Diameter',
+        diameter: { value: 10, units: 'Mm' },
+        arc: 10,
+        source: { expr: '10', is_literal: true },
+      },
+    },
+    {
+      name: 'arc',
+      segment: createArcApiObject({ id: 10, center: 1, start: 2, end: 3 }),
+      expectedConstraint: {
+        type: 'Radius',
+        radius: { value: 5, units: 'Mm' },
+        arc: 10,
+        source: { expr: '5', is_literal: true },
+      },
+    },
+  ])(
+    'creates the default $name dimension on the first click',
+    async ({ segment, expectedConstraint }) => {
+      const sketch = createSketchApiObject({ id: 0 })
+      const center = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const start = createPointApiObject({ id: 2, x: 3, y: 4 })
+      const end = createPointApiObject({ id: 3, x: -3, y: 4 })
+      const { actor, sceneInfra, addConstraintMock, events } =
+        createParentHarness([sketch, center, start, end, segment])
+      const callbacks = vi.mocked(sceneInfra.setCallbacks).mock.calls[0]?.[0]
+      if (!callbacks?.onClick) {
+        throw new Error('Dimension tool did not register its click callback')
+      }
+
+      await callbacks.onClick(createMouseEvent([0, 5]))
+
+      await waitFor(actor, () => addConstraintMock.mock.calls.length === 1)
+      await waitFor(actor, () =>
+        events.some((event) => event.type === 'update sketch outcome')
+      )
+      expect(addConstraintMock.mock.calls[0][2]).toEqual(expectedConstraint)
+      expect(addConstraintMock.mock.calls[0][4]).toBe(true)
+      expect(events.map((event) => event.type)).toEqual(
+        expect.arrayContaining([
+          'update sketch outcome',
+          'clear draft entities',
+          'update hovered id',
+        ])
+      )
+    }
+  )
+
   it('starts a smart line-length draft on the first unmodified click', async () => {
     const sketch = createSketchApiObject({ id: 0 })
     const lineStart = createPointApiObject({ id: 1, x: 0, y: 0 })
