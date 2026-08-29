@@ -19,8 +19,12 @@ import {
 import { kclErrorMessage } from '@src/lib/kcl/errors'
 import { textDiff } from '@src/lib/buffers/textDiff'
 import type { PlaneFrame, PlanePoint } from '@src/lib/scene/projection'
-import { sketchIdAt } from '@src/lib/sketch/sceneGraph'
-import { sketchPlaneSource } from '@src/lib/sketch/sketchPlane'
+import type {
+  ApiObjectId,
+  SceneGraph,
+} from '@rust/kcl-lib/bindings/FrontendApi'
+import { objectAt, sketchIdAt, sketchRanges } from '@src/lib/sketch/sceneGraph'
+import { sketchIdIn, sketchPlaneSource } from '@src/lib/sketch/sketchPlane'
 import {
   type SketchToolId,
   type SketchToolState,
@@ -95,6 +99,23 @@ export function createSketchSession(
       program() !== null &&
       buffer() !== null
   )
+
+  /**
+   * An id the frontend agrees is a sketch, or null.
+   *
+   * Both routes to an id are inferences about a graph built by a *different*
+   * execution from the one that produced them, so neither is worth trusting
+   * unchecked: an id that is out of range, or names something that is not a
+   * sketch, would be reported by kcl-lib as "sketch not found" one call later
+   * and with less to go on.
+   */
+  const verified = (
+    graph: SceneGraph,
+    sketchId: ApiObjectId | null
+  ): ApiObjectId | null => {
+    if (sketchId === null) return null
+    return objectAt(graph, sketchId)?.kind.type === 'Sketch' ? sketchId : null
+  }
 
   const fail = (message: string) => {
     error.value = message
@@ -222,11 +243,28 @@ export function createSketchSession(
         /*
          * The crossing between the two ways this app names a sketch: we know
          * where it is written, the frontend knows an object id.
+         *
+         * The artifact graph first, because it is the one place the link is
+         * *recorded* rather than recomputed — a `sketchBlock` artifact carries
+         * the frontend's own id. Matching by source range is the fallback, and
+         * it is a fallback because it was wrong: our idea of a sketch's extent
+         * is the whole declaration and the frontend's is the expression inside
+         * it, so the offset we ask about most often — the start of the statement
+         * — is the one that cannot match.
          */
-        const sketchId = sketchIdAt(built.graph, where.from)
+        const sketchId =
+          verified(built.graph, sketchIdIn(artifacts(), where)) ??
+          verified(built.graph, sketchIdAt(built.graph, where.from))
+
         if (sketchId === null) {
+          const present = sketchRanges(built.graph)
+            .map((sketch) => `#${sketch.id} at ${sketch.range.join('–')}`)
+            .join(', ')
+
           fail(
-            `The last run has no sketch at offset ${where.from}, so there is nothing to open. This is a bug rather than something you did.`
+            `Could not match the sketch at ${where.from}–${where.to} to anything the last run produced${
+              present ? ` (it has ${present})` : ' (it produced no sketches)'
+            }. This is a bug rather than something you did.`
           )
           return
         }

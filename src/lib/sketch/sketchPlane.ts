@@ -34,6 +34,50 @@ export type SketchPlaneSource =
   | { kind: 'face'; entityId: string }
   | { kind: 'unavailable'; reason: string }
 
+/**
+ * The frontend's id for the sketch written across a range of the file.
+ *
+ * The bridge the artifact graph was built to be: a `sketchBlock` artifact
+ * carries the frontend's own `sketchId`, so the two models of the file are
+ * matched by a link kcl-lib maintains rather than by two range calculations
+ * agreeing.
+ *
+ * That distinction is not academic. Matching on ranges failed, and failed in the
+ * least obvious way: our idea of a sketch's extent is the whole
+ * `s = sketch(on = XY) { … }` *declaration*, because a cursor on the first line
+ * is in the sketch by any useful definition, while the frontend records the
+ * range of the `sketch(…)` *expression* — which starts after `s = `. So the
+ * offset we were most likely to ask about, the start of the statement, was the
+ * one offset guaranteed to fall outside. In a file containing nothing else that
+ * is offset 0, and every attempt to open the sketch reported no sketch there.
+ *
+ * Overlap rather than containment, for the same reason: neither range is
+ * reliably inside the other, and asking whether they refer to the same piece of
+ * text does not require knowing which is wider. The narrowest match wins, so a
+ * nested sketch resolves to the one the cursor is actually in.
+ */
+export function sketchIdIn(
+  artifacts: ArtifactMap,
+  range: { from: number; to: number }
+): ApiObjectId | null {
+  let found: { id: ApiObjectId; width: number } | null = null
+
+  for (const artifact of artifacts.values()) {
+    if (artifact.type !== 'sketchBlock') continue
+
+    const [from, to] = artifact.codeRef.range
+    // Touching at a boundary counts: an empty block's range can be a point.
+    if (to < range.from || from > range.to) continue
+
+    const width = to - from
+    if (!found || width < found.width) {
+      found = { id: artifact.sketchId, width }
+    }
+  }
+
+  return found?.id ?? null
+}
+
 /** The sketch block the frontend calls `sketchId`. */
 export function sketchBlockFor(
   artifacts: ArtifactMap,

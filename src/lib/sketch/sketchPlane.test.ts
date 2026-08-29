@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 import type { ArtifactMap } from '@src/lib/kcl/artifacts'
-import { sketchPlaneSource } from '@src/lib/sketch/sketchPlane'
+import { sketchIdIn, sketchPlaneSource } from '@src/lib/sketch/sketchPlane'
 
 const codeRef = { range: [0, 10, 0], pathToNode: [], nodePath: {} } as never
 
@@ -88,5 +88,48 @@ describe('sketchPlaneSource', () => {
   it('says why for a sketch on something with no plane at all', () => {
     const source = sketchPlaneSource(graph(sketchBlock({})), 7)
     expect(source.kind).toBe('unavailable')
+  })
+})
+
+describe('sketchIdIn', () => {
+  const block = (sketchId: number, range: [number, number, number]): Artifact =>
+    ({
+      type: 'sketchBlock',
+      id: `block-${sketchId}`,
+      sketchId,
+      codeRef: { range },
+    }) as unknown as Artifact
+
+  /*
+   * The bug this function exists for: our range is the whole
+   * `s = sketch(on = XY) { … }` declaration and the frontend's is the expression
+   * inside it, so the start of the statement falls outside the frontend's range.
+   */
+  it('matches a declaration range against an expression range', () => {
+    expect(sketchIdIn(graph(block(7, [12, 48, 0])), { from: 0, to: 48 })).toBe(
+      7
+    )
+  })
+
+  it('ignores a sketch somewhere else in the file', () => {
+    expect(
+      sketchIdIn(graph(block(7, [200, 260, 0])), { from: 0, to: 48 })
+    ).toBeNull()
+  })
+
+  it('counts a block whose range is a single point', () => {
+    // An empty sketch can report one, and it is still the sketch you are in.
+    expect(sketchIdIn(graph(block(7, [48, 48, 0])), { from: 0, to: 48 })).toBe(
+      7
+    )
+  })
+
+  it('takes the innermost of two that overlap', () => {
+    const artifacts = graph(block(1, [0, 200, 0]), block(2, [20, 60, 0]))
+    expect(sketchIdIn(artifacts, { from: 30, to: 40 })).toBe(2)
+  })
+
+  it('has no answer when the run produced no sketch blocks', () => {
+    expect(sketchIdIn(graph(), { from: 0, to: 48 })).toBeNull()
   })
 })

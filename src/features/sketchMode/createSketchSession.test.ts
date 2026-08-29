@@ -16,8 +16,14 @@ import type { SketchBlockRange } from '@src/lib/kclStdlib/program'
 
 const SOURCE = 's = sketch(on = XY) {\n}\n'
 
-/** A graph whose one sketch is written where the fixture's sketch is. */
-const graph = (): SceneGraph =>
+/**
+ * A graph whose one sketch is written where the fixture's sketch is.
+ *
+ * `range` is the frontend's own idea of the sketch's extent, which is *not* ours:
+ * it covers the `sketch(…)` expression, so it begins after the `s = ` that our
+ * own block range starts at.
+ */
+const graph = (range: [number, number, number] = [0, 23, 0]): SceneGraph =>
   ({
     objects: [
       {
@@ -32,7 +38,7 @@ const graph = (): SceneGraph =>
         label: 's',
         comments: '',
         artifact_id: 'a',
-        source: { type: 'Simple', range: [0, 23, 0], node_path: null },
+        source: { type: 'Simple', range, node_path: null },
       },
     ],
     sketch_mode: null,
@@ -196,9 +202,10 @@ describe('opening a sketch', () => {
 
     await app.session.enter()
 
-    // Names the offset, because this one is a bug in the crossing between our
-    // text ranges and the frontend's ids and nobody can act on it without one.
-    expect(app.session.error.value).toMatch(/no sketch at offset 900/)
+    // Names both ranges, because this one is a bug in the crossing between our
+    // text ranges and the frontend's ids, and nobody can act on it without them.
+    expect(app.session.error.value).toMatch(/900–950/)
+    expect(app.session.error.value).toMatch(/#0 at 0–23/)
   })
 
   it('opens only once', async () => {
@@ -457,5 +464,73 @@ describe('drawing in a sketch', () => {
     await app.session.exit()
 
     expect(app.session.tool.value).toBeNull()
+  })
+})
+
+describe('matching our sketch to the frontend’s', () => {
+  /*
+   * The bug this exists for. Our block range is the whole declaration, because a
+   * cursor on the first line is in the sketch; the frontend's is the expression
+   * inside it. So the offset asked about most often — the start of the statement
+   * — is the one guaranteed to fall outside, and in a file containing nothing
+   * else that offset is 0.
+   */
+  it('matches by the link the artifact graph records, not by range', async () => {
+    const app = setup({
+      sketch: { name: 'sketch001', from: 0, to: 48 },
+      // The frontend's range starts after `sketch001 = `.
+      setProgram: async () => ({ kind: 'built', graph: graph([12, 48, 0]) }),
+      artifacts: new Map([
+        [
+          'block',
+          {
+            type: 'sketchBlock',
+            id: 'block',
+            sketchId: 0,
+            codeRef: { range: [12, 48, 0] },
+            planeInfo: {
+              origin: { x: 0, y: 0, z: 0, units: 'mm' },
+              xAxis: { x: 1, y: 0, z: 0, units: null },
+              yAxis: { x: 0, y: 1, z: 0, units: null },
+              zAxis: { x: 0, y: 0, z: 1, units: null },
+            },
+          } as unknown as Artifact,
+        ],
+      ]),
+    })
+
+    await app.session.enter()
+
+    expect(app.session.error.value).toBeNull()
+    expect(app.frontend.editSketch).toHaveBeenCalledWith(0)
+  })
+
+  /*
+   * Both routes are inferences about a graph built by a different execution, so
+   * an id that names something else must not be passed on — kcl-lib would report
+   * it as "sketch not found" one call later, with less to go on.
+   */
+  it('refuses an id the frontend does not agree is a sketch', async () => {
+    const app = setup({
+      // No range route to fall back on either: the frontend's range excludes the
+      // offset, which is the situation the artifact route exists to rescue.
+      setProgram: async () => ({ kind: 'built', graph: graph([12, 48, 0]) }),
+      artifacts: new Map([
+        [
+          'block',
+          {
+            type: 'sketchBlock',
+            id: 'block',
+            sketchId: 42,
+            codeRef: { range: [0, 23, 0] },
+          } as unknown as Artifact,
+        ],
+      ]),
+    })
+
+    await app.session.enter()
+
+    expect(app.frontend.editSketch).not.toHaveBeenCalled()
+    expect(app.session.error.value).toMatch(/Could not match/)
   })
 })

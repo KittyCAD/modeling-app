@@ -12,6 +12,7 @@ import {
   segmentAt,
   segmentsOf,
   sketchIdAt,
+  sketchRanges,
 } from '@src/lib/sketch/sceneGraph'
 
 const at = (id: number, kind: ApiObject['kind']): ApiObject => ({
@@ -235,5 +236,35 @@ describe('finding a sketch by where it is written', () => {
     const noSketches = graphOf([point(0, 0, 0), line(1, 0, 0)])
 
     expect(sketchIdAt(noSketches, 0)).toBeNull()
+  })
+})
+
+describe('sketchRanges', () => {
+  it('reads a sketch that came through a call, not just a simple one', () => {
+    // A `BackTrace` source carries every range on the way in; the last is the
+    // one nearest the sketch itself. Skipping these was a silent hole.
+    const traced = graphOf([
+      at(0, {
+        type: 'Sketch',
+        args: { on: { default: 'XY' } },
+        plane: 9,
+        segments: [],
+        constraints: [],
+      } as never),
+    ])
+    const object = traced.objects[0]
+    if (object) {
+      object.source = {
+        type: 'BackTrace',
+        ranges: [
+          [[100, 200, 0], null],
+          [[140, 160, 0], null],
+        ],
+      } as never
+    }
+
+    expect(sketchRanges(traced)).toEqual([{ id: 0, range: [140, 160] }])
+    expect(sketchIdAt(traced, 150)).toBe(0)
+    expect(sketchIdAt(traced, 110)).toBeNull()
   })
 })

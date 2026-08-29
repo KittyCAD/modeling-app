@@ -200,18 +200,50 @@ export function sketchIdAt(
 ): ApiObjectId | null {
   let found: { id: ApiObjectId; width: number } | null = null
 
-  for (const object of graph.objects) {
-    if (object?.kind.type !== 'Sketch') continue
-    if (object.source.type !== 'Simple') continue
-
-    const [from, to] = object.source.range
+  for (const sketch of sketchRanges(graph)) {
+    const [from, to] = sketch.range
     if (offset < from || offset > to) continue
 
     const width = to - from
-    if (!found || width < found.width) found = { id: object.id, width }
+    if (!found || width < found.width) found = { id: sketch.id, width }
   }
 
   return found?.id ?? null
+}
+
+/**
+ * Every sketch in the graph and where it is written.
+ *
+ * Exported because it is the only way to say something useful when a lookup
+ * fails: "no sketch at offset 0" is unactionable, and "no sketch at offset 0;
+ * the graph has one at 12–48" points straight at the mismatch.
+ *
+ * A `BackTrace` source is flattened to its innermost range rather than skipped.
+ * Skipping it was a silent hole — an object that came through a function call
+ * carries every range on the way in, and the last is the one nearest the thing
+ * itself.
+ */
+export function sketchRanges(
+  graph: SceneGraph
+): readonly { id: ApiObjectId; range: readonly [number, number] }[] {
+  const found: { id: ApiObjectId; range: readonly [number, number] }[] = []
+
+  for (const object of graph.objects) {
+    if (object?.kind.type !== 'Sketch') continue
+
+    if (object.source.type === 'Simple') {
+      const [from, to] = object.source.range
+      found.push({ id: object.id, range: [from, to] })
+      continue
+    }
+
+    const innermost = object.source.ranges.at(-1)
+    if (!innermost) continue
+    const [from, to] = innermost[0]
+    found.push({ id: object.id, range: [from, to] })
+  }
+
+  return found
 }
 
 /** The constraints a sketch holds, for drawing them and for asking about them. */
