@@ -333,4 +333,23 @@ describe('commands extension', () => {
       },
     ])
   })
+
+  it('refocuses the editor after formatting from the command palette', async () => {
+    const format = vi.fn().mockResolvedValue(undefined)
+    const focus = vi.fn()
+    const kclManager = {
+      format,
+      editorView: { focus },
+    } as unknown as KclManager
+    const command = appCommands.find(
+      (candidate) => candidate.id === APP_COMMAND_IDS.editor.format
+    )
+
+    await command?.onSubmit({
+      context: { kclManager } as CommandBarContext,
+    })
+
+    expect(format).toHaveBeenCalledOnce()
+    expect(focus).toHaveBeenCalledOnce()
+  })
 })
