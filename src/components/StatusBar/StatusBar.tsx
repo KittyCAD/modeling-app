@@ -1,8 +1,10 @@
 import { Popover } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useLocation } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
@@ -48,7 +50,11 @@ export const defaultStatusBarItemClassNames =
 function StatusBarItem(
   props: StatusBarItemType & { position: 'left' | 'middle' | 'right' }
 ) {
+  useSignals()
   const location = useLocation()
+  const activeFileRoutePath = useAbsoluteFilePath({
+    warnIfNoExecutingPath: false,
+  })
   const tooltipPosition: TooltipProps['position'] =
     props.position === 'middle' ? 'top' : `top-${props.position}`
 
@@ -150,7 +156,9 @@ function StatusBarItem(
         <ActionButton
           Element={props.element}
           to={
-            props.href instanceof Function ? props.href(location) : props.href
+            props.href instanceof Function
+              ? props.href(location, { activeFileRoutePath })
+              : props.href
           }
           iconStart={
             'icon' in props

@@ -112,13 +112,19 @@ const settingsRegistryItem = defineRegistryItem({
       id: 'settings',
       element: 'link',
       icon: 'settings',
-      href: (location) => {
+      href: (location, { activeFileRoutePath } = {}) => {
         const pathname = location.pathname
+        const routePath =
+          !pathname.includes(PATHS.SETTINGS) &&
+          pathname.includes(PATHS.FILE) &&
+          activeFileRoutePath
+            ? activeFileRoutePath
+            : pathname
         const settingsPath = pathname.includes(PATHS.SETTINGS)
           ? pathname
-          : webSafeJoin([pathname, makeUrlPathRelative(PATHS.SETTINGS)])
+          : webSafeJoin([routePath, makeUrlPathRelative(PATHS.SETTINGS)])
 
-        return `${settingsPath}${pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`
+        return `${settingsPath}${routePath.includes(PATHS.FILE) ? '?tab=project' : ''}`
       },
       'data-testid': 'settings-link',
       order: 1,

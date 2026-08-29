@@ -162,11 +162,9 @@ export const ModelingPageProvider = ({
   // Due to the route provider, i've moved this to the ModelingPageProvider instead of CommandBarProvider
   // This will register the commands to route to Telemetry, Home, and Settings.
   useEffect(() => {
-    if (file?.path === undefined) {
+    if (filePath === undefined) {
       return
     }
-
-    const filePath = PATHS.FILE + '/' + encodeURIComponent(file?.path)
 
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
@@ -192,9 +190,7 @@ export const ModelingPageProvider = ({
         },
       })
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [location])
+  }, [commands, filePath, location, navigate])
 
   const cb = modelingMenuCallbackMostActions({
     authActor: auth.actor,
