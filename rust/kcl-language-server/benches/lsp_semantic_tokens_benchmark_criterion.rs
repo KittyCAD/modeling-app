@@ -4,7 +4,7 @@ use criterion::BenchmarkId;
 use criterion::Criterion;
 use criterion::criterion_group;
 use criterion::criterion_main;
-use kcl_lib::kcl_lsp_server;
+use kcl_language_server::kcl_lsp_server;
 use tokio::runtime::Runtime;
 use tower_lsp::LanguageServer;
 
@@ -63,10 +63,10 @@ fn bench_kcl_lsp_semantic_tokens(c: &mut Criterion) {
 criterion_group!(benches, bench_kcl_lsp_semantic_tokens);
 criterion_main!(benches);
 
-const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");
-const PIPES_PROGRAM: &str = include_str!("../e2e/executor/inputs/pipes_on_pipes.kcl");
-const CUBE_PROGRAM: &str = include_str!("../e2e/executor/inputs/cube.kcl");
-const MATH_PROGRAM: &str = include_str!("../e2e/executor/inputs/math.kcl");
-const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../tests/mike_stress_test/input.kcl");
-const GLOBAL_TAGS_FILE: &str = include_str!("../e2e/executor/inputs/global-tags.kcl");
-const LSYSTEM_PROGRAM: &str = include_str!("../e2e/executor/inputs/lsystem.kcl");
+const KITT_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/kittycad_svg.kcl");
+const PIPES_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/pipes_on_pipes.kcl");
+const CUBE_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/cube.kcl");
+const MATH_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/math.kcl");
+const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../../kcl-lib/tests/mike_stress_test/input.kcl");
+const GLOBAL_TAGS_FILE: &str = include_str!("../../kcl-lib/e2e/executor/inputs/global-tags.kcl");
+const LSYSTEM_PROGRAM: &str = include_str!("../../kcl-lib/e2e/executor/inputs/lsystem.kcl");

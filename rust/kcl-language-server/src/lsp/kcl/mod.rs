@@ -7,7 +7,6 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use anyhow::Result;
-#[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
 use tokio::sync::RwLock;
@@ -117,6 +116,7 @@ use crate::lsp::ToLspRange;
 use crate::lsp::backend::Backend as _;
 use crate::lsp::kcl::hover::Hover;
 use crate::lsp::kcl::hover::HoverOpts;
+use crate::lsp::kcl::hover::HoverProvider;
 use crate::lsp::util::IntoDiagnostic;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::ast::types::Expr;
@@ -152,15 +152,14 @@ const SEMANTIC_TOKEN_MODIFIERS: [SemanticTokenModifier; 5] = [
 ];
 
 /// A subcommand for running the server.
-#[derive(Clone, Debug)]
-#[cfg_attr(feature = "cli", derive(Parser))]
+#[derive(Clone, Debug, Parser)]
 pub struct Server {
     /// Port that the server should listen
-    #[cfg_attr(feature = "cli", clap(long, default_value = "8080"))]
+    #[clap(long, default_value = "8080")]
     pub socket: i32,
 
     /// Listen over stdin and stdout instead of a tcp socket.
-    #[cfg_attr(feature = "cli", clap(short, long, default_value = "false"))]
+    #[clap(short, long, default_value = "false")]
     pub stdio: bool,
 }
 
@@ -2011,9 +2010,7 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
-    let mem = cache::read_old_memory().await?;
-    let value = mem.stack.get(name, SourceRange::default()).ok()?;
-
+    let value = cache::read_old_memory_var(name).await?;
     Some(f(&value))
 }
 

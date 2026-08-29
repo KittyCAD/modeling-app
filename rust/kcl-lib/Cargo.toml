@@ -38,7 +38,7 @@ dhat-heap = ["dep:dhat"]
 disable-println = []
 engine = []
 pyo3 = ["dep:pyo3", "dep:pyo3-stub-gen"]
-# Helper functions also used in benchmarks.
+# Test-only compiler hooks used by the standalone language-server crate.
 lsp-test-util = []
 # For debugging.
 snapshot-engine-responses = []
@@ -182,11 +182,6 @@ harness = false
 [[bench]]
 name = "ast_benchmark"
 harness = false
-
-[[bench]]
-name = "lsp_semantic_tokens_benchmark_criterion"
-harness = false
-required-features = ["lsp-test-util"]
 
 [[bench]]
 name = "benchmark_kcl_samples"

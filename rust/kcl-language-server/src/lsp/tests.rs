@@ -1652,7 +1652,7 @@ async fn test_kcl_lsp_semantic_tokens() {
 #[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_semantic_tokens_large_file() {
     let server = kcl_lsp_server(false).await.unwrap();
-    let code = include_str!("../../e2e/executor/inputs/global-tags.kcl");
+    let code = include_str!("../../../kcl-lib/e2e/executor/inputs/global-tags.kcl");
 
     // Send open file.
     server
@@ -3963,7 +3963,7 @@ async fn kcl_test_kcl_lsp_multi_file_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let cwd = std::env::current_dir().unwrap();
-    let joined = cwd.join("tests/import_file_parse_error/");
+    let joined = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../kcl-lib/tests/import_file_parse_error/");
 
     // Change the current directory.
     std::env::set_current_dir(joined).unwrap();
@@ -4023,6 +4023,7 @@ async fn kcl_test_kcl_lsp_multi_file_error() {
     }
 
     server.executor_ctx().await.clone().unwrap().close().await;
+    std::env::set_current_dir(cwd).unwrap();
 }
 
 #[tokio::test(flavor = "multi_thread")]

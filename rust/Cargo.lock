@@ -2415,12 +2415,19 @@ name = "kcl-language-server"
 version = "0.2.181"
 dependencies = [
  "anyhow",
+ "async-trait",
  "clap",
+ "criterion",
  "dashmap 6.2.1",
  "kcl-lib",
  "kittycad",
+ "kittycad-modeling-cmds",
  "lazy_static",
  "log",
+ "pretty_assertions",
+ "ropey",
+ "serde",
+ "serde_json",
  "signal-hook",
  "slog",
  "slog-async",
@@ -2429,6 +2436,9 @@ dependencies = [
  "tokio",
  "tower-lsp",
  "tracing-subscriber",
+ "ts-rs",
+ "url",
+ "uuid",
 ]
 
 [[package]]
@@ -2591,6 +2601,7 @@ dependencies = [
  "getrandom 0.3.4",
  "gloo-utils",
  "js-sys",
+ "kcl-language-server",
  "kcl-lib",
  "kittycad",
  "kittycad-modeling-cmds",
