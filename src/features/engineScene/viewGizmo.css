@@ -1,0 +1,99 @@
+/*
+ * The view gizmo.
+ *
+ * A round pad matching the outline's chrome, with six handles arranged by where
+ * the camera says each axis points. Nothing here knows how the scene is
+ * rendered: the arrangement comes from the projection, and the colours are the
+ * existing app's so the two read as the same tool.
+ */
+.zds-gizmo {
+  position: relative;
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-pill);
+  background: color-mix(in oklch, var(--zds-surface-overlay) 72%, transparent);
+  box-shadow: var(--zds-shadow-overlay);
+  backdrop-filter: blur(0.5rem);
+
+  --zds-gizmo-x: #fa6668;
+  --zds-gizmo-y: #11eb6b;
+  --zds-gizmo-z: #6689ef;
+  /* The negative handles are unlabelled and quiet: they say which way round the
+     model is without competing with the three that name themselves. */
+  --zds-gizmo-negative: #c6c7c2;
+  --zds-gizmo-handle: 15px;
+}
+
+.zds-gizmo__stems {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.zds-gizmo__stem {
+  stroke: var(--zds-gizmo-negative);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.zds-gizmo__stem[data-positive="true"][data-axis="x"] {
+  stroke: var(--zds-gizmo-x);
+}
+.zds-gizmo__stem[data-positive="true"][data-axis="y"] {
+  stroke: var(--zds-gizmo-y);
+}
+.zds-gizmo__stem[data-positive="true"][data-axis="z"] {
+  stroke: var(--zds-gizmo-z);
+}
+
+.zds-gizmo__handle {
+  position: absolute;
+  /* Centred on its own point, so the arithmetic above is about direction only. */
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  inline-size: var(--zds-gizmo-handle);
+  block-size: var(--zds-gizmo-handle);
+  padding: 0;
+  border: var(--zds-size-hairline) solid transparent;
+  border-radius: var(--zds-radius-pill);
+  background: var(--zds-gizmo-negative);
+  color: #fcfcfc;
+  font-family: var(--zds-font-sans);
+  font-size: 9px;
+  font-weight: var(--zds-font-weight-bold);
+  line-height: 1;
+  cursor: pointer;
+  transition: scale var(--zds-motion-fast) var(--zds-motion-ease-out);
+}
+
+.zds-gizmo__handle[data-positive="true"][data-axis="x"] {
+  background: var(--zds-gizmo-x);
+}
+.zds-gizmo__handle[data-positive="true"][data-axis="y"] {
+  background: var(--zds-gizmo-y);
+}
+.zds-gizmo__handle[data-positive="true"][data-axis="z"] {
+  background: var(--zds-gizmo-z);
+}
+
+/*
+ * Grown rather than recoloured on hover, which is what the existing app does and
+ * is the right choice here: the colour already means which axis this is, so
+ * changing it would say something the hover does not mean.
+ */
+.zds-gizmo__handle[data-hovered="true"],
+.zds-gizmo__handle:focus-visible {
+  scale: 1.5;
+}
+
+.zds-gizmo__handle:focus-visible {
+  outline: none;
+  border-color: var(--zds-border-focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zds-gizmo__handle {
+    transition: none;
+  }
+}

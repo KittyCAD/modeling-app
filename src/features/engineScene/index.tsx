@@ -14,6 +14,7 @@ import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { themeService } from '@src/contracts/theme'
 import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
 import { createEngineProjection } from '@src/features/engineScene/createEngineProjection'
+import { ViewGizmo } from '@src/features/engineScene/ViewGizmo'
 import { createEngineScenePicker } from '@src/features/engineScene/createEngineScenePicker'
 import {
   backgroundColorFor,
@@ -153,6 +154,20 @@ export default defineRegistryItemFactory((ctx) => {
          * value spec. The scene owns the placement; feature and body trees only
          * know that they are outline sections ordered inside it.
          */
+        /**
+         * Which way round the model is, in the corner it is always in.
+         *
+         * Reads the projection and runs the named-view commands, so it holds no
+         * behaviour of its own: clicking a handle is the same act as pressing
+         * `v r`, and both go through the one command.
+         */
+        provide(sceneItemsValueSpec, {
+          id: 'scene.viewGizmo',
+          zone: 'end',
+          order: 0,
+          render: () => <ViewGizmo />,
+        }),
+
         provide(sceneItemsValueSpec, {
           id: 'scene.outlineHud',
           zone: 'start',

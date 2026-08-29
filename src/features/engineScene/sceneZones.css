@@ -52,11 +52,18 @@
   align-items: flex-start;
 }
 
+/*
+ * Bottom-aligned, because what lives here is the view gizmo.
+ *
+ * The lower-right corner is where every CAD package puts it, and muscle memory
+ * about where to click to square up a view is worth more than symmetry with the
+ * start edge.
+ */
 .zds-scene-zone[data-zone="end"] {
   inset-inline-end: var(--zds-space-2);
   inset-block: var(--zds-space-2);
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: flex-end;
 }
 

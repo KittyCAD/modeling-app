@@ -12,6 +12,7 @@ import {
   pixelsPerUnit,
   projectPoint,
   unprojectToPlane,
+  viewDirection,
 } from '@src/lib/scene/projection'
 
 /**
@@ -163,6 +164,11 @@ export function createEngineProjection(
     id: 'engine',
     ready: computed(() => camera.value !== null),
     epoch: computed(() => epoch.value),
+
+    orientationOf(direction: Vector3) {
+      const current = camera.peek()
+      return current ? viewDirection(current, direction) : null
+    },
 
     project(point: Vector3, viewport: ViewportSize) {
       const current = camera.peek()

@@ -295,6 +295,36 @@ export function worldToPlane(plane: PlaneFrame, point: Vector3): PlanePoint {
 }
 
 /**
+ * Which way a world direction points on screen.
+ *
+ * Orientation without position: `x` and `y` are where the direction goes in the
+ * image plane, and `depth` is how much of it points away from the viewer. All
+ * three are in [-1, 1] for a unit direction, so a caller can scale them into a
+ * box of any size.
+ *
+ * This is what a view gizmo needs and it is deliberately *not* `projectPoint`.
+ * A gizmo is not in the scene: it has no position, it does not move when the
+ * model does, and it must keep working when the camera is inside the geometry.
+ * All it shares with the scene is which way round the camera is.
+ *
+ * Screen y is flipped here, as everywhere: the camera's up is the screen's up,
+ * and the screen counts downward.
+ */
+export function viewDirection(
+  camera: CameraFrame,
+  direction: Vector3
+): { x: number; y: number; depth: number } {
+  const basis = viewBasis(camera)
+  const unit = normalize(direction)
+
+  return {
+    x: dot(unit, basis.right),
+    y: -dot(unit, basis.up),
+    depth: dot(unit, basis.forward),
+  }
+}
+
+/**
  * How many element pixels one plane unit covers, near a point.
  *
  * Measured rather than derived, by projecting a short step along the plane: it

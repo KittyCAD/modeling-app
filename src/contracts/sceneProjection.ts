@@ -43,6 +43,20 @@ export interface SceneProjection {
    */
   readonly epoch: ReadonlySignal<number>
 
+  /**
+   * Which way a world direction points on screen, and how far from the viewer.
+   *
+   * Orientation without position, in [-1, 1] on each axis. Separate from
+   * `project` because what needs it is not in the scene: a view gizmo has no
+   * place in the model, does not move when the model does, and has to keep
+   * working when the camera is inside the geometry. All it shares with the scene
+   * is which way round the camera is.
+   *
+   * Null until a camera has been heard from.
+   */
+  orientationOf(
+    direction: Vector3
+  ): { x: number; y: number; depth: number } | null
   /** Where a world point lands on the surface, in element pixels. */
   project(
     point: Vector3,
