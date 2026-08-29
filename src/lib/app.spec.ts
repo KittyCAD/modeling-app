@@ -895,6 +895,9 @@ describe('project system', () => {
       vi.spyOn(kclManager, 'executeCode').mockImplementation(async () => {
         calls.push(`execute:${kclManager.path}`)
       })
+      const sendUpdateFile = vi
+        .spyOn(kclManager.rustContext, 'sendUpdateFile')
+        .mockImplementation(async () => {})
       vi.spyOn(
         kclManager.engineCommandManager,
         'sendSceneCommand'
@@ -913,8 +916,12 @@ describe('project system', () => {
         expect(calls).toEqual([`open:${alternatePath}`])
       })
 
+      expect(openedProject.executingPath).toBe(alternatePath)
+      expect(openedProject.executingFileEntry.value.name).toBe('alternate.kcl')
+
       await vi.advanceTimersByTimeAsync(1000)
       expect(calls).toEqual([`open:${alternatePath}`])
+      expect(sendUpdateFile).not.toHaveBeenCalled()
 
       resolveOpenProject()
       await openAlternatePromise
@@ -924,6 +931,7 @@ describe('project system', () => {
         `open:resolved:${alternatePath}`,
         `execute:${alternatePath}`,
       ])
+      expect(sendUpdateFile).not.toHaveBeenCalled()
     } finally {
       vi.useRealTimers()
       app.dispose()

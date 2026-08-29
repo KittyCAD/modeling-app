@@ -502,6 +502,10 @@ export class ZDSProject {
 
     // Initialize a snapshot of the project for Rust
     // to have for executions and code mods
+    if (isExecuting) {
+      this.executingPath = path
+    }
+
     markOnce('project/startCollectFiles')
     const apiFiles = await this.getAllKclFiles()
     markOnce('project/endCollectFiles')
@@ -512,9 +516,6 @@ export class ZDSProject {
       .catch(reportRejection)
     markOnce('project/endSendProjectToWasm')
 
-    if (isExecuting) {
-      this.executingPath = path
-    }
     if (
       isExecuting &&
       providedEditor &&
