@@ -19,10 +19,12 @@
 }
 
 /*
- * Flush with the top edge, so an item can attach to it.
+ * Flush with the top and start edges, so an item can attach to them.
  *
- * The other three keep their margin: they hold things that hover — a gizmo, a
- * readout — while the top strip is where the toolbar hangs from the panel.
+ * The toolbar hangs from the top strip and the scene outline hangs from the
+ * start one, both by squaring the corners they meet and dropping that border.
+ * The other two keep their margin: they hold things that hover — a gizmo, a
+ * readout — which look wrong welded to an edge.
  */
 .zds-scene-zone[data-zone="top"] {
   inset-block-start: 0;
@@ -39,7 +41,11 @@
 }
 
 .zds-scene-zone[data-zone="start"] {
-  inset-inline-start: var(--zds-space-2);
+  /*
+   * Flush inline, so the outline can weld itself to the edge; still inset in the
+   * block direction, so it hangs below the top strip rather than fighting it.
+   */
+  inset-inline-start: 0;
   inset-block: var(--zds-space-2);
   flex-direction: column;
   justify-content: flex-start;

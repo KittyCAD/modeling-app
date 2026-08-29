@@ -61,9 +61,17 @@ export function SceneHud() {
       aria-label="Scene outline"
       data-collapsed={collapsed ? 'true' : undefined}
     >
+      {/*
+        Ghost, not chassis. The chassis variant exists for buttons that tile into
+        a strip, and it pays for that with `block-size: 100%` and its own padding
+        — both of which win over `size` because they are declared later in the
+        same file. In a strip that is invisible; here it made the button as tall
+        as the outline, and then squeezed the chevron out of a square too small
+        to hold an icon and two paddings.
+      */}
       <Button
         class="zds-scene-hud__collapse"
-        variant="chassis"
+        variant="ghost"
         size="small"
         icon={collapsed ? 'chevronRight' : 'chevronLeft'}
         iconOnly
