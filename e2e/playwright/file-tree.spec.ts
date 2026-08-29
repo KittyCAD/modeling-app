@@ -931,10 +931,9 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
       await fileWithinFolder.click()
 
       await expect(projectMenuButton).toContainText('someFileWithin.kcl')
-      const newUrl = page.url()
-      expect(newUrl).toContain('folderToRename')
-      expect(newUrl).toContain('someFileWithin.kcl')
-      expect(newUrl).not.toContain('main.kcl')
+      await expect(page).toHaveURL(/folderToRename/)
+      await expect(page).toHaveURL(/someFileWithin\.kcl/)
+      await expect(page).not.toHaveURL(/main\.kcl/)
       expect(await checkUnRenamedFolderFS()).toBeTruthy()
       expect(await checkRenamedFolderFS()).toBeFalsy()
     })
