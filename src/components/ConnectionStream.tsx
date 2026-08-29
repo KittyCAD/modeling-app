@@ -645,6 +645,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
 
   useEffect(() => {
     const cameraControls = sceneInfra.camControls
+    const wasLocalCameraMode = cameraControls.localCameraMode
+    cameraControls.localCameraMode = shouldShowLocalWebGpuScene
 
     // The existing sketch state machine owns camera synchronization while
     // entering and editing sketches.
@@ -657,11 +659,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     }
 
     if (shouldShowLocalWebGpuScene) {
-      cameraControls.syncDirection = 'local'
       return
     }
 
-    if (cameraControls.syncDirection !== 'local') {
+    if (!wasLocalCameraMode) {
       cameraControls.syncDirection = 'engineToClient'
       return
     }

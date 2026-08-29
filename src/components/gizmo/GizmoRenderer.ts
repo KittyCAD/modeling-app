@@ -384,7 +384,7 @@ export default class GizmoRenderer {
         }
 
         const camControls = this.sceneInfra.camControls
-        if (camControls.syncDirection === 'local') {
+        if (camControls.localCameraMode) {
           // Use the same update path as dragging the main canvas so the camera
           // starts a subsequent gizmo animation from exactly the visible pose.
           camControls.pendingRotation = camControls.pendingRotation
@@ -626,7 +626,10 @@ async function animateCameraToQuaternion(
 ) {
   const camControls = sceneInfra.camControls
   const previousSyncDirection = camControls.syncDirection
-  if (previousSyncDirection === 'engineToClient') {
+  if (
+    !camControls.localCameraMode &&
+    previousSyncDirection === 'engineToClient'
+  ) {
     camControls.syncDirection = 'clientToEngine'
   }
   camControls.enableRotate = false

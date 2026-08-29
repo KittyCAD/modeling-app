@@ -86,7 +86,7 @@ export type ReactCameraProperties =
       quaternion: [number, number, number, number]
     }
 
-export type CameraSyncDirection = 'clientToEngine' | 'engineToClient' | 'local'
+export type CameraSyncDirection = 'clientToEngine' | 'engineToClient'
 
 class CameraRateLimiter {
   lastSend?: Date = undefined
@@ -112,6 +112,7 @@ class CameraRateLimiter {
 export class CameraControls {
   engineCommandManager: ConnectionManager
   syncDirection: CameraSyncDirection = 'engineToClient'
+  localCameraMode = false
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
@@ -143,6 +144,10 @@ export class CameraControls {
   _setting_allowOrbitInSketchMode = false
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
+  }
+
+  private get effectiveCameraMode(): CameraSyncDirection | 'local' {
+    return this.localCameraMode ? 'local' : this.syncDirection
   }
 
   private _zoomFocus: Vector3 | null = null // the position under the mouse when zooming, in world space
@@ -254,11 +259,13 @@ export class CameraControls {
   }
 
   throttledEngCmd = throttle((cmd: EngineCommand) => {
+    if (this.localCameraMode) return
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 30)
 
   throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
+    if (this.localCameraMode) return
     const cmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -394,7 +401,7 @@ export class CameraControls {
 
     const cb = ({ data, type }: CallBackParam) => {
       if (
-        this.syncDirection === 'local' &&
+        this.effectiveCameraMode === 'local' &&
         (type === 'camera_drag_move' ||
           type === 'camera_drag_end' ||
           type === 'default_camera_zoom')
@@ -514,7 +521,7 @@ export class CameraControls {
     if (interaction === 'none') return
     this.handleStart()
 
-    if (this.syncDirection === 'engineToClient') {
+    if (this.effectiveCameraMode === 'engineToClient') {
       const window = this.streamToEngineWindowCoordinates({
         clientX: event.clientX,
         clientY: event.clientY,
@@ -552,7 +559,7 @@ export class CameraControls {
       // our past (and current) interaction was a drag.
       this.wasDragging = true
 
-      if (this.syncDirection === 'engineToClient') {
+      if (this.effectiveCameraMode === 'engineToClient') {
         this.moveSender.send(() => {
           this.doMove(interaction, [event.clientX, event.clientY])
         })
@@ -565,7 +572,8 @@ export class CameraControls {
       // For example, for rotating the camera around the target:
       if (
         interaction === 'rotate' ||
-        (this.syncDirection === 'local' && interaction === 'rotatetrackball')
+        (this.effectiveCameraMode === 'local' &&
+          interaction === 'rotatetrackball')
       ) {
         this.pendingRotation = this.pendingRotation
           ? this.pendingRotation
@@ -588,7 +596,7 @@ export class CameraControls {
           this.pendingPan = newPosition.sub(this.worldDownPosition)
         }
       }
-      if (this.syncDirection === 'local') {
+      if (this.effectiveCameraMode === 'local') {
         this.update()
       }
     } else {
@@ -600,10 +608,7 @@ export class CameraControls {
 
       // Clear any previous drag state
       this.wasDragging = false
-      if (
-        this.syncDirection === 'engineToClient' ||
-        this.syncDirection === 'local'
-      ) {
+      if (this.effectiveCameraMode === 'engineToClient') {
         const newCmdId = uuidv4()
 
         // You can use raw JS to fetch the element from the DOM. We do not need to proxy a ref of a ref element on the DOM element
@@ -643,7 +648,7 @@ export class CameraControls {
     this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
     this.handleEnd()
-    if (this.syncDirection === 'engineToClient') {
+    if (this.effectiveCameraMode === 'engineToClient') {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
       const window = this.streamToEngineWindowCoordinates({
@@ -670,7 +675,7 @@ export class CameraControls {
     // TODO: find a better way than this clipping to +/- 100 to prevent the bug in #5120
     const deltaY = Math.max(-100, Math.min(100, event.deltaY))
 
-    if (this.syncDirection === 'engineToClient') {
+    if (this.effectiveCameraMode === 'engineToClient') {
       if (interaction === 'zoom') {
         this.zoomSender.send(() => {
           this.doZoom(deltaY)
@@ -705,7 +710,7 @@ export class CameraControls {
         `Unexpected interaction type for wheel event: ${interaction}`
       )
     }
-    if (this.syncDirection === 'local') {
+    if (this.effectiveCameraMode === 'local') {
       this.update()
     }
     this.handleEnd()
@@ -741,7 +746,7 @@ export class CameraControls {
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
-    if (this.syncDirection !== 'local') {
+    if (this.effectiveCameraMode !== 'local') {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
@@ -790,7 +795,7 @@ export class CameraControls {
     }
 
     if (this.camera instanceof OrthographicCamera) {
-      if (this.syncDirection !== 'local') {
+      if (this.effectiveCameraMode !== 'local') {
         await this.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
@@ -808,8 +813,8 @@ export class CameraControls {
   usePerspectiveCamera = async (forceSend = false) => {
     this._usePerspectiveCamera()
     if (
-      this.syncDirection === 'clientToEngine' ||
-      (forceSend && this.syncDirection !== 'local')
+      this.effectiveCameraMode === 'clientToEngine' ||
+      (forceSend && this.effectiveCameraMode !== 'local')
     ) {
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
@@ -858,7 +863,7 @@ export class CameraControls {
       .add(direction.multiplyScalar(-distanceAfter))
     this.camera.position.copy(newPosition)
 
-    if (this.syncDirection === 'local') {
+    if (this.effectiveCameraMode === 'local') {
       this.onCameraChange()
       return
     }
@@ -919,7 +924,7 @@ export class CameraControls {
     let didChange = false
     if (this.pendingRotation) {
       this.rotateCamera(this.pendingRotation.x, this.pendingRotation.y)
-      if (this.syncDirection === 'local') {
+      if (this.effectiveCameraMode === 'local') {
         this.safeLookAtTarget()
       }
       this.pendingRotation = null // Clear the pending rotation after applying it
@@ -1352,7 +1357,7 @@ export class CameraControls {
     targetPosition = new Vector3(),
     duration = 500
   ): Promise<void> {
-    if (this.syncDirection === 'engineToClient')
+    if (this.effectiveCameraMode === 'engineToClient')
       console.warn(
         'tweenCameraToQuaternion not design to work with engineToClient syncDirection.'
       )
@@ -1435,7 +1440,7 @@ export class CameraControls {
   snapToPerspectiveBeforeHandingBackControlToEngine = async (
     targetCamUp = new Vector3(0, 0, 1)
   ) => {
-    if (this.syncDirection === 'engineToClient') {
+    if (this.effectiveCameraMode === 'engineToClient') {
       console.warn(
         'animate To Perspective not design to work with engineToClient syncDirection.'
       )
@@ -1501,8 +1506,8 @@ export class CameraControls {
     }
 
     if (
-      this.syncDirection === 'clientToEngine' ||
-      (forceUpdate && this.syncDirection !== 'local')
+      this.effectiveCameraMode === 'clientToEngine' ||
+      (forceUpdate && this.effectiveCameraMode !== 'local')
     ) {
       this.throttledUpdateEngineCamera({
         quaternion: this.camera.quaternion,
@@ -1600,7 +1605,10 @@ export class CameraControls {
 
     // Orbit gesture is a 1-finger "pan"
     hammertime.on('pan', (ev) => {
-      if (this.syncDirection === 'engineToClient' && ev.maxPointers === 1) {
+      if (
+        this.effectiveCameraMode === 'engineToClient' &&
+        ev.maxPointers === 1
+      ) {
         if (this.enableRotate) {
           const orbitMode =
             this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
@@ -1620,7 +1628,7 @@ export class CameraControls {
       const direction = ev.angle
 
       if (
-        this.syncDirection === 'engineToClient' &&
+        this.effectiveCameraMode === 'engineToClient' &&
         ev.maxPointers === 1 &&
         this.enableRotate &&
         velocity > 0
@@ -1660,7 +1668,7 @@ export class CameraControls {
 
     // Pan gesture is a 2-finger gesture I named "doublepan"
     hammertime.on('doublepan', (ev) => {
-      if (this.syncDirection === 'engineToClient' && this.enablePan) {
+      if (this.effectiveCameraMode === 'engineToClient' && this.enablePan) {
         this.moveSender.send(() => {
           this.doMove('pan', [ev.center.x, ev.center.y])
         })
@@ -1684,7 +1692,7 @@ export class CameraControls {
         Math.abs(normalizedScale) > normalizedScaleThreshold
 
       if (
-        this.syncDirection === 'engineToClient' &&
+        this.effectiveCameraMode === 'engineToClient' &&
         this.enableZoom &&
         isUnderVelocityLimit &&
         isOverNormalizedScaleLimit
