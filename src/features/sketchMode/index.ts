@@ -161,6 +161,28 @@ export default defineRegistryItemFactory((ctx) => {
           run: () => void session.exit(),
         }),
 
+        /**
+         * Opening has a button, because otherwise it has nothing.
+         *
+         * Start sketch writes the block and puts the cursor in it, which is
+         * enough to reach Sketch mode — and Sketch mode then showed a strip of
+         * tools that were all disabled, because a tool needs a *session* and
+         * only a command nobody can see would open one. A mode whose every
+         * button is greyed out and whose remedy is in the palette is not a
+         * discoverable app.
+         *
+         * Its own run, ahead of the tools: open, then draw, then finish is the
+         * order the buttons are used in.
+         */
+        provide(toolbarItemsValueSpec, {
+          kind: 'command',
+          id: 'sketch.begin',
+          mode: SKETCHING_MODE,
+          section: 'open',
+          order: 0,
+          commandId: 'sketch.enter',
+        }),
+
         provide(toolbarItemsValueSpec, {
           kind: 'command',
           id: 'sketch.finish',
