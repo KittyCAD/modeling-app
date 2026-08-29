@@ -55,7 +55,7 @@ describe('MeasurementTool helpers', () => {
       trajectoryId: null,
       method: 'new',
       consumed: false,
-    } as Extract<Artifact, { type: 'sweep' }>
+    }
   }
 
   function pathArtifact(value: {
@@ -75,7 +75,7 @@ describe('MeasurementTool helpers', () => {
         pathToNode: [],
         nodePath: { steps: [] },
       },
-    } as Extract<Artifact, { type: 'path' }>
+    }
   }
 
   function patternArtifact(value: {
