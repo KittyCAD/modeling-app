@@ -330,8 +330,7 @@ enum Control {
     /// `exit()` was called (or an edited sketch block finished): unwind every
     /// continuation -- running cleanups, and the exit flavor of call_finish on
     /// call boundaries -- out to the fresh root, which returns the carried
-    /// control-flow value. Only `Exit`-kind control flow enters here; a
-    /// KCL 3.0 `return` uses [`Control::Return`].
+    /// control-flow value. Only `Exit`-kind control flow enters here.
     Exit(KclValueControlFlow),
     /// A `return` executed under a KCL 3.0 entry point: unwind continuations --
     /// running cleanups -- to the nearest call boundary, which absorbs the
