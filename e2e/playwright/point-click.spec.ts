@@ -642,7 +642,7 @@ extrude001 = extrude(region001, length = 100)`
         },
         commandName: 'Helix',
       })
-      await page.getByRole('button', { name: 'Counter clock wise' }).click()
+      await page.getByRole('button', { name: 'CounterClockWise' }).click()
       await cmdBar.expectState({
         commandName: 'Helix',
         stage: 'arguments',
