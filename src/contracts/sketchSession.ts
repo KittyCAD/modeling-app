@@ -48,6 +48,8 @@ export interface SketchSessionService {
   readonly busy: ReadonlySignal<boolean>
   /** Why the last attempt did not work, in words a user can act on. */
   readonly error: ReadonlySignal<string | null>
+  /** Put the last failure away. It is a report, not a state to be stuck in. */
+  dismissError(): void
   /** Whether a session could be opened right now. */
   readonly canEnter: ReadonlySignal<boolean>
 

@@ -2,7 +2,11 @@ import type { SceneGraph } from '@rust/kcl-lib/bindings/FrontendApi'
 import { signal } from '@preact/signals'
 import { describe, expect, it, vi } from 'vitest'
 import { combineCapabilities } from '@src/contracts/buffers'
-import type { KclFrontendService } from '@src/contracts/kclFrontend'
+import { requestExecution } from '@src/lib/buffers/annotations'
+import type {
+  KclFrontendService,
+  SetProgramResult,
+} from '@src/contracts/kclFrontend'
 import type { SceneProjection } from '@src/contracts/sceneProjection'
 import type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 import type { ArtifactMap } from '@src/lib/kcl/artifacts'
@@ -57,8 +61,7 @@ const setup = (
   options: {
     sketch?: SketchBlockRange | null
     program?: unknown
-    setProgram?: () => Promise<SceneGraph | null>
-    exitText?: string
+    setProgram?: () => Promise<SetProgramResult>
     exitThrows?: boolean
     artifacts?: ArtifactMap
     projection?: SceneProjection
@@ -79,9 +82,9 @@ const setup = (
     }),
     setProgram: vi.fn(
       options.setProgram ??
-        (async () => {
+        (async (): Promise<SetProgramResult> => {
           calls.push('setProgram')
-          return graph()
+          return { kind: 'built', graph: graph() }
         })
     ),
     editSketch: vi.fn(async () => {
@@ -91,7 +94,8 @@ const setup = (
     exitSketch: vi.fn(async () => {
       calls.push('exitSketch')
       if (options.exitThrows) throw new Error('the frontend gave up')
-      return { text: options.exitText ?? SOURCE } as never
+      // A bare scene graph: leaving a sketch changes no text.
+      return graph()
     }),
     addSegment: vi.fn(async () => {
       calls.push('addSegment')
@@ -160,13 +164,31 @@ describe('opening a sketch', () => {
     expect(app.calls).toEqual([])
   })
 
-  it('reports a program that would not build a scene', async () => {
-    const app = setup({ setProgram: async () => null })
+  /*
+   * kcl-lib does not reject when a program fails — it hands back the partial
+   * state — so the reason has to be read out of the answer and repeated. This
+   * used to tell somebody to run a file they had just run.
+   */
+  it('repeats KCL’s own words when the program ran and failed', async () => {
+    const app = setup({
+      setProgram: async () => ({
+        kind: 'failed',
+        reason: 'sketch on a face is not supported here',
+      }),
+    })
 
     await app.session.enter()
 
-    expect(app.session.error.value).toMatch(/has to run/)
+    expect(app.session.error.value).toMatch(/not supported here/)
     expect(app.session.open.value).toBeNull()
+  })
+
+  it('says to wait when KCL has not loaded', async () => {
+    const app = setup({ setProgram: async () => ({ kind: 'unavailable' }) })
+
+    await app.session.enter()
+
+    expect(app.session.error.value).toMatch(/still loading/)
   })
 
   it('reports a run whose scene has no sketch there', async () => {
@@ -174,7 +196,9 @@ describe('opening a sketch', () => {
 
     await app.session.enter()
 
-    expect(app.session.error.value).toMatch(/does not have a sketch/)
+    // Names the offset, because this one is a bug in the crossing between our
+    // text ranges and the frontend's ids and nobody can act on it without one.
+    expect(app.session.error.value).toMatch(/no sketch at offset 900/)
   })
 
   it('opens only once', async () => {
@@ -194,51 +218,63 @@ describe('opening a sketch', () => {
 })
 
 describe('leaving a sketch', () => {
-  const DRAWN = 's = sketch(on = XY) {\n  l1 = line()\n}\n'
+  /**
+   * Whether the buffer was told to run.
+   *
+   * Leaving returns a scene and no text, because every segment went into the
+   * file as it was drawn — so there is no edit to trigger an execution and it
+   * has to be asked for out loud.
+   */
+  const runRequested = (buffer: ReturnType<typeof setup>['buffer']) => {
+    let asked = false
+    buffer.onChange((change) => {
+      if (
+        change.transactions.some((transaction) =>
+          transaction.annotation(requestExecution)
+        )
+      ) {
+        asked = true
+      }
+    })
+    return () => asked
+  }
 
-  it('writes the sketch back as one edit', async () => {
-    const app = setup({ exitText: DRAWN })
-    await app.session.enter()
-
-    await app.session.exit()
-
-    expect(app.buffer.text.value).toBe(DRAWN)
-    expect(app.session.open.value).toBeNull()
-  })
-
-  /* One transaction is one undo entry for the whole sketch, and one run. */
-  it('writes it in a single transaction', async () => {
-    const app = setup({ exitText: DRAWN })
-    await app.session.enter()
-    const before = app.buffer.version.value
-
-    await app.session.exit()
-
-    expect(app.buffer.version.value).toBe(before + 1)
-  })
-
-  it('writes nothing when the sketch came back unchanged', async () => {
+  it('closes the sketch and asks for the run that renders it', async () => {
     const app = setup()
     await app.session.enter()
-    const before = app.buffer.version.value
+    const asked = runRequested(app.buffer)
 
     await app.session.exit()
 
-    expect(app.buffer.version.value).toBe(before)
+    expect(app.session.open.value).toBeNull()
+    expect(asked()).toBe(true)
+  })
+
+  it('changes no text of its own', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    await app.session.exit()
+
+    // The only text a session writes is a segment, at the moment it is drawn.
+    // Leaving asks for a run, which is a transaction that changes nothing.
+    expect(app.buffer.text.value).toBe(SOURCE)
   })
 
   /*
-   * Being unable to write back is bad; being stuck in a session that cannot be
-   * left is worse, and the text is still in the frontend.
+   * Being unable to close cleanly is bad; being stuck in a session that cannot
+   * be left is worse, and the segments are in the file either way.
    */
-  it('closes even when writing back fails', async () => {
+  it('closes, and still runs, even when the frontend fails', async () => {
     const app = setup({ exitThrows: true })
     await app.session.enter()
+    const asked = runRequested(app.buffer)
 
     await app.session.exit()
 
     expect(app.session.open.value).toBeNull()
     expect(app.session.error.value).toMatch(/gave up/)
+    expect(asked()).toBe(true)
   })
 
   it('does nothing when no sketch is open', async () => {

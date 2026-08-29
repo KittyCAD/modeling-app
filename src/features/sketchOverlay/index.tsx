@@ -22,6 +22,7 @@ import {
 } from '@src/features/sceneToolbar/modes'
 import { createSketchInteraction } from '@src/features/sketchOverlay/createSketchInteraction'
 import { SketchOverlay } from '@src/features/sketchOverlay/SketchOverlay'
+import { SketchProblem } from '@src/features/sketchOverlay/SketchProblem'
 
 /**
  * Drawing in a sketch: what it looks like, and what the pointer does.
@@ -68,6 +69,26 @@ export default defineRegistryItemFactory((ctx) => {
           // not consulted — or subscribed to — the rest of the time.
           visible: drawable,
           render: () => <SketchOverlay pointer={interaction.pointer} />,
+        }),
+
+        /**
+         * Why a sketch would not open.
+         *
+         * At an edge rather than in the fill zone, because it has a button and
+         * things in the fill zone take no pointer events — and outside the sketch
+         * mode's toolbar, because failing to open a sketch is what *leaves* that
+         * mode.
+         */
+        provide(sceneItemsValueSpec, {
+          id: 'sketch.problem',
+          zone: 'bottom',
+          order: 0,
+          visible: computed(
+            () =>
+              sessions()?.error.value != null ||
+              sessions()?.open.value?.planeProblem != null
+          ),
+          render: () => <SketchProblem />,
         }),
 
         /**

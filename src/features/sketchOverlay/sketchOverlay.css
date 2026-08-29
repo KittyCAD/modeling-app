@@ -67,3 +67,32 @@
   r: 5;
   fill: var(--zds-text-accent);
 }
+
+/*
+ * A sketch that would not open, or one that opened somewhere we cannot draw.
+ *
+ * Over the scene rather than in the toolbar, because failing to open a sketch
+ * leaves the sketch mode — so a message in that toolbar would be removed by the
+ * event it is reporting.
+ */
+.zds-sketch-problem {
+  display: flex;
+  gap: var(--zds-space-2);
+  align-items: center;
+  max-inline-size: min(38rem, 90%);
+  padding-block: var(--zds-space-1);
+  padding-inline-start: var(--zds-space-3);
+  padding-inline-end: var(--zds-space-1);
+  border: var(--zds-size-hairline) solid var(--zds-status-fault);
+  border-radius: var(--zds-radius-content);
+  background: color-mix(in oklch, var(--zds-surface-overlay) 92%, transparent);
+  box-shadow: var(--zds-shadow-overlay);
+  backdrop-filter: blur(0.5rem);
+  color: var(--zds-text-primary);
+}
+
+.zds-sketch-problem__message {
+  flex: 1;
+  min-inline-size: 0;
+  font-size: var(--zds-font-size-small);
+}

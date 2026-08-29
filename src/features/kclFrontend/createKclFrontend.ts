@@ -10,8 +10,10 @@ import type {
 } from '@src/contracts/kclContext'
 import type {
   KclFrontendService,
+  SetProgramResult,
   SketchOutcome,
 } from '@src/contracts/kclFrontend'
+import { kclErrorMessage } from '@src/lib/kcl/errors'
 
 /**
  * The version every call is stamped with.
@@ -126,24 +128,33 @@ export function createKclFrontend(
       await available.wasm.update_file(PROJECT, FILE, text)
     },
 
-    async setProgram(programAst) {
+    async setProgram(programAst): Promise<SetProgramResult> {
       const available = await ready()
-      if (!available) return null
+      if (!available) return { kind: 'unavailable' }
 
+      /*
+       * `SetProgramOutcome` is a tagged union and *both* of its arms come back as
+       * a resolved promise: kcl-lib deliberately does not reject when the program
+       * fails, because it wants to hand over the partial state it managed to
+       * build. So a failure has to be read out of the answer rather than caught.
+       */
       const raw = (await available.wasm.hack_set_program(
         JSON.stringify(programAst),
         available.settings
-      )) as { type?: string; sceneGraph?: SceneGraph } | null
+      )) as { type?: string; sceneGraph?: SceneGraph; error?: unknown } | null
 
-      /*
-       * An outcome that is not a success carries no scene. Reporting null rather
-       * than throwing keeps "the program does not run yet" an ordinary answer —
-       * it is the same thing the execution status already says out loud.
-       */
-      const graph = raw?.type === 'Success' ? (raw.sceneGraph ?? null) : null
-      if (graph) sceneGraph.value = graph
+      if (raw?.type === 'Success' && raw.sceneGraph) {
+        sceneGraph.value = raw.sceneGraph
+        return { kind: 'built', graph: raw.sceneGraph }
+      }
 
-      return graph
+      return {
+        kind: 'failed',
+        reason: kclErrorMessage(
+          raw?.error ?? raw,
+          'The program could not be executed.'
+        ),
+      }
     },
 
     async editSketch(sketchId) {
@@ -169,13 +180,21 @@ export function createKclFrontend(
       const available = await ready()
       if (!available) throw new Error('KCL is not loaded yet.')
 
-      const raw = await available.wasm.exit_sketch(
+      /*
+       * A bare `SceneGraph`, not an outcome — the one call here whose answer is
+       * shaped unlike its siblings', because leaving a sketch changes no text.
+       * Each segment was written into the file when it was drawn, so there is
+       * nothing left to write back and the caller's remaining job is to get the
+       * file executed.
+       */
+      const raw = (await available.wasm.exit_sketch(
         JSON.stringify(VERSION),
         JSON.stringify(sketchId),
         available.settings
-      )
+      )) as SceneGraph | null
 
-      return outcomeOf(raw, '')
+      if (raw?.objects) sceneGraph.value = raw
+      return raw ?? null
     },
 
     async addSegment(sketchId, segment: SegmentCtor, options = {}) {

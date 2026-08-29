@@ -11,7 +11,12 @@ import type {
 } from '@src/contracts/sketchSession'
 import type { ArtifactMap } from '@src/lib/kcl/artifacts'
 import type { SketchBlockRange } from '@src/lib/kclStdlib/program'
-import { suppressExecution } from '@src/lib/buffers/annotations'
+import {
+  bufferOrigin,
+  requestExecution,
+  suppressExecution,
+} from '@src/lib/buffers/annotations'
+import { kclErrorMessage } from '@src/lib/kcl/errors'
 import { textDiff } from '@src/lib/buffers/textDiff'
 import type { PlaneFrame, PlanePoint } from '@src/lib/scene/projection'
 import { sketchIdAt } from '@src/lib/sketch/sceneGraph'
@@ -129,11 +134,12 @@ export function createSketchSession(
    * Put what the frontend answered with into the buffer.
    *
    * As one minimal edit, recovered from the whole file it hands back, so the
-   * cursor stays where it was and the action is one thing to undo. Marked not to
-   * execute unless this is the last write of the session: a segment drawn is a
-   * change to the file that deliberately does not rebuild the model.
+   * cursor stays where it was and the action is one thing to undo. Always marked
+   * not to execute: a segment drawn is a real change to the file that
+   * deliberately does not rebuild the model. The rebuild happens once, on the
+   * way out.
    */
-  const write = (outcome: SketchOutcome, options: { execute: boolean }) => {
+  const write = (outcome: SketchOutcome) => {
     const target = buffer()
     if (!target || !outcome.text) return
 
@@ -147,7 +153,22 @@ export function createSketchSession(
         to: change.to,
         insert: change.insert,
       })),
-      annotations: options.execute ? [] : [suppressExecution.of(true)],
+      annotations: [suppressExecution.of(true)],
+    })
+  }
+
+  /**
+   * Ask for the run that makes what was drawn real.
+   *
+   * Leaving a sketch returns a scene and no text — every segment went into the
+   * file as it was drawn — so there is no edit here to trigger an execution the
+   * way an ordinary change would. It has to be said out loud, which is what
+   * `requestExecution` is for, and it is the only execution a whole sketching
+   * session costs.
+   */
+  const requestRun = () => {
+    buffer()?.dispatch({
+      annotations: [bufferOrigin.of('semantic'), requestExecution.of(true)],
     })
   }
 
@@ -155,6 +176,10 @@ export function createSketchSession(
     open: computed(() => open.value),
     busy: computed(() => busy.value),
     error: computed(() => error.value),
+
+    dismissError() {
+      error.value = null
+    },
     canEnter,
     tool: computed(() => tool.value),
 
@@ -178,9 +203,19 @@ export function createSketchSession(
       try {
         await api.sync(file, target.text.peek())
 
-        const graph = await api.setProgram(ast)
-        if (!graph) {
-          fail('That file has to run before its sketches can be edited.')
+        const built = await api.setProgram(ast)
+        if (built.kind === 'unavailable') {
+          fail('KCL is still loading. Try again in a moment.')
+          return
+        }
+        if (built.kind === 'failed') {
+          /*
+           * The program ran and the program was wrong. Saying so in KCL's own
+           * words matters more here than anywhere: this used to say "that file
+           * has to run first" to somebody who had just run it, which sends them
+           * to look at the one thing that is working.
+           */
+          fail(`That sketch cannot be opened: ${built.reason}`)
           return
         }
 
@@ -188,9 +223,11 @@ export function createSketchSession(
          * The crossing between the two ways this app names a sketch: we know
          * where it is written, the frontend knows an object id.
          */
-        const sketchId = sketchIdAt(graph, where.from)
+        const sketchId = sketchIdAt(built.graph, where.from)
         if (sketchId === null) {
-          fail('The last run does not have a sketch there.')
+          fail(
+            `The last run has no sketch at offset ${where.from}, so there is nothing to open. This is a bug rather than something you did.`
+          )
           return
         }
 
@@ -205,11 +242,7 @@ export function createSketchSession(
         }
         busy.value = false
       } catch (caught) {
-        fail(
-          caught instanceof Error
-            ? caught.message
-            : 'That sketch could not be opened.'
-        )
+        fail(kclErrorMessage(caught, 'That sketch could not be opened.'))
       }
     },
 
@@ -229,31 +262,25 @@ export function createSketchSession(
       await queue.catch(() => {})
 
       try {
-        const outcome = api ? await api.exitSketch(current.sketchId) : null
+        if (api) await api.exitSketch(current.sketchId)
 
         /*
-         * The session closes whatever the write does.
+         * The session closes whatever else happens.
          *
-         * Being unable to write the text back is bad; being stuck in a session
-         * that cannot be left is worse, and the text is still recoverable from
-         * the frontend. So the state goes first and the failure is reported.
+         * Failing to leave cleanly is bad; being stuck in a session that cannot
+         * be left is worse, and every segment is already in the file either way.
+         * So the state goes first and the failure is reported after.
          */
         open.value = null
         busy.value = false
 
-        /*
-         * The one write of the session that runs. Leaving a sketch is exactly
-         * when the engine should be told what was drawn — until this happens it
-         * has never seen any of it.
-         */
-        if (outcome) write(outcome, { execute: true })
+        requestRun()
       } catch (caught) {
         open.value = null
-        fail(
-          caught instanceof Error
-            ? caught.message
-            : 'That sketch could not be written back.'
-        )
+        // Still ask for the run. The file holds the segments whether or not the
+        // frontend tidied up after itself, and the model has to catch up to it.
+        requestRun()
+        fail(kclErrorMessage(caught, 'That sketch could not be closed.'))
       }
     },
 
@@ -291,7 +318,7 @@ export function createSketchSession(
               session.sketchId,
               action.segment
             )
-            write(outcome, { execute: false })
+            write(outcome)
           }
         })
         .catch((caught: unknown) => {

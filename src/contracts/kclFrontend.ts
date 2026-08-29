@@ -31,6 +31,19 @@ export interface SketchOutcome {
 }
 
 /**
+ * What building a scene from a program did.
+ *
+ * Three outcomes, because kcl-lib has three: it built one, it ran the program
+ * and the program was wrong, or there was nothing to run it with.
+ */
+export type SetProgramResult =
+  | { kind: 'built'; graph: SceneGraph }
+  /** The program ran and failed. `reason` is the KCL error's own words. */
+  | { kind: 'failed'; reason: string }
+  /** No WASM context yet, so nothing has run and nothing can. */
+  | { kind: 'unavailable' }
+
+/**
  * KCL's sketch frontend, as a service.
  *
  * kcl-lib holds its own copy of the project and solves sketches against it
@@ -60,14 +73,28 @@ export interface KclFrontendService {
    *
    * The one call here that reaches the engine, and the reason opening a sketch
    * costs a run: a sketch is solved against object ids only a real execution
-   * produces. Answers null when the program could not be executed.
+   * produces.
+   *
+   * Answers with *why* rather than with null, because "the program has not been
+   * run" and "the program ran and failed on line 12" are different problems with
+   * different remedies, and kcl-lib reports the second as an ordinary outcome
+   * rather than as a rejection. Collapsing them told everybody to run a file
+   * they had just run.
    */
-  setProgram(programAst: unknown): Promise<SceneGraph | null>
+  setProgram(programAst: unknown): Promise<SetProgramResult>
 
   /** Open a sketch for editing. The graph reports it as the active one. */
   editSketch(sketchId: ApiObjectId): Promise<SketchOutcome>
-  /** Close it, answering with the text to write back. */
-  exitSketch(sketchId: ApiObjectId): Promise<SketchOutcome>
+  /**
+   * Close it.
+   *
+   * Answers with the scene and *no text*, which is the one place the frontend's
+   * naming misleads: every segment was already written into the file when it was
+   * drawn, so leaving changes the model rather than the source. Whoever leaves
+   * still has to get the file executed — until then the engine has never seen
+   * any of it.
+   */
+  exitSketch(sketchId: ApiObjectId): Promise<SceneGraph | null>
   addSegment(
     sketchId: ApiObjectId,
     segment: SegmentCtor,
