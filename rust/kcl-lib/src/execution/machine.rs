@@ -327,11 +327,6 @@ enum Control {
     Eval(Box<EvalRequest>),
     /// A value is ready; hand it to the innermost continuation.
     Apply(Applied),
-    /// `exit()` was called (or an edited sketch block finished): unwind every
-    /// continuation -- running cleanups, and the exit flavor of call_finish on
-    /// call boundaries -- out to the fresh root, which returns the carried
-    /// control-flow value. Only `Exit`-kind control flow enters here.
-    Exit(KclValueControlFlow),
     /// A `return` executed under a KCL 3.0 entry point: unwind continuations --
     /// running cleanups -- to the nearest call boundary, which absorbs the
     /// value as the function's normal result (tags and return-type coercion
@@ -339,6 +334,11 @@ enum Control {
     /// boundary remains (a callback body, whose native call frame absorbs it,
     /// or a top-level return escaping an expression, which run_block rejects).
     Return(KclValueControlFlow),
+    /// `exit()` was called (or an edited sketch block finished): unwind every
+    /// continuation -- running cleanups, and the exit flavor of call_finish on
+    /// call boundaries -- out to the fresh root, which returns the carried
+    /// control-flow value. Only `Exit`-kind control flow enters here.
+    Exit(KclValueControlFlow),
 }
 
 /// What a finished sub-computation produced.
@@ -742,69 +742,17 @@ async fn run_loop(
                     Err(e) => return Err(unwind_error(e, &mut konts, exec_state)),
                 },
             },
-            Control::Exit(cf) => {
-                let cf = unwind_exit(cf, &mut konts, exec_state)?;
-                return Ok(RootResult::Exited(cf));
-            }
             Control::Return(cf) => match unwind_return(cf, &mut konts, exec_state, ctx).await {
                 Ok(ReturnUnwind::Resume(c)) => c,
                 Ok(ReturnUnwind::Root(cf)) => return Ok(RootResult::Exited(cf)),
                 Err(e) => return Err(unwind_error(e, &mut konts, exec_state)),
             },
+            Control::Exit(cf) => {
+                let cf = unwind_exit(cf, &mut konts, exec_state)?;
+                return Ok(RootResult::Exited(cf));
+            }
         };
     }
-}
-
-/// Unwind every continuation for an `exit()`: cleanups on non-boundaries, the
-/// exit flavor of `call_finish` on call boundaries (restore ambient flags, pop
-/// the callee env, finalize the operation -- skipping tags and coercion), and
-/// the balancing sketch cleanup (including its feature-tree `GroupEnd`).
-fn unwind_exit(
-    mut cf: KclValueControlFlow,
-    konts: &mut Vec<Kont>,
-    exec_state: &mut ExecState,
-) -> Result<KclValueControlFlow, KclError> {
-    while let Some(kont) = konts.pop() {
-        match kont {
-            Kont::CallBoundary(b) => {
-                exec_state.mod_local.machine_call_depth = exec_state.mod_local.machine_call_depth.saturating_sub(1);
-                // The exit flavor: call_finish's Exit bypass runs restores,
-                // pop_env, and op finalization, then returns the Exit
-                // unchanged before tags/coercion.
-                match b.fn_src.call_finish(b.state, Ok(Some(cf)), exec_state) {
-                    Ok(Some(v)) => cf = v,
-                    Ok(None) => {
-                        return Err(KclError::new_internal(KclErrorDetails::new(
-                            "machine executor: exit vanished at a call boundary".to_owned(),
-                            vec![b.callsite],
-                        )));
-                    }
-                    Err(e) => {
-                        // pop_env failed; propagate through the error unwind.
-                        let e = match &b.completion {
-                            BoundaryCompletion::CallExpr { .. } => e.add_unwind_location(b.fn_name.clone(), b.callsite),
-                            BoundaryCompletion::Callback => e,
-                        };
-                        return Err(unwind_error(e, konts, exec_state));
-                    }
-                }
-            }
-            Kont::SketchBody(sb) => {
-                sketch_body_cleanup(*sb, exec_state);
-                // Balance the GroupBegin operation pushed by scene_setup so
-                // the feature tree stays well-formed (matches the recursive
-                // executor's exit path; its error path deliberately skips
-                // this).
-                exec_state.push_op(Operation::GroupEnd);
-            }
-            other => {
-                if let Err(cleanup_err) = cleanup(other, exec_state) {
-                    return Err(unwind_error(cleanup_err, konts, exec_state));
-                }
-            }
-        }
-    }
-    Ok(cf)
 }
 
 /// How a `Return` unwind ended.
@@ -877,6 +825,58 @@ async fn unwind_return(
         }
     }
     Ok(ReturnUnwind::Root(cf))
+}
+
+/// Unwind every continuation for an `exit()`: cleanups on non-boundaries, the
+/// exit flavor of `call_finish` on call boundaries (restore ambient flags, pop
+/// the callee env, finalize the operation -- skipping tags and coercion), and
+/// the balancing sketch cleanup (including its feature-tree `GroupEnd`).
+fn unwind_exit(
+    mut cf: KclValueControlFlow,
+    konts: &mut Vec<Kont>,
+    exec_state: &mut ExecState,
+) -> Result<KclValueControlFlow, KclError> {
+    while let Some(kont) = konts.pop() {
+        match kont {
+            Kont::CallBoundary(b) => {
+                exec_state.mod_local.machine_call_depth = exec_state.mod_local.machine_call_depth.saturating_sub(1);
+                // The exit flavor: call_finish's Exit bypass runs restores,
+                // pop_env, and op finalization, then returns the Exit
+                // unchanged before tags/coercion.
+                match b.fn_src.call_finish(b.state, Ok(Some(cf)), exec_state) {
+                    Ok(Some(v)) => cf = v,
+                    Ok(None) => {
+                        return Err(KclError::new_internal(KclErrorDetails::new(
+                            "machine executor: exit vanished at a call boundary".to_owned(),
+                            vec![b.callsite],
+                        )));
+                    }
+                    Err(e) => {
+                        // pop_env failed; propagate through the error unwind.
+                        let e = match &b.completion {
+                            BoundaryCompletion::CallExpr { .. } => e.add_unwind_location(b.fn_name.clone(), b.callsite),
+                            BoundaryCompletion::Callback => e,
+                        };
+                        return Err(unwind_error(e, konts, exec_state));
+                    }
+                }
+            }
+            Kont::SketchBody(sb) => {
+                sketch_body_cleanup(*sb, exec_state);
+                // Balance the GroupBegin operation pushed by scene_setup so
+                // the feature tree stays well-formed (matches the recursive
+                // executor's exit path; its error path deliberately skips
+                // this).
+                exec_state.push_op(Operation::GroupEnd);
+            }
+            other => {
+                if let Err(cleanup_err) = cleanup(other, exec_state) {
+                    return Err(unwind_error(cleanup_err, konts, exec_state));
+                }
+            }
+        }
+    }
+    Ok(cf)
 }
 
 /// Unwind every continuation for an error: cleanups on non-boundaries,

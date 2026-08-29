@@ -212,16 +212,17 @@ pub(crate) use early_return;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
 pub enum ControlFlowKind {
+    /// Normal control flow. Continue to the next step.
     #[default]
     Continue,
-    /// `exit()` was called: unwind all the way to the program root, bypassing
-    /// function-call boundaries.
-    Exit,
     /// A `return` statement executed under KCL 3.0: unwind to the nearest
     /// function-call boundary, which absorbs it as the function's result. Never
     /// constructed under older entry points, whose `return` uses
     /// write-and-continue semantics instead; see `bind_return_value`.
     Return,
+    /// `exit()` was called: unwind all the way to the program root, bypassing
+    /// function-call boundaries.
+    Exit,
 }
 
 impl ControlFlowKind {
@@ -229,7 +230,8 @@ impl ControlFlowKind {
     pub fn is_some_return(&self) -> bool {
         match self {
             ControlFlowKind::Continue => false,
-            ControlFlowKind::Exit | ControlFlowKind::Return => true,
+            ControlFlowKind::Return => true,
+            ControlFlowKind::Exit => true,
         }
     }
 }
@@ -250,17 +252,17 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn exit(self) -> KclValueControlFlow {
-        KclValueControlFlow {
-            value: Box::new(self),
-            control: ControlFlowKind::Exit,
-        }
-    }
-
     pub(crate) fn return_(self) -> KclValueControlFlow {
         KclValueControlFlow {
             value: Box::new(self),
             control: ControlFlowKind::Return,
+        }
+    }
+
+    pub(crate) fn exit(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: Box::new(self),
+            control: ControlFlowKind::Exit,
         }
     }
 }
@@ -271,12 +273,12 @@ impl KclValueControlFlow {
         self.control.is_some_return()
     }
 
-    pub(crate) fn is_exit(&self) -> bool {
-        matches!(self.control, ControlFlowKind::Exit)
-    }
-
     pub(crate) fn is_return(&self) -> bool {
         matches!(self.control, ControlFlowKind::Return)
+    }
+
+    pub(crate) fn is_exit(&self) -> bool {
+        matches!(self.control, ControlFlowKind::Exit)
     }
 
     /// The source ranges of the wrapped value, for error reporting.
