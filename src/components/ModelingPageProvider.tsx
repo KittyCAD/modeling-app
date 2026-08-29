@@ -18,7 +18,6 @@ import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standard
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { kclCommands } from '@src/lib/kclCommands'
-import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
