@@ -197,6 +197,7 @@ interface ExecuteArgs {
 
 type UpdateCodeEditorOptions = {
   shouldExecute: boolean
+  shouldSyncRust: boolean
   shouldClearHistory: boolean
   /** Only has an effect if `shouldClearHistory` is `false`.
   if it is `true` then this will act as `false`. */
@@ -215,6 +216,8 @@ type UpdateCodeEditorAdditionalSpec = {
 type FromFileOptions = {
   shouldSyncRustOnOpen: boolean
 }
+
+const requestSkipRustUpdate = StateEffect.define<boolean>()
 
 type SyntheticHistoryCommit = {
   undoCode: string
@@ -1593,7 +1596,12 @@ export class KclManager extends File {
         this.lastExecutedCode
       )
       this.persistRecoverySnapshot()
-      this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
+      const shouldSkipRustUpdate = update.transactions.some((tr) =>
+        tr.effects.some((e) => e.is(requestSkipRustUpdate) && e.value)
+      )
+      if (!shouldSkipRustUpdate) {
+        this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
+      }
     }
   })
 
@@ -2184,6 +2192,7 @@ export class KclManager extends File {
         shouldExecute:
           options.shouldSyncRustOnOpen &&
           providedEditor.engineCommandManager.connection?.connected,
+        shouldSyncRust: options.shouldSyncRustOnOpen,
         shouldClearHistory: true,
         shouldResetCamera: true,
         // We explicitly do not write to the file here since we are loading from
@@ -3527,6 +3536,7 @@ export class KclManager extends File {
 
   static defaultUpdateCodeEditorOptions: UpdateCodeEditorOptions = {
     shouldExecute: false,
+    shouldSyncRust: true,
     shouldWriteToDisk: true,
     shouldResetCamera: false,
     shouldClearHistory: false,
@@ -3724,6 +3734,7 @@ export class KclManager extends File {
           ],
           effects: [
             requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
+            requestSkipRustUpdate.of(!resolvedOptions.shouldSyncRust),
             ...(additionalSpec?.effects || []),
           ],
         })
@@ -3766,6 +3777,7 @@ export class KclManager extends File {
       ],
       effects: [
         requestSkipExecution.of(!resolvedOptions.shouldExecute),
+        requestSkipRustUpdate.of(!resolvedOptions.shouldSyncRust),
         requestCameraReset.of(resolvedOptions.shouldResetCamera),
         requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
         ...this.getCheckpointHistoryEffect(resolvedOptions, additionalSpec),
