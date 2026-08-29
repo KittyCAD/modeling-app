@@ -7,9 +7,11 @@ import { useEffect, useRef } from 'react'
 export const useOnPageIdle = ({
   startCallback,
   idleCallback,
+  enabled = true,
 }: {
   startCallback: () => void
   idleCallback: () => void
+  enabled?: boolean
 }) => {
   const { settings } = useApp()
   const { kclManager } = useSingletons()
@@ -23,15 +25,6 @@ export const useOnPageIdle = ({
   const idleTimeMsRef = useRef(Number(streamIdleMode))
   const wasBusyRef = useRef(false)
   const timeoutStart = useRef<number | null>(null)
-
-  useEffect(() => {
-    return () => {
-      if (intervalId.current) {
-        clearInterval(intervalId.current)
-        intervalId.current = null
-      }
-    }
-  }, [])
 
   useEffect(() => {
     startCallbackRef.current = startCallback
@@ -51,6 +44,10 @@ export const useOnPageIdle = ({
   }, [streamIdleMode])
 
   useEffect(() => {
+    if (!enabled) {
+      return
+    }
+
     if (intervalId.current) {
       return
     }
@@ -113,10 +110,17 @@ export const useOnPageIdle = ({
       })()
     }, 1_000)
     intervalId.current = interval
-  }, [kclManager])
+
+    return () => {
+      clearInterval(interval)
+      intervalId.current = null
+    }
+  }, [enabled, kclManager])
 
   useEffect(() => {
-    if (!idleTimeMsRef.current) return
+    if (!enabled || !idleTimeMsRef.current) {
+      return
+    }
 
     const onAnyInput = () => {
       // Just in case it happens in the middle of the user turning off
@@ -165,5 +169,5 @@ export const useOnPageIdle = ({
       window.document.removeEventListener('touchend', onAnyInput)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager, streamIdleMode])
+  }, [enabled, kclManager, streamIdleMode])
 }

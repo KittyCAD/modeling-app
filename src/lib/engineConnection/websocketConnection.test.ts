@@ -28,6 +28,8 @@ const createMessageHandler = (cloudProjectId?: string) =>
     sdpAnswerReject: vi.fn(),
     setApiCallId: vi.fn(),
     getCloudProjectId: () => cloudProjectId,
+    webrtc: true,
+    onWebSocketReady: vi.fn(),
   })
 
 const dispatchFailureMessage = (message: string, cloudProjectId?: string) => {
@@ -85,5 +87,56 @@ describe('createOnWebSocketMessage', () => {
     dispatchFailureMessage('modeling service unavailable; please retry')
 
     expect(reportClientError).not.toHaveBeenCalled()
+  })
+
+  it('completes a pong handshake without creating a peer connection when WebRTC is disabled', () => {
+    const createPeerConnection = vi.fn()
+    const onWebSocketReady = vi.fn()
+    const onMessage = createOnWebSocketMessage({
+      disconnectAll: vi.fn(),
+      setPong: vi.fn(),
+      dispatchEvent: vi.fn(() => true),
+      ping: vi.fn(),
+      setPing: vi.fn(),
+      createPeerConnection,
+      send: vi.fn(),
+      setSdpAnswer: vi.fn(),
+      initiateConnectionExclusive: vi.fn(),
+      addIceCandidate: vi.fn(),
+      webrtcStatsCollector: vi.fn(),
+      sdpAnswerResolve: vi.fn(),
+      sdpAnswerReject: vi.fn(),
+      setApiCallId: vi.fn(),
+      getCloudProjectId: () => undefined,
+      webrtc: false,
+      onWebSocketReady,
+    })
+
+    onMessage(
+      new MessageEvent('message', {
+        data: JSON.stringify({
+          success: true,
+          request_id: null,
+          resp: {
+            type: 'pong',
+          },
+        }),
+      })
+    )
+    onMessage(
+      new MessageEvent('message', {
+        data: JSON.stringify({
+          success: true,
+          request_id: null,
+          resp: {
+            type: 'ice_server_info',
+            data: { ice_servers: [] },
+          },
+        }),
+      })
+    )
+
+    expect(onWebSocketReady).toHaveBeenCalledOnce()
+    expect(createPeerConnection).not.toHaveBeenCalled()
   })
 })

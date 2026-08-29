@@ -1,5 +1,6 @@
 import type { GetSketchModePlane } from '@kittycad/lib'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
+import { LOCAL_WEBGPU_RENDERING_ENABLED } from '@src/clientSideScene/localRenderer/config'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import {
   decodeRenderPacket,
@@ -51,7 +52,6 @@ import {
   Vector3,
 } from 'three'
 
-const WEBGPU_PORT_POC_STORAGE_KEY = 'webgpu-port-poc'
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
 const WEBGPU_TRIMMING_ENABLED = true
@@ -62,10 +62,6 @@ const HOVER_COLOR = new Color(SKETCH_HIGHLIGHT_COLOR)
 const SELECTED_COLOR = new Color(SKETCH_SELECTION_COLOR)
 const previewMaterialBaseColors = new WeakMap<Material, Color>()
 const EDGE_RAYCAST_THRESHOLD_GLTF_METERS = 0.001
-
-function shouldEnableLocalWebGpuPreview() {
-  return localStorage.getItem(WEBGPU_PORT_POC_STORAGE_KEY) !== 'false'
-}
 
 function shouldDebugLocalWebGpuPreview() {
   return localStorage.getItem(WEBGPU_PORT_DEBUG_STORAGE_KEY) === 'true'
@@ -1358,8 +1354,7 @@ export const LocalWebGPUScene = ({
   }, [commandProxyEnabled])
 
   useEffect(() => {
-    if (!shouldEnableLocalWebGpuPreview()) {
-      logLocalWebGpuPreview('preview disabled by localStorage flag')
+    if (!LOCAL_WEBGPU_RENDERING_ENABLED) {
       onVisibilityChange(false)
       return
     }

@@ -51,6 +51,7 @@ interface IDeferredPromise {
 export class Connection extends EventTarget {
   // connection url for the new Websocket()
   readonly url: string
+  readonly webrtc: boolean
   // Authorization bearer token for headers on websocket
   private readonly _token: string | undefined
   private _pingPongSpan: {
@@ -112,6 +113,7 @@ export class Connection extends EventTarget {
     callbackOnUnitTestingConnection,
     handleMessage,
     getCloudProjectId,
+    webrtc = true,
   }: {
     url: string
     token: string
@@ -121,6 +123,7 @@ export class Connection extends EventTarget {
     callbackOnUnitTestingConnection?: (message: string) => void
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
+    webrtc?: boolean
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -131,6 +134,7 @@ export class Connection extends EventTarget {
       metadata: { id: this.id },
     })
     this.url = url
+    this.webrtc = webrtc
     this._token = token
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
     this.tearDownManager = tearDownManager
@@ -280,9 +284,6 @@ export class Connection extends EventTarget {
     }
 
     this.deferredConnection = promiseFactory<any>()
-    this.deferredPeerConnection = promiseFactory<any>()
-    this.deferredMediaStreamAndWebrtcStatsCollector = promiseFactory<any>()
-    this.deferredSdpAnswer = promiseFactory<any>()
 
     const warnAndRejectConnect = (e: any) => {
       console.warn(e)
@@ -293,6 +294,18 @@ export class Connection extends EventTarget {
     this.deferredConnection.promise.catch((e) => {
       console.warn(e)
     })
+
+    if (!this.webrtc) {
+      this.createWebSocketConnection()
+      await this.deferredConnection.promise
+      this.connected = true
+      return
+    }
+
+    this.deferredPeerConnection = promiseFactory<any>()
+    this.deferredMediaStreamAndWebrtcStatsCollector = promiseFactory<any>()
+    this.deferredSdpAnswer = promiseFactory<any>()
+
     this.deferredPeerConnection.promise.catch(warnAndRejectConnect)
     this.deferredMediaStreamAndWebrtcStatsCollector.promise.catch(
       warnAndRejectConnect
@@ -589,7 +602,7 @@ export class Connection extends EventTarget {
   }
 
   createWebSocketConnection() {
-    if (!this.deferredSdpAnswer?.resolve) {
+    if (this.webrtc && !this.deferredSdpAnswer?.resolve) {
       console.warn('deferredSdpAnswer resolve is undefined')
       return
     }
@@ -608,6 +621,7 @@ export class Connection extends EventTarget {
       send: this.send.bind(this),
       token: this.token,
       dispatchEvent: this.dispatchEvent.bind(this),
+      onOpen: this.beginWebSocketOnlyHandshake.bind(this),
     })
     const onWebSocketError = createOnWebSocketError()
     const onWebSocketMessage = createOnWebSocketMessage({
@@ -624,12 +638,14 @@ export class Connection extends EventTarget {
       initiateConnectionExclusive: this.initiateConnectionExclusive.bind(this),
       addIceCandidate: this.addIceCandidate.bind(this),
       webrtcStatsCollector: () => this.webrtcStatsCollector?.bind(this),
-      sdpAnswerResolve: this.deferredSdpAnswer.resolve,
-      sdpAnswerReject: this.deferredSdpAnswer.reject,
+      sdpAnswerResolve: this.deferredSdpAnswer?.resolve ?? (() => undefined),
+      sdpAnswerReject: this.deferredSdpAnswer?.reject ?? (() => undefined),
       setApiCallId: (apiCallId) => {
         this.apiCallId = apiCallId
       },
       getCloudProjectId: this.getCloudProjectId,
+      webrtc: this.webrtc,
+      onWebSocketReady: this.establishWebSocketOnlyConnection.bind(this),
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
@@ -690,6 +706,37 @@ export class Connection extends EventTarget {
     this.mediaStream = mediaStream
   }
 
+  private establishWebSocketOnlyConnection() {
+    if (this.webrtc || this.connected) {
+      return
+    }
+
+    this.connected = true
+    this.startPingPong()
+    this.cleanUpTimeouts()
+    markOnce('code/endInitialEngineConnect')
+    this.deferredConnection?.resolve(true)
+    this.dispatchEvent(
+      new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
+        detail: {
+          type: EngineConnectionStateType.ConnectionEstablished,
+        },
+      })
+    )
+  }
+
+  private beginWebSocketOnlyHandshake() {
+    if (this.webrtc) {
+      return
+    }
+
+    this.send({ type: 'ping' })
+    this._pingPongSpan = {
+      ping: Date.now(),
+      pong: undefined,
+    }
+  }
+
   setWebrtcStatsCollector(webrtcStatsCollector: () => Promise<ClientMetrics>) {
     EngineDebugger.addLog({
       label: 'connection',
@@ -735,7 +782,9 @@ export class Connection extends EventTarget {
     this.removeAllEventListeners()
     this.disconnectWebsocket()
     this.disconnectUnreliableDataChannel()
-    this.disconnectPeerConnection()
+    if (this.webrtc) {
+      this.disconnectPeerConnection()
+    }
     // Function generated from createPeerConnection workflow
     this.webrtcStatsCollector = undefined
     this.cleanUpTimeouts()

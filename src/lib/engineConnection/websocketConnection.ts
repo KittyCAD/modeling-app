@@ -32,10 +32,12 @@ export const createOnWebSocketOpen = ({
   send,
   token,
   dispatchEvent,
+  onOpen,
 }: {
   send: (message: WebSocketRequest) => void
   token: string | undefined
   dispatchEvent: (event: Event) => boolean
+  onOpen?: () => void
 }) => {
   const onWebSocketOpen = (event: Event) => {
     // This is required for when the app is running stand-alone / within desktop app.
@@ -67,6 +69,7 @@ export const createOnWebSocketOpen = ({
         })
       )
     }
+    onOpen?.()
   }
   return onWebSocketOpen
 }
@@ -103,6 +106,8 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject,
   setApiCallId,
   getCloudProjectId,
+  webrtc,
+  onWebSocketReady,
 }: {
   disconnectAll: () => void
   setPong: (pong: number) => void
@@ -119,6 +124,8 @@ export const createOnWebSocketMessage = ({
   sdpAnswerReject: (value: any) => void
   setApiCallId: (apiCallId: string) => void
   getCloudProjectId: () => string | undefined
+  webrtc: boolean
+  onWebSocketReady: () => void
 }) => {
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
@@ -204,6 +211,9 @@ export const createOnWebSocketMessage = ({
           })
         )
         setPing(undefined)
+        if (!webrtc) {
+          onWebSocketReady()
+        }
         break
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id
@@ -226,6 +236,10 @@ export const createOnWebSocketMessage = ({
         break
       // Only fires on successful authentication.
       case 'ice_server_info':
+        if (!webrtc) {
+          break
+        }
+
         const iceServers = resp.data.ice_servers
         // Now that we have some ICE servers it makes sense
         // to start initializing the RTCPeerConnection. RTCPeerConnection

@@ -1,5 +1,6 @@
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import { LOCAL_WEBGPU_RENDERING_ENABLED } from '@src/clientSideScene/localRenderer/config'
 import { LocalWebGPUScene } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import Loading from '@src/components/Loading'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -47,18 +48,11 @@ import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 const TIME_TO_CONNECT = 30_000
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
-const WEBGPU_PORT_POC_STORAGE_KEY = 'webgpu-port-poc'
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 
 function shouldDebugLocalWebGpuPreview() {
   return localStorage.getItem(WEBGPU_PORT_DEBUG_STORAGE_KEY) === 'true'
 }
-
-function shouldEnableLocalWebGpuPreview() {
-  return localStorage.getItem(WEBGPU_PORT_POC_STORAGE_KEY) !== 'false'
-}
-
-type LocalWebGpuViewMode = 'auto' | 'stream' | 'webgpu'
 
 const stringHash = (value: string) => {
   let hash = 0
@@ -88,8 +82,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const [isLocalRenderVisible, setIsLocalRenderVisible] = useState(false)
   const [isExportingLocalScene, setIsExportingLocalScene] = useState(false)
   const exportLocalSceneRef = useRef<(() => Promise<void>) | null>(null)
-  const [localWebGpuViewMode, setLocalWebGpuViewMode] =
-    useState<LocalWebGpuViewMode>('auto')
   const settingsValues = settings.useSettings()
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
@@ -106,7 +98,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
   const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
-    useTryConnect()
+    useTryConnect({ webrtc: !LOCAL_WEBGPU_RENDERING_ENABLED })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -116,13 +108,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isSketchInteractionMode =
     modelingMachineState.matches('Sketch') ||
     modelingMachineState.matches('sketchSolveMode')
-  const isSketchCameraTransition =
-    modelingMachineState.matches('Sketch no face') ||
-    modelingMachineState.matches('animating to plane') ||
-    modelingMachineState.matches('animating to existing sketch') ||
-    modelingMachineState.matches('animating to sketch solve mode') ||
-    modelingMachineState.matches('animating to existing sketch solve')
-
   const reportEngineDisconnect = useCallback(
     (eventType: EngineDisconnectEvent, extra?: Record<string, unknown>) => {
       const kclSource = kclManager.code
@@ -370,6 +355,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       videoRef,
       canvasRef,
       engineCommandManager,
+      enabled: !LOCAL_WEBGPU_RENDERING_ENABLED,
     }),
     [engineCommandManager]
   )
@@ -410,6 +396,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       idleCallback: () => {
         isIdle.current = true
       },
+      enabled: !LOCAL_WEBGPU_RENDERING_ENABLED,
     }),
     [onPageIdleStartCb]
   )
@@ -633,59 +620,21 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     }
   }, [isExportingLocalScene])
 
-  const shouldShowLocalWebGpuDebugToggle = shouldEnableLocalWebGpuPreview()
+  const shouldShowLocalWebGpuDebugToggle = LOCAL_WEBGPU_RENDERING_ENABLED
   const shouldShowLocalWebGpuScene =
-    localWebGpuViewMode === 'stream'
-      ? false
-      : localWebGpuViewMode === 'webgpu'
-        ? isLocalRenderVisible
-        : isLocalRenderVisible
+    LOCAL_WEBGPU_RENDERING_ENABLED && isLocalRenderVisible
   const shouldEnableLocalWebGpuSelectionProxy =
     shouldShowLocalWebGpuScene && !isSketchInteractionMode
 
   useEffect(() => {
     const cameraControls = sceneInfra.camControls
     const wasLocalCameraMode = cameraControls.localCameraMode
-    cameraControls.localCameraMode = shouldShowLocalWebGpuScene
-
-    // The existing sketch state machine owns camera synchronization while
-    // entering and editing sketches.
-    if (isSketchInteractionMode) {
-      return
-    }
-    if (isSketchCameraTransition) {
-      cameraControls.syncDirection = 'engineToClient'
-      return
-    }
-
-    if (shouldShowLocalWebGpuScene) {
-      return
-    }
-
-    if (!wasLocalCameraMode) {
-      cameraControls.syncDirection = 'engineToClient'
-      return
-    }
-
-    let cancelled = false
-    void cameraControls
-      .syncCameraToEngine()
-      .catch(reportRejection)
-      .finally(() => {
-        if (!cancelled) {
-          cameraControls.syncDirection = 'engineToClient'
-        }
-      })
+    cameraControls.localCameraMode = LOCAL_WEBGPU_RENDERING_ENABLED
 
     return () => {
-      cancelled = true
+      cameraControls.localCameraMode = wasLocalCameraMode
     }
-  }, [
-    isSketchCameraTransition,
-    isSketchInteractionMode,
-    sceneInfra.camControls,
-    shouldShowLocalWebGpuScene,
-  ])
+  }, [sceneInfra.camControls])
 
   return (
     <div
@@ -707,7 +656,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         ref={videoRef}
         controls={false}
         className={`w-full cursor-pointer h-full transition-opacity duration-200 ${
-          shouldShowLocalWebGpuScene ? 'opacity-0' : 'opacity-100'
+          LOCAL_WEBGPU_RENDERING_ENABLED ? 'opacity-0' : 'opacity-100'
         }${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
@@ -715,19 +664,23 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className={shouldShowLocalWebGpuScene ? 'opacity-0' : 'cursor-pointer'}
+        className={
+          LOCAL_WEBGPU_RENDERING_ENABLED ? 'opacity-0' : 'cursor-pointer'
+        }
         id="freeze-frame"
       >
         No canvas support
       </canvas>
-      <LocalWebGPUScene
-        backgroundColor={style.backgroundColor}
-        enableSSAO={settingsValues.modeling.enableSSAO.current}
-        onVisibilityChange={handleLocalVisibilityChange}
-        onExportReady={handleLocalExportReady}
-        forceHide={!shouldShowLocalWebGpuScene}
-        commandProxyEnabled={shouldEnableLocalWebGpuSelectionProxy}
-      />
+      {LOCAL_WEBGPU_RENDERING_ENABLED && (
+        <LocalWebGPUScene
+          backgroundColor={style.backgroundColor}
+          enableSSAO={settingsValues.modeling.enableSSAO.current}
+          onVisibilityChange={handleLocalVisibilityChange}
+          onExportReady={handleLocalExportReady}
+          forceHide={!shouldShowLocalWebGpuScene}
+          commandProxyEnabled={shouldEnableLocalWebGpuSelectionProxy}
+        />
+      )}
       <ClientSideScene
         cameraControls={settingsValues.modeling.mouseControls.current}
         enableTouchControls={
@@ -755,38 +708,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         <div className="pointer-events-auto absolute left-1/2 top-16 z-40 -translate-x-1/2 rounded-full border border-chalkboard-30/80 bg-chalkboard-10/90 p-1 shadow-md backdrop-blur dark:border-chalkboard-70 dark:bg-chalkboard-90/90">
           <div className="flex items-center gap-1 text-xs">
             <span className="px-2 py-1 text-chalkboard-70 dark:text-chalkboard-30">
-              View
+              WebGPU
             </span>
-            {(
-              [
-                ['auto', 'Auto'],
-                ['stream', 'Stream'],
-                ['webgpu', 'WebGPU'],
-              ] as const
-            ).map(([value, label]) => {
-              const isActive = localWebGpuViewMode === value
-              const isDisabled = value === 'webgpu' && !isLocalRenderVisible
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  disabled={isDisabled}
-                  onClick={() => setLocalWebGpuViewMode(value)}
-                  className={`rounded-full px-3 py-1 transition-colors ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-chalkboard-80 hover:bg-chalkboard-20 dark:text-chalkboard-20 dark:hover:bg-chalkboard-80'
-                  } ${
-                    isDisabled
-                      ? 'cursor-not-allowed opacity-40 hover:bg-transparent dark:hover:bg-transparent'
-                      : ''
-                  }`}
-                >
-                  {label}
-                </button>
-              )
-            })}
-            <div className="mx-1 h-4 w-px bg-chalkboard-30 dark:bg-chalkboard-70" />
             <button
               type="button"
               disabled={!isLocalRenderVisible || isExportingLocalScene}

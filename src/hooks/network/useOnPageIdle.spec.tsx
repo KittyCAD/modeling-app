@@ -103,6 +103,32 @@ describe('useOnPageIdle', () => {
     unmount()
   })
 
+  test('does not start the stream idle timer when disabled', async () => {
+    const startCallback = vi.fn()
+    const idleCallback = vi.fn()
+
+    const { unmount } = renderHook(() =>
+      useOnPageIdle({
+        startCallback,
+        idleCallback,
+        enabled: false,
+      })
+    )
+
+    await advance(30_000)
+
+    expect(
+      hookMocks.state.kclManager.sceneInfra.camControls.saveRemoteCameraState
+    ).not.toHaveBeenCalled()
+    expect(
+      hookMocks.state.kclManager.engineCommandManager.tearDown
+    ).not.toHaveBeenCalled()
+    expect(startCallback).not.toHaveBeenCalled()
+    expect(idleCallback).not.toHaveBeenCalled()
+
+    unmount()
+  })
+
   test('starts the idle countdown only after KCL finishes executing', async () => {
     const startCallback = vi.fn()
     const idleCallback = vi.fn()

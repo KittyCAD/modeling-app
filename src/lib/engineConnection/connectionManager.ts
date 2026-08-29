@@ -179,6 +179,7 @@ export class ConnectionManager extends EventTarget {
     setStreamIsReady,
     callbackOnUnitTestingConnection,
     rustContext,
+    webrtc = true,
   }: {
     width: number
     height: number
@@ -186,6 +187,7 @@ export class ConnectionManager extends EventTarget {
     setStreamIsReady: (setStreamIsReady: boolean) => void
     callbackOnUnitTestingConnection?: (message: string) => void
     rustContext?: RustContext
+    webrtc?: boolean
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -220,10 +222,11 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    const url = this.generateWebsocketURL()
+    const url = this.generateWebsocketURL(webrtc)
     this.connection = new Connection({
       url,
       token,
+      webrtc,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       tearDownManager: this.tearDown.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
@@ -263,7 +266,7 @@ export class ConnectionManager extends EventTarget {
     // Moved from ondatachannelopen in RTCPeerConnection.
     this.inSequence = 1
 
-    if (!this.connection.peerConnection) {
+    if (webrtc && !this.connection.peerConnection) {
       return Promise.reject(
         new Error('this.connection.peerConnection is undefined')
       )
@@ -397,10 +400,11 @@ export class ConnectionManager extends EventTarget {
     })
   }
 
-  generateWebsocketURL() {
+  generateWebsocketURL(webrtc = true) {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
+    additionalSettings += `&webrtc=${webrtc}`
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )

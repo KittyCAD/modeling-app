@@ -29,6 +29,7 @@ const attemptToConnectToEngine = async ({
   timeToConnect,
   engineCommandManager,
   rustContext,
+  webrtc,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
@@ -38,6 +39,7 @@ const attemptToConnectToEngine = async ({
   timeToConnect: number
   engineCommandManager: ConnectionManager
   rustContext: RustContext
+  webrtc: boolean
 }) => {
   const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
@@ -74,7 +76,14 @@ const attemptToConnectToEngine = async ({
             setAppState({ isStreamReady: true })
           },
           rustContext,
+          webrtc,
         })
+
+        if (!webrtc) {
+          setIsSceneReady(true)
+          clearTimeout(cancelTimeout)
+          return resolve(true)
+        }
 
         if (!videoRef.current) {
           EngineDebugger.addLog({
@@ -201,6 +210,7 @@ async function tryConnecting({
   engineCommandManager,
   kclManager,
   rustContext,
+  webrtc,
 }: {
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
@@ -216,6 +226,7 @@ async function tryConnecting({
   engineCommandManager: ConnectionManager
   kclManager: KclManager
   rustContext: RustContext
+  webrtc: boolean
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
@@ -240,6 +251,7 @@ async function tryConnecting({
             timeToConnect,
             engineCommandManager,
             rustContext,
+            webrtc,
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
@@ -296,13 +308,13 @@ async function tryConnecting({
   })
   return connection
 }
-export const useTryConnect = () => {
+export const useTryConnect = ({ webrtc = true }: { webrtc?: boolean } = {}) => {
   const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
   type TryConnectingArgs = Omit<
     Parameters<typeof tryConnecting>[0],
-    'engineCommandManager' | 'kclManager' | 'rustContext'
+    'engineCommandManager' | 'kclManager' | 'rustContext' | 'webrtc'
   >
 
   return {
@@ -312,6 +324,7 @@ export const useTryConnect = () => {
         engineCommandManager: kclManager.engineCommandManager,
         kclManager,
         rustContext: kclManager.rustContext,
+        webrtc,
       }),
     isConnecting,
     numberOfConnectionAttempts,
