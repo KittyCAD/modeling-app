@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 549
 description: Artifact commands cassette.kcl
 ---
 {
@@ -146,8 +147,8 @@ description: Artifact commands cassette.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0,
-            "y": 0.0000000000000001762479051592436
+            "x": 0.0000000000000007049916206369744,
+            "y": 0.0000000000000003524958103184872
           },
           "radius": 5.746,
           "start": {
@@ -710,7 +711,7 @@ description: Artifact commands cassette.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.800000000000002,
+          "x": 7.8,
           "y": 0.0,
           "z": 0.0
         }
@@ -735,7 +736,7 @@ description: Artifact commands cassette.kcl
             "x": 0.0,
             "y": 0.0
           },
-          "radius": 7.800000000000002,
+          "radius": 7.8,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -1331,7 +1332,7 @@ description: Artifact commands cassette.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.800000000000002,
+          "x": 7.8,
           "y": 0.0,
           "z": 0.0
         }
@@ -1356,7 +1357,7 @@ description: Artifact commands cassette.kcl
             "x": 0.0,
             "y": 0.0
           },
-          "radius": 7.800000000000002,
+          "radius": 7.8,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -1952,7 +1953,7 @@ description: Artifact commands cassette.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.800000000000002,
+          "x": 7.8,
           "y": 0.0,
           "z": 0.0
         }
@@ -1977,7 +1978,7 @@ description: Artifact commands cassette.kcl
             "x": 0.0,
             "y": 0.0
           },
-          "radius": 7.800000000000002,
+          "radius": 7.8,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -2573,7 +2574,7 @@ description: Artifact commands cassette.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.800000000000002,
+          "x": 7.8,
           "y": 0.0,
           "z": 0.0
         }
@@ -2598,7 +2599,7 @@ description: Artifact commands cassette.kcl
             "x": 0.0,
             "y": 0.0
           },
-          "radius": 7.800000000000002,
+          "radius": 7.8,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -3194,7 +3195,7 @@ description: Artifact commands cassette.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.800000000000002,
+          "x": 7.8,
           "y": 0.0,
           "z": 0.0
         }
@@ -3219,7 +3220,7 @@ description: Artifact commands cassette.kcl
             "x": 0.0,
             "y": 0.0
           },
-          "radius": 7.800000000000002,
+          "radius": 7.8,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -3815,7 +3816,7 @@ description: Artifact commands cassette.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.800000000000002,
+          "x": 7.8,
           "y": 0.0,
           "z": 0.0
         }
@@ -3840,7 +3841,7 @@ description: Artifact commands cassette.kcl
             "x": 0.0,
             "y": 0.0
           },
-          "radius": 7.800000000000002,
+          "radius": 7.8,
           "start": {
             "unit": "radians",
             "value": 0.0
@@ -4436,7 +4437,7 @@ description: Artifact commands cassette.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.800000000000002,
+          "x": 7.8,
           "y": 0.0,
           "z": 0.0
         }
@@ -4461,7 +4462,7 @@ description: Artifact commands cassette.kcl
             "x": 0.0,
             "y": 0.0
           },
-          "radius": 7.800000000000002,
+          "radius": 7.8,
           "start": {
             "unit": "radians",
             "value": 0.0

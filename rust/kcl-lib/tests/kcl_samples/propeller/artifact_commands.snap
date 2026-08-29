@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 549
 description: Artifact commands propeller.kcl
 ---
 {
@@ -227,7 +228,7 @@ description: Artifact commands propeller.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -61.243228245719514,
+          "x": -61.24322824571952,
           "y": -20.929600000075652,
           "z": 0.0
         }
@@ -243,16 +244,16 @@ description: Artifact commands propeller.kcl
           "type": "arc",
           "center": {
             "x": -64.4182280370584,
-            "y": -20.930751085663125
+            "y": -20.930751085663093
           },
           "radius": 3.174999999999995,
           "start": {
             "unit": "radians",
-            "value": 0.00036254664966605337
+            "value": 0.0003625466496562834
           },
           "end": {
             "unit": "radians",
-            "value": 6.283547853829252
+            "value": 6.283547853829242
           },
           "relative": false
         }

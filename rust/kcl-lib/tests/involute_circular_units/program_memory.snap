@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 490
 description: Variables in memory after executing involute_circular_units.kcl
 ---
 {
@@ -286,8 +287,8 @@ description: Variables in memory after executing involute_circular_units.kcl
             ],
             "tag": null,
             "to": [
-              4.714209749659843,
-              1.4541411272450477
+              4.714209749659842,
+              1.454141127245048
             ],
             "type": "ToPoint",
             "units": "cm"
@@ -298,8 +299,8 @@ description: Variables in memory after executing involute_circular_units.kcl
               "sourceRange": []
             },
             "from": [
-              4.714209749659843,
-              1.4541411272450477
+              4.714209749659842,
+              1.454141127245048
             ],
             "tag": null,
             "to": [
