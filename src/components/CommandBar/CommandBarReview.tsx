@@ -1,3 +1,4 @@
+import decamelize from 'decamelize'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
@@ -10,6 +11,7 @@ import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import type { CommandArgument } from '@src/lib/commandTypes'
+import { capitaliseFC } from '@src/lib/utils'
 import { useMemo } from 'react'
 
 function validationErrorParts(error: string) {
@@ -209,8 +211,9 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
                         </Tooltip>
                       </span>
                     )}
-                    <span className="capitalize">
-                      {arg.displayName || argName}
+                    <span>
+                      {arg.displayName ||
+                        capitaliseFC(decamelize(argName, { separator: ' ' }))}
                     </span>
                     <CustomIcon name="plus" className="w-4 h-4" />
                   </button>

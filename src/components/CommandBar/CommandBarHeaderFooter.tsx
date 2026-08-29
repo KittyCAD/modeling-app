@@ -1,3 +1,4 @@
+import decamelize from 'decamelize'
 import type React from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -14,7 +15,7 @@ import type {
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { roundOffWithUnits } from '@src/lib/utils'
+import { capitaliseFC, roundOffWithUnits } from '@src/lib/utils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 function CommandBarHeaderFooter({
@@ -230,9 +231,9 @@ function CommandBarHeaderFooter({
                     <span
                       data-testid={`arg-name-${argName.toLowerCase()}`}
                       data-test-name="arg-name"
-                      className="capitalize"
                     >
-                      {arg.displayName || argName}
+                      {arg.displayName ||
+                        capitaliseFC(decamelize(argName, { separator: ' ' }))}
                     </span>
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">
