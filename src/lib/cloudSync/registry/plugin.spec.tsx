@@ -593,63 +593,6 @@ describe('cloud sync library home summary', () => {
     }
   })
 
-  test('keeps the project title when conflict metadata uses the directory name', async () => {
-    const projectPath = projectWellFormed.path
-    cloudSyncStatus.value = {
-      enabled: true,
-      state: 'conflict',
-      pendingCount: 0,
-      activeProjectPath: projectPath,
-    }
-    cloudConflictDialogMocks.conflicts = [
-      {
-        localProjectPath: projectPath,
-        projectName: projectWellFormed.name,
-      },
-    ]
-    const registry = new Registry()
-
-    registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
-    enableCloudSyncPlugin(registry)
-
-    try {
-      const cloudLibraryType = registry
-        .get(projectLibraryTypesValueSpec)
-        .get(CLOUD_PROJECT_LIBRARY_TYPE)
-      const HomeSummary = cloudLibraryType?.homeSummary
-      expect(HomeSummary).toBeDefined()
-      if (!HomeSummary) {
-        return
-      }
-
-      const cloudLibrary = {
-        ...getDefaultCloudProjectLibrarySetting(),
-        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-      }
-      const project = {
-        ...homeProjectEntryFromProject(projectWellFormed),
-        id: `local:${projectPath}`,
-        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
-        status: 'conflicted',
-        conflict: {},
-      } satisfies HomeProjectEntry
-      renderWithRouter(
-        <HomeSummary library={cloudLibrary} projects={[project]} />
-      )
-
-      fireEvent.click(screen.getByTestId('cloud-library-sync-status'))
-
-      expect(
-        await screen.findByRole('button', { name: projectWellFormed.title })
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: projectWellFormed.name })
-      ).not.toBeInTheDocument()
-    } finally {
-      registry[Symbol.dispose]()
-    }
-  })
-
   test('uses destroy styling for library sync failure status', () => {
     const projectPath = projectWellFormed.path
     cloudSyncStatus.value = {

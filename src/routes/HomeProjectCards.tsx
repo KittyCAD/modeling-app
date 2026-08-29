@@ -139,12 +139,9 @@ export function ProjectLibraryPreviewRow({
           projects={libraryProjects}
           projectLibraryTypes={projectLibraryTypes}
         />
-        <Link
-          to={getProjectLibraryRoute(library)}
-          className="hidden flex-none select-none text-xs text-chalkboard-70 !no-underline dark:text-chalkboard-30 sm:block"
-        >
+        <span className="hidden flex-none text-xs text-chalkboard-70 dark:text-chalkboard-30 sm:block">
           {projectCountLabel(projects.length)}
-        </Link>
+        </span>
         <Link
           to={getProjectLibraryRoute(library)}
           aria-label={`Open ${library.title} library`}
