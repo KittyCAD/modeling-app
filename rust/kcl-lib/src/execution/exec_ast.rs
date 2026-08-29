@@ -1216,9 +1216,9 @@ impl ExecutorContext {
                     }
                     let value = value_cf.into_value();
                     if exec_state.entry_point_is_v3() {
-                        // 3.0-preview: early return. The value unwinds as
-                        // control flow to the nearest function-call boundary,
-                        // which absorbs it; see call_finish.
+                        // KCL 3.0: early return. The value unwinds as control
+                        // flow to the nearest function-call boundary, which
+                        // absorbs it; see call_finish.
                         last_expr = Some(value.return_());
                         break;
                     }
@@ -1689,13 +1689,12 @@ impl ExecutorContext {
     }
 
     /// Record a return statement's evaluated value as the function result
-    /// (`__return`). This is the pre-3.0-preview `return` semantics: it
+    /// (`__return`). This is the pre-KCL-3.0 `return` semantics: it
     /// deliberately does NOT stop the enclosing block -- statements after a
     /// `return` still execute, exactly like the historical behavior (see the
     /// ReturnStatement arm of exec_block); a second executed `return` is the
-    /// "Multiple returns" error. Under a 3.0-preview entry point this is
-    /// never called; `return` unwinds as `Return` control flow instead.
-    /// Shared by both executors.
+    /// "Multiple returns" error. Under KCL 3.0, this is never called; `return`
+    /// unwinds as `Return` control flow instead. Shared by both executors.
     pub(super) fn bind_return_value(
         return_statement: &Node<ReturnStatement>,
         value: KclValue,

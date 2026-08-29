@@ -217,11 +217,10 @@ pub enum ControlFlowKind {
     /// `exit()` was called: unwind all the way to the program root, bypassing
     /// function-call boundaries.
     Exit,
-    /// A `return` statement executed under a 3.0-preview entry point: unwind
-    /// to the nearest function-call boundary, which absorbs it as the
-    /// function's result. Never constructed under older entry points, whose
-    /// `return` uses write-and-continue semantics instead; see
-    /// `bind_return_value`.
+    /// A `return` statement executed under KCL 3.0: unwind to the nearest
+    /// function-call boundary, which absorbs it as the function's result. Never
+    /// constructed under older entry points, whose `return` uses
+    /// write-and-continue semantics instead; see `bind_return_value`.
     Return,
 }
 
@@ -4958,7 +4957,7 @@ startSketchOn(XY)
         assert_eq!(exec_state.kcl_version(), KclVersion::V2);
         assert_eq!(exec_state.legacy_caller_kcl_version(), KclVersion::V2);
 
-        // An entry-point 3.0-preview declaration overrides the module-local
+        // An entry-point KCL 3.0 declaration overrides the module-local
         // settings for the unified lookup, but not for the legacy one.
         exec_state.global.entry_point_kcl_version = Some(KclVersion::V3Preview);
         assert_eq!(exec_state.kcl_version(), KclVersion::V3Preview);
@@ -5072,9 +5071,9 @@ export fn filletedBox() {
 }
 "#;
 
-    /// A 3.0-preview entry point pins the kclVersion for the whole execution:
-    /// an imported 2.0 module observes 3.0-preview both in its module-level
-    /// code and in its functions, wherever they are called from.
+    /// A KCL 3.0 entry point pins the kclVersion for the whole execution: an
+    /// imported 2.0 module observes KCL 3.0 both in its module-level code and
+    /// in its functions, wherever they are called from.
     #[tokio::test(flavor = "multi_thread")]
     async fn entry_point_v3_pins_kcl_version_for_imported_modules() {
         use kittycad_modeling_cmds::shared::EdgeCutVersion;
@@ -5095,10 +5094,10 @@ box = filletedBox()
         assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
     }
 
-    /// Without a 3.0-preview entry point, the legacy lookup applies
-    /// unchanged, including its quirk: an imported module's module-level code
-    /// observes the module's own declared version, but its functions observe
-    /// the CALLING module's version.
+    /// Without a KCL 3.0 entry point, the legacy lookup applies unchanged,
+    /// including its quirk: an imported module's module-level code observes the
+    /// module's own declared version, but its functions observe the CALLING
+    /// module's version.
     #[tokio::test(flavor = "multi_thread")]
     async fn legacy_kcl_version_quirk_applies_without_v3_entry_point() {
         use kittycad_modeling_cmds::shared::EdgeCutVersion;
@@ -5285,8 +5284,8 @@ x = f()
             }
         }
 
-        // Under 3.0-preview, a return escaping a top-level if-arm is also
-        // rejected (without the setting it is silently ignored; see
+        // Under KCL 3.0, a return escaping a top-level if-arm is also rejected
+        // (without the setting it is silently ignored; see
         // top_level_if_arm_return_ignored_without_v3).
         let code = r#"@settings(kclVersion = "3.0-preview")
 x = if true {
@@ -5340,8 +5339,8 @@ x = f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn return_inside_sketch_block_ignored_without_v3() {
-        // Pins the pre-3.0-preview behavior: `__return` binds in the sketch
-        // block's child environment and is lost when it pops.
+        // Pins the pre-KCL-3.0 behavior: `__return` binds in the sketch block's
+        // child environment and is lost when it pops.
         let code = r#"@settings(experimentalFeatures = allow)
 fn f() {
   sketch(on = XY) {
@@ -5395,7 +5394,7 @@ x = f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn if_arm_return_plus_function_return_errors_without_v3() {
-        // Pins the pre-3.0-preview behavior: the if-arm's `return` writes
+        // Pins the pre-KCL-3.0 behavior: the if-arm's `return` writes
         // `__return` into the function's environment, so the function-level
         // `return` is a second return.
         let code = r#"fn f() {
@@ -5420,7 +5419,7 @@ x = f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn top_level_if_arm_return_ignored_without_v3() {
-        // Pins the pre-3.0-preview behavior: the return silently binds
+        // Pins the pre-KCL-3.0 behavior: the return silently binds
         // `__return` in the root environment and the arm yields its trailing
         // expression.
         let code = r#"x = if true {
@@ -5441,10 +5440,10 @@ x = f()
     /// defining module's.
     #[tokio::test(flavor = "multi_thread")]
     async fn return_semantics_gated_on_entry_point_not_module() {
-        // A 2.0 entry point keeps write-and-continue everywhere, even inside
-        // an imported 3.0-preview module: its function still runs code after
-        // return, and a return escaping its module-level if-arm is still
-        // silently ignored.
+        // A 2.0 entry point keeps write-and-continue everywhere, even inside an
+        // imported KCL 3.0 module: its function still runs code after return,
+        // and a return escaping its module-level if-arm is still silently
+        // ignored.
         let dep = r#"@settings(kclVersion = "3.0-preview")
 ignored = if true {
   return 1
@@ -5469,8 +5468,8 @@ x = f()
             err.message()
         );
 
-        // A 3.0-preview entry point applies early return everywhere,
-        // including inside an imported 2.0 module.
+        // A KCL 3.0 entry point applies early return everywhere, including
+        // inside an imported 2.0 module.
         let dep = r#"@settings(kclVersion = 2.0)
 export fn f() {
   return 1

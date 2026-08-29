@@ -535,13 +535,12 @@ impl FunctionSource {
     /// otherwise the function's result is the `__return` value recorded in
     /// the callee environment, if any.
     ///
-    /// NOTE: under a pre-3.0-preview entry point, a `return` statement does
-    /// NOT stop the body -- it records `__return` and execution continues to
-    /// the following statements (see exec_block's ReturnStatement arm). The
-    /// block's own trailing value is deliberately ignored here; only
-    /// `__return` counts. Under a 3.0-preview entry point, `return` stops
-    /// the body and arrives here as a `Return` control flow instead;
-    /// `__return` is never written.
+    /// NOTE: under a pre-KCL-3.0 entry point, a `return` statement does NOT
+    /// stop the body -- it records `__return` and execution continues to the
+    /// following statements (see exec_block's ReturnStatement arm). The block's
+    /// own trailing value is deliberately ignored here; only `__return` counts.
+    /// Under KCL 3.0, `return` stops the body and arrives here as a `Return`
+    /// control flow instead; `__return` is never written.
     pub(super) fn kcl_body_result(
         &self,
         block_result: Result<Option<KclValueControlFlow>, KclError>,
@@ -587,9 +586,9 @@ impl FunctionSource {
     /// `Exit` control flow bypasses tags and coercion (it terminates the whole
     /// evaluation rather than completing this function normally), and errors
     /// skip them too; both still restore ambient state and finalize the
-    /// operation. `Return` control flow (a 3.0-preview early return) is
-    /// absorbed here: it completes this function normally, so tags and
-    /// coercion apply to it exactly as they do to a `__return` value.
+    /// operation. `Return` control flow (a KCL 3.0 early return) is absorbed
+    /// here: it completes this function normally, so tags and coercion apply to
+    /// it exactly as they do to a `__return` value.
     pub(super) fn call_finish(
         &self,
         state: CallState,

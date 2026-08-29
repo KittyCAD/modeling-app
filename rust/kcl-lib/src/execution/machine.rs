@@ -331,15 +331,14 @@ enum Control {
     /// continuation -- running cleanups, and the exit flavor of call_finish on
     /// call boundaries -- out to the fresh root, which returns the carried
     /// control-flow value. Only `Exit`-kind control flow enters here; a
-    /// 3.0-preview `return` uses [`Control::Return`].
+    /// KCL 3.0 `return` uses [`Control::Return`].
     Exit(KclValueControlFlow),
-    /// A `return` executed under a 3.0-preview entry point: unwind
-    /// continuations -- running cleanups -- to the nearest call boundary,
-    /// which absorbs the value as the function's normal result (tags and
-    /// return-type coercion apply) and resumes the machine. Reaches the fresh
-    /// root only when no boundary remains (a callback body, whose native call
-    /// frame absorbs it, or a top-level return escaping an expression, which
-    /// run_block rejects).
+    /// A `return` executed under a KCL 3.0 entry point: unwind continuations --
+    /// running cleanups -- to the nearest call boundary, which absorbs the
+    /// value as the function's normal result (tags and return-type coercion
+    /// apply) and resumes the machine. Reaches the fresh root only when no
+    /// boundary remains (a callback body, whose native call frame absorbs it,
+    /// or a top-level return escaping an expression, which run_block rejects).
     Return(KclValueControlFlow),
 }
 
@@ -717,8 +716,8 @@ pub(crate) async fn run_expr(
 enum RootResult {
     /// The root computation finished with this result.
     Done(Applied),
-    /// An exit() -- or a 3.0-preview return with no call boundary left --
-    /// unwound all the way out (cleanups already ran).
+    /// An exit() -- or a KCL 3.0 return with no call boundary left -- unwound
+    /// all the way out (cleanups already ran).
     Exited(KclValueControlFlow),
 }
 
@@ -821,13 +820,13 @@ enum ReturnUnwind {
     Root(KclValueControlFlow),
 }
 
-/// Unwind continuations for a 3.0-preview `return`: cleanups on
-/// non-boundaries, the balancing sketch cleanup (including its feature-tree
-/// `GroupEnd`) on sketch bodies, and then -- unlike unwind_exit -- stop at
-/// the nearest call boundary, which absorbs the value as the function's
-/// normal result via call_finish (tags and return-type coercion apply) and
-/// resumes the machine from the boundary's completion. Errors propagate to
-/// the caller, which unwinds the remaining continuations.
+/// Unwind continuations for a KCL 3.0 `return`: cleanups on non-boundaries, the
+/// balancing sketch cleanup (including its feature-tree `GroupEnd`) on sketch
+/// bodies, and then -- unlike unwind_exit -- stop at the nearest call boundary,
+/// which absorbs the value as the function's normal result via call_finish
+/// (tags and return-type coercion apply) and resumes the machine from the
+/// boundary's completion. Errors propagate to the caller, which unwinds the
+/// remaining continuations.
 async fn unwind_return(
     cf: KclValueControlFlow,
     konts: &mut Vec<Kont>,
@@ -1459,9 +1458,9 @@ async fn step_apply(
     }
 }
 
-/// Route a control-flow value produced by shared (recursive-style) helper
-/// code to the matching machine unwind: a 3.0-preview `Return` unwinds to the
-/// nearest call boundary, anything else is an `Exit`.
+/// Route a control-flow value produced by shared (recursive-style) helper code
+/// to the matching machine unwind: a KCL 3.0 `Return` unwinds to the nearest
+/// call boundary, anything else is an `Exit`.
 fn unwind_control(cf: KclValueControlFlow) -> Control {
     if cf.is_return() {
         Control::Return(cf)
@@ -1562,10 +1561,10 @@ async fn step_block(
                     )));
                 };
                 if exec_state.entry_point_is_v3() {
-                    // 3.0-preview: early return. The rest of this block is
-                    // abandoned (this continuation is already popped and
-                    // holds no ambient state); unwind_return absorbs the
-                    // value at the nearest call boundary.
+                    // KCL 3.0: early return. The rest of this block is
+                    // abandoned (this continuation is already popped and holds
+                    // no ambient state); unwind_return absorbs the value at the
+                    // nearest call boundary.
                     return Ok(Control::Return(value.return_()));
                 }
                 crate::execution::ExecutorContext::bind_return_value(return_statement, value, exec_state)?;
@@ -2347,7 +2346,7 @@ fn finish_call_value(
     fn_meta: Vec<Metadata>,
 ) -> Result<Control, KclError> {
     match finished {
-        // Only an Exit can pass through call_finish; a 3.0-preview Return is
+        // Only an Exit can pass through call_finish; a KCL 3.0 Return is
         // absorbed there and arrives here as a Continue.
         Some(cf) if cf.is_some_return() => Ok(Control::Exit(cf)),
         Some(cf) => Ok(Control::Apply(Applied::Value(cf.into_value()))),
