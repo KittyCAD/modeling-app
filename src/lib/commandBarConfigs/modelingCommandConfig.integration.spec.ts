@@ -459,6 +459,34 @@ describe('Transform arguments', () => {
       }
     }
   })
+
+  it('does not require or show Clone variableName while editing an existing clone', () => {
+    const commandConfig = modelingMachineCommandConfig.Clone
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Clone should have a single command config')
+    }
+
+    const variableNameArg = commandConfig.args?.variableName
+    if (!variableNameArg) {
+      throw new Error('Clone.variableName should exist')
+    }
+
+    const creatingContext = { argumentsToSubmit: {} }
+    const editingContext = { argumentsToSubmit: { nodeToEdit: [] } }
+    const required =
+      typeof variableNameArg.required === 'function'
+        ? variableNameArg.required
+        : () => variableNameArg.required
+    const hidden =
+      typeof variableNameArg.hidden === 'function'
+        ? variableNameArg.hidden
+        : () => variableNameArg.hidden
+
+    expect(required(creatingContext)).toBe(true)
+    expect(hidden(creatingContext)).toBeFalsy()
+    expect(required(editingContext)).toBe(false)
+    expect(hidden(editingContext)).toBe(true)
+  })
 })
 
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()

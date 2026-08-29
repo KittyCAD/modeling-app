@@ -373,6 +373,25 @@ export function addClone({
     []
   )
 
+  if (mNodeToEdit) {
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: mNodeToEdit,
+      pathIfNewPipe: vars.pathIfPipe,
+      variableIfNewDecl: variableName,
+      wasmInstance,
+    })
+    if (err(pathToNode)) {
+      return pathToNode
+    }
+
+    return {
+      modifiedAst,
+      pathToNode,
+    }
+  }
+
   if (vars.pathIfPipe) {
     const expression = getNodeFromPath<ExpressionStatement>(
       modifiedAst,
@@ -422,9 +441,6 @@ export function addClone({
   modifiedAst.body.push(declaration)
   const toFirstKwarg = false
   const pathToNode = createPathToNodeForLastVariable(modifiedAst, toFirstKwarg)
-  if (err(pathToNode)) {
-    return pathToNode
-  }
 
   return {
     modifiedAst,
