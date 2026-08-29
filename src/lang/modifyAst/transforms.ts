@@ -21,6 +21,7 @@ import {
 } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
+  CallExpressionKw,
   Expr,
   PathToNode,
   Program,
@@ -32,6 +33,15 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+
+function preserveObjectInputOnEdit(
+  call: Node<CallExpressionKw>,
+  nodeToEdit?: PathToNode
+) {
+  if (nodeToEdit) {
+    call.unlabeled = null
+  }
+}
 
 export function addTranslate({
   ast,
@@ -91,6 +101,7 @@ export function addTranslate({
     objectsExpr,
     [...xExpr, ...yExpr, ...zExpr, ...globalExpr, ...xyzExpr]
   )
+  preserveObjectInputOnEdit(call, mNodeToEdit)
 
   // Insert variables for labeled arguments if provided
   if (x && 'variableName' in x && x.variableName) {
@@ -198,6 +209,7 @@ export function addRotate({
       ...globalExpr,
     ]
   )
+  preserveObjectInputOnEdit(call, mNodeToEdit)
 
   // Insert variables for labeled arguments if provided
   if (roll && 'variableName' in roll && roll.variableName) {
@@ -293,6 +305,7 @@ export function addScale({
     objectsExpr,
     [...xExpr, ...yExpr, ...zExpr, ...factorExpr, ...globalExpr]
   )
+  preserveObjectInputOnEdit(call, mNodeToEdit)
 
   // Insert variables for labeled arguments if provided
   if (x && 'variableName' in x && x.variableName) {
@@ -445,12 +458,7 @@ export function addAppearance({
     objectsExpr,
     [...colorExpr, ...metalnessExpr, ...roughnessExpr, ...opacityExpr]
   )
-  if (mNodeToEdit) {
-    // The selected object can resolve to a downstream child through
-    // last-child lookup. The object input is hidden while editing, so preserve
-    // the existing input and apply only the editable Appearance arguments.
-    call.unlabeled = null
-  }
+  preserveObjectInputOnEdit(call, mNodeToEdit)
 
   if (metalness && 'variableName' in metalness && metalness.variableName) {
     insertVariableAndOffsetPathToNode(metalness, modifiedAst, mNodeToEdit)
