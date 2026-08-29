@@ -126,6 +126,7 @@ export default defineRegistryItemFactory((ctx) => {
           icon: 'line',
           description: 'Draw a line between two points in the open sketch.',
           enabled: drawable,
+          active: computed(() => sessions()?.tool.value?.tool === 'line'),
           run: equip('line'),
         }),
 

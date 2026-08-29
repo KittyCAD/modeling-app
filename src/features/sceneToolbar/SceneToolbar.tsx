@@ -106,6 +106,9 @@ function CommandButton({
       icon={command.icon}
       iconOnly={command.icon !== undefined}
       disabled={!(command.enabled?.value ?? true)}
+      // A tool that stays equipped has to look equipped. Absent for the
+      // one-shot actions, which is most of them.
+      pressed={command.active?.value ?? false}
       shortcut={keys.displayFor(command.id)}
       description={command.description}
       onClick={() => {

@@ -33,19 +33,29 @@ import './sketchOverlay.css'
  * clicked asks for pointer events itself.
  */
 
-/** Enough of the DOM's own size for the projection to work in. */
+/**
+ * Enough of the DOM's own size for the projection to work in.
+ *
+ * Measured from the element rather than passed in, because the projection needs
+ * the size of the surface the sketch is drawn *over* and only the DOM knows it.
+ *
+ * The element must therefore always be in the document — see the note on the
+ * early return below. Measuring something you only render once you have measured
+ * it is a deadlock that looks like a blank overlay.
+ */
 function useViewport(element: preact.RefObject<SVGSVGElement>) {
   const size = useSignal({ width: 0, height: 0 })
 
   useEffect(() => {
     const svg = element.current
-    if (!svg || typeof ResizeObserver === 'undefined') return
+    if (!svg) return
 
     const measure = () => {
       size.value = { width: svg.clientWidth, height: svg.clientHeight }
     }
     measure()
 
+    if (typeof ResizeObserver === 'undefined') return
     const observer = new ResizeObserver(measure)
     observer.observe(svg)
     return () => observer.disconnect()
@@ -80,10 +90,20 @@ export function SketchOverlay({ pointer }: { pointer: SketchPointer }) {
   void projection.epoch.value
   const size = viewport.value
 
-  if (!open || !graph || !plane || size.width === 0) return null
+  /*
+   * Nothing to draw, but the surface stays.
+   *
+   * Returning null here is what an earlier version did, and it could never draw
+   * anything at all: the size comes from measuring this very element, so bailing
+   * out before rendering it meant the observer never attached, the size stayed
+   * zero, and the condition that caused it stayed true. An empty `<svg>` costs
+   * nothing and keeps the measurement alive.
+   */
+  const drawable =
+    open !== null && graph !== null && plane !== null && size.width > 0
 
   const project = (point: PlanePoint) =>
-    projection.project(planeToWorld(plane, point), size)
+    plane ? projection.project(planeToWorld(plane, point), size) : null
 
   const projectAll = (points: readonly PlanePoint[]) => {
     const placed = points.map(project)
@@ -95,20 +115,35 @@ export function SketchOverlay({ pointer }: { pointer: SketchPointer }) {
       : null
   }
 
-  const drawing = drawingOf(graph, open.sketchId)
-  const hovered = pointer.at.value
-    ? pickInSketch(
-        drawing,
-        pointer.at.value,
-        // A few pixels of slack, in the plane's own units.
-        projection.scaleOn(plane, pointer.at.value, size) > 0
-          ? 8 / projection.scaleOn(plane, pointer.at.value, size)
-          : 0
-      )
-    : null
+  const drawing =
+    drawable && graph && open
+      ? drawingOf(graph, open.sketchId)
+      : { shapes: [], vertices: [] }
+
+  /**
+   * What the pointer is over, in the plane's own units.
+   *
+   * The tolerance is a few pixels turned into millimetres, which is the only way
+   * a fixed pointer slack means the same thing at every zoom. A scale of zero
+   * says the plane is edge-on or off screen, and then nothing is pickable —
+   * which has to read as "do not pick" rather than as an infinitely fine one.
+   */
+  const hoverIn = (
+    shapes: typeof drawing,
+    on: typeof plane,
+    viewportSize: typeof size
+  ) => {
+    const where = pointer.at.value
+    if (!drawable || !on || !where) return null
+
+    const scale = projection.scaleOn(on, where, viewportSize)
+    return scale > 0 ? pickInSketch(shapes, where, 8 / scale) : null
+  }
+
+  const hovered = hoverIn(drawing, plane, size)
 
   const tool = sessions.tool.value
-  const preview = tool ? previewOf(tool, pointer.at.value) : null
+  const preview = drawable && tool ? previewOf(tool, pointer.at.value) : null
 
   const shape = (item: SketchShape, key: string, kind: string) => {
     const points = projectAll(flatten(item))
