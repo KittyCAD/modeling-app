@@ -18,7 +18,7 @@ import {
   vec2,
 } from 'three/tsl'
 
-const TRIM_MASK_SIZE = 256
+const TRIM_MASK_SIZE = 128
 const TRIM_MASK_BOUNDARY_WIDTH = 4
 const loopOverTrimTriangles = Loop as unknown as (
   parameters: {
