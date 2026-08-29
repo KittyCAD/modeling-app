@@ -23,6 +23,7 @@ import {
 } from '@src/lang/queryAst'
 import type {
   ArtifactGraph,
+  CallExpressionKw,
   ExpressionStatement,
   PathToNode,
   Program,
@@ -202,6 +203,50 @@ function validateBooleanSelections(
       inputKeys.add(key)
     }
   }
+}
+
+function preserveSplitInputsOnEdit({
+  ast,
+  call,
+  nodeToEdit,
+  wasmInstance,
+}: {
+  ast: Node<Program>
+  call: Node<CallExpressionKw>
+  nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
+}) {
+  if (!nodeToEdit) {
+    return
+  }
+
+  call.unlabeled = null
+  const existingCall = getNodeFromPath<CallExpressionKw>(
+    ast,
+    nodeToEdit,
+    wasmInstance,
+    'CallExpressionKw'
+  )
+  if (err(existingCall)) {
+    return
+  }
+
+  const existingToolsArg = existingCall.node.arguments.find(
+    (arg) => arg.label?.name === 'tools'
+  )
+  if (!existingToolsArg) {
+    return
+  }
+
+  const replacementToolsIndex = call.arguments.findIndex(
+    (arg) => arg.label?.name === 'tools'
+  )
+  if (replacementToolsIndex === -1) {
+    call.arguments.unshift(structuredClone(existingToolsArg))
+    return
+  }
+
+  call.arguments[replacementToolsIndex] = structuredClone(existingToolsArg)
 }
 
 export function addUnion({
@@ -511,6 +556,12 @@ export function addSplit({
     objectsExpr,
     labeledArgs
   )
+  preserveSplitInputsOnEdit({
+    ast: modifiedAst,
+    call,
+    nodeToEdit: mNodeToEdit,
+    wasmInstance,
+  })
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
