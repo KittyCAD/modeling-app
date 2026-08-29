@@ -340,6 +340,9 @@ export default class GizmoRenderer {
     const currentQuaternion = this.sceneInfra.camControls.camera.quaternion
     this.camera.position.set(0, 0, 2.2).applyQuaternion(currentQuaternion)
     this.camera.quaternion.copy(currentQuaternion)
+    // A click can follow the final drag event before the next render frame.
+    // Keep the matrices current so that raycasting uses the new orientation.
+    this.camera.updateMatrixWorld()
 
     if (this.lastMouse && !this.isDragging) {
       this.doRayCast(this.lastMouse)
@@ -380,10 +383,21 @@ export default class GizmoRenderer {
           this.updateHoveringMesh(null)
         }
 
-        this.sceneInfra.camControls.rotateCamera(dx, dy)
-        this.sceneInfra.camControls.safeLookAtTarget()
-
-        this.sceneInfra.camControls.onCameraChange(true)
+        const camControls = this.sceneInfra.camControls
+        if (camControls.syncDirection === 'local') {
+          // Use the same update path as dragging the main canvas so the camera
+          // starts a subsequent gizmo animation from exactly the visible pose.
+          camControls.pendingRotation = camControls.pendingRotation
+            ? camControls.pendingRotation
+            : new Vector2()
+          camControls.pendingRotation.x += dx
+          camControls.pendingRotation.y += dy
+          camControls.update()
+        } else {
+          camControls.rotateCamera(dx, dy)
+          camControls.safeLookAtTarget()
+          camControls.onCameraChange(true)
+        }
       }
     }
   }
@@ -611,7 +625,10 @@ async function animateCameraToQuaternion(
   sceneInfra: SceneInfra
 ) {
   const camControls = sceneInfra.camControls
-  camControls.syncDirection = 'clientToEngine'
+  const previousSyncDirection = camControls.syncDirection
+  if (previousSyncDirection === 'engineToClient') {
+    camControls.syncDirection = 'clientToEngine'
+  }
   camControls.enableRotate = false
   try {
     sceneInfra.animate()
@@ -625,6 +642,6 @@ async function animateCameraToQuaternion(
   } finally {
     sceneInfra.stop()
     camControls.enableRotate = true
-    camControls.syncDirection = 'engineToClient'
+    camControls.syncDirection = previousSyncDirection
   }
 }

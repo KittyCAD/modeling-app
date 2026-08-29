@@ -86,6 +86,8 @@ export type ReactCameraProperties =
       quaternion: [number, number, number, number]
     }
 
+export type CameraSyncDirection = 'clientToEngine' | 'engineToClient' | 'local'
+
 class CameraRateLimiter {
   lastSend?: Date = undefined
   rateLimitMs: number = 16 //60 FPS
@@ -109,7 +111,7 @@ class CameraRateLimiter {
 
 export class CameraControls {
   engineCommandManager: ConnectionManager
-  syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
+  syncDirection: CameraSyncDirection = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
@@ -272,6 +274,44 @@ export class CameraControls {
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 15)
 
+  /** Push the locally owned camera to the engine before showing its stream. */
+  syncCameraToEngine = async () => {
+    if (this.camera instanceof OrthographicCamera) {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'default_camera_set_orthographic' },
+      })
+    } else {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_set_perspective',
+          parameters: { fov_y: this.camera.fov },
+        },
+      })
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam(
+          {
+            quaternion: this.camera.quaternion,
+            position: this.camera.position,
+            zoom: this.camera.zoom,
+            isPerspective: this.isPerspective,
+            target: this.target,
+          },
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+        ),
+      },
+    })
+  }
+
   doMove = (
     interaction: CameraDragInteractionType,
     coordinates: [number, number]
@@ -353,6 +393,15 @@ export class CameraControls {
     >[0]
 
     const cb = ({ data, type }: CallBackParam) => {
+      if (
+        this.syncDirection === 'local' &&
+        (type === 'camera_drag_move' ||
+          type === 'camera_drag_end' ||
+          type === 'default_camera_zoom')
+      ) {
+        return
+      }
+
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -510,10 +559,14 @@ export class CameraControls {
         return
       }
 
-      // else "clientToEngine" (Sketch Mode) or forceUpdate
+      // Else the client owns the camera, either with engine synchronization
+      // for sketch mode or without it for local rendering.
       // Implement camera movement logic here based on deltaMove
       // For example, for rotating the camera around the target:
-      if (interaction === 'rotate') {
+      if (
+        interaction === 'rotate' ||
+        (this.syncDirection === 'local' && interaction === 'rotatetrackball')
+      ) {
         this.pendingRotation = this.pendingRotation
           ? this.pendingRotation
           : new Vector2()
@@ -535,6 +588,9 @@ export class CameraControls {
           this.pendingPan = newPosition.sub(this.worldDownPosition)
         }
       }
+      if (this.syncDirection === 'local') {
+        this.update()
+      }
     } else {
       /**
        * If we're not in sketch mode and not dragging, we can highlight entities
@@ -544,7 +600,10 @@ export class CameraControls {
 
       // Clear any previous drag state
       this.wasDragging = false
-      if (this.syncDirection === 'engineToClient') {
+      if (
+        this.syncDirection === 'engineToClient' ||
+        this.syncDirection === 'local'
+      ) {
         const newCmdId = uuidv4()
 
         // You can use raw JS to fetch the element from the DOM. We do not need to proxy a ref of a ref element on the DOM element
@@ -625,7 +684,8 @@ export class CameraControls {
       return
     }
 
-    // else "clientToEngine" (Sketch Mode) or forceUpdate
+    // Else the client owns the camera, either with engine synchronization
+    // for sketch mode or without it for local rendering.
 
     // We need to simulate similar behavior as when we send
     // zoom commands to engine. This means dropping some zoom
@@ -644,6 +704,9 @@ export class CameraControls {
       console.error(
         `Unexpected interaction type for wheel event: ${interaction}`
       )
+    }
+    if (this.syncDirection === 'local') {
+      this.update()
     }
     this.handleEnd()
   }
@@ -678,14 +741,16 @@ export class CameraControls {
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_orthographic',
-      },
-    })
+    if (this.syncDirection !== 'local') {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_set_orthographic',
+        },
+      })
+    }
     this.onCameraChange()
   }
   private createPerspectiveCamera = () => {
@@ -725,13 +790,15 @@ export class CameraControls {
     }
 
     if (this.camera instanceof OrthographicCamera) {
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_set_orthographic',
-        },
-      })
+      if (this.syncDirection !== 'local') {
+        await this.engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_set_orthographic',
+          },
+        })
+      }
       return
     }
 
@@ -740,7 +807,10 @@ export class CameraControls {
 
   usePerspectiveCamera = async (forceSend = false) => {
     this._usePerspectiveCamera()
-    if (forceSend || this.syncDirection === 'clientToEngine') {
+    if (
+      this.syncDirection === 'clientToEngine' ||
+      (forceSend && this.syncDirection !== 'local')
+    ) {
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -787,6 +857,11 @@ export class CameraControls {
       .clone()
       .add(direction.multiplyScalar(-distanceAfter))
     this.camera.position.copy(newPosition)
+
+    if (this.syncDirection === 'local') {
+      this.onCameraChange()
+      return
+    }
 
     if (splitEngineCalls) {
       await this.engineCommandManager.sendSceneCommand({
@@ -844,6 +919,9 @@ export class CameraControls {
     let didChange = false
     if (this.pendingRotation) {
       this.rotateCamera(this.pendingRotation.x, this.pendingRotation.y)
+      if (this.syncDirection === 'local') {
+        this.safeLookAtTarget()
+      }
       this.pendingRotation = null // Clear the pending rotation after applying it
       didChange = true
     }
@@ -1422,7 +1500,10 @@ export class CameraControls {
       this.camera.updateProjectionMatrix()
     }
 
-    if (this.syncDirection === 'clientToEngine' || forceUpdate) {
+    if (
+      this.syncDirection === 'clientToEngine' ||
+      (forceUpdate && this.syncDirection !== 'local')
+    ) {
       this.throttledUpdateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,

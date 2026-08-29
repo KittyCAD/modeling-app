@@ -43,7 +43,7 @@ import type {
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 const TIME_TO_CONNECT = 30_000
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
@@ -116,6 +116,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const isSketchInteractionMode =
     modelingMachineState.matches('Sketch') ||
     modelingMachineState.matches('sketchSolveMode')
+  const isSketchCameraTransition =
+    modelingMachineState.matches('Sketch no face') ||
+    modelingMachineState.matches('animating to plane') ||
+    modelingMachineState.matches('animating to existing sketch') ||
+    modelingMachineState.matches('animating to sketch solve mode') ||
+    modelingMachineState.matches('animating to existing sketch solve')
 
   const reportEngineDisconnect = useCallback(
     (eventType: EngineDisconnectEvent, extra?: Record<string, unknown>) => {
@@ -636,6 +642,50 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         : isLocalRenderVisible
   const shouldEnableLocalWebGpuSelectionProxy =
     shouldShowLocalWebGpuScene && !isSketchInteractionMode
+
+  useEffect(() => {
+    const cameraControls = sceneInfra.camControls
+
+    // The existing sketch state machine owns camera synchronization while
+    // entering and editing sketches.
+    if (isSketchInteractionMode) {
+      return
+    }
+    if (isSketchCameraTransition) {
+      cameraControls.syncDirection = 'engineToClient'
+      return
+    }
+
+    if (shouldShowLocalWebGpuScene) {
+      cameraControls.syncDirection = 'local'
+      return
+    }
+
+    if (cameraControls.syncDirection !== 'local') {
+      cameraControls.syncDirection = 'engineToClient'
+      return
+    }
+
+    let cancelled = false
+    void cameraControls
+      .syncCameraToEngine()
+      .catch(reportRejection)
+      .finally(() => {
+        if (!cancelled) {
+          cameraControls.syncDirection = 'engineToClient'
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    isSketchCameraTransition,
+    isSketchInteractionMode,
+    sceneInfra.camControls,
+    shouldShowLocalWebGpuScene,
+  ])
+
   return (
     <div
       role="presentation"
