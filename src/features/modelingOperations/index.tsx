@@ -5,7 +5,8 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
-import { commandsValueSpec } from '@src/contracts/commands'
+import { commandService, commandsValueSpec } from '@src/contracts/commands'
+import { executionCoordinatorService } from '@src/contracts/execution'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import {
   sceneModeGatesValueSpec,
@@ -23,6 +24,7 @@ import { selectionService } from '@src/contracts/selection'
 import { overlaysValueSpec } from '@src/contracts/shell'
 import { loadKclWasm } from '@src/features/kclAnalysis/wasmModule'
 import { OperationPrompt } from '@src/features/modelingOperations/OperationPrompt'
+import { afterExecution } from '@src/features/modelingOperations/afterExecution'
 import { createOperationRunner } from '@src/features/modelingOperations/createOperationRunner'
 import { layoutFor } from '@src/features/modelingOperations/presentation'
 import { createSelectionResolver } from '@src/features/modelingOperations/selectionResolver'
@@ -90,6 +92,23 @@ export default defineRegistryItemFactory((ctx) => {
       const wasm = await loadKclWasm()
       const [ast] = wasm.parse_wasm(source) as [Program, unknown[]]
       return { source, ast }
+    },
+
+    /**
+     * Whatever the operation asked to happen next, once the model has caught up.
+     *
+     * Both halves are somebody else's: the coordinator knows when a run landed
+     * and the command service knows what an id means. Wiring them together here
+     * is what lets an operation say `then: 'sketch.enter'` and stay declarative —
+     * Start sketch writes a block, and being able to draw in that block needs
+     * object ids only an execution produces.
+     */
+    handoff: (commandId, until) => {
+      afterExecution(
+        () => ctx.services.optional(executionCoordinatorService),
+        until,
+        () => ctx.services.optional(commandService)?.run(commandId)
+      )
     },
   })
 

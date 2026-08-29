@@ -102,6 +102,19 @@ export interface OperationRunnerDependencies {
   session: () => ProjectSession | null
   /** Injected: parsing needs the WASM module, and a test does not. */
   parse: (source: string) => Promise<ParsedProgram>
+  /**
+   * Hand off to a command once the model has caught up to an edit.
+   *
+   * Injected, because both halves belong to somebody else: only the execution
+   * coordinator knows when a run has landed, and only the command service knows
+   * what a command id means. Absent in a build or a test with neither, in which
+   * case an operation's `then` is simply not honoured — the edit still applies,
+   * which is the part that matters.
+   */
+  handoff?: (
+    commandId: string,
+    until: { bufferId: string; version: number }
+  ) => void
 }
 
 export interface OperationRunner {
@@ -570,6 +583,23 @@ export function createOperationRunner(
       }
 
       pending.value = null
+
+      /*
+       * And then whatever the operation asked for next.
+       *
+       * After the dispatches and after `pending` is cleared, because the handoff
+       * waits on an execution and the prompt should not stay open while it does.
+       * The version is read *now*, from the buffer the operation wrote to, so
+       * what is waited for is this edit landing rather than whatever the user
+       * types next.
+       */
+      const written = target.session.bufferForPath(state.path)
+      if (edit.then && written && dependencies.handoff) {
+        dependencies.handoff(edit.then, {
+          bufferId: written.id,
+          version: written.version.peek(),
+        })
+      }
     } catch (caught) {
       pending.value = {
         ...state,

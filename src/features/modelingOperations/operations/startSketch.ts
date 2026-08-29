@@ -80,6 +80,17 @@ export const startSketchSpec: OperationSpec = {
 
     return {
       label: `Started a sketch on ${on}`,
+      /*
+       * And then edit it, once the run has landed.
+       *
+       * Starting a sketch and being in it are one intention, and the app used to
+       * infer the second from the cursor arriving in the block. That inference
+       * had to go — entering now opens a sketch session and costs a real
+       * execution, which is not something a cursor move may buy. Saying it here
+       * is the honest version: the operation whose point is to put you in a
+       * sketch is the operation that asks to be put there.
+       */
+      then: 'sketch.enter',
       changes: {
         [path]: [
           {

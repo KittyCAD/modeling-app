@@ -49,6 +49,21 @@ export interface ProjectEdit {
    * it inserted rather than mapping anything.
    */
   focus?: { path: string; offset: number }
+  /**
+   * A command to run once the model has caught up to this edit.
+   *
+   * For an operation whose *point* is to leave you somewhere the model has to
+   * exist first. Start sketch is the case: it writes an empty block, and being
+   * able to draw in that block needs object ids that only an execution produces
+   * — so "and now edit it" cannot happen when the edit is applied, only when the
+   * run it triggered has landed.
+   *
+   * A command id rather than a callback, so an operation stays declarative and
+   * says what should happen next in the same vocabulary as a key or a menu item.
+   * The operation therefore never learns what sketch mode is, and whoever owns
+   * sketch mode never learns that an operation asked.
+   */
+  then?: string
 }
 
 /** A KCL program, parsed, with the source it was parsed from. */
