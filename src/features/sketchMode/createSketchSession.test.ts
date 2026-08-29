@@ -7,6 +7,7 @@ import type {
   KclFrontendService,
   SetProgramResult,
 } from '@src/contracts/kclFrontend'
+import type { CameraDriver } from '@src/contracts/scene'
 import type { SceneProjection } from '@src/contracts/sceneProjection'
 import type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 import type { ArtifactMap } from '@src/lib/kcl/artifacts'
@@ -71,6 +72,7 @@ const setup = (
     exitThrows?: boolean
     artifacts?: ArtifactMap
     projection?: SceneProjection
+    faceOnEntry?: boolean
     addSegment?: (calls: string[]) => Promise<unknown>
   } = {}
 ) => {
@@ -82,6 +84,7 @@ const setup = (
   })
 
   const calls: string[] = []
+  const camera = { faceOn: vi.fn() } as unknown as CameraDriver
   const frontend = {
     sync: vi.fn(async () => {
       calls.push('sync')
@@ -123,9 +126,11 @@ const setup = (
       options.program === undefined ? { body: [] } : options.program,
     artifacts: () => options.artifacts ?? onXY,
     projection: () => options.projection,
+    camera: () => camera,
+    faceOnEntry: () => options.faceOnEntry ?? true,
   })
 
-  return { session, buffer, frontend, calls }
+  return { session, buffer, frontend, calls, camera }
 }
 
 describe('opening a sketch', () => {
@@ -532,5 +537,39 @@ describe('matching our sketch to the frontend’s', () => {
 
     expect(app.frontend.editSketch).not.toHaveBeenCalled()
     expect(app.session.error.value).toMatch(/Could not match/)
+  })
+})
+
+describe('turning to face the plane', () => {
+  it('looks straight at the sketch plane on the way in', async () => {
+    const app = setup()
+
+    await app.session.enter()
+
+    expect(app.camera.faceOn).toHaveBeenCalledWith({
+      origin: { x: 0, y: 0, z: 0 },
+      xAxis: { x: 1, y: 0, z: 0, units: null },
+      yAxis: { x: 0, y: 1, z: 0, units: null },
+      zAxis: { x: 0, y: 0, z: 1, units: null },
+    })
+  })
+
+  it('leaves the view alone when the preference says to', async () => {
+    const app = setup({ faceOnEntry: false })
+
+    await app.session.enter()
+
+    expect(app.camera.faceOn).not.toHaveBeenCalled()
+  })
+
+  it('has nothing to look at when the sketch could not be placed', async () => {
+    const app = setup({ artifacts: new Map() })
+
+    await app.session.enter()
+
+    // The session still opens — editing the KCL is worth doing without an
+    // overlay — but there is no plane to point a camera at.
+    expect(app.session.open.value).not.toBeNull()
+    expect(app.camera.faceOn).not.toHaveBeenCalled()
   })
 })

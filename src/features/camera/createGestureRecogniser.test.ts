@@ -29,6 +29,7 @@ function createFakeDriver() {
       zoom: (request: CameraZoomRequest) => zooms.push(request),
       setProjection: vi.fn(),
       standardView: vi.fn(),
+      faceOn: vi.fn(),
       zoomToFit: vi.fn(),
     } satisfies CameraDriver,
     gestures,

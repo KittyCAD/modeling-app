@@ -15,12 +15,22 @@ import {
   sceneModeService,
   toolbarItemsValueSpec,
 } from '@src/contracts/sceneModes'
+import { cameraDriverService } from '@src/contracts/scene'
 import { sceneProjectionService } from '@src/contracts/sceneProjection'
+import {
+  settingsSectionsValueSpec,
+  settingsService,
+  settingsValueSpec,
+} from '@src/contracts/settings'
 import { sketchSessionService } from '@src/contracts/sketchSession'
 import { selectionService } from '@src/contracts/selection'
 import { SKETCHING_MODE } from '@src/features/sceneToolbar/modes'
 import { bindSketchModeToSession } from '@src/features/sketchMode/bindSketchModeToSession'
 import { createSketchSession } from '@src/features/sketchMode/createSketchSession'
+import {
+  faceOnWhenEnteringSketchSetting,
+  sketchingSettings,
+} from '@src/features/sketchMode/settings'
 import { sketchContextAt } from '@src/features/sketchMode/sketchContext'
 
 /**
@@ -98,6 +108,11 @@ export default defineRegistryItemFactory((ctx) => {
     artifacts: () =>
       ctx.services.optional(kclSceneService)?.artifacts.value ?? new Map(),
     projection: () => ctx.services.optional(sceneProjectionService),
+    camera: () => ctx.services.optional(cameraDriverService),
+    faceOnEntry: () =>
+      ctx.services
+        .optional(settingsService)
+        ?.read(faceOnWhenEnteringSketchSetting) ?? true,
   })
 
   /**
@@ -131,6 +146,54 @@ export default defineRegistryItemFactory((ctx) => {
         stopBinding?.()
       },
       provides: [
+        ...sketchingSettings.map((setting) =>
+          provide(settingsValueSpec, setting)
+        ),
+
+        provide(settingsSectionsValueSpec, {
+          id: 'sketching',
+          title: 'Sketching',
+          description: 'How drawing in a sketch behaves.',
+          icon: 'sketch',
+          order: 6,
+        }),
+
+        /**
+         * Look straight at the plane, on demand.
+         *
+         * A command as well as an automatic behaviour, because the automatic one
+         * only fires when the sketch opens and the camera is free to move
+         * afterwards — orbiting inside a sketch is allowed, so getting back to
+         * face-on has to be something you can ask for.
+         *
+         * It takes the plane from the sketch that is open rather than an
+         * argument. Every command in this app is argument-free and reads its
+         * target from where the user is; the plane is the capability's argument,
+         * not the command's.
+         */
+        provide(commandsValueSpec, {
+          id: 'sketch.faceOn',
+          title: 'Look at the sketch plane',
+          category: 'Sketch',
+          icon: 'plane',
+          description:
+            'Turn the camera to look straight down the sketch plane’s normal.',
+          enabled: computed(() => session.open.value?.plane != null),
+          run: () => {
+            const plane = session.open.value?.plane
+            if (plane) ctx.services.optional(cameraDriverService)?.faceOn(plane)
+          },
+        }),
+
+        provide(toolbarItemsValueSpec, {
+          kind: 'command',
+          id: 'sketch.faceOn',
+          mode: SKETCHING_MODE,
+          section: 'view',
+          order: 50,
+          commandId: 'sketch.faceOn',
+        }),
+
         /**
          * Opening and leaving are both deliberate acts, so both are commands.
          *

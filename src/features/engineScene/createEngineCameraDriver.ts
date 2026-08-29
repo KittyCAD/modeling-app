@@ -39,6 +39,23 @@ interface Point {
 }
 
 /**
+ * A direction of length one.
+ *
+ * The engine is given directions, not distances, so a plane frame whose axes
+ * happen not to be normalised must not turn into a camera further away than it
+ * was asked to be. A zero vector stays zero; there is no direction to invent.
+ */
+function unit(vector: Point): Point {
+  const length = Math.hypot(vector.x, vector.y, vector.z)
+  if (length === 0) return vector
+  return {
+    x: vector.x / length,
+    y: vector.y / length,
+    z: vector.z / length,
+  }
+}
+
+/**
  * The camera driver for the streamed engine.
  *
  * Three things make this engine-specific, and all three would be wrong for a
@@ -222,6 +239,31 @@ export function createEngineCameraDriver(
       // needs `default_camera_get_settings` and a decoded reply, and a fit is a
       // better answer than a preserved distance for a view someone asked for by
       // name.
+      sendZoomToFit()
+    },
+
+    faceOn(plane) {
+      if (!ready.peek()) return
+
+      const normal = unit(plane.zAxis)
+      const origin = plane.origin
+
+      getConnection().fireCommand({
+        type: 'default_camera_look_at',
+        center: origin,
+        /*
+         * Along the normal, at the same nominal distance the named views use.
+         * A fit follows, so what this fixes is the direction and the roll.
+         */
+        vantage: {
+          x: origin.x + normal.x * DISTANCE,
+          y: origin.y + normal.y * DISTANCE,
+          z: origin.z + normal.z * DISTANCE,
+        },
+        // The plane's own up, so the sketch's Y is the screen's Y. Anything else
+        // would draw a horizontal constraint at an angle.
+        up: unit(plane.yAxis),
+      })
       sendZoomToFit()
     },
 

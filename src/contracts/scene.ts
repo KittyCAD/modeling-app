@@ -7,6 +7,7 @@ import {
 import type { ReadonlySignal } from '@preact/signals'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { ContextMenuContribution } from '@src/contracts/contextMenu'
+import type { PlaneFrame } from '@src/lib/scene/projection'
 import { byOrder, dedupeById } from '@src/lib/registryOrdering'
 import type { ComponentChildren } from 'preact'
 
@@ -119,6 +120,21 @@ export interface CameraDriver {
    * pay twice for something the user asked for once.
    */
   standardView(view: StandardView): void
+  /**
+   * Look at a plane from straight on, along its normal.
+   *
+   * The general form of `standardView`, and needed because a sketch plane is
+   * rarely one of the seven: a sketch on the face of a swept solid is on a plane
+   * with an arbitrary origin and orientation, and drawing on a surface seen at an
+   * angle means every distance on screen lies about itself.
+   *
+   * Which side to look from is the normal's, and which way is up is the plane's
+   * own `yAxis` — so the axes the sketch is measured in are the axes on screen,
+   * and a horizontal constraint looks horizontal.
+   *
+   * Millimetres, like everything else that meets the renderer.
+   */
+  faceOn(plane: PlaneFrame): void
   /** Frame everything there is. */
   zoomToFit(): void
 }

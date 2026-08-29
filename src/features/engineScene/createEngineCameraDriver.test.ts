@@ -233,3 +233,71 @@ describe('createEngineCameraDriver', () => {
     })
   })
 })
+
+describe('looking straight at a plane', () => {
+  /** The XY plane, as the artifact graph reports one. */
+  const xy = {
+    origin: { x: 0, y: 0, z: 0 },
+    xAxis: { x: 1, y: 0, z: 0 },
+    yAxis: { x: 0, y: 1, z: 0 },
+    zAxis: { x: 0, y: 0, z: 1 },
+  }
+
+  it('looks along the normal, with the plane’s own up', () => {
+    const fake = createFakeConnection()
+    const driver = createEngineCameraDriver(() => fake.connection)
+
+    driver.faceOn(xy)
+
+    expect(fake.sent[0]).toMatchObject({
+      type: 'default_camera_look_at',
+      center: { x: 0, y: 0, z: 0 },
+      vantage: { x: 0, y: 0, z: 1000 },
+      // The sketch's Y is the screen's Y, or a horizontal constraint would be
+      // drawn at an angle.
+      up: { x: 0, y: 1, z: 0 },
+    })
+    // Direction and roll only; the framing is a fit, as with the named views.
+    expect(fake.sent[1]).toMatchObject({ type: 'zoom_to_fit' })
+  })
+
+  it('looks from the plane’s own origin, not the world’s', () => {
+    const fake = createFakeConnection()
+    const driver = createEngineCameraDriver(() => fake.connection)
+
+    // A sketch on the face of a swept solid: somewhere else, facing sideways.
+    driver.faceOn({
+      origin: { x: 5, y: 10, z: 20 },
+      xAxis: { x: 0, y: 1, z: 0 },
+      yAxis: { x: 0, y: 0, z: 1 },
+      zAxis: { x: 1, y: 0, z: 0 },
+    })
+
+    expect(fake.sent[0]).toMatchObject({
+      center: { x: 5, y: 10, z: 20 },
+      vantage: { x: 1005, y: 10, z: 20 },
+      up: { x: 0, y: 0, z: 1 },
+    })
+  })
+
+  it('normalises axes it was given unnormalised', () => {
+    const fake = createFakeConnection()
+    const driver = createEngineCameraDriver(() => fake.connection)
+
+    // An axis is a direction. A frame whose axes are not unit length must not
+    // put the camera further away than it was asked to be.
+    driver.faceOn({ ...xy, zAxis: { x: 0, y: 0, z: 4 } })
+
+    expect(fake.sent[0]).toMatchObject({ vantage: { x: 0, y: 0, z: 1000 } })
+  })
+
+  it('drops the request when there is nothing rendering', () => {
+    const fake = createFakeConnection()
+    fake.status.value = 'offline'
+    const driver = createEngineCameraDriver(() => fake.connection)
+
+    driver.faceOn(xy)
+
+    expect(fake.sent).toEqual([])
+  })
+})

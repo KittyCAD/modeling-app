@@ -4,6 +4,7 @@ import type {
   KclFrontendService,
   SketchOutcome,
 } from '@src/contracts/kclFrontend'
+import type { CameraDriver } from '@src/contracts/scene'
 import type { SceneProjection } from '@src/contracts/sceneProjection'
 import type {
   OpenSketch,
@@ -47,6 +48,10 @@ export interface SketchSessionDependencies {
   artifacts: () => ArtifactMap
   /** Whoever is rendering, for the one plane it alone can place. */
   projection: () => SceneProjection | undefined
+  /** For turning to face the plane on the way in, if that is wanted. */
+  camera: () => CameraDriver | undefined
+  /** Whether opening a sketch should look straight at its plane. */
+  faceOnEntry: () => boolean
 }
 
 /**
@@ -72,8 +77,17 @@ export interface SketchSessionDependencies {
 export function createSketchSession(
   dependencies: SketchSessionDependencies
 ): SketchSessionService {
-  const { frontend, sketch, buffer, path, program, artifacts, projection } =
-    dependencies
+  const {
+    frontend,
+    sketch,
+    buffer,
+    path,
+    program,
+    artifacts,
+    projection,
+    camera,
+    faceOnEntry,
+  } = dependencies
 
   const open = signal<OpenSketch | null>(null)
   const busy = signal(false)
@@ -279,6 +293,20 @@ export function createSketchSession(
           planeProblem: placed.problem,
         }
         busy.value = false
+
+        /*
+         * And turn to face it.
+         *
+         * After the session is open rather than before, because this is the first
+         * moment the plane is known — which is also why it is not something the
+         * Start sketch operation could put in its plan. Both ways into a sketch
+         * pass through here, so both get it, and neither had to be told.
+         *
+         * The camera is free to move afterwards. Orbiting inside a sketch is
+         * allowed, so this is a starting position rather than a lock, and
+         * `sketch.faceOn` is how somebody gets back to it.
+         */
+        if (placed.plane && faceOnEntry()) camera()?.faceOn(placed.plane)
       } catch (caught) {
         fail(kclErrorMessage(caught, 'That sketch could not be opened.'))
       }
