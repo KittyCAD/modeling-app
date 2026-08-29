@@ -231,6 +231,10 @@ function CommandBarHeaderFooter({
                     <span
                       data-testid={`arg-name-${argName.toLowerCase()}`}
                       data-test-name="arg-name"
+                      data-test-arg-name={arg.displayName || argName}
+                      data-test-arg-label={
+                        arg.displayName || capitaliseFC(argName)
+                      }
                     >
                       {arg.displayName ||
                         capitaliseFC(decamelize(argName, { separator: ' ' }))}

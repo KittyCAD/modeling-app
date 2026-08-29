@@ -338,7 +338,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     })
 
     // Clear optional arg
-    await page.getByRole('button', { name: 'BidirectionalLength' }).click()
+    await page.getByRole('button', { name: 'Bidirectional length' }).click()
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
