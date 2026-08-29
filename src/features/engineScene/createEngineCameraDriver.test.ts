@@ -6,7 +6,24 @@ import type {
   SceneCommand,
 } from '@src/contracts/engine'
 import type { CameraGesture, ScenePoint } from '@src/contracts/scene'
+import type { CameraFrame } from '@src/lib/scene/projection'
+import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
 import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
+
+/**
+ * A camera the driver can animate from, or none at all.
+ *
+ * The distinction matters: with no reported camera there is nothing to
+ * interpolate, so a view change states its destination instead.
+ */
+function fakeCamera(frame: CameraFrame | null = null): EngineCamera {
+  const value = signal(frame)
+  return {
+    frame: computed(() => value.value),
+    epoch: computed(() => 0),
+    dispose: () => {},
+  }
+}
 
 function createFakeConnection() {
   const status = signal<EngineConnectionState['status']>('connected')
@@ -51,7 +68,10 @@ describe('createEngineCameraDriver', () => {
 
   beforeEach(() => {
     fake = createFakeConnection()
-    driver = createEngineCameraDriver(() => fake.connection)
+    driver = createEngineCameraDriver(() => fake.connection, {
+      camera: fakeCamera(),
+      reducedMotion: () => true,
+    })
   })
 
   it('maps element pixels onto the engine’s pixels', () => {
@@ -245,7 +265,10 @@ describe('looking straight at a plane', () => {
 
   it('looks along the normal, with the plane’s own up', () => {
     const fake = createFakeConnection()
-    const driver = createEngineCameraDriver(() => fake.connection)
+    const driver = createEngineCameraDriver(() => fake.connection, {
+      camera: fakeCamera(),
+      reducedMotion: () => true,
+    })
 
     driver.faceOn(xy)
 
@@ -263,7 +286,10 @@ describe('looking straight at a plane', () => {
 
   it('looks from the plane’s own origin, not the world’s', () => {
     const fake = createFakeConnection()
-    const driver = createEngineCameraDriver(() => fake.connection)
+    const driver = createEngineCameraDriver(() => fake.connection, {
+      camera: fakeCamera(),
+      reducedMotion: () => true,
+    })
 
     // A sketch on the face of a swept solid: somewhere else, facing sideways.
     driver.faceOn({
@@ -282,7 +308,10 @@ describe('looking straight at a plane', () => {
 
   it('normalises axes it was given unnormalised', () => {
     const fake = createFakeConnection()
-    const driver = createEngineCameraDriver(() => fake.connection)
+    const driver = createEngineCameraDriver(() => fake.connection, {
+      camera: fakeCamera(),
+      reducedMotion: () => true,
+    })
 
     // An axis is a direction. A frame whose axes are not unit length must not
     // put the camera further away than it was asked to be.
@@ -294,10 +323,156 @@ describe('looking straight at a plane', () => {
   it('drops the request when there is nothing rendering', () => {
     const fake = createFakeConnection()
     fake.status.value = 'offline'
-    const driver = createEngineCameraDriver(() => fake.connection)
+    const driver = createEngineCameraDriver(() => fake.connection, {
+      camera: fakeCamera(),
+      reducedMotion: () => true,
+    })
 
     driver.faceOn(xy)
 
     expect(fake.sent).toEqual([])
+  })
+})
+
+describe('animating a view change', () => {
+  /** A camera 200mm out along -Y, as the engine would report one. */
+  const looking = {
+    position: { x: 0, y: -200, z: 0 },
+    target: { x: 0, y: 0, z: 0 },
+    up: { x: 0, y: 0, z: 1 },
+    fovY: 45,
+    orthographic: false,
+  }
+
+  const xy = {
+    origin: { x: 0, y: 0, z: 0 },
+    xAxis: { x: 1, y: 0, z: 0 },
+    yAxis: { x: 0, y: 1, z: 0 },
+    zAxis: { x: 0, y: 0, z: 1 },
+  }
+
+  const setup = (reduced: boolean) => {
+    const fake = createFakeConnection()
+    const driver = createEngineCameraDriver(() => fake.connection, {
+      camera: fakeCamera(looking),
+      reducedMotion: () => reduced,
+    })
+    return { fake, driver }
+  }
+
+  it('keeps the distance it had, rather than fitting', () => {
+    const { fake, driver } = setup(true)
+
+    driver.faceOn(xy)
+
+    // The camera reports itself, so squaring up to a plane can leave the zoom
+    // alone — and a fit on a file whose only content is an empty sketch has
+    // nothing to fit to.
+    expect(fake.sent).toEqual([
+      {
+        type: 'default_camera_look_at',
+        center: { x: 0, y: 0, z: 0 },
+        vantage: { x: 0, y: 0, z: 200 },
+        up: { x: 0, y: 1, z: 0 },
+      },
+    ])
+  })
+
+  it('goes straight there when animation is limited', () => {
+    const { fake, driver } = setup(true)
+
+    driver.faceOn(xy)
+
+    expect(fake.sent).toHaveLength(1)
+  })
+
+  it('swings round when it is not', () => {
+    vi.useFakeTimers()
+    const { fake, driver } = setup(false)
+
+    driver.faceOn(xy)
+    // Nothing yet: the first step lands on the first interval, not on the call.
+    expect(fake.sent).toHaveLength(0)
+
+    vi.advanceTimersByTime(400)
+
+    expect(fake.sent.length).toBeGreaterThan(2)
+    for (const command of fake.sent) {
+      expect(command.type).toBe('default_camera_look_at')
+    }
+    vi.useRealTimers()
+  })
+
+  it('arrives exactly, not merely nearby', () => {
+    vi.useFakeTimers()
+    const { fake, driver } = setup(false)
+
+    driver.faceOn(xy)
+    vi.advanceTimersByTime(1000)
+
+    // The point of the move is the destination; the last interpolated step is
+    // not it.
+    expect(fake.sent.at(-1)).toMatchObject({
+      vantage: { x: 0, y: 0, z: 200 },
+      up: { x: 0, y: 1, z: 0 },
+    })
+    vi.useRealTimers()
+  })
+
+  it('keeps its distance from the target the whole way round', () => {
+    vi.useFakeTimers()
+    const { fake, driver } = setup(false)
+
+    driver.faceOn(xy)
+    vi.advanceTimersByTime(400)
+
+    // A lerp of the two positions would cut the corner, dragging the camera
+    // through whatever is at the target.
+    for (const command of fake.sent) {
+      const vantage = (
+        command as unknown as {
+          vantage: { x: number; y: number; z: number }
+        }
+      ).vantage
+      expect(Math.hypot(vantage.x, vantage.y, vantage.z)).toBeCloseTo(200)
+    }
+    vi.useRealTimers()
+  })
+
+  it('stops animating the moment the user touches the camera', () => {
+    vi.useFakeTimers()
+    const { fake, driver } = setup(false)
+
+    driver.faceOn(xy)
+    vi.advanceTimersByTime(80)
+    const partWay = fake.sent.length
+    driver.gesture({
+      kind: 'rotate',
+      phase: 'start',
+      at: { x: 0, y: 0, viewport: { width: 500, height: 250 } },
+    })
+    vi.advanceTimersByTime(1000)
+
+    // Only the drag start after the animation was cancelled: a tween that kept
+    // sending look-at commands would fight the orbit.
+    expect(fake.sent.length).toBe(partWay + 1)
+    expect(fake.sent.at(-1)?.type).toBe('camera_drag_start')
+    vi.useRealTimers()
+  })
+
+  it('states the destination and fits when it has never heard a camera', () => {
+    const fake = createFakeConnection()
+    const driver = createEngineCameraDriver(() => fake.connection, {
+      camera: fakeCamera(null),
+      reducedMotion: () => false,
+    })
+
+    driver.faceOn(xy)
+
+    // Nothing to interpolate from, and no distance to keep.
+    expect(fake.sent.map((command) => command.type)).toEqual([
+      'default_camera_look_at',
+      'zoom_to_fit',
+    ])
   })
 })

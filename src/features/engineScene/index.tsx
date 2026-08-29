@@ -6,6 +6,7 @@ import {
 } from '@kittycad/registry'
 import { computed, effect } from '@preact/signals'
 import { engineConnectionService } from '@src/contracts/engine'
+import { motionService } from '@src/contracts/motion'
 import { streamParamsValueSpec } from '@src/contracts/engineScene'
 import { cameraDriverService, sceneItemsValueSpec } from '@src/contracts/scene'
 import { sceneProjectionService } from '@src/contracts/sceneProjection'
@@ -13,6 +14,7 @@ import { scenePickerService } from '@src/contracts/selection'
 import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { themeService } from '@src/contracts/theme'
 import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
+import { createEngineCamera } from '@src/features/engineScene/createEngineCamera'
 import { createEngineProjection } from '@src/features/engineScene/createEngineProjection'
 import { ViewGizmo } from '@src/features/engineScene/ViewGizmo'
 import { createEngineScenePicker } from '@src/features/engineScene/createEngineScenePicker'
@@ -70,7 +72,21 @@ export default defineRegistryItemFactory((ctx) => {
    * motion here". A different renderer answers differently, and the camera
    * feature never learns which one it got.
    */
-  const cameraDriver = createEngineCameraDriver(engine)
+  /**
+   * Where the engine's camera is, listened to once and shared.
+   *
+   * Two consumers with nothing else in common: the projection places things on
+   * screen, and the driver needs somewhere to animate a view change *from*. Two
+   * listeners would be two subscriptions to the same messages and two ideas of
+   * the current camera.
+   */
+  const camera = createEngineCamera(engine)
+
+  const cameraDriver = createEngineCameraDriver(engine, {
+    camera,
+    reducedMotion: () =>
+      ctx.services.optional(motionService)?.reduced.value ?? false,
+  })
 
   /**
    * What is under a point, for whoever is selecting.
@@ -88,7 +104,7 @@ export default defineRegistryItemFactory((ctx) => {
    * reading a camera it owns, which is exactly the difference a local renderer
    * would erase.
    */
-  const projection = createEngineProjection(engine)
+  const projection = createEngineProjection(engine, camera)
 
   let stopApplying = () => {}
   queueMicrotask(() => {
@@ -139,7 +155,7 @@ export default defineRegistryItemFactory((ctx) => {
       dispose: () => {
         stopApplying()
         cameraDriver.dispose()
-        projection.dispose()
+        camera.dispose()
       },
       providesServices: [
         provideService(cameraDriverService, cameraDriver),

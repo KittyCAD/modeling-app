@@ -1,7 +1,13 @@
 import { type ReadonlySignal, computed, effect } from '@preact/signals'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { EngineConnection } from '@src/contracts/engine'
+import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
 import { toStreamWindow } from '@src/features/engineScene/streamWindow'
+import {
+  type Viewpoint,
+  ease,
+  tweenViewpoint,
+} from '@src/lib/scene/cameraTween'
 import type {
   CameraDriver,
   CameraGesture,
@@ -31,6 +37,16 @@ const DISTANCE = 1000
 
 /** Space left around the model by a fit. The existing app's number. */
 const FIT_PADDING = 0.1
+
+/**
+ * How long a view change takes.
+ *
+ * Short, because the cadence is 15 Hz: a third of a second is five frames, and
+ * anything longer at this rate stops reading as motion and starts reading as a
+ * slideshow. What the animation buys is not smoothness but *continuity* — you
+ * can see which way the model turned, which is the thing a jump cut loses.
+ */
+const TWEEN_DURATION_MS = 340
 
 interface Point {
   x: number
@@ -66,9 +82,22 @@ function unit(vector: Point): Point {
  * almost never the size of the panel. So a click at the middle of the element has
  * to arrive as the middle of the *frame*, and the mapping needs both sizes.
  */
+export interface EngineCameraDriverDependencies {
+  /** Where the engine's camera is, so a view change can be animated *from* it. */
+  camera: EngineCamera
+  /**
+   * Whether to skip the animation and go straight to the result.
+   *
+   * Read per move rather than captured, so turning the preference on takes
+   * effect on the next view change instead of on the next connection.
+   */
+  reducedMotion: () => boolean
+}
+
 export function createEngineCameraDriver(
   /** Lazy: resolving a service while the registry graph is built is not allowed. */
-  getConnection: () => EngineConnection
+  getConnection: () => EngineConnection,
+  dependencies: EngineCameraDriverDependencies
 ): CameraDriver & { dispose: () => void } {
   const ready: ReadonlySignal<boolean> = computed(
     () => getConnection().state.value.status === 'connected'
@@ -78,6 +107,57 @@ export function createEngineCameraDriver(
   let pending: CameraGesture | null = null
   let timer: number | undefined
   let projection: CameraProjectionType | null = null
+  let tweenTimer: number | undefined
+
+  /**
+   * Stop any view change that is part way through.
+   *
+   * Anything that moves the camera cancels it, and that is the whole of the
+   * conflict resolution: a user who starts orbiting during an animation has said
+   * something more recent than the animation did, and an animation that kept
+   * sending look-at commands underneath them would fight the drag.
+   */
+  const cancelTween = () => {
+    if (tweenTimer !== undefined) window.clearInterval(tweenTimer)
+    tweenTimer = undefined
+  }
+
+  const sendLookAt = (at: Viewpoint) => {
+    getConnection().fireCommand({
+      type: 'default_camera_look_at',
+      center: at.target,
+      vantage: at.position,
+      up: at.up,
+    })
+  }
+
+  /**
+   * Swing the camera from where it is to where it was asked to be.
+   *
+   * At the same 15 Hz everything else is sent at, and for the same reason: each
+   * step costs a re-render and a re-stream, so a smoother tween would only build
+   * a queue that runs behind itself. Six or seven frames is what the stream can
+   * show of a third of a second, which is why the duration is short — a long
+   * animation at this cadence reads as stuttering rather than as motion.
+   */
+  const tweenTo = (from: Viewpoint, to: Viewpoint) => {
+    cancelTween()
+    const startedAt = performance.now()
+
+    tweenTimer = window.setInterval(() => {
+      const progress = (performance.now() - startedAt) / TWEEN_DURATION_MS
+
+      if (progress >= 1) {
+        cancelTween()
+        // Sent exactly, rather than as the last interpolated step: the point of
+        // the move is the destination, and arriving near it is not arriving.
+        sendLookAt(to)
+        return
+      }
+
+      sendLookAt(tweenViewpoint(from, to, ease(progress)))
+    }, MOVE_INTERVAL_MS)
+  }
 
   /** Element pixels to the engine's pixels. Shared with the picker. */
   const windowFor = (at: ScenePoint) =>
@@ -180,6 +260,8 @@ export function createEngineCameraDriver(
 
     gesture(gesture) {
       if (!ready.peek()) return
+      // The user is more recent than the animation.
+      cancelTween()
 
       if (gesture.phase === 'move') {
         pending = gesture
@@ -208,6 +290,7 @@ export function createEngineCameraDriver(
 
     zoom(request: CameraZoomRequest) {
       if (!ready.peek()) return
+      cancelTween()
       getConnection().fireCommand({
         type: 'default_camera_zoom',
         magnitude: request.magnitude,
@@ -216,6 +299,7 @@ export function createEngineCameraDriver(
 
     standardView(view) {
       if (!ready.peek()) return
+      cancelTween()
 
       if (view === 'isometric') {
         // The engine's own isometric, which is safe under either projection: it
@@ -244,31 +328,60 @@ export function createEngineCameraDriver(
 
     faceOn(plane) {
       if (!ready.peek()) return
+      cancelTween()
 
       const normal = unit(plane.zAxis)
       const origin = plane.origin
+      const from = dependencies.camera.frame.peek()
 
-      getConnection().fireCommand({
-        type: 'default_camera_look_at',
-        center: origin,
-        /*
-         * Along the normal, at the same nominal distance the named views use.
-         * A fit follows, so what this fixes is the direction and the roll.
-         */
-        vantage: {
-          x: origin.x + normal.x * DISTANCE,
-          y: origin.y + normal.y * DISTANCE,
-          z: origin.z + normal.z * DISTANCE,
+      /*
+       * The distance is kept when we know it.
+       *
+       * Because we do: the camera reports itself, so looking at a plane can
+       * change the direction and the centre and leave the zoom alone — which is
+       * what somebody squaring up to a face wants, and it avoids a fit. A fit is
+       * the fallback for a camera we have never heard from, and on a file whose
+       * only content is an empty sketch there is nothing to fit to.
+       */
+      const distance = from
+        ? Math.hypot(
+            from.position.x - from.target.x,
+            from.position.y - from.target.y,
+            from.position.z - from.target.z
+          ) || DISTANCE
+        : DISTANCE
+
+      const to: Viewpoint = {
+        target: origin,
+        position: {
+          x: origin.x + normal.x * distance,
+          y: origin.y + normal.y * distance,
+          z: origin.z + normal.z * distance,
         },
         // The plane's own up, so the sketch's Y is the screen's Y. Anything else
         // would draw a horizontal constraint at an angle.
         up: unit(plane.yAxis),
-      })
-      sendZoomToFit()
+      }
+
+      if (!from) {
+        // Nothing to move from, so there is nothing to animate: state the
+        // destination and frame it.
+        sendLookAt(to)
+        sendZoomToFit()
+        return
+      }
+
+      if (dependencies.reducedMotion()) {
+        sendLookAt(to)
+        return
+      }
+
+      tweenTo({ position: from.position, target: from.target, up: from.up }, to)
     },
 
     zoomToFit() {
       if (!ready.peek()) return
+      cancelTween()
       sendZoomToFit()
     },
 
@@ -279,6 +392,7 @@ export function createEngineCameraDriver(
     },
 
     dispose: () => {
+      cancelTween()
       stopRestating()
       cancelPending()
     },

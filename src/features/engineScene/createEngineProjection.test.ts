@@ -1,75 +1,12 @@
-import { computed, signal } from '@preact/signals'
 import { encode as msgpackEncode } from '@msgpack/msgpack'
 import { beforeEach, describe, expect, it } from 'vitest'
-import type {
-  EngineConnection,
-  EngineConnectionState,
-  SceneCommand,
-} from '@src/contracts/engine'
-import type { PlaneFrame } from '@src/lib/scene/projection'
+import { createEngineCamera } from '@src/features/engineScene/createEngineCamera'
 import { createEngineProjection } from '@src/features/engineScene/createEngineProjection'
-
-/** A camera 100mm above the origin, looking down, as the engine reports one. */
-const OVERHEAD = {
-  pos: { x: 0, y: 0, z: 100 },
-  center: { x: 0, y: 0, z: 0 },
-  up: { x: 0, y: 1, z: 0 },
-  fov_y: 45,
-  ortho: false,
-}
-
-const cameraResponse = (type: string, settings: unknown) =>
-  msgpackEncode({
-    request_id: 'whoever',
-    resp: { data: { modeling_response: { type, data: { settings } } } },
-  }).slice()
-
-function createFakeConnection() {
-  const status = signal<EngineConnectionState['status']>('connected')
-  const epoch = signal(0)
-  const sent: SceneCommand[] = []
-  const listeners = new Set<(bytes: Uint8Array) => void>()
-  let answer: (cmd: SceneCommand) => Uint8Array | Promise<Uint8Array> = () =>
-    cameraResponse('default_camera_get_settings', OVERHEAD)
-
-  const connection = {
-    state: computed(() => ({
-      status: status.value,
-      stage: null,
-      error: null,
-      pingMs: null,
-      apiCallId: null,
-    })),
-    sceneEpoch: computed(() => epoch.value),
-    viewportSize: computed(() => ({ width: 800, height: 400 })),
-    fireCommand: (cmd: SceneCommand) => {
-      sent.push(cmd)
-    },
-    sendCommand: async (cmd: SceneCommand) => {
-      sent.push(cmd)
-      return answer(cmd)
-    },
-    onUnmatchedResponse: (listener: (bytes: Uint8Array) => void) => {
-      listeners.add(listener)
-      return () => listeners.delete(listener)
-    },
-  } as unknown as EngineConnection
-
-  return {
-    connection,
-    sent,
-    status,
-    epoch,
-    deliver: (bytes: Uint8Array) => {
-      for (const listener of listeners) listener(bytes)
-    },
-    respondWith: (next: typeof answer) => {
-      answer = next
-    },
-  }
-}
-
-const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
+import {
+  createFakeConnection,
+  settle,
+} from '@src/features/engineScene/fakeConnection'
+import type { PlaneFrame } from '@src/lib/scene/projection'
 
 const xy: PlaneFrame = {
   origin: { x: 0, y: 0, z: 0 },
@@ -82,69 +19,36 @@ const viewport = { width: 800, height: 400 }
 
 describe('createEngineProjection', () => {
   let fake: ReturnType<typeof createFakeConnection>
+  let camera: ReturnType<typeof createEngineCamera>
   let projection: ReturnType<typeof createEngineProjection>
 
   beforeEach(() => {
     fake = createFakeConnection()
-    projection = createEngineProjection(() => fake.connection)
+    camera = createEngineCamera(() => fake.connection)
+    projection = createEngineProjection(() => fake.connection, camera)
   })
 
-  it('cannot place anything until a camera has been heard from', async () => {
-    fake.status.value = 'connecting'
-    const offline = createEngineProjection(() => fake.connection)
+  it('places nothing until the camera has been heard from', async () => {
+    const offline = createFakeConnection()
+    offline.status.value = 'connecting'
+    const quiet = createEngineCamera(() => offline.connection)
+    const waiting = createEngineProjection(() => offline.connection, quiet)
     await settle()
 
-    expect(offline.ready.value).toBe(false)
-    expect(offline.project({ x: 0, y: 0, z: 0 }, viewport)).toBeNull()
-    offline.dispose()
+    expect(waiting.ready.value).toBe(false)
+    expect(waiting.project({ x: 0, y: 0, z: 0 }, viewport)).toBeNull()
+    expect(waiting.orientationOf({ x: 1, y: 0, z: 0 })).toBeNull()
+    quiet.dispose()
   })
 
-  it('asks for the camera once a scene exists, so the overlay is not blank', async () => {
+  it('puts the look-at centre in the middle of the viewport', async () => {
     await settle()
 
-    expect(fake.sent).toContainEqual({ type: 'default_camera_get_settings' })
     expect(projection.ready.value).toBe(true)
     expect(projection.project({ x: 0, y: 0, z: 0 }, viewport)).toEqual({
       x: 400,
       y: 200,
     })
-  })
-
-  it('follows the camera without owning it', async () => {
-    await settle()
-    const before = projection.epoch.value
-
-    // What a drag produces: the engine moved its own camera and says where it
-    // ended up. Nothing here told it to.
-    fake.deliver(
-      cameraResponse('camera_drag_move', {
-        ...OVERHEAD,
-        center: { x: 10, y: 0, z: 0 },
-        pos: { x: 10, y: 0, z: 100 },
-      })
-    )
-
-    expect(projection.epoch.value).toBe(before + 1)
-    expect(projection.project({ x: 10, y: 0, z: 0 }, viewport)).toEqual({
-      x: 400,
-      y: 200,
-    })
-  })
-
-  it('ignores responses that are not about the camera', async () => {
-    await settle()
-    const before = projection.epoch.value
-
-    fake.deliver(
-      msgpackEncode({
-        resp: { data: { modeling_response: { type: 'select_with_point' } } },
-      }).slice()
-    )
-    // Unmatched responses go to every listener, so most of them are other
-    // people's traffic.
-    fake.deliver(new Uint8Array([0xc1]))
-
-    expect(projection.epoch.value).toBe(before)
   })
 
   it('unprojects a click onto the sketch plane', async () => {
@@ -153,6 +57,15 @@ describe('createEngineProjection', () => {
     const point = projection.unproject({ x: 400, y: 200, viewport }, xy)
     expect(point?.x).toBeCloseTo(0)
     expect(point?.y).toBeCloseTo(0)
+  })
+
+  it('says which way a world direction points, for the gizmo', async () => {
+    await settle()
+
+    // Looking down at the origin: +X is to the right and lies in the screen.
+    const seen = projection.orientationOf({ x: 1, y: 0, z: 0 })
+    expect(seen?.x).toBeCloseTo(1)
+    expect(seen?.depth).toBeCloseTo(0)
   })
 
   it('asks the engine where a face is, and always leaves sketch mode', async () => {
