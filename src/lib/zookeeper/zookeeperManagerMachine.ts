@@ -628,15 +628,10 @@ export async function toMlCopilotFile(
   try {
     data = await file.arrayBuffer()
   } catch (error) {
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'name' in error &&
-      error.name === 'NotFoundError'
-    ) {
+    if (isErr(error) && error.name === 'NotFoundError') {
       return new ZookeeperAttachmentReadError(error)
     }
-    return error instanceof Error
+    return isErr(error)
       ? error
       : new Error('Unknown attachment read error', { cause: error })
   }
