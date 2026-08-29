@@ -164,7 +164,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     // Test case for https://github.com/KittyCAD/modeling-app/issues/2881
     await commandThemeArgButton.click()
     await expect(commandThemeArgButton).toBeDisabled()
-    await expect(commandLevelArgButton).toHaveText('level: project')
+    await expect(commandLevelArgButton).toHaveText(/^Level:\s+project$/)
   })
 
   test('Command bar keybinding works from code editor and can change a setting', async ({
