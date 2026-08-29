@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties teapot.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.628084327916298,
+      "y": 25.48190798839397,
+      "z": 40.24665797230057
+    },
+    "dimensions": {
+      "x": 249.7475152964956,
+      "y": 210.02281591241427,
+      "z": 180.4933159446011
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 141080.3563548697
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 404.8425492110015
+  }
+}
