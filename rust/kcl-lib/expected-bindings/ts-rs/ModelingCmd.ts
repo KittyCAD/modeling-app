@@ -3176,6 +3176,14 @@ firstIndex: number,
  */
 indexCount: number, 
 /**
+ * Index of this face's material in `RenderPacket::body_materials`.
+ */
+materialIndex: number, 
+/**
+ * Trim implementation selected by the geometry engine.
+ */
+trimMode: RenderPacketTrimMode, 
+/**
  * Trim loops in the same normalized face-local uv space as `uvs`.
  */
 trimLoops: Array<RenderPacketTrimLoop>, 
@@ -3299,6 +3307,11 @@ firstPoint: number,
  * Number of points in this closed trim loop.
  */
 pointCount: number, };
+
+/**
+ * How the browser renderer should evaluate a face's trim loops.
+ */
+export type RenderPacketTrimMode = "none" | "hybrid" | "complexTexture";
 
 /**
  * Layout of a surface vertex in the interleaved vertex section.

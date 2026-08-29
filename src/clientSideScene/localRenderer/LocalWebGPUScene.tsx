@@ -10,10 +10,7 @@ import {
   type LocalRenderPacketSketchSegment,
 } from '@src/clientSideScene/localRenderer/renderPacketBinary'
 import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
-import type {
-  WebGpuTrimPrimitiveState,
-  WebGpuTrimResources,
-} from '@src/clientSideScene/webgpuTrim'
+import type { WebGpuSurfaceResources } from '@src/clientSideScene/webgpuTrim'
 import type { KclExecutionDoneDetail } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import type { ArtifactGraph, PathToNode, SourceRange } from '@src/lang/wasm'
@@ -24,10 +21,7 @@ import {
   SKETCH_SELECTION_COLOR,
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
-import type {
-  RenderPacket,
-  RenderPacketBodyMaterial,
-} from '@src/lib/rustContext'
+import type { RenderPacket } from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
@@ -38,7 +32,6 @@ import {
   BufferGeometry,
   Color,
   DoubleSide,
-  FrontSide,
   Group,
   InterleavedBuffer,
   InterleavedBufferAttribute,
@@ -47,7 +40,6 @@ import {
   type Material,
   Mesh,
   MeshBasicMaterial,
-  MeshStandardMaterial,
   NeutralToneMapping,
   type Object3D,
   OrthographicCamera,
@@ -66,8 +58,6 @@ const WEBGPU_TRIMMING_ENABLED = true
 const GLTF_METERS_TO_ENGINE_MILLIMETERS = 1000
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / GLTF_METERS_TO_ENGINE_MILLIMETERS
 const ENGINE_DEFAULT_SURFACE_COLOR = new Color(0.9, 0.9, 0.9)
-const ENGINE_DEFAULT_METALNESS = 0.6
-const ENGINE_DEFAULT_ROUGHNESS = 0.4
 const HOVER_COLOR = new Color(SKETCH_HIGHLIGHT_COLOR)
 const SELECTED_COLOR = new Color(SKETCH_SELECTION_COLOR)
 const previewMaterialBaseColors = new WeakMap<Material, Color>()
@@ -106,9 +96,49 @@ function logLocalWebGpuPreview(message: string, metadata?: unknown) {
   }
 }
 
+function summarizeRenderPacketTrimModes(
+  primitives: LocalRenderPacketPrimitive[]
+) {
+  const stats = {
+    faceCount: primitives.length,
+    noTrimFaceCount: 0,
+    hybridTrimFaceCount: 0,
+    complexTextureTrimFaceCount: 0,
+    totalTrimLoopCount: 0,
+    totalTrimPointCount: 0,
+  }
+
+  for (const primitive of primitives) {
+    const validTrimLoops = primitive.trimLoops.filter(
+      (loop) => loop.positions.length >= 6
+    )
+    const trimPointCount = validTrimLoops.reduce(
+      (count, loop) => count + loop.positions.length / 2,
+      0
+    )
+
+    stats.totalTrimLoopCount += validTrimLoops.length
+    stats.totalTrimPointCount += trimPointCount
+
+    switch (primitive.trimMode) {
+      case 'none':
+        stats.noTrimFaceCount += 1
+        break
+      case 'hybrid':
+        stats.hybridTrimFaceCount += 1
+        break
+      case 'complexTexture':
+        stats.complexTextureTrimFaceCount += 1
+        break
+    }
+  }
+
+  return stats
+}
+
 function buildRenderPacketModel(
   packet: LocalRenderPacket,
-  trimResources: WebGpuTrimResources | null
+  surfaceResources: WebGpuSurfaceResources
 ) {
   const root = new Group()
   const primitiveByObject = new WeakMap<Object3D, LocalRenderPacketPrimitive>()
@@ -141,19 +171,56 @@ function buildRenderPacketModel(
     packet.primitiveIndices,
     1
   )
-  const indexAttribute = new BufferAttribute(packet.indices, 1)
+  const modelBounds = new Box3()
+  const boundsPoint = new Vector3()
+  const positionOffset =
+    packet.vertexLayout.positionOffset / Float32Array.BYTES_PER_ELEMENT
+  for (
+    let vertexIndex = 0;
+    vertexIndex < positionAttribute.count;
+    vertexIndex++
+  ) {
+    const offset = vertexIndex * vertexStride + positionOffset
+    boundsPoint.set(
+      packet.vertices[offset],
+      packet.vertices[offset + 1],
+      packet.vertices[offset + 2]
+    )
+    modelBounds.expandByPoint(boundsPoint)
+  }
 
-  packet.primitives.forEach((primitive, primitiveOffset) => {
+  const createSurfaceGeometry = (primitiveOffsets: number[]) => {
+    const indexCount = primitiveOffsets.reduce(
+      (count, primitiveOffset) =>
+        count + packet.primitives[primitiveOffset].indexCount,
+      0
+    )
+    const batchIndices = new Uint32Array(indexCount)
+    let outputOffset = 0
+    for (const primitiveOffset of primitiveOffsets) {
+      const primitive = packet.primitives[primitiveOffset]
+      const sourceIndices = packet.indices.subarray(
+        primitive.firstIndex,
+        primitive.firstIndex + primitive.indexCount
+      )
+      batchIndices.set(sourceIndices, outputOffset)
+      outputOffset += sourceIndices.length
+    }
+
     const geometry = new BufferGeometry()
     geometry.setAttribute('position', positionAttribute)
     geometry.setAttribute('normal', normalAttribute)
     geometry.setAttribute('uv', uvAttribute)
     geometry.setAttribute('primitiveIndex', primitiveIndexAttribute)
-    geometry.setIndex(indexAttribute)
-    geometry.setDrawRange(primitive.firstIndex, primitive.indexCount)
+    geometry.setIndex(new BufferAttribute(batchIndices, 1))
+    geometry.boundingBox = modelBounds
+    return geometry
+  }
 
-    const mesh = new Mesh(geometry)
-    mesh.name = `mesh_0_${primitive.primitiveIndex ?? primitiveOffset}`
+  const setPrimitiveMetadata = (
+    mesh: Mesh,
+    primitive: LocalRenderPacketPrimitive
+  ) => {
     mesh.userData.gltfPrimitiveExtras = {
       KITTYCAD: {
         object_id: primitive.objectId,
@@ -166,9 +233,34 @@ function buildRenderPacketModel(
     mesh.userData.kittycadPrimitiveExtras =
       mesh.userData.gltfPrimitiveExtras.KITTYCAD
     mesh.userData.kittycadTrimLoops = primitive.trimLoops
-    mesh.userData.kittycadTrimState =
-      trimResources?.primitiveStates[primitiveOffset] ?? null
     primitiveByObject.set(mesh, primitive)
+  }
+
+  surfaceResources.batches.forEach((batch, batchIndex) => {
+    if (batch.primitiveOffsets.length === 0) {
+      return
+    }
+
+    const mesh = new Mesh(
+      createSurfaceGeometry(batch.primitiveOffsets),
+      batch.material
+    )
+    mesh.name = `surface_batch_${batchIndex}`
+    mesh.userData.kittycadSurfaceBatch = true
+    mesh.renderOrder = batch.transparent ? 1 : 0
+    root.add(mesh)
+  })
+
+  surfaceResources.complexSurfaces.forEach((surface) => {
+    const primitive = packet.primitives[surface.primitiveOffset]
+    const mesh = new Mesh(
+      createSurfaceGeometry([surface.primitiveOffset]),
+      surface.material
+    )
+    mesh.name = `complex_surface_${primitive.primitiveIndex}`
+    mesh.userData.kittycadSurfaceBatch = true
+    setPrimitiveMetadata(mesh, primitive)
+    mesh.renderOrder = surface.material.transparent ? 1 : 0
     root.add(mesh)
   })
 
@@ -269,6 +361,7 @@ function buildRenderPacketModel(
       sketchByObject,
       regionByObject,
     } satisfies RenderPacketParserState,
+    modelBounds,
   }
 }
 
@@ -302,11 +395,7 @@ function disposeObject3D(root: Object3D) {
   })
 }
 
-function prepareLoadedModelForPreview(
-  root: Object3D,
-  trimResources: WebGpuTrimResources | null,
-  bodyMaterialById: ReadonlyMap<string, RenderPacketBodyMaterial>
-) {
+function prepareLoadedModelForPreview(root: Object3D) {
   let meshCount = 0
   let materialCount = 0
   const materialTypes = new Set<string>()
@@ -320,57 +409,23 @@ function prepareLoadedModelForPreview(
     }
 
     meshCount += 1
+    if (
+      object.userData?.kittycadSurfaceBatch ||
+      object.userData?.kittycadRegionExtras
+    ) {
+      const materials = (
+        isArray(object.material) ? object.material : [object.material]
+      ) as Material[]
+      materialCount += materials.length
+      materials.forEach((material) => {
+        materialTypes.add(material.type)
+      })
+      return
+    }
+
     if (!object.geometry.getAttribute('normal')) {
       object.geometry.computeVertexNormals()
     }
-    const materials = (
-      isArray(object.material) ? object.material : [object.material]
-    ) as Material[]
-    const trimState = (object.userData?.kittycadTrimState ??
-      null) as WebGpuTrimPrimitiveState | null
-    const primitiveExtras = isKittycadPrimitiveExtras(
-      object.userData?.kittycadPrimitiveExtras
-    )
-      ? object.userData.kittycadPrimitiveExtras
-      : null
-    const bodyMaterial = primitiveExtras
-      ? bodyMaterialById.get(primitiveExtras.body_id)
-      : undefined
-    const opacity = bodyMaterial
-      ? Math.min(1, Math.max(0, bodyMaterial.baseColor.a))
-      : 1
-    const previewMaterials = materials.map((material) => {
-      const materialParameters = {
-        color: bodyMaterial
-          ? new Color(
-              bodyMaterial.baseColor.r,
-              bodyMaterial.baseColor.g,
-              bodyMaterial.baseColor.b
-            )
-          : ENGINE_DEFAULT_SURFACE_COLOR,
-        metalness: bodyMaterial?.metalness ?? ENGINE_DEFAULT_METALNESS,
-        roughness: bodyMaterial?.roughness ?? ENGINE_DEFAULT_ROUGHNESS,
-        opacity,
-        transparent: opacity < 1,
-        depthWrite: opacity >= 1,
-        side: FrontSide,
-      }
-      const previewMaterial =
-        trimState && trimResources
-          ? trimResources.createMaterial(trimState, materialParameters)
-          : new MeshStandardMaterial(materialParameters)
-      previewMaterialBaseColors.set(
-        previewMaterial,
-        previewMaterial.color.clone()
-      )
-      materialCount += 1
-      materialTypes.add(material.type)
-      disposeMaterial(material)
-      return previewMaterial
-    })
-    object.material = isArray(object.material)
-      ? previewMaterials
-      : previewMaterials[0]
   })
 
   return {
@@ -1322,7 +1377,7 @@ export const LocalWebGPUScene = ({
     let animationFrameId = -1
     let resizeObserver: ResizeObserver | null = null
     let currentModel: Object3D | null = null
-    let currentTrimResources: WebGpuTrimResources | null = null
+    let currentSurfaceResources: WebGpuSurfaceResources | null = null
     let currentRefreshId = 0
     let isVisible = false
     let pendingRefreshRequest = false
@@ -1657,7 +1712,7 @@ export const LocalWebGPUScene = ({
       logLocalWebGpuPreview('initializing preview renderer')
       const [
         { WebGPURenderer, RenderPipeline },
-        { createWebGpuTrimResources },
+        { createWebGpuSurfaceResources },
         { pass, vec3, vec4 },
         { ao },
       ] = await Promise.all([
@@ -1896,8 +1951,11 @@ export const LocalWebGPUScene = ({
         aoPass.scale.value = 1
       }
 
-      const updateAmbientOcclusionScale = (model: Object3D) => {
-        const size = new Box3().setFromObject(model).getSize(new Vector3())
+      const updateAmbientOcclusionScale = (modelBounds: Box3) => {
+        if (modelBounds.isEmpty()) {
+          return
+        }
+        const size = modelBounds.getSize(new Vector3())
         const modelScale = Math.max(size.x, size.y, size.z)
         if (!Number.isFinite(modelScale) || modelScale <= 0) {
           return
@@ -2363,8 +2421,8 @@ export const LocalWebGPUScene = ({
           currentModel = null
         }
 
-        currentTrimResources?.dispose(renderer)
-        currentTrimResources = null
+        currentSurfaceResources?.dispose(renderer)
+        currentSurfaceResources = null
         selectionEntityIdToObject.clear()
         requestRender?.()
       }
@@ -2568,28 +2626,24 @@ export const LocalWebGPUScene = ({
           (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
         ) {
           clearModel()
-          currentTrimResources = WEBGPU_TRIMMING_ENABLED
-            ? createWebGpuTrimResources(renderPacket.primitives)
-            : null
+          currentSurfaceResources = createWebGpuSurfaceResources(
+            renderPacket.primitives,
+            renderPacket.bodyMaterials ?? [],
+            WEBGPU_TRIMMING_ENABLED
+          )
           const packetModel = buildRenderPacketModel(
             renderPacket,
-            currentTrimResources
-          )
-          const bodyMaterialById = new Map(
-            (renderPacket.bodyMaterials ?? []).map((material) => [
-              material.bodyId,
-              material,
-            ])
+            currentSurfaceResources
           )
           currentModel = packetModel.model
-          updateAmbientOcclusionScale(currentModel)
+          updateAmbientOcclusionScale(packetModel.modelBounds)
           parserState = packetModel.parserState
           hydrateCurrentModelMetadata()
           scene.add(currentModel)
-          const loadedModelStats = prepareLoadedModelForPreview(
-            currentModel,
-            currentTrimResources,
-            bodyMaterialById
+          const loadedModelStats = prepareLoadedModelForPreview(currentModel)
+          console.info(
+            `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet trim stats`,
+            summarizeRenderPacketTrimModes(renderPacket.primitives)
           )
           if (loadedModelStats.meshCount === 0) {
             clearModel()
@@ -2600,10 +2654,15 @@ export const LocalWebGPUScene = ({
             refreshId,
             primitiveCount: renderPacket.primitives.length,
             edgeCount: renderPacket.edges.length,
-            bodyMaterialCount: bodyMaterialById.size,
+            bodyMaterialCount: renderPacket.bodyMaterials?.length ?? 0,
             meshCount: loadedModelStats.meshCount,
+            surfaceDrawCount:
+              currentSurfaceResources.batches.length +
+              currentSurfaceResources.complexSurfaces.length,
             trimmingEnabled: WEBGPU_TRIMMING_ENABLED,
-            trimTriangleCount: currentTrimResources?.triangleCount ?? 0,
+            trimTriangleCount: currentSurfaceResources.triangleCount,
+            hybridMaskLayerCount: currentSurfaceResources.hybridMaskLayerCount,
+            complexMaskCount: currentSurfaceResources.complexMaskCount,
           })
           syncPreviewCameraFromShared()
           setVisible(true)

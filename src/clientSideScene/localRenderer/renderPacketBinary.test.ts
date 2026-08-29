@@ -58,6 +58,8 @@ function makePacket(): RenderPacket {
           vertexCount: 2,
           firstIndex: 0,
           indexCount: 3,
+          materialIndex: 0,
+          trimMode: 'hybrid',
           trimLoops: [{ firstPoint: 0, pointCount: 3 }],
           objectId: '00000000-0000-0000-0000-000000000001',
           bodyId: '00000000-0000-0000-0000-000000000001',

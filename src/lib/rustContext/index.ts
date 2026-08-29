@@ -35,6 +35,7 @@ import type {
   RenderPacketRegion,
   RenderPacketRegionLoop,
   RenderPacketTrimLoop,
+  RenderPacketTrimMode,
   RenderPacketVertexLayout,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -70,6 +71,7 @@ export type {
   RenderPacketRegionLoop,
   FrontendRenderPacketSketchSegment as RenderPacketSketchSegment,
   RenderPacketTrimLoop,
+  RenderPacketTrimMode,
   RenderPacketVertexLayout,
 }
 

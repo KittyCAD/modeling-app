@@ -10,6 +10,7 @@ mod tests {
     use kittycad_modeling_cmds::format::render_packet::RenderPacketRegionLoop;
     use kittycad_modeling_cmds::format::render_packet::RenderPacketSketchSegment;
     use kittycad_modeling_cmds::format::render_packet::RenderPacketTrimLoop;
+    use kittycad_modeling_cmds::format::render_packet::RenderPacketTrimMode;
     use kittycad_modeling_cmds::format::render_packet::RenderPacketVertexLayout;
     use ts_rs::Config;
     use ts_rs::TS;
@@ -31,6 +32,7 @@ mod tests {
         RenderPacketRegionLoop::export_all(&cfg).unwrap();
         RenderPacketSketchSegment::export_all(&cfg).unwrap();
         RenderPacketTrimLoop::export_all(&cfg).unwrap();
+        RenderPacketTrimMode::export_all(&cfg).unwrap();
         RenderPacketVertexLayout::export_all(&cfg).unwrap();
         FrontendRenderPacket::export_all(&cfg).unwrap();
         FrontendRenderPacketMetadata::export_all(&cfg).unwrap();

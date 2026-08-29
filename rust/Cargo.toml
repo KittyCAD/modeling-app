@@ -29,7 +29,7 @@ kittycad = { version = "0.5.0", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "bacd58d7262ec4b0f95e0eb01cf2f1be67a09532", features = [
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", rev = "317da830f48ffa403d2ff7ae6cea34cf345bd10b", features = [
   "ts-rs",
   "websocket",
 ] }
