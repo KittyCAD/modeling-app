@@ -847,6 +847,90 @@ describe('project system', () => {
     }
   })
 
+  it('waits for the Rust project snapshot before executing a reused editor after a file switch', async () => {
+    const projectPath = `/tmp/app-file-switch-open-race-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
+    const app = createAppForTest()
+    let resolveOpenProject: () => void = () => {}
+    const openProjectGate = new Promise<void>((resolve) => {
+      resolveOpenProject = resolve
+    })
+
+    try {
+      await writeText(mainPath, 'main = true\n')
+      await writeText(alternatePath, 'alternate = true\n')
+      const project: Project = {
+        name: fsZds.basename(projectPath),
+        default_file: mainPath,
+        directory_count: 0,
+        kcl_file_count: 2,
+        metadata: null,
+        path: projectPath,
+        readWriteAccess: true,
+        children: [
+          {
+            name: 'main.kcl',
+            path: mainPath,
+            children: null,
+          },
+          {
+            name: 'alternate.kcl',
+            path: alternatePath,
+            children: null,
+          },
+        ],
+      }
+      const openedProject = await app.openProject(project)
+      const kclManager = await openedProject.openEditor(mainPath)
+      const calls: string[] = []
+
+      vi.spyOn(kclManager.rustContext, 'sendOpenProject').mockImplementation(
+        async (currentFilePath) => {
+          calls.push(`open:${currentFilePath}`)
+          await openProjectGate
+          calls.push(`open:resolved:${currentFilePath}`)
+        }
+      )
+      vi.spyOn(kclManager, 'executeCode').mockImplementation(async () => {
+        calls.push(`execute:${kclManager.path}`)
+      })
+      vi.spyOn(
+        kclManager.engineCommandManager,
+        'sendSceneCommand'
+      ).mockResolvedValue({} as never)
+      kclManager.engineCommandManager.connection = {
+        connected: true,
+      } as typeof kclManager.engineCommandManager.connection
+
+      vi.useFakeTimers()
+      const openAlternatePromise = openedProject.openEditor(
+        alternatePath,
+        kclManager
+      )
+
+      await vi.waitFor(() => {
+        expect(calls).toEqual([`open:${alternatePath}`])
+      })
+
+      await vi.advanceTimersByTimeAsync(1000)
+      expect(calls).toEqual([`open:${alternatePath}`])
+
+      resolveOpenProject()
+      await openAlternatePromise
+
+      expect(calls).toEqual([
+        `open:${alternatePath}`,
+        `open:resolved:${alternatePath}`,
+        `execute:${alternatePath}`,
+      ])
+    } finally {
+      vi.useRealTimers()
+      app.dispose()
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('can open, close project', async () => {
     // Stub out File read and write implementations
     File.ioImplementations.read = () => Promise.resolve('')

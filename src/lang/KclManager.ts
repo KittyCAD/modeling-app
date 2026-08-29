@@ -212,6 +212,10 @@ type UpdateCodeEditorAdditionalSpec = {
   sketchCheckpointId?: number | null
 }
 
+type FromFileOptions = {
+  shouldSyncRustOnOpen: boolean
+}
+
 type SyntheticHistoryCommit = {
   undoCode: string
   redoCode: string
@@ -464,7 +468,11 @@ export class ZDSProject {
         : new File(path, this.nextFileId++),
       systemDeps,
       providedEditor,
-      providedCode
+      providedCode,
+      // Project-level file opens refresh Rust with the full project snapshot
+      // below. Do not let the reused editor send update_file for a new file ID
+      // before that snapshot has registered the file.
+      { shouldSyncRustOnOpen: !providedEditor }
     )
 
     // Splice our new editor into our files array
@@ -506,6 +514,18 @@ export class ZDSProject {
 
     if (isExecuting) {
       this.executingPath = path
+    }
+    if (
+      isExecuting &&
+      providedEditor &&
+      newEditor.engineCommandManager.connection?.connected
+    ) {
+      await newEditor.executeCode(newEditor.code)
+      await resetCameraPosition({
+        sceneInfra: newEditor.sceneInfra,
+        engineCommandManager: newEditor.engineCommandManager,
+        settingsActor: this.app.settings.actor,
+      })
     }
     return newEditor
   }
@@ -1802,13 +1822,19 @@ export class KclManager extends File {
    * manager state, recovery snapshot, Rust file contents, and deferred
    * execution that ordinary editor writes would have triggered.
    */
-  private refreshRestoredEditorStateAfterFileSwitch(code: string) {
+  private refreshRestoredEditorStateAfterFileSwitch(
+    code: string,
+    options: FromFileOptions = { shouldSyncRustOnOpen: true }
+  ) {
     this._code.value = code
     this._hasEditsSinceLastExecution.value = !isCodeTheSame(
       code,
       this.lastExecutedCode
     )
     this.persistRecoverySnapshot()
+    if (!options.shouldSyncRustOnOpen) {
+      return
+    }
     this.rustContext.sendUpdateFile(this.id, code).catch(reportRejection)
 
     if (!this.engineCommandManager.connection?.connected) {
@@ -2110,7 +2136,8 @@ export class KclManager extends File {
     file: File,
     systemDeps: SystemDeps,
     providedEditor?: KclManager,
-    providedCode?: string
+    providedCode?: string,
+    options: FromFileOptions = { shouldSyncRustOnOpen: true }
   ) {
     const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
     const recoverySnapshot = readRecoverySnapshot(file.path)
@@ -2146,11 +2173,15 @@ export class KclManager extends File {
     if (savedEditorState && canRestoreEditorState) {
       providedEditor.editorView.setState(savedEditorState)
       providedEditor.updateHistoryDepth(savedEditorState)
-      providedEditor.refreshRestoredEditorStateAfterFileSwitch(initialCode)
+      providedEditor.refreshRestoredEditorStateAfterFileSwitch(
+        initialCode,
+        options
+      )
     } else {
       providedEditor.editorStatesByPath.delete(file.path)
       providedEditor.updateCodeEditor(initialCode, {
         shouldExecute:
+          options.shouldSyncRustOnOpen &&
           providedEditor.engineCommandManager.connection?.connected,
         shouldClearHistory: true,
         shouldResetCamera: true,

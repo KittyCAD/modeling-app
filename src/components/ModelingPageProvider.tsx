@@ -70,7 +70,7 @@ export const ModelingPageProvider = ({
   const settingsActor = settings.actor
   const projectIORef = project?.projectIORefSignal
   const file = project?.executingFileEntry.value
-  const filePath = useAbsoluteFilePath()
+  const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
 
   useEffect(() => {
     const {
