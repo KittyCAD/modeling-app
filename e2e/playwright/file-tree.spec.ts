@@ -824,9 +824,8 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
       await expect(projectMenuButton).toBeVisible()
       await expect(projectMenuButton).toContainText('main.kcl')
 
-      const url = page.url()
-      expect(url).toContain('main.kcl')
-      expect(url).not.toContain('folderToRename')
+      await expect(page).toHaveURL(/main\.kcl/)
+      await expect(page).not.toHaveURL(/folderToRename/)
 
       await u.openFilePanel()
       await expect(folderToRename).toBeVisible()
@@ -844,9 +843,8 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     })
 
     await test.step('Verify the folder is renamed, and no navigation occurred', async () => {
-      const url = page.url()
-      expect(url).toContain('main.kcl')
-      expect(url).not.toContain('folderToRename')
+      await expect(page).toHaveURL(/main\.kcl/)
+      await expect(page).not.toHaveURL(/folderToRename/)
 
       await expect(projectMenuButton).toContainText('main.kcl')
       await expect(renamedFolder).toBeVisible()
@@ -920,9 +918,8 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
       await expect(projectMenuButton).toBeVisible()
       await expect(projectMenuButton).toContainText('main.kcl')
 
-      const url = page.url()
-      expect(url).toContain('main.kcl')
-      expect(url).not.toContain('folderToRename')
+      await expect(page).toHaveURL(/main\.kcl/)
+      await expect(page).not.toHaveURL(/folderToRename/)
 
       await u.openFilePanel()
       await expect(folderToRename).toBeVisible()
