@@ -31,6 +31,17 @@
   inset-block-start: 0;
   inset-inline-end: 0;
   z-index: 1;
+  /*
+   * Its own height, stated here because the variant takes it away.
+   *
+   * The chassis variant is `block-size: 100%` so a button fills the strip it
+   * tiles into, and its rule sits after the size rules in the same file at the
+   * same specificity — so `size="small"` loses to it, silently. In a strip that
+   * is right and invisible. Here the containing block is the outline itself,
+   * which grows with the features in it, so the button grew with them: a
+   * chevron the height of the panel, and square, so it got wider too.
+   */
+  --zds-button-height: var(--zds-size-control-sm);
 }
 
 .zds-scene-hud[data-collapsed="true"] .zds-scene-hud__collapse {
