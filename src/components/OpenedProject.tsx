@@ -179,6 +179,10 @@ export function OpenedProject() {
     registry.signal(statusBarLocalItemsValueSpec).value,
     ['file']
   )
+  const executingPath = project?.executingPathSignal.value?.value
+  const activeFileRoutePath = executingPath
+    ? PATHS.FILE + '/' + encodeURIComponent(executingPath)
+    : undefined
   const authToken = auth.useToken()
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
@@ -326,6 +330,7 @@ export function OpenedProject() {
           />
         </section>
         <StatusBar
+          activeFileRoutePath={activeFileRoutePath}
           globalItems={[
             networkHealthStatus,
             ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),

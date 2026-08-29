@@ -1,19 +1,19 @@
 import { Popover } from '@headlessui/react'
-import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useLocation } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
 export function StatusBar({
   globalItems,
   localItems,
+  activeFileRoutePath,
 }: {
   globalItems: StatusBarItemType[]
   localItems: StatusBarItemType[]
+  activeFileRoutePath?: string
 }) {
   return (
     <footer
@@ -23,7 +23,11 @@ export function StatusBar({
       <menu id="statusbar-globals" className="flex items-stretch">
         {globalItems.map((item, index, arr) => (
           <Fragment key={item.id}>
-            <StatusBarItem {...item} position="left" />
+            <StatusBarItem
+              {...item}
+              position="left"
+              activeFileRoutePath={activeFileRoutePath}
+            />
             {index < arr.length - 1 && (
               <div className="w-[1px] self-stretch bg-chalkboard-30 dark:bg-chalkboard-80" />
             )}
@@ -33,7 +37,11 @@ export function StatusBar({
       <menu id="statusbar-locals" className="flex items-stretch">
         {localItems.map((item, index, arr) => (
           <Fragment key={item.id}>
-            <StatusBarItem {...item} position="right" />
+            <StatusBarItem
+              {...item}
+              position="right"
+              activeFileRoutePath={activeFileRoutePath}
+            />
             {index < arr.length - 1 && (
               <div className="w-[1px] self-stretch bg-chalkboard-30 dark:bg-chalkboard-80" />
             )}
@@ -48,13 +56,12 @@ export const defaultStatusBarItemClassNames =
   'flex items-center gap-2 px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'
 
 function StatusBarItem(
-  props: StatusBarItemType & { position: 'left' | 'middle' | 'right' }
+  props: StatusBarItemType & {
+    position: 'left' | 'middle' | 'right'
+    activeFileRoutePath?: string
+  }
 ) {
-  useSignals()
   const location = useLocation()
-  const activeFileRoutePath = useAbsoluteFilePath({
-    warnIfNoExecutingPath: false,
-  })
   const tooltipPosition: TooltipProps['position'] =
     props.position === 'middle' ? 'top' : `top-${props.position}`
 
@@ -157,7 +164,9 @@ function StatusBarItem(
           Element={props.element}
           to={
             props.href instanceof Function
-              ? props.href(location, { activeFileRoutePath })
+              ? props.href(location, {
+                  activeFileRoutePath: props.activeFileRoutePath,
+                })
               : props.href
           }
           iconStart={
