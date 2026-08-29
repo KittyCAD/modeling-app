@@ -37,7 +37,8 @@ export function createSketchInteraction(
   dependencies: SketchInteractionDependencies
 ): {
   pointer: SketchPointer
-  attach: (element: HTMLElement) => () => void
+  attachTool: (element: HTMLElement) => () => void
+  attachPick: (element: HTMLElement) => () => void
 } {
   const at = signal<PlanePoint | null>(null)
 
@@ -65,10 +66,13 @@ export function createSketchInteraction(
   /** True while the pointer belongs to a tool rather than to the camera. */
   const drawing = () => dependencies.session()?.tool.value != null
 
+  /** True while a sketch is open, tool or no tool. */
+  const inSketch = () => dependencies.session()?.open.value != null
+
   return {
     pointer: { at: computed(() => at.value) },
 
-    attach(element: HTMLElement) {
+    attachTool(element: HTMLElement) {
       let pressedAt: { x: number; y: number } | null = null
 
       const onPointerMove = (event: PointerEvent) => {
@@ -133,6 +137,41 @@ export function createSketchInteraction(
         element.removeEventListener('pointerdown', onPointerDown)
         element.removeEventListener('pointerup', onPointerUp)
         at.value = null
+      }
+    },
+
+    /**
+     * Clicks that reach neither the engine nor the mode.
+     *
+     * Attached *after* the camera and *before* selection, which is the only
+     * position that works and is why interaction order is a number rather than a
+     * list. It has to be after the camera because swallowing a press would stop
+     * an orbit, and orbiting inside a sketch is the whole reason the projection
+     * follows the camera instead of taking it. It has to be before selection
+     * because of what selection does with a click on nothing: it runs "leave the
+     * mode", which now writes the sketch back and rebuilds the model. A stray
+     * click may not finish somebody's sketch.
+     *
+     * Suppressing the engine pick is wanted here regardless. The engine is
+     * showing the last model that was *built*, so what it says is under the
+     * cursor is one execution out of date, and a segment drawn a moment ago is
+     * not in it at all. Analytic sketch selection lands here next; until then a
+     * click means nothing, which is the right amount of nothing.
+     */
+    attachPick(element: HTMLElement) {
+      const swallow = (event: PointerEvent) => {
+        // A tool has its own listener, ahead of the camera, and has already
+        // taken this event by the time it would get here.
+        if (!inSketch() || drawing() || event.button !== 0) return
+        event.stopImmediatePropagation()
+      }
+
+      element.addEventListener('pointerdown', swallow)
+      element.addEventListener('pointerup', swallow)
+
+      return () => {
+        element.removeEventListener('pointerdown', swallow)
+        element.removeEventListener('pointerup', swallow)
       }
     },
   }

@@ -13,9 +13,9 @@ import { sketchBlockAt } from '@src/lib/kclStdlib/program'
  * Focus deliberately does *not* gate this. It was tried, to make sketch mode
  * escapable, and it took the mode away from the case that needs it most: Start
  * sketch writes a block with the code panel closed, so there is no view to hold
- * focus and the sketch it just made would not count. Leaving is now something the
- * user says — a click on nothing, or Escape — rather than something inferred from
- * where the keyboard is.
+ * focus and the sketch it just made would not count. Both entering and leaving
+ * are now things the user says, so there is nothing here that needs escaping
+ * from.
  */
 export interface SketchCursor {
   offset: number
@@ -28,8 +28,12 @@ export interface SketchCursor {
  *
  * "In a sketch" is read from the file rather than remembered. There is no
  * enter-sketch-mode event to miss and no leave to forget: a selection is inside a
- * `sketch { … }` block or it is not, and the program says which. That is what
- * lets a mode be derived from state instead of maintained alongside it.
+ * `sketch { … }` block or it is not, and the program says which.
+ *
+ * What this decides is whether Sketch mode can be *entered*, not whether it is
+ * active. Entering opens the sketch and costs a real execution, so it stays
+ * something the user asks for — this only says whether the question makes
+ * sense.
  *
  * The scene selection comes first, because clicking geometry is the more
  * deliberate act — the cursor is wherever it was left, and often left in the

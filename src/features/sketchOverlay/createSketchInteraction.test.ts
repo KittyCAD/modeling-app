@@ -53,9 +53,30 @@ function setup(
   element.getBoundingClientRect = () =>
     ({ left: 0, top: 0, width: 200, height: 100 }) as DOMRect
 
-  const dispose = interaction.attach(element)
+  /*
+   * Two listeners on two elements, because in the app they are two interactions
+   * at two orders — the tool ahead of the camera, the click swallower behind it.
+   * Sharing one element here would test a stacking that does not exist.
+   */
+  const dispose = interaction.attachTool(element)
 
-  return { element, interaction, session, tool, open, place, dispose }
+  const picked = document.createElement('div')
+  picked.getBoundingClientRect = element.getBoundingClientRect
+  const disposePick = interaction.attachPick(picked)
+
+  return {
+    element,
+    picked,
+    interaction,
+    session,
+    tool,
+    open,
+    place,
+    dispose: () => {
+      dispose()
+      disposePick()
+    },
+  }
 }
 
 describe('createSketchInteraction', () => {
@@ -99,7 +120,7 @@ describe('createSketchInteraction', () => {
     expect(event.defaultPrevented).toBe(true)
   })
 
-  it('leaves the surface to the camera when no tool is equipped', () => {
+  it('leaves the press alone when no tool is equipped', () => {
     const app = setup()
     const event = pointer('pointerdown')
     const claimed = vi.spyOn(event, 'stopImmediatePropagation')
@@ -107,6 +128,8 @@ describe('createSketchInteraction', () => {
     app.element.dispatchEvent(event)
     app.element.dispatchEvent(pointer('pointerup'))
 
+    // Orbiting inside a sketch has to keep working, and the camera starts its
+    // drag on the press.
     expect(claimed).not.toHaveBeenCalled()
     expect(app.place).not.toHaveBeenCalled()
   })
@@ -146,5 +169,42 @@ describe('createSketchInteraction', () => {
     app.element.dispatchEvent(pointer('pointerup', 20, 30))
 
     expect(app.place).not.toHaveBeenCalled()
+  })
+})
+
+describe('clicks that are not drawing', () => {
+  /*
+   * Selection's answer to a click on nothing is "leave the mode", and leaving
+   * the mode now writes the sketch back. A stray click may not finish a sketch.
+   */
+  it('swallows a click so selection never leaves the mode', () => {
+    const app = setup()
+    const event = pointer('pointerup')
+    const claimed = vi.spyOn(event, 'stopImmediatePropagation')
+
+    app.picked.dispatchEvent(event)
+
+    expect(claimed).toHaveBeenCalled()
+  })
+
+  it('leaves clicks alone when no sketch is open', () => {
+    const app = setup({ open: null })
+    const event = pointer('pointerup')
+    const claimed = vi.spyOn(event, 'stopImmediatePropagation')
+
+    app.picked.dispatchEvent(event)
+
+    expect(claimed).not.toHaveBeenCalled()
+  })
+
+  it('leaves a tool’s clicks to the tool', () => {
+    const app = setup({ tool: { tool: 'line', points: [] } })
+    const event = pointer('pointerup', 20, 30)
+    const claimed = vi.spyOn(event, 'stopImmediatePropagation')
+
+    app.picked.dispatchEvent(event)
+
+    // The tool's own listener is ahead of the camera and has already taken it.
+    expect(claimed).not.toHaveBeenCalled()
   })
 })

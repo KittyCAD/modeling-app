@@ -133,14 +133,14 @@ export interface SceneModeService {
   /**
    * Forget which mode was asked for, landing back where you start.
    *
-   * How a mode is *left*. Entering is inferred — selecting something inside a
-   * sketch is a request to edit that sketch — so leaving has to be said, or the
-   * inference becomes a trap: the cursor stays in the block, so the condition
-   * that entered the mode is still true and nothing takes you out of it.
+   * How a mode is *left*, and worth being a separate verb from entering the
+   * first mode: the fallback already knows what to land on, so a mode
+   * contributed later becomes the place you land without this method learning
+   * about it.
    *
-   * Deliberately "forget", not "enter the first mode". The fallback already
-   * knows what to land on, and this way a mode contributed later becomes the
-   * place you land without this method learning about it.
+   * A mode may have work behind it — sketching *is* an open sketch — so this
+   * can be expensive, and it is still only ever called because somebody said to.
+   * Nothing infers it.
    */
   reset(): void
   noteUsed(groupId: string, commandId: string): void

@@ -82,7 +82,20 @@ export default defineRegistryItemFactory((ctx) => {
         provide(sceneInteractionsValueSpec, {
           id: 'sketch.draw',
           order: 50,
-          attach: interaction.attach,
+          attach: interaction.attachTool,
+        }),
+
+        /**
+         * Between the camera and selection, for clicks that are not drawing.
+         *
+         * The camera has to see a press or an orbit inside a sketch would stop
+         * working; selection must not, because its answer to a click on nothing
+         * is to leave the mode — which now finishes the sketch.
+         */
+        provide(sceneInteractionsValueSpec, {
+          id: 'sketch.pick',
+          order: 150,
+          attach: interaction.attachPick,
         }),
 
         provide(commandsValueSpec, {
@@ -142,11 +155,12 @@ export default defineRegistryItemFactory((ctx) => {
               session?.equip(null)
               return
             }
-            if (session?.open.value) {
-              void session.exit()
-              return
-            }
 
+            /*
+             * Nothing sketch-specific left to stop, so this means what Escape
+             * means everywhere: leave the mode. Which now writes the sketch
+             * back, because the mode *is* the open sketch.
+             */
             ctx.services.optional(commandService)?.run(EXIT_MODE_COMMAND)
           },
         }),

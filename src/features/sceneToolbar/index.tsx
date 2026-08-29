@@ -88,10 +88,10 @@ export default defineRegistryItemFactory((ctx) => {
         /**
          * Escape: stop what I was doing.
          *
-         * Entering a mode is inferred — selecting inside a sketch is a request to
-         * edit that sketch — so leaving has to be sayable, or the inference is a
-         * trap. This is the saying, and a click on nothing in the scene runs the
-         * same command, because a click on nothing means the same thing.
+         * Leaving a mode has to be sayable, and this is the saying. A click on
+         * nothing in the scene runs the same command, because a click on nothing
+         * means the same thing — though a mode with work behind it may claim
+         * that click first, and sketching does.
          *
          * It clears the selection too. Both are "I am done with this", and
          * splitting them would mean pressing Escape twice for one intention.

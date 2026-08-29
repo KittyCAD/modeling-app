@@ -19,10 +19,7 @@ import { sceneProjectionService } from '@src/contracts/sceneProjection'
 import { sketchSessionService } from '@src/contracts/sketchSession'
 import { selectionService } from '@src/contracts/selection'
 import { SKETCHING_MODE } from '@src/features/sceneToolbar/modes'
-import {
-  autoEnterSketchMode,
-  isTypingOutsideTheEditor,
-} from '@src/features/sketchMode/autoEnterSketchMode'
+import { bindSketchModeToSession } from '@src/features/sketchMode/bindSketchModeToSession'
 import { createSketchSession } from '@src/features/sketchMode/createSketchSession'
 import { sketchContextAt } from '@src/features/sketchMode/sketchContext'
 
@@ -32,13 +29,14 @@ import { sketchContextAt } from '@src/features/sketchMode/sketchContext'
  * The existing app enters sketch mode by sending an event to a machine and then
  * has to keep that machine's idea of where you are in step with the file, the
  * camera, and the selection — which is where most of "the sketch mode is stuck"
- * comes from. Here it is derived: your selection is inside a `sketch { … }` block
- * or it is not, and the mode follows.
+ * comes from. Here the file is the authority: your cursor is inside a
+ * `sketch { … }` block or it is not, and the program says which.
  *
- * That inversion is what this feature is. It owns no tools yet — sketch V2 edits
- * inside a block and the operation layer only appends — but it owns the answer to
- * "am I in a sketch", which is what the mode, its keys and a future Start Sketch
- * all need.
+ * What that fact decides is *availability*, not the mode. Sketch mode is an open
+ * sketch — entering it opens one and leaving it writes one back — because a mode
+ * that could be entered without a session showed a strip of tools that none of
+ * them worked. Being in a sketch is what makes the mode reachable; entering is
+ * still something the user says.
  */
 export default defineRegistryItemFactory((ctx) => {
   /** The open project, which owns the buffers a sketch is written into. */
@@ -81,27 +79,7 @@ export default defineRegistryItemFactory((ctx) => {
   })
 
   /**
-   * Deferred by a microtask: the effect's first run resolves services, and doing
-   * that while the registry graph is still being flattened is not allowed.
-   */
-  let stopFollowing: (() => void) | null = null
-  let disposed = false
-  queueMicrotask(() => {
-    if (disposed) return
-
-    const modes = ctx.services.optional(sceneModeService)
-    if (!modes) return
-
-    stopFollowing = autoEnterSketchMode({
-      sketch,
-      sketching: computed(() => modes.active.value?.id === SKETCHING_MODE),
-      isTyping: isTypingOutsideTheEditor,
-      enter: () => modes.enter(SKETCHING_MODE),
-    })
-  })
-
-  /**
-   * Editing one sketch, as opposed to being in the mode that shows its tools.
+   * Editing one sketch, which is what being in Sketch mode means.
    *
    * Built here because this is where "which sketch is the user in" already
    * lives, and the session needs exactly that answer to know what to open.
@@ -122,6 +100,27 @@ export default defineRegistryItemFactory((ctx) => {
     projection: () => ctx.services.optional(sceneProjectionService),
   })
 
+  /**
+   * Deferred by a microtask: the effect's first run resolves services, and doing
+   * that while the registry graph is still being flattened is not allowed.
+   */
+  let stopBinding: (() => void) | null = null
+  let disposed = false
+  queueMicrotask(() => {
+    if (disposed) return
+
+    const modes = ctx.services.optional(sceneModeService)
+    if (!modes) return
+
+    stopBinding = bindSketchModeToSession({
+      sketching: computed(() => modes.active.value?.id === SKETCHING_MODE),
+      open: computed(() => session.open.value !== null),
+      enter: () => session.enter(),
+      exit: () => session.exit(),
+      leaveMode: () => modes.reset(),
+    })
+  })
+
   return {
     model: { sketch, session },
     item: defineRuntimeRegistryItem({
@@ -129,7 +128,7 @@ export default defineRegistryItemFactory((ctx) => {
       providesServices: [provideService(sketchSessionService, session)],
       dispose: () => {
         disposed = true
-        stopFollowing?.()
+        stopBinding?.()
       },
       provides: [
         /**
@@ -138,6 +137,11 @@ export default defineRegistryItemFactory((ctx) => {
          * Opening costs a real execution — it is what produces the object ids a
          * sketch is solved against — and leaving costs another, to get what was
          * drawn rendered. Neither should happen because a selection moved.
+         *
+         * Both move the *mode* and let the binding open and close the sketch.
+         * There is deliberately no path that does one without the other: two
+         * ways in would be two things to keep in step, which is the arrangement
+         * this replaced.
          */
         provide(commandsValueSpec, {
           id: 'sketch.enter',
@@ -147,7 +151,8 @@ export default defineRegistryItemFactory((ctx) => {
           description:
             'Open the sketch the cursor is in, and draw in it without rebuilding the model.',
           enabled: session.canEnter,
-          run: () => void session.enter(),
+          run: () =>
+            ctx.services.optional(sceneModeService)?.enter(SKETCHING_MODE),
         }),
 
         provide(commandsValueSpec, {
@@ -158,29 +163,7 @@ export default defineRegistryItemFactory((ctx) => {
           description:
             'Write the sketch back to the file and rebuild the model from it.',
           enabled: computed(() => session.open.value !== null),
-          run: () => void session.exit(),
-        }),
-
-        /**
-         * Opening has a button, because otherwise it has nothing.
-         *
-         * Start sketch writes the block and puts the cursor in it, which is
-         * enough to reach Sketch mode — and Sketch mode then showed a strip of
-         * tools that were all disabled, because a tool needs a *session* and
-         * only a command nobody can see would open one. A mode whose every
-         * button is greyed out and whose remedy is in the palette is not a
-         * discoverable app.
-         *
-         * Its own run, ahead of the tools: open, then draw, then finish is the
-         * order the buttons are used in.
-         */
-        provide(toolbarItemsValueSpec, {
-          kind: 'command',
-          id: 'sketch.begin',
-          mode: SKETCHING_MODE,
-          section: 'open',
-          order: 0,
-          commandId: 'sketch.enter',
+          run: () => ctx.services.optional(sceneModeService)?.reset(),
         }),
 
         provide(toolbarItemsValueSpec, {
@@ -202,8 +185,16 @@ export default defineRegistryItemFactory((ctx) => {
         provide(sceneModeGatesValueSpec, {
           id: 'sketchMode.inSketch',
           mode: SKETCHING_MODE,
-          available: computed(() => sketch.value !== null),
-          reason: 'Select something inside a sketch to edit it.',
+          /*
+           * Or already editing one. A session suppresses execution while it is
+           * open, so the last run's program goes stale under it — and the
+           * condition that let you in must not become the condition that says
+           * you were never allowed.
+           */
+          available: computed(
+            () => sketch.value !== null || session.open.value !== null
+          ),
+          reason: 'Put the cursor inside a sketch to edit it.',
         }),
       ],
     }),
