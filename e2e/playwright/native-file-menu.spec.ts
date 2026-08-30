@@ -3,6 +3,7 @@ import type { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixtu
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   expectKeybindingsSettingsVisible,
+  getUtils,
   openSettingsExpectLocator,
   openSettingsExpectText,
 } from '@e2e/playwright/test-utils'
@@ -38,7 +39,6 @@ test.describe(
   () => {
     test('Design menu actions target only the clicked BrowserWindow', async ({
       tronApp,
-      cmdBar,
       homePage,
       nativeMenu,
       page,
@@ -104,7 +104,9 @@ test.describe(
       homePage,
       nativeMenu,
     }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) {
+        throw new Error('tronApp is missing.')
+      }
 
       await test.step('Home.File.New window', async () => {
         await page.reload()
@@ -113,9 +115,9 @@ test.describe(
         await expectNewWindowMenuItem(nativeMenu)
 
         const windowCountBefore = tronApp.electron.windows().length
-        const newWindowPromise = tronApp.electron.waitForEvent('window')
-        await nativeMenu.click('File.New window')
-        const newWindow = await newWindowPromise
+        const newWindow = await nativeMenu.clickAndWait('File.New window', () =>
+          tronApp.electron.waitForEvent('window')
+        )
 
         await expect
           .poll(() => tronApp.electron.windows().length)
@@ -245,6 +247,7 @@ test.describe(
     test('Modeling page', async ({
       tronApp,
       cmdBar,
+      editor,
       nativeMenu,
       page,
       homePage,
@@ -259,40 +262,41 @@ test.describe(
       await scene.settled()
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
+      const u = await getUtils(page)
+      const expectCommandAndClose = async (commandName: string) => {
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName(commandName)
+        await page.keyboard.press('Escape')
+        await cmdBar.toBeClosed()
+      }
 
       await test.step('Modeling.File.New window', async () => {
         await expectNewWindowMenuItem(nativeMenu)
         await nativeMenu.find('File.New window')
       })
       await test.step('Modeling.File.Create project', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Create project')
-        await cmdBar.expectCommandName('Create project')
+        await expectCommandAndClose('Create project')
       })
       await test.step('Modeling.File.Duplicate project', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Duplicate project')
         await expect(page.getByTestId('app-header-project-name')).toHaveText(
           `${sourceProjectName}-copy`
         )
       })
       await test.step('Modeling.File.Open project', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Open project')
-        await cmdBar.expectCommandName('Open project')
+        await expectCommandAndClose('Open project')
       })
       await test.step('Modeling.File.Add file to project', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Add file to project')
-        await cmdBar.expectCommandName('Add file to project')
+        await expectCommandAndClose('Add file to project')
       })
       await test.step('Modeling.File.Export current part', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Export current part')
-        await cmdBar.expectCommandName('Export')
+        await expectCommandAndClose('Export')
       })
       await test.step('Modeling.File.Preferences.Project settings', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Preferences.Project settings')
         await openSettingsExpectText(
           page,
@@ -300,243 +304,230 @@ test.describe(
         )
       })
       await test.step('Modeling.File.Preferences.User settings', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Preferences.User settings')
         await openSettingsExpectText(page, 'The overall appearance of the app')
       })
       await test.step('Modeling.File.Preferences.Keybindings', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Preferences.Keybindings')
         await expectKeybindingsSettingsVisible(page)
       })
       await test.step('Modeling.File.Preferences.User default units', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Preferences.User default units')
         await openSettingsExpectLocator(page, '#defaultUnit')
       })
       await test.step('Modeling.File.Preferences.Theme', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Preferences.Theme')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Settings · app · theme')
+        await expectCommandAndClose('Settings · app · theme')
       })
       await test.step('Modeling.Edit.Edit parameter', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Edit.Edit parameter')
-        await cmdBar.expectCommandName('Edit parameter')
+        await expectCommandAndClose('Edit parameter')
       })
       await test.step('Modeling.Edit.Format code', async () => {
-        await page.waitForTimeout(250)
+        const settingsLine =
+          '@settings(defaultLengthUnit = in, kclVersion = 2.0)'
+        await editor.replaceCodeByTyping(
+          settingsLine,
+          `${settingsLine}\nmy_var=  1+2`
+        )
+        await expect
+          .poll(() =>
+            page.evaluate(() => window.app.singletons.kclManager.code)
+          )
+          .toContain('my_var=  1+2')
         await nativeMenu.click('Edit.Format code')
+        await editor.expectEditor.toContain('my_var = 1 + 2')
       })
       await test.step('Modeling.Edit.Rename project', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Edit.Rename project')
-        await cmdBar.expectCommandName('Rename project')
+        await expectCommandAndClose('Rename project')
       })
       await test.step('Modeling.Edit.Delete project', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Edit.Delete project')
-        await cmdBar.expectCommandName('Delete project')
+        await expectCommandAndClose('Delete project')
       })
       await test.step('Modeling.Edit.Change project directory', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Edit.Change project directory')
         await openSettingsExpectLocator(page, '#libraries')
+        await page.getByTestId('settings-close-button').click()
+        await expect(page.getByTestId('settings-dialog-panel')).toBeHidden()
       })
       await test.step('Modeling.View.Orthographic view', async () => {
-        await nativeMenu.click('View.Orthographic view')
-        const textToCheck =
-          'Set camera projection to "orthographic" as a user default.'
-        const toast = page.locator('[data-rht-toaster]')
-        // Let the previous toast clear
-        await expect(toast).toHaveText(textToCheck)
+        await nativeMenu.clickAndWait('View.Orthographic view', () =>
+          page.waitForFunction(() => {
+            const snapshot = window.app.settings.actor.getSnapshot()
+            return (
+              snapshot.matches('idle') &&
+              snapshot.context.modeling.cameraProjection.current ===
+                'orthographic'
+            )
+          })
+        )
       })
       await test.step('Modeling.View.Perspective view', async () => {
-        await page.waitForTimeout(250)
-        await nativeMenu.click('View.Perspective view')
-        const textToCheck =
-          'Set camera projection to "perspective" as a user default.'
-        const toast = page.locator('[data-rht-toaster]')
-        await expect(toast).toHaveText(textToCheck)
+        await nativeMenu.clickAndWait('View.Perspective view', () =>
+          page.waitForFunction(() => {
+            const snapshot = window.app.settings.actor.getSnapshot()
+            return (
+              snapshot.matches('idle') &&
+              snapshot.context.modeling.cameraProjection.current ===
+                'perspective'
+            )
+          })
+        )
       })
       await test.step('Modeling.View.Standard views.Right view', async () => {
-        await page.waitForTimeout(250)
-        await nativeMenu.click('View.Standard views.Right view')
+        await u.openAndClearDebugPanel()
+        await nativeMenu.clickAndWait('View.Standard views.Right view', () =>
+          u.waitForCmdReceive('default_camera_get_settings')
+        )
       })
       await test.step('Modeling.View.Standard views.Back view', async () => {
-        await page.waitForTimeout(250)
-        await nativeMenu.click('View.Standard views.Back view')
+        await u.clearCommandLogs()
+        await nativeMenu.clickAndWait('View.Standard views.Back view', () =>
+          u.waitForCmdReceive('default_camera_get_settings')
+        )
       })
       await test.step('Modeling.View.Standard views.Top view', async () => {
-        await page.waitForTimeout(250)
-        await nativeMenu.click('View.Standard views.Top view')
+        await u.clearCommandLogs()
+        await nativeMenu.clickAndWait('View.Standard views.Top view', () =>
+          u.waitForCmdReceive('default_camera_get_settings')
+        )
       })
       await test.step('Modeling.View.Standard views.Left view', async () => {
-        await page.waitForTimeout(250)
-        await nativeMenu.click('View.Standard views.Left view')
+        await u.clearCommandLogs()
+        await nativeMenu.clickAndWait('View.Standard views.Left view', () =>
+          u.waitForCmdReceive('default_camera_get_settings')
+        )
       })
       await test.step('Modeling.View.Standard views.Front view', async () => {
-        await page.waitForTimeout(250)
-        await nativeMenu.click('View.Standard views.Front view')
+        await u.clearCommandLogs()
+        await nativeMenu.clickAndWait('View.Standard views.Front view', () =>
+          u.waitForCmdReceive('default_camera_get_settings')
+        )
       })
       await test.step('Modeling.View.Standard views.Bottom view', async () => {
-        await page.waitForTimeout(250)
-        await nativeMenu.click('View.Standard views.Bottom view')
+        await u.clearCommandLogs()
+        await nativeMenu.clickAndWait('View.Standard views.Bottom view', () =>
+          u.waitForCmdReceive('default_camera_get_settings')
+        )
       })
       await test.step('Modeling.View.Standard views.Reset view', async () => {
-        await page.waitForTimeout(250)
-        await nativeMenu.click('View.Standard views.Reset view')
+        await u.clearCommandLogs()
+        await nativeMenu.clickAndWait('View.Standard views.Reset view', () =>
+          u.waitForCmdReceive('zoom_to_fit')
+        )
       })
       await test.step('Modeling.View.Standard views.Center view on selection', async () => {
-        await page.waitForTimeout(250)
-        await nativeMenu.click('View.Standard views.Center view on selection')
+        await u.clearCommandLogs()
+        await nativeMenu.clickAndWait(
+          'View.Standard views.Center view on selection',
+          () => u.waitForCmdReceive('default_camera_center_to_selection')
+        )
+        await u.clearAndCloseDebugPanel()
       })
       await test.step('Modeling.View.Named views.Create named view', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('View.Named views.Create named view')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Create named view')
+        await expectCommandAndClose('Create named view')
       })
       await test.step('Modeling.View.Named views.Load named view', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('View.Named views.Load named view')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Load named view')
+        await expectCommandAndClose('Load named view')
       })
       await test.step('Modeling.View.Named views.Delete named view', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('View.Named views.Delete named view')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Delete named view')
+        await expectCommandAndClose('Delete named view')
       })
       await test.step('Modeling.View.Panes.Feature tree', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('View.Panes.Feature tree')
         const button = page.getByTestId('feature-tree-pane-button')
-        const isPressed = await button.getAttribute('aria-pressed')
-        expect(isPressed).toBe('true')
+        await expect(button).toHaveAttribute('aria-pressed', 'true')
       })
       await test.step('Modeling.View.Panes.KCL code', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('View.Panes.KCL code')
         const button = page.getByTestId('code-pane-button')
-        const isPressed = await button.getAttribute('aria-pressed')
-        expect(isPressed).toBe('true')
+        await expect(button).toHaveAttribute('aria-pressed', 'true')
       })
       await test.step('Modeling.View.Panes.Project files', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('View.Panes.Project files')
         const button = page.getByTestId('files-pane-button')
-        const isPressed = await button.getAttribute('aria-pressed')
-        expect(isPressed).toBe('true')
+        await expect(button).toHaveAttribute('aria-pressed', 'true')
       })
       await test.step('Modeling.View.Panes.Variables', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('View.Panes.Variables')
         const button = page.getByTestId('variables-pane-button')
-        const isPressed = await button.getAttribute('aria-pressed')
-        expect(isPressed).toBe('true')
+        await expect(button).toHaveAttribute('aria-pressed', 'true')
       })
       await test.step('Modeling.View.Panes.Logs', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('View.Panes.Logs')
         const button = page.getByTestId('logs-pane-button')
-        const isPressed = await button.getAttribute('aria-pressed')
-        expect(isPressed).toBe('true')
+        await expect(button).toHaveAttribute('aria-pressed', 'true')
       })
       await test.step('Modeling.View.Panes.Zookeeper', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('View.Panes.Zookeeper')
         const button = page.getByTestId('ttc-pane-button')
-        const isPressed = await button.getAttribute('aria-pressed')
-        expect(isPressed).toBe('true')
+        await expect(button).toHaveAttribute('aria-pressed', 'true')
       })
       await test.step('Modeling.Design.Create an offset plane', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Design.Create an offset plane')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Offset plane')
+        await expectCommandAndClose('Offset plane')
       })
       await test.step('Modeling.Design.Create a helix', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Design.Create a helix')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Helix')
+        await expectCommandAndClose('Helix')
       })
       await test.step('Modeling.Design.Create a parameter', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Design.Create a parameter')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Create parameter')
+        await expectCommandAndClose('Create parameter')
       })
 
       await test.step('Modeling.Design.Create an additive feature.Extrude', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Design.Create an additive feature.Extrude')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Extrude')
+        await expectCommandAndClose('Extrude')
       })
       await test.step('Modeling.Design.Create an additive feature.Revolve', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Design.Create an additive feature.Revolve')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Revolve')
+        await expectCommandAndClose('Revolve')
       })
       await test.step('Modeling.Design.Create an additive feature.Sweep', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Design.Create an additive feature.Sweep')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Sweep')
+        await expectCommandAndClose('Sweep')
       })
       await test.step('Modeling.Design.Create an additive feature.Loft', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Design.Create an additive feature.Loft')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Loft')
+        await expectCommandAndClose('Loft')
       })
       await test.step('Modeling.Design.Apply modification feature.Fillet', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Design.Apply modification feature.Fillet')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Fillet')
+        await expectCommandAndClose('Fillet')
       })
       await test.step('Modeling.Design.Apply modification feature.Chamfer', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Design.Apply modification feature.Chamfer')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Chamfer')
+        await expectCommandAndClose('Chamfer')
       })
 
       await test.step('Modeling.Design.Apply modification feature.Shell', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('Design.Apply modification feature.Shell')
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Shell')
+        await expectCommandAndClose('Shell')
       })
 
       await test.step('Modeling.Help.KCL code samples', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.find('Help.KCL code samples')
       })
 
       await test.step('Modeling.Help.Report a bug', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.find('Help.Report a bug')
       })
 
       await test.step('Modeling.Help.Replay onboarding tutorial', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.find('Help.Replay onboarding tutorial')
       })
 
       await test.step('Modeling.File.Preferences.Sign out', async () => {
-        await page.waitForTimeout(250)
         await nativeMenu.click('File.Sign out')
-        // FIXME: When signing out during E2E the page is not bound correctly.
-        // It cannot find the button
-        // const signIn = page.getByTestId('sign-in-button')
-        // await expect(signIn).toBeVisible()
+        await page.waitForFunction(() =>
+          window.app.auth.actor.getSnapshot().matches('loggedOut')
+        )
       })
     })
   }
