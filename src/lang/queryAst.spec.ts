@@ -1,9 +1,8 @@
+import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-
-import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -11,6 +10,7 @@ import {
   createLabeledArg,
   createPipeSubstitution,
 } from '@src/lang/create'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
@@ -23,6 +23,7 @@ import {
   getSelectedPlaneId,
   getSelectedSketchTarget,
   getVariableExprsFromSelection,
+  getVariableNameFromNodePath,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
   isNodeSafeToReplace,
@@ -41,19 +42,17 @@ import {
   getAllOperations,
   recast,
 } from '@src/lang/wasm'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import type RustContext from '@src/lib/rustContext'
 import {
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-
-import type { KclManager } from '@src/lang/KclManager'
-import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -837,6 +836,61 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
       instanceInThisFile
     )
     expect(result).toEqual(false)
+  })
+  it('does not log when a cursor function-definition check gets a stale node path', () => {
+    const ast = assertParse('x = 1', instanceInThisFile)
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const stalePathToPrimitive = [
+      ['body', ''],
+      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['id', ''],
+      ['name', ''],
+      ['stale', ''],
+    ] as PathToNode
+
+    try {
+      const result = isCursorInFunctionDefinition(
+        ast,
+        {
+          codeRef: {
+            range: [0, 0, 0],
+            pathToNode: stalePathToPrimitive,
+          },
+        },
+        instanceInThisFile
+      )
+
+      expect(result).toEqual(false)
+      expect(consoleError).not.toHaveBeenCalled()
+    } finally {
+      consoleError.mockRestore()
+    }
+  })
+  it('does not log when operation variable lookup gets a stale node path', () => {
+    const ast = assertParse('x = 1', instanceInThisFile)
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const stalePathToPrimitive = [
+      ['body', ''],
+      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['id', ''],
+      ['name', ''],
+      ['stale', ''],
+    ] as PathToNode
+
+    try {
+      const result = getVariableNameFromNodePath(
+        stalePathToPrimitive,
+        ast,
+        instanceInThisFile
+      )
+
+      expect(result).toBeUndefined()
+      expect(consoleError).not.toHaveBeenCalled()
+    } finally {
+      consoleError.mockRestore()
+    }
   })
 })
 

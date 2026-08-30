@@ -1,9 +1,13 @@
+import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import type { Block } from '@rust/kcl-lib/bindings/Block'
 import type { ElseIf } from '@rust/kcl-lib/bindings/ElseIf'
 import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { NumericLiteral } from '@rust/kcl-lib/bindings/NumericLiteral'
+import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 import {
   createLiteral,
@@ -12,6 +16,7 @@ import {
   createPipeSubstitution,
 } from '@src/lang/create'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { sourceRangeContains } from '@src/lang/sourceRange'
 import {
@@ -52,21 +57,15 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
   isParallel as areVectorsParallel,
   deg2Rad,
   subVec,
 } from '@src/lib/utils2d'
-
-import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
-import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
-import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
-import type { SketchBlock } from '@rust/kcl-lib/bindings/SketchBlock'
-import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
-import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EdgeCutInfo,
@@ -1059,9 +1058,11 @@ export function isCursorInFunctionDefinition(
     ast,
     selectionRanges.codeRef.pathToNode,
     wasmInstance,
-    'FunctionExpression'
+    'FunctionExpression',
+    false,
+    true
   )
-  if (err(node)) return false
+  if (isErr(node)) return false
   if (node.node.type === 'FunctionExpression') return true
   return false
 }
@@ -1211,10 +1212,12 @@ export function getVariableNameFromNodePath(
     program,
     pathToNode,
     wasmInstance,
-    ['CallExpressionKw', 'SketchBlock']
+    ['CallExpressionKw', 'SketchBlock'],
+    false,
+    true
   )
   if (
-    err(call) ||
+    isErr(call) ||
     !(call.node.type === 'CallExpressionKw' || call.node.type === 'SketchBlock')
   ) {
     return undefined
@@ -1224,9 +1227,11 @@ export function getVariableNameFromNodePath(
     program,
     pathToNode,
     wasmInstance,
-    'VariableDeclaration'
+    'VariableDeclaration',
+    false,
+    true
   )
-  if (err(varDec)) {
+  if (isErr(varDec)) {
     return undefined
   }
   if (varDec.node.type !== 'VariableDeclaration') {
@@ -1244,9 +1249,11 @@ export function getVariableNameFromNodePath(
     program,
     pathToNode,
     wasmInstance,
-    'PipeExpression'
+    'PipeExpression',
+    false,
+    true
   )
-  if (err(pipe)) {
+  if (isErr(pipe)) {
     return undefined
   }
   if (
