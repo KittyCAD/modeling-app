@@ -351,6 +351,44 @@ startSketchOn(XZ)
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
+    it('should materialize a variable-less pipe selected as tools', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.1)
+extrude001 = extrude(profile001, length = 1)
+
+startSketchOn(XZ)
+  |> circle(center = [0.2, 0.2], radius = 0.05)
+  |> extrude(length = -1)`
+      const expectedToolDeclaration = `solid001 = startSketchOn(XZ)
+  |> circle(center = [0.2, 0.2], radius = 0.05)
+  |> extrude(length = -1)`
+      const expectedSubtractDeclaration = `solid002 = subtract(extrude001, tools = solid001)`
+      const { ast, artifactGraph, solids, tools } = await getSolidsAndTools(
+        code,
+        [0],
+        [1],
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const result = addSubtract({
+        ast,
+        artifactGraph,
+        solids,
+        tools,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      expect(
+        (await enginelessExecutor(result.modifiedAst, rustContextInThisFile))
+          .issues
+      ).toEqual([])
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(expectedToolDeclaration)
+      expect(newCode).toContain(expectedSubtractDeclaration)
+    })
+
     it('should support multi-profile extrude as tool', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.05)
@@ -623,6 +661,27 @@ extrude002 = extrude(profile002, length = .1)`
         keepTools: true,
       })
       expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    it('should materialize a variable-less pipe selected as tools', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.1)
+extrude001 = extrude(profile001, length = 1)
+
+startSketchOn(XZ)
+  |> circle(center = [0.2, 0.2], radius = 0.05)
+  |> extrude(length = -1)`
+      const expectedToolDeclaration = `solid001 = startSketchOn(XZ)
+  |> circle(center = [0.2, 0.2], radius = 0.05)
+  |> extrude(length = -1)`
+      const expectedSplitDeclaration = `split001 = split(extrude001, tools = solid001)`
+      const newCode = await runAddSplitTest({
+        code,
+        targetIds: [0],
+        toolIds: [1],
+      })
+      expect(newCode).toContain(expectedToolDeclaration)
+      expect(newCode).toContain(expectedSplitDeclaration)
     })
 
     it('should work with a compositeSolid for tools in a more complex part', async () => {
