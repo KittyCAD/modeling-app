@@ -3,7 +3,7 @@ import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import {
   getOnboardingChildRoute,
   isRequestedFileLoaded,
-} from '@src/lib/routeLoaders'
+} from '@src/lib/routeLoaderNavigation'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 describe('route loader onboarding file navigation helpers', () => {

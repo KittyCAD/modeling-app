@@ -10,9 +10,6 @@ import fsZds from '@src/lib/fs-zds'
 import {
   getParentAbsolutePath,
   getRouterSearchFromRequestUrl,
-  joinOSPaths,
-  joinRouterPaths,
-  normalizeFilesystemPathForComparison,
   PATHS,
   parseProjectRoute,
   safeEncodeForRouterPaths,
@@ -28,6 +25,10 @@ import {
   loadHomeProjects,
   webHomeRouteEnabled,
 } from '@src/lib/routeLoaderUtils'
+import {
+  getOnboardingChildRoute,
+  isRequestedFileLoaded,
+} from '@src/lib/routeLoaderNavigation'
 import {
   type AppSettings,
   loadAndValidateSettings,
@@ -56,11 +57,6 @@ type CanonicalWebProjectLibrary = {
   library: ProjectLibrarySetting
   projectPath: string
   defaultFilePath: string
-}
-
-type RequestedFileNavigation = {
-  project: string
-  file: string
 }
 
 function loadRouteSettings(
@@ -133,49 +129,6 @@ async function fileExists(filePath: string) {
 function redirectToFile(filePath: string, routerSearch: string) {
   return redirect(
     `${PATHS.FILE}/${encodeURIComponent(filePath)}${routerSearch}`
-  )
-}
-
-export function getOnboardingChildRoute(requestUrl: string, routeId: string) {
-  const url = new URL(requestUrl)
-  const fileRoutePrefix = joinRouterPaths(
-    PATHS.FILE,
-    safeEncodeForRouterPaths(routeId)
-  )
-  const childRoute = url.pathname.startsWith(`${fileRoutePrefix}/`)
-    ? url.pathname.slice(fileRoutePrefix.length)
-    : ''
-
-  return childRoute === PATHS.ONBOARDING ||
-    childRoute.startsWith(`${PATHS.ONBOARDING}/`)
-    ? childRoute
-    : ''
-}
-
-export function isRequestedFileLoaded({
-  requestedFileName,
-  projectName,
-  projectPath,
-  currentFilePath,
-}: {
-  requestedFileName: RequestedFileNavigation
-  projectName: string | null
-  projectPath: string
-  currentFilePath: string | null
-}) {
-  if (
-    !requestedFileName.project ||
-    !requestedFileName.file ||
-    requestedFileName.project !== projectName ||
-    !currentFilePath
-  ) {
-    return false
-  }
-
-  const requestedFilePath = joinOSPaths(projectPath, requestedFileName.file)
-  return (
-    normalizeFilesystemPathForComparison(currentFilePath) ===
-    normalizeFilesystemPathForComparison(requestedFilePath)
   )
 }
 
