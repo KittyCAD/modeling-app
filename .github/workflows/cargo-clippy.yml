@@ -8,6 +8,7 @@ on:
       - '**/rust-toolchain.toml'
       - '**.rs'
       - .github/workflows/cargo-clippy.yml
+      - .github/ci-cd-scripts/verify-rust-cache-writable.sh
   pull_request:
     paths:
       - '**/Cargo.toml'
@@ -15,6 +16,7 @@ on:
       - '**/rust-toolchain.toml'
       - '**.rs'
       - .github/workflows/cargo-clippy.yml
+      - .github/ci-cd-scripts/verify-rust-cache-writable.sh
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -24,7 +26,8 @@ permissions:
 jobs:
   cargoclippy:
     name: cargo clippy
-    runs-on: namespace-profile-ubuntu-8-cores
+    # Keep host-user Cargo outputs separate from the root-run MUSL build.
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: taiki-e/install-action@just
@@ -48,6 +51,9 @@ jobs:
             rust/target
             ~/.cargo/registry
             ~/.cargo/git
+
+      - name: Verify Rust cache is writable
+        run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
 
       - name: Run clippy
         run: |
