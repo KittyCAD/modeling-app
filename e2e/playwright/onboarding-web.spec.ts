@@ -1,3 +1,4 @@
+import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import {
   type CloudProject,
   createRemoteListGate,
@@ -49,6 +50,22 @@ test(
   'Replay onboarding creates a uniquely named Personal Cloud tutorial',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
+    const clientErrors: Array<{ code?: string; stack?: string }> = []
+    await context.route('**/user/client-errors', async (route) => {
+      const report = route.request().postDataJSON() as {
+        code?: unknown
+        stack?: unknown
+      }
+      clientErrors.push({
+        code: typeof report.code === 'string' ? report.code : undefined,
+        stack: typeof report.stack === 'string' ? report.stack : undefined,
+      })
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({}),
+      })
+    })
     const remoteProjects: CloudProject[] = []
     const remoteRevisions = new Map<string, number>()
     const remoteListGate = createRemoteListGate()
@@ -132,6 +149,9 @@ test(
     await expect
       .poll(() => apiCalls.remoteListResponses)
       .toBeGreaterThanOrEqual(1)
+    await expect(page.getByTestId('cloud-library-sync-status')).toContainText(
+      'Cloud synced'
+    )
     await expect(tutorialProjectLink).toHaveCount(1)
     await expect(
       tutorialProjectLink.getByTestId('project-file-count')
@@ -139,13 +159,29 @@ test(
     await tutorialProjectLink.click()
     await expect(page).toHaveURL(/tutorial-project%2Fmain\.kcl$/)
 
-    await page.evaluate(async (mainPath) => {
-      await window.fsZds.writeFile(
-        mainPath,
-        new TextEncoder().encode('changed = true')
+    const editor = new EditorFixture(page)
+    await editor.openPane()
+    await expect(editor.codeContent).toContainText('plateLength = 10')
+    const firstProjectUpdatesBeforeEdit = apiCalls.updates.filter(
+      ({ projectId }) => projectId === TUTORIAL_PROJECT_IDS[0]
+    ).length
+    await editor.replaceCode('', 'changed = true')
+    await expect
+      .poll(async () => {
+        const files = await readOpfsTextFiles(page, {
+          main: `${PROJECT_DIR}/tutorial-project/main.kcl`,
+        })
+        return files.main
+      })
+      .toBe('changed = true')
+    await expect
+      .poll(
+        () =>
+          apiCalls.updates.filter(
+            ({ projectId }) => projectId === TUTORIAL_PROJECT_IDS[0]
+          ).length
       )
-    }, `${PROJECT_DIR}/tutorial-project/main.kcl`)
-    await expect.poll(() => apiCalls.updates.length).toBeGreaterThanOrEqual(1)
+      .toBeGreaterThan(firstProjectUpdatesBeforeEdit)
 
     await replayOnboardingFromSettings(page, 'tutorial-project-1')
     await expect.poll(() => apiCalls.creates.length).toBe(2)
@@ -213,6 +249,13 @@ test(
       `project_id = "${TUTORIAL_PROJECT_IDS[1]}"`
     )
     expect(apiCalls.creates).toHaveLength(2)
+    expect(
+      clientErrors.some(
+        ({ code, stack }) =>
+          code === 'cloud_sync_untracked_local_changes' &&
+          stack?.includes(TUTORIAL_PROJECT_IDS[0])
+      )
+    ).toBe(false)
 
     await page.keyboard.press('Escape')
     await expect(page).toHaveURL(/\/home$/)
