@@ -298,6 +298,9 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
+      await editor.expectEditor.toContain('hidden001 = hide', {
+        timeout: 15_000,
+      })
       await scene.settled()
       await toolbar.closePane(DefaultLayoutPaneID.Debug)
       await toolbar.openFeatureTreePane()
