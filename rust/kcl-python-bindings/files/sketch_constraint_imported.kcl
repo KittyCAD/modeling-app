@@ -1,0 +1,8 @@
+@settings(experimentalFeatures = allow)
+
+export fn importedSketch() {
+  result = sketch(on = XY) {
+    line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  }
+  return result
+}
