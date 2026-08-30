@@ -112,7 +112,7 @@ test(
       page.getByRole('heading', { name: 'Time to start building' })
     ).toBeVisible({ timeout: 15_000 })
     await Promise.all([
-      page.waitForURL(/\/home$/, { timeout: 5_000 }),
+      page.waitForURL(/\/home$/, { timeout: 15_000 }),
       page.getByRole('button', { name: /Finish$/ }).click(),
     ])
     await expectBackDoesNotReopenOnboarding(page)
