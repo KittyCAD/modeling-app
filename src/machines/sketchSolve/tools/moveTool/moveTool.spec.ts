@@ -179,6 +179,7 @@ function createDragSnappingDeps() {
     getLastGoodPreview: vi.fn(() => null),
     setLastGoodPreview: vi.fn(),
     getDragStartOutcome: vi.fn(() => null),
+    getCircleCenterDragOwnerId: vi.fn((): number | null => null),
     onClearDragSnapping: vi.fn(),
   }
 }
@@ -494,14 +495,20 @@ describe('createOnDragStartCallback', () => {
     const setLastGoodPreview = vi.fn()
     const setDragStartOutcome = vi.fn()
     const setPreDragCheckpointId = vi.fn()
+    const setCircleCenterDragOwnerId = vi.fn()
     const beginDragSession = vi.fn()
+    const sceneGraphDelta = createSceneGraphDelta([
+      createPointApiObject({ id: 1, owner: 3 }),
+      createPointApiObject({ id: 2, x: 10, owner: 3 }),
+      createCircleApiObject({ id: 3, center: 1, start: 2 }),
+    ])
     const getCurrentSketchOutcome = vi.fn(() => ({
       kclSource: { text: 'baseline' },
-      sceneGraphDelta: createSceneGraphDelta([]),
+      sceneGraphDelta,
     }))
     const getCurrentCommittedCheckpointId = vi.fn(() => 12)
     const dismissConstraintHoverPopup = vi.fn()
-    const getDraggedEntityId = vi.fn(() => null)
+    const getDraggedEntityId = vi.fn(() => 1)
     const onUpdateHoveredId = vi.fn()
 
     const callback = createOnDragStartCallback({
@@ -509,6 +516,7 @@ describe('createOnDragStartCallback', () => {
       setLastGoodPreview,
       setDragStartOutcome,
       setPreDragCheckpointId,
+      setCircleCenterDragOwnerId,
       beginDragSession,
       getCurrentSketchOutcome,
       getCurrentCommittedCheckpointId,
@@ -533,19 +541,20 @@ describe('createOnDragStartCallback', () => {
     expect(beginDragSession).toHaveBeenCalledOnce()
     expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledOnce()
     expect(setLastSuccessfulDragFromPoint).toHaveBeenCalledWith(
-      expect.objectContaining({ x: 10, y: 20 })
+      expect.objectContaining({ x: 0, y: 0 })
     )
     // Verify it's a clone (new object)
     const callArg = setLastSuccessfulDragFromPoint.mock.calls[0][0]
     expect(callArg).not.toBe(intersectionPoint.twoD)
-    expect(callArg.x).toBe(10)
-    expect(callArg.y).toBe(20)
+    expect(callArg.x).toBe(0)
+    expect(callArg.y).toBe(0)
     expect(setLastGoodPreview).toHaveBeenCalledWith(null)
     expect(setDragStartOutcome).toHaveBeenCalledWith({
       kclSource: { text: 'baseline' },
-      sceneGraphDelta: createSceneGraphDelta([]),
+      sceneGraphDelta,
     })
     expect(setPreDragCheckpointId).toHaveBeenCalledWith(12)
+    expect(setCircleCenterDragOwnerId).toHaveBeenCalledWith(3)
   })
 })
 
@@ -1183,6 +1192,66 @@ describe('createOnDragCallback', () => {
       })
     }
   )
+
+  it('should redirect a dragged circle center through its owner circle', async () => {
+    const center = createPointApiObject({
+      id: 1,
+      x: 0,
+      y: 0,
+      owner: 3,
+    })
+    const start = createPointApiObject({
+      id: 2,
+      x: 10,
+      y: 0,
+      owner: 3,
+    })
+    const circle = createCircleApiObject({ id: 3, center: 1, start: 2 })
+    const sceneGraphDelta = createSceneGraphDelta([center, start, circle])
+    const editSegments = vi.fn(async () => ({
+      kclSource: { text: 'segments updated' },
+      sceneGraphDelta,
+    }))
+    const dragSnappingDeps = createDragSnappingDeps()
+    dragSnappingDeps.getCircleCenterDragOwnerId.mockReturnValue(3)
+
+    const callback = createOnDragCallback({
+      getIsSolveInProgress: vi.fn(() => false),
+      setIsSolveInProgress: vi.fn(),
+      getLastSuccessfulDragFromPoint: vi.fn(() => new Vector2(0, 0)),
+      setLastSuccessfulDragFromPoint: vi.fn(),
+      getDraggedEntityId: createDraggedEntityIdGetter(1),
+      getContextData: vi.fn(() => ({
+        selectedIds: [],
+        sketchId: 2,
+        sketchExecOutcome: { sceneGraphDelta },
+      })),
+      editSegments,
+      onNewSketchOutcome: vi.fn(),
+      getDefaultLengthUnit: vi.fn((): UnitLength => 'mm'),
+      getJsAppSettings: vi.fn(() => Promise.resolve({})),
+      ...dragSnappingDeps,
+    })
+
+    await callback({
+      intersectionPoint: {
+        twoD: new Vector2(2, 3),
+        threeD: new Vector3(2, 3, 0),
+      },
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    expect(editSegments).toHaveBeenCalledWith(
+      0,
+      2,
+      [expect.objectContaining({ id: 1 }), expect.objectContaining({ id: 3 })],
+      {},
+      [1, 3],
+      []
+    )
+  })
 
   it('should move a diameter label when a dragged line moves its coincident circle center', async () => {
     const lineStart = createPointApiObject({ id: 1, x: 0, y: 0, owner: 3 })
