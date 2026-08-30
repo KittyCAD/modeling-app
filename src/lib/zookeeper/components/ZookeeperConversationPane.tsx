@@ -1,12 +1,9 @@
-import {
-  ZookeeperConversation,
-  type QueuedMessage,
-} from '@src/lib/zookeeper/components/ZookeeperConversation'
-import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import {
+  CMD_GROUP_QUERY_PARAM,
+  CMD_NAME_QUERY_PARAM,
   LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
   SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
@@ -14,15 +11,22 @@ import { getParentAbsolutePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection, trap } from '@src/lib/trap'
-import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
-import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
-import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
+  type QueuedMessage,
+  ZookeeperConversation,
+} from '@src/lib/zookeeper/components/ZookeeperConversation'
+import { ZookeeperConversationWelcome } from '@src/lib/zookeeper/components/ZookeeperConversationWelcome'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import type {
+  MlCopilotModeId,
+  ZookeeperManagerActor,
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
+import {
+  hasBeenInterruptedOnLast,
   ZookeeperManagerStates,
   ZookeeperManagerTransitions,
-  hasBeenInterruptedOnLast,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
-import type { MlCopilotModeId } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import { activeFileRelativeToProject } from '@src/lib/zookeeper/zookeeperPromptRequest'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
@@ -695,6 +699,16 @@ export const ZookeeperConversationPane = (props: {
       searchParams.get(LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
     if (promptParam) {
       setDefaultPrompt(promptParam)
+
+      // Generic commands may finish asynchronously and clean up cmd/groupId
+      // from the query snapshot they captured when they started. Let that
+      // cleanup happen first so this effect cannot restore those parameters.
+      if (
+        searchParams.has(CMD_NAME_QUERY_PARAM) &&
+        searchParams.has(CMD_GROUP_QUERY_PARAM)
+      ) {
+        return
+      }
 
       // Now clear that param
       const newSearchParams = new URLSearchParams(searchParams)
