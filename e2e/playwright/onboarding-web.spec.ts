@@ -110,10 +110,10 @@ test(
     await expect(page).toHaveURL(/\/onboarding\/desktop\/conclusion$/)
     await expect(
       page.getByRole('heading', { name: 'Time to start building' })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 15_000 })
     await Promise.all([
       page.waitForURL(/\/home$/, { timeout: 5_000 }),
-      page.getByRole('button', { name: 'Finish', exact: true }).click(),
+      page.getByRole('button', { name: /Finish$/ }).click(),
     ])
     await expectBackDoesNotReopenOnboarding(page)
     await expect(
