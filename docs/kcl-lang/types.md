@@ -34,10 +34,19 @@ example returns 0.
 ## `ImportedGeometry`
 
 Using `import` you can import geometry defined using other CAD software. In KCL,
-these objects have type `ImportedGeometry` and can mostly be treated like any
-other solid (they can be rotated, scaled, etc.), although there is no access to
-their internal components. See the [modules and imports docs](modules) for more
-detail on importing geometry.
+these objects have type `ImportedGeometry`, which is distinct from `Solid`: there
+is no access to their internal components, and no conversion between the two
+types.
+
+```
+The input argument of `subtract` requires one or more `Solid`s (`[Solid; 1+]`),
+but found an array of `ImportedGeometry`
+```
+
+To model against imported geometry, either recreate the shape natively in KCL and
+operate on that, or leave the import in place as a reference and build a separate
+part around it. See the [foreign imports docs](foreign-imports) for supported
+formats and [known issues](known-issues) for the engine limitation behind this.
 
 
 ## Tags

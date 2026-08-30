@@ -234,10 +234,13 @@ async fn inner_get_opposite_edge(
     args: Args,
 ) -> Result<Uuid, KclError> {
     check_tag_not_ambiguous(&edge, &args)?;
+    // Even mock execution has enough tag metadata to distinguish a sketch
+    // edge from an edge that belongs to a solid face. Validate that invariant
+    // before substituting a synthetic opposite-edge ID.
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
 
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
     let tagged_path_id = tagged_path.id;
@@ -1017,6 +1020,7 @@ mod tests {
     use super::combination_count;
     use super::edge_combinations_exceed_limit;
     use super::face_id_combinations;
+    use crate::execution::MockConfig;
 
     #[test]
     fn face_id_combinations_empty_input_is_one_empty_combination() {
@@ -1104,5 +1108,44 @@ mod tests {
         // multiply must neither panic nor wrap.
         assert!(edge_combinations_exceed_limit(usize::MAX, 2));
         assert!(edge_combinations_exceed_limit(usize::MAX, usize::MAX));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_get_opposite_edge_rejects_unextruded_sketch_edge() {
+        let code = r#"
+profile = sketch(on = XY) {
+  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
+}
+profileRegion = region(segments = [profile.circle1])
+opposite = getOppositeEdge(profileRegion.tags.circle1)
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let err = ctx.run_mock(&program, &MockConfig::default()).await.unwrap_err();
+        ctx.close().await;
+
+        assert!(
+            err.error.message().contains("refers to a sketch edge")
+                && err.error.message().contains("requires a face tag"),
+            "{err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_get_opposite_edge_accepts_extruded_sketch_edge() {
+        let code = r#"
+profile = sketch(on = XY) {
+  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
+}
+profileRegion = region(segments = [profile.circle1])
+body = extrude(profileRegion, length = 5)
+opposite = getOppositeEdge(profileRegion.tags.circle1)
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+
+        outcome.unwrap();
     }
 }

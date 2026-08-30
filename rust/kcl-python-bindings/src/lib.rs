@@ -98,13 +98,12 @@ fn render_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError
 
 fn add_execution_issues(
     report: &mut SketchConstraintReport,
-    filename: &str,
-    code: &str,
     issues: Vec<kcl_lib::CompilationIssue>,
+    render: impl Fn(kcl_lib::CompilationIssue) -> String,
 ) {
     for issue in issues {
         let severity = issue.severity;
-        let rendered = kcl_lib::render_compilation_issue_miette(filename, code, issue);
+        let rendered = render(issue);
         if severity.is_fatal() {
             report.execution_fatals.push(rendered);
         } else if severity.is_err() {
@@ -271,39 +270,64 @@ async fn new_context_state(
 #[pyclass(from_py_object)]
 #[derive(Debug, Clone)]
 struct ExecOutcome {
-    issues: Vec<CompilationIssue>,
+    inner: kcl_lib::ExecOutcome,
     code: String,
     filename: String,
+}
+
+impl ExecOutcome {
+    /// Render the issue against the module source its range points into,
+    /// falling back to the top-level source captured at execution time.
+    fn render_issue(&self, issue: kcl_lib::CompilationIssue) -> String {
+        kcl_lib::render_compilation_issue_miette(&self.filename, &self.code, &self.inner.source_files, issue)
+    }
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pymethods]
 #[pymethods]
 impl ExecOutcome {
     fn issues(&self) -> PyResult<Vec<CompilationIssue>> {
-        Ok(self.issues.clone())
+        Ok(self.inner.issues.iter().cloned().map(CompilationIssue::from).collect())
     }
 
     /// Render the given compilation issue as a miette report string, using
-    /// the source code and filename captured at execution time.
+    /// the source code and filenames captured at execution time.
     fn report(&self, issue: &CompilationIssue) -> String {
-        kcl_lib::render_compilation_issue_miette(&self.filename, &self.code, issue.inner.clone())
+        self.render_issue(issue.inner.clone())
+    }
+
+    /// Analyze all sketches from this execution and group them by constraint
+    /// status.
+    fn sketch_constraint_report(&self) -> SketchConstraintReport {
+        let mut report: SketchConstraintReport = self.inner.sketch_constraint_report().into();
+        add_execution_issues(&mut report, self.inner.issues.clone(), |issue| self.render_issue(issue));
+        report
+    }
+
+    /// Render one sketch from this execution as a PNG, colored by solver
+    /// freedom.
+    fn render_sketch_png(&self, sketch_name: &str) -> PyResult<Vec<u8>> {
+        self.inner.render_sketch_png(sketch_name).map_err(to_py_exception)
     }
 
     fn report_all(&self) -> Vec<String> {
-        let mut out = Vec::with_capacity(self.issues.len());
-        for issue in self.issues.iter() {
-            out.push(self.report(issue));
-        }
-        out
+        self.inner
+            .issues
+            .iter()
+            .cloned()
+            .map(CompilationIssue::from)
+            .map(|issue| self.report(&issue))
+            .collect()
     }
 }
 
 struct ExecutedKcl {
     ctx: ExecutorContext,
+    state: kcl_lib::ExecState,
+    env_ref: kcl_lib::EnvironmentRef,
     program: kcl_lib::Program,
     code: String,
     filename: String,
-    issues: Vec<kcl_lib::CompilationIssue>,
 }
 
 async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> PyResult<ExecutedKcl> {
@@ -317,33 +341,42 @@ async fn run_kcl(input: KclInput, mock: bool, highlight_edges: Option<bool>) -> 
     let (ctx, mut state) = new_context_state(path, mock, highlight_edges)
         .await
         .map_err(to_py_exception)?;
-    if let Err(err) = ctx.run(&program, &mut state).await {
-        ctx.close().await;
-        return Err(into_miette(err, &code));
-    }
-
-    let issues = state.issues().to_vec();
-
+    let (env_ref, _) = match ctx.run(&program, &mut state).await {
+        Ok(result) => result,
+        Err(err) => {
+            ctx.close().await;
+            return Err(into_miette(err, &code));
+        }
+    };
     Ok(ExecutedKcl {
         ctx,
+        state,
+        env_ref,
         program,
         code,
         filename,
-        issues,
     })
 }
 
 async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
     let ExecutedKcl {
         ctx,
-        issues,
+        state,
+        env_ref,
         code,
         filename,
         ..
     } = run_kcl(input, mock, None).await?;
+    let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
+        Ok(outcome) => outcome,
+        Err(err) => {
+            ctx.close().await;
+            return Err(to_py_exception(err));
+        }
+    };
     ctx.close().await;
     Ok(ExecOutcome {
-        issues: issues.into_iter().map(CompilationIssue::from).collect(),
+        inner: outcome,
         code,
         filename,
     })
@@ -372,7 +405,9 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
             let mut report: SketchConstraintReport = outcome.sketch_constraint_report().into();
-            add_execution_issues(&mut report, &filename, &code, outcome.issues);
+            add_execution_issues(&mut report, outcome.issues, |issue| {
+                kcl_lib::render_compilation_issue_miette(&filename, &code, &outcome.source_files, issue)
+            });
             Ok(report)
         }
         Err(err) => {
@@ -381,7 +416,9 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
             }
             let error_text = render_miette(err.clone(), &code);
             let mut report: SketchConstraintReport = err.sketch_constraint_report().into();
-            add_execution_issues(&mut report, &filename, &code, err.non_fatal);
+            add_execution_issues(&mut report, err.non_fatal, |issue| {
+                kcl_lib::render_compilation_issue_miette(&filename, &code, &err.source_files, issue)
+            });
             report.is_complete = false;
             report.kcl_error = Some(KclErrorInfo {
                 phase: "execution".to_string(),
@@ -443,7 +480,7 @@ async fn execute_and_export_impl(input: KclInput, export_format: FileExportForma
         program,
         code,
         filename,
-        issues: _,
+        ..
     } = run_kcl(input, false, None).await?;
 
     let settings = match program.meta_settings() {
@@ -1338,11 +1375,11 @@ result = subtract(cube, tools = [cylinder])
             .await
             .expect("execute_impl should succeed for valid non-overlapping subtract");
 
-        let warning = outcome
-            .issues
+        let issues = outcome.issues().expect("issues should convert");
+        let warning = issues
             .iter()
             .find(|issue| issue.is_warning())
-            .unwrap_or_else(|| panic!("expected at least one warning issue, got: {:?}", outcome.issues));
+            .unwrap_or_else(|| panic!("expected at least one warning issue, got: {issues:?}"));
         assert!(!warning.is_err());
         assert!(!warning.is_fatal());
 
@@ -1363,6 +1400,60 @@ result = subtract(cube, tools = [cylinder])
         assert!(
             report.contains("[22:10]"),
             "report should include a line:column marker for the source span: {report}"
+        );
+    }
+
+    /// A short top-level file that calls a function defined in a longer
+    /// imported module. Evaluating the function body multiplies numbers with
+    /// unknown units, so execution emits an `unknown-numeric-units` warning
+    /// whose source range points into the imported module, past the end of
+    /// the top-level source. The report must render that range against the
+    /// imported module's source, not the top-level file.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_exec_outcome_report_renders_imported_module_warning_against_imported_source() {
+        let project_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/files/imported_warning");
+        let outcome = execute_impl(KclInput::Path(project_dir.to_owned()), true)
+            .await
+            .expect("mock execute_impl should succeed for a project that only warns");
+
+        let issues = outcome.issues().expect("issues should convert");
+        let warning = issues
+            .iter()
+            .find(|issue| issue.is_warning() && issue.message().contains("unknown or incompatible units"))
+            .unwrap_or_else(|| panic!("expected an unknown-numeric-units warning, got: {issues:?}"));
+
+        let report = outcome.report(warning);
+
+        assert!(
+            !report.contains("Failed to read contents") && !report.contains("OutOfBounds"),
+            "imported range should not be read against the top-level source: {report}"
+        );
+        assert!(
+            report.contains("derived.kcl"),
+            "report should name the imported file: {report}"
+        );
+        assert!(
+            report.contains("PI * 2"),
+            "report should include the offending line from the imported source snippet: {report}"
+        );
+
+        // The sketch constraint report renders the same issues through the
+        // shared helper; it must also resolve the imported module's source.
+        let constraint_report = outcome.sketch_constraint_report();
+        assert!(
+            !constraint_report.warnings.is_empty(),
+            "constraint report should carry the rendered execution warning"
+        );
+        for rendered in &constraint_report.warnings {
+            assert!(
+                !rendered.contains("Failed to read contents") && !rendered.contains("OutOfBounds"),
+                "constraint report warning should render against the imported source: {rendered}"
+            );
+        }
+        assert!(
+            constraint_report.warnings.iter().any(|w| w.contains("PI * 2")),
+            "a constraint report warning should include the imported source snippet: {:?}",
+            constraint_report.warnings
         );
     }
 }

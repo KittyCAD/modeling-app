@@ -13,8 +13,8 @@ description: Lints enclosure.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1193,
-      1719,
+      1206,
+      1732,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints enclosure.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      7757,
-      8275,
+      7770,
+      8288,
       0
     ],
     "overridden": false,
@@ -47,8 +47,8 @@ description: Lints enclosure.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      12689,
-      13231,
+      12702,
+      13244,
       0
     ],
     "overridden": false,

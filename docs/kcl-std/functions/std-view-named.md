@@ -104,11 +104,11 @@ hide(boss)
 // successful execution of the program. A `Show` baseline shows every object
 // the program built, including the boss that `hide(boss)` took out of that
 // scene.
-everything = view::named("Everything", camera = view::oriented(view::Orientation::Isometric), baseline = view::Visibility::Show)
+overview = view::named("Everything", camera = view::oriented(view::Orientation::Isometric), baseline = view::Visibility::Show)
 
 // 2. Visible by default, with one object hidden. Add to `except` to hide
 // more.
-plateOnly = view::named(
+plateInspection = view::named(
   "Plate only",
   camera = view::oriented(view::Orientation::Front, distance = 200mm),
   baseline = view::Visibility::Show,
@@ -118,7 +118,10 @@ plateOnly = view::named(
 // 3. Hidden by default, with one object shown. This is the form to reach for
 // when a view should isolate a few objects out of many, because `except`
 // then lists what you want rather than everything you do not.
-bossOnly = view::named(
+//
+// This one is not assigned to a variable, which a view never requires: the
+// display name is what identifies it.
+view::named(
   "Boss only",
   camera = view::oriented(view::Orientation::Top, distance = 150mm),
   baseline = view::Visibility::Hide,

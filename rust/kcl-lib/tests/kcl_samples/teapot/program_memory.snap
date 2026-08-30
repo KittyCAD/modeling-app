@@ -249,10 +249,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4345,
-            "end": 4350,
+            "commentStart": 4356,
+            "end": 4361,
             "moduleId": 0,
-            "start": 4345,
+            "start": 4356,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -263,10 +263,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4415,
-            "end": 4419,
+            "commentStart": 4426,
+            "end": 4430,
             "moduleId": 0,
-            "start": 4415,
+            "start": 4426,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -277,10 +277,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4560,
-            "end": 4564,
+            "commentStart": 4571,
+            "end": 4575,
             "moduleId": 0,
-            "start": 4560,
+            "start": 4571,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -291,10 +291,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4717,
-            "end": 4721,
+            "commentStart": 4728,
+            "end": 4732,
             "moduleId": 0,
-            "start": 4717,
+            "start": 4728,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -305,10 +305,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4871,
-            "end": 4875,
+            "commentStart": 4882,
+            "end": 4886,
             "moduleId": 0,
-            "start": 4871,
+            "start": 4882,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -319,10 +319,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5025,
-            "end": 5029,
+            "commentStart": 5036,
+            "end": 5040,
             "moduleId": 0,
-            "start": 5025,
+            "start": 5036,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -333,10 +333,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5183,
-            "end": 5187,
+            "commentStart": 5194,
+            "end": 5198,
             "moduleId": 0,
-            "start": 5183,
+            "start": 5194,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -347,10 +347,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5339,
-            "end": 5343,
+            "commentStart": 5350,
+            "end": 5354,
             "moduleId": 0,
-            "start": 5339,
+            "start": 5350,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -361,10 +361,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5486,
-            "end": 5491,
+            "commentStart": 5497,
+            "end": 5502,
             "moduleId": 0,
-            "start": 5486,
+            "start": 5497,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -386,10 +386,10 @@ description: Variables in memory after executing teapot.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4345,
-              "end": 4350,
+              "commentStart": 4356,
+              "end": 4361,
               "moduleId": 0,
-              "start": 4345,
+              "start": 4356,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -416,10 +416,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 44.777328933390166,
             "tag": {
-              "commentStart": 4415,
-              "end": 4419,
+              "commentStart": 4426,
+              "end": 4430,
               "moduleId": 0,
-              "start": 4415,
+              "start": 4426,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -446,10 +446,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 206.30138558029725,
             "tag": {
-              "commentStart": 4560,
-              "end": 4564,
+              "commentStart": 4571,
+              "end": 4575,
               "moduleId": 0,
-              "start": 4560,
+              "start": 4571,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -476,10 +476,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 26.529804827300886,
             "tag": {
-              "commentStart": 4717,
-              "end": 4721,
+              "commentStart": 4728,
+              "end": 4732,
               "moduleId": 0,
-              "start": 4717,
+              "start": 4728,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -506,10 +506,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 3.0008882736381723,
             "tag": {
-              "commentStart": 4871,
-              "end": 4875,
+              "commentStart": 4882,
+              "end": 4886,
               "moduleId": 0,
-              "start": 4871,
+              "start": 4882,
               "type": "TagDeclarator",
               "value": "arc5"
             },
@@ -536,10 +536,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 14.605000000000004,
             "tag": {
-              "commentStart": 5025,
-              "end": 5029,
+              "commentStart": 5036,
+              "end": 5040,
               "moduleId": 0,
-              "start": 5025,
+              "start": 5036,
               "type": "TagDeclarator",
               "value": "arc6"
             },
@@ -566,10 +566,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 134.80844644276507,
             "tag": {
-              "commentStart": 5183,
-              "end": 5187,
+              "commentStart": 5194,
+              "end": 5198,
               "moduleId": 0,
-              "start": 5183,
+              "start": 5194,
               "type": "TagDeclarator",
               "value": "arc7"
             },
@@ -596,10 +596,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 43.26572494982126,
             "tag": {
-              "commentStart": 5339,
-              "end": 5343,
+              "commentStart": 5350,
+              "end": 5354,
               "moduleId": 0,
-              "start": 5339,
+              "start": 5350,
               "type": "TagDeclarator",
               "value": "arc8"
             },
@@ -620,10 +620,10 @@ description: Variables in memory after executing teapot.kcl
               6.000230208866938
             ],
             "tag": {
-              "commentStart": 5486,
-              "end": 5491,
+              "commentStart": 5497,
+              "end": 5502,
               "moduleId": 0,
-              "start": 5486,
+              "start": 5497,
               "type": "TagDeclarator",
               "value": "line9"
             },
@@ -644,10 +644,10 @@ description: Variables in memory after executing teapot.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 5596,
-              "end": 5602,
+              "commentStart": 5607,
+              "end": 5613,
               "moduleId": 0,
-              "start": 5596,
+              "start": 5607,
               "type": "TagDeclarator",
               "value": "line10"
             },
@@ -771,10 +771,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3325,
-            "end": 3329,
+            "commentStart": 3336,
+            "end": 3340,
             "moduleId": 0,
-            "start": 3325,
+            "start": 3336,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -785,10 +785,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3434,
-            "end": 3438,
+            "commentStart": 3445,
+            "end": 3449,
             "moduleId": 0,
-            "start": 3434,
+            "start": 3445,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -799,10 +799,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3579,
-            "end": 3583,
+            "commentStart": 3590,
+            "end": 3594,
             "moduleId": 0,
-            "start": 3579,
+            "start": 3590,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -813,10 +813,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3725,
-            "end": 3729,
+            "commentStart": 3736,
+            "end": 3740,
             "moduleId": 0,
-            "start": 3725,
+            "start": 3736,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -844,10 +844,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 34.08014671329922,
             "tag": {
-              "commentStart": 3325,
-              "end": 3329,
+              "commentStart": 3336,
+              "end": 3340,
               "moduleId": 0,
-              "start": 3325,
+              "start": 3336,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -874,10 +874,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 3.659904370335378,
             "tag": {
-              "commentStart": 3434,
-              "end": 3438,
+              "commentStart": 3445,
+              "end": 3449,
               "moduleId": 0,
-              "start": 3434,
+              "start": 3445,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -904,10 +904,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 34.08014671329922,
             "tag": {
-              "commentStart": 3579,
-              "end": 3583,
+              "commentStart": 3590,
+              "end": 3594,
               "moduleId": 0,
-              "start": 3579,
+              "start": 3590,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -934,10 +934,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 3.659904370335378,
             "tag": {
-              "commentStart": 3725,
-              "end": 3729,
+              "commentStart": 3736,
+              "end": 3740,
               "moduleId": 0,
-              "start": 3725,
+              "start": 3736,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -1895,10 +1895,10 @@ description: Variables in memory after executing teapot.kcl
                     26.0
                   ],
                   "tag": {
-                    "commentStart": 2450,
-                    "end": 2455,
+                    "commentStart": 2461,
+                    "end": 2466,
                     "moduleId": 0,
-                    "start": 2450,
+                    "start": 2461,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1925,10 +1925,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 16.009086587218125,
                   "tag": {
-                    "commentStart": 2522,
-                    "end": 2526,
+                    "commentStart": 2533,
+                    "end": 2537,
                     "moduleId": 0,
-                    "start": 2522,
+                    "start": 2533,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -1955,10 +1955,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 172.15308154877854,
                   "tag": {
-                    "commentStart": 2671,
-                    "end": 2675,
+                    "commentStart": 2682,
+                    "end": 2686,
                     "moduleId": 0,
-                    "start": 2671,
+                    "start": 2682,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -1985,10 +1985,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 12.236005240149465,
                   "tag": {
-                    "commentStart": 2831,
-                    "end": 2835,
+                    "commentStart": 2842,
+                    "end": 2846,
                     "moduleId": 0,
-                    "start": 2831,
+                    "start": 2842,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -2015,10 +2015,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 241.8619387115584,
                   "tag": {
-                    "commentStart": 2991,
-                    "end": 2995,
+                    "commentStart": 3002,
+                    "end": 3006,
                     "moduleId": 0,
-                    "start": 2991,
+                    "start": 3002,
                     "type": "TagDeclarator",
                     "value": "arc5"
                   },
@@ -2039,10 +2039,10 @@ description: Variables in memory after executing teapot.kcl
                     112.36006708837684
                   ],
                   "tag": {
-                    "commentStart": 3152,
-                    "end": 3157,
+                    "commentStart": 3163,
+                    "end": 3168,
                     "moduleId": 0,
-                    "start": 3152,
+                    "start": 3163,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -2170,10 +2170,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 5.999999999999995,
           "tag": {
-            "commentStart": 1031,
-            "end": 1038,
+            "commentStart": 1042,
+            "end": 1049,
             "moduleId": 0,
-            "start": 1031,
+            "start": 1042,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2200,10 +2200,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 4.500000000000028,
           "tag": {
-            "commentStart": 1116,
-            "end": 1123,
+            "commentStart": 1127,
+            "end": 1134,
             "moduleId": 0,
-            "start": 1116,
+            "start": 1127,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -2294,10 +2294,10 @@ description: Variables in memory after executing teapot.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 1533,
-            "end": 1538,
+            "commentStart": 1544,
+            "end": 1549,
             "moduleId": 0,
-            "start": 1533,
+            "start": 1544,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2324,10 +2324,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 44.77723286484254,
           "tag": {
-            "commentStart": 1603,
-            "end": 1607,
+            "commentStart": 1614,
+            "end": 1618,
             "moduleId": 0,
-            "start": 1603,
+            "start": 1614,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2354,10 +2354,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 206.30120022252223,
           "tag": {
-            "commentStart": 1748,
-            "end": 1752,
+            "commentStart": 1759,
+            "end": 1763,
             "moduleId": 0,
-            "start": 1748,
+            "start": 1759,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -2384,10 +2384,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 26.529417081759483,
           "tag": {
-            "commentStart": 1905,
-            "end": 1909,
+            "commentStart": 1916,
+            "end": 1920,
             "moduleId": 0,
-            "start": 1905,
+            "start": 1916,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -2408,10 +2408,10 @@ description: Variables in memory after executing teapot.kcl
             129.99939480072032
           ],
           "tag": {
-            "commentStart": 2059,
-            "end": 2064,
+            "commentStart": 2070,
+            "end": 2075,
             "moduleId": 0,
-            "start": 2059,
+            "start": 2070,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2432,10 +2432,10 @@ description: Variables in memory after executing teapot.kcl
             130.0
           ],
           "tag": {
-            "commentStart": 2171,
-            "end": 2176,
+            "commentStart": 2182,
+            "end": 2187,
             "moduleId": 0,
-            "start": 2171,
+            "start": 2182,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2548,10 +2548,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 34.08014671329922,
           "tag": {
-            "commentStart": 3325,
-            "end": 3329,
+            "commentStart": 3336,
+            "end": 3340,
             "moduleId": 0,
-            "start": 3325,
+            "start": 3336,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2578,10 +2578,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 3.659904370335378,
           "tag": {
-            "commentStart": 3434,
-            "end": 3438,
+            "commentStart": 3445,
+            "end": 3449,
             "moduleId": 0,
-            "start": 3434,
+            "start": 3445,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2608,10 +2608,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 34.08014671329922,
           "tag": {
-            "commentStart": 3579,
-            "end": 3583,
+            "commentStart": 3590,
+            "end": 3594,
             "moduleId": 0,
-            "start": 3579,
+            "start": 3590,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -2638,10 +2638,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 3.659904370335378,
           "tag": {
-            "commentStart": 3725,
-            "end": 3729,
+            "commentStart": 3736,
+            "end": 3740,
             "moduleId": 0,
-            "start": 3725,
+            "start": 3736,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -2746,10 +2746,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 6.0,
           "tag": {
-            "commentStart": 4088,
-            "end": 4095,
+            "commentStart": 4099,
+            "end": 4106,
             "moduleId": 0,
-            "start": 4088,
+            "start": 4099,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2836,10 +2836,10 @@ description: Variables in memory after executing teapot.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 4345,
-            "end": 4350,
+            "commentStart": 4356,
+            "end": 4361,
             "moduleId": 0,
-            "start": 4345,
+            "start": 4356,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2866,10 +2866,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 44.777328933390166,
           "tag": {
-            "commentStart": 4415,
-            "end": 4419,
+            "commentStart": 4426,
+            "end": 4430,
             "moduleId": 0,
-            "start": 4415,
+            "start": 4426,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2896,10 +2896,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 206.30138558029725,
           "tag": {
-            "commentStart": 4560,
-            "end": 4564,
+            "commentStart": 4571,
+            "end": 4575,
             "moduleId": 0,
-            "start": 4560,
+            "start": 4571,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -2926,10 +2926,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 26.529804827300886,
           "tag": {
-            "commentStart": 4717,
-            "end": 4721,
+            "commentStart": 4728,
+            "end": 4732,
             "moduleId": 0,
-            "start": 4717,
+            "start": 4728,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -2956,10 +2956,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 3.0008882736381723,
           "tag": {
-            "commentStart": 4871,
-            "end": 4875,
+            "commentStart": 4882,
+            "end": 4886,
             "moduleId": 0,
-            "start": 4871,
+            "start": 4882,
             "type": "TagDeclarator",
             "value": "arc5"
           },
@@ -2986,10 +2986,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 14.605000000000004,
           "tag": {
-            "commentStart": 5025,
-            "end": 5029,
+            "commentStart": 5036,
+            "end": 5040,
             "moduleId": 0,
-            "start": 5025,
+            "start": 5036,
             "type": "TagDeclarator",
             "value": "arc6"
           },
@@ -3016,10 +3016,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 134.80844644276507,
           "tag": {
-            "commentStart": 5183,
-            "end": 5187,
+            "commentStart": 5194,
+            "end": 5198,
             "moduleId": 0,
-            "start": 5183,
+            "start": 5194,
             "type": "TagDeclarator",
             "value": "arc7"
           },
@@ -3046,10 +3046,10 @@ description: Variables in memory after executing teapot.kcl
           ],
           "radius": 43.26572494982126,
           "tag": {
-            "commentStart": 5339,
-            "end": 5343,
+            "commentStart": 5350,
+            "end": 5354,
             "moduleId": 0,
-            "start": 5339,
+            "start": 5350,
             "type": "TagDeclarator",
             "value": "arc8"
           },
@@ -3070,10 +3070,10 @@ description: Variables in memory after executing teapot.kcl
             6.000230208866938
           ],
           "tag": {
-            "commentStart": 5486,
-            "end": 5491,
+            "commentStart": 5497,
+            "end": 5502,
             "moduleId": 0,
-            "start": 5486,
+            "start": 5497,
             "type": "TagDeclarator",
             "value": "line9"
           },
@@ -3094,10 +3094,10 @@ description: Variables in memory after executing teapot.kcl
             6.0
           ],
           "tag": {
-            "commentStart": 5596,
-            "end": 5602,
+            "commentStart": 5607,
+            "end": 5613,
             "moduleId": 0,
-            "start": 5596,
+            "start": 5607,
             "type": "TagDeclarator",
             "value": "line10"
           },
@@ -3472,10 +3472,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 5.999999999999995,
                   "tag": {
-                    "commentStart": 1031,
-                    "end": 1038,
+                    "commentStart": 1042,
+                    "end": 1049,
                     "moduleId": 0,
-                    "start": 1031,
+                    "start": 1042,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -3519,10 +3519,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 4.500000000000028,
                   "tag": {
-                    "commentStart": 1116,
-                    "end": 1123,
+                    "commentStart": 1127,
+                    "end": 1134,
                     "moduleId": 0,
-                    "start": 1116,
+                    "start": 1127,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -4441,10 +4441,10 @@ description: Variables in memory after executing teapot.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1533,
-                    "end": 1538,
+                    "commentStart": 1544,
+                    "end": 1549,
                     "moduleId": 0,
-                    "start": 1533,
+                    "start": 1544,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -4471,10 +4471,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 44.77723286484254,
                   "tag": {
-                    "commentStart": 1603,
-                    "end": 1607,
+                    "commentStart": 1614,
+                    "end": 1618,
                     "moduleId": 0,
-                    "start": 1603,
+                    "start": 1614,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -4501,10 +4501,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 206.30120022252223,
                   "tag": {
-                    "commentStart": 1748,
-                    "end": 1752,
+                    "commentStart": 1759,
+                    "end": 1763,
                     "moduleId": 0,
-                    "start": 1748,
+                    "start": 1759,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -4531,10 +4531,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 26.529417081759483,
                   "tag": {
-                    "commentStart": 1905,
-                    "end": 1909,
+                    "commentStart": 1916,
+                    "end": 1920,
                     "moduleId": 0,
-                    "start": 1905,
+                    "start": 1916,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -4555,10 +4555,10 @@ description: Variables in memory after executing teapot.kcl
                     129.99939480072032
                   ],
                   "tag": {
-                    "commentStart": 2059,
-                    "end": 2064,
+                    "commentStart": 2070,
+                    "end": 2075,
                     "moduleId": 0,
-                    "start": 2059,
+                    "start": 2070,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -4579,10 +4579,10 @@ description: Variables in memory after executing teapot.kcl
                     130.0
                   ],
                   "tag": {
-                    "commentStart": 2171,
-                    "end": 2176,
+                    "commentStart": 2182,
+                    "end": 2187,
                     "moduleId": 0,
-                    "start": 2171,
+                    "start": 2182,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -5315,10 +5315,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 34.08014671329922,
                   "tag": {
-                    "commentStart": 3325,
-                    "end": 3329,
+                    "commentStart": 3336,
+                    "end": 3340,
                     "moduleId": 0,
-                    "start": 3325,
+                    "start": 3336,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -5362,10 +5362,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 3.659904370335378,
                   "tag": {
-                    "commentStart": 3434,
-                    "end": 3438,
+                    "commentStart": 3445,
+                    "end": 3449,
                     "moduleId": 0,
-                    "start": 3434,
+                    "start": 3445,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -5409,10 +5409,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 34.08014671329922,
                   "tag": {
-                    "commentStart": 3579,
-                    "end": 3583,
+                    "commentStart": 3590,
+                    "end": 3594,
                     "moduleId": 0,
-                    "start": 3579,
+                    "start": 3590,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -5456,10 +5456,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 3.659904370335378,
                   "tag": {
-                    "commentStart": 3725,
-                    "end": 3729,
+                    "commentStart": 3736,
+                    "end": 3740,
                     "moduleId": 0,
-                    "start": 3725,
+                    "start": 3736,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -5696,10 +5696,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 6.0,
                   "tag": {
-                    "commentStart": 4088,
-                    "end": 4095,
+                    "commentStart": 4099,
+                    "end": 4106,
                     "moduleId": 0,
-                    "start": 4088,
+                    "start": 4099,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -7222,10 +7222,10 @@ description: Variables in memory after executing teapot.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 4345,
-                    "end": 4350,
+                    "commentStart": 4356,
+                    "end": 4361,
                     "moduleId": 0,
-                    "start": 4345,
+                    "start": 4356,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7252,10 +7252,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 44.777328933390166,
                   "tag": {
-                    "commentStart": 4415,
-                    "end": 4419,
+                    "commentStart": 4426,
+                    "end": 4430,
                     "moduleId": 0,
-                    "start": 4415,
+                    "start": 4426,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -7282,10 +7282,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 206.30138558029725,
                   "tag": {
-                    "commentStart": 4560,
-                    "end": 4564,
+                    "commentStart": 4571,
+                    "end": 4575,
                     "moduleId": 0,
-                    "start": 4560,
+                    "start": 4571,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -7312,10 +7312,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 26.529804827300886,
                   "tag": {
-                    "commentStart": 4717,
-                    "end": 4721,
+                    "commentStart": 4728,
+                    "end": 4732,
                     "moduleId": 0,
-                    "start": 4717,
+                    "start": 4728,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -7342,10 +7342,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 3.0008882736381723,
                   "tag": {
-                    "commentStart": 4871,
-                    "end": 4875,
+                    "commentStart": 4882,
+                    "end": 4886,
                     "moduleId": 0,
-                    "start": 4871,
+                    "start": 4882,
                     "type": "TagDeclarator",
                     "value": "arc5"
                   },
@@ -7372,10 +7372,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 14.605000000000004,
                   "tag": {
-                    "commentStart": 5025,
-                    "end": 5029,
+                    "commentStart": 5036,
+                    "end": 5040,
                     "moduleId": 0,
-                    "start": 5025,
+                    "start": 5036,
                     "type": "TagDeclarator",
                     "value": "arc6"
                   },
@@ -7402,10 +7402,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 134.80844644276507,
                   "tag": {
-                    "commentStart": 5183,
-                    "end": 5187,
+                    "commentStart": 5194,
+                    "end": 5198,
                     "moduleId": 0,
-                    "start": 5183,
+                    "start": 5194,
                     "type": "TagDeclarator",
                     "value": "arc7"
                   },
@@ -7432,10 +7432,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 43.26572494982126,
                   "tag": {
-                    "commentStart": 5339,
-                    "end": 5343,
+                    "commentStart": 5350,
+                    "end": 5354,
                     "moduleId": 0,
-                    "start": 5339,
+                    "start": 5350,
                     "type": "TagDeclarator",
                     "value": "arc8"
                   },
@@ -7456,10 +7456,10 @@ description: Variables in memory after executing teapot.kcl
                     6.000230208866938
                   ],
                   "tag": {
-                    "commentStart": 5486,
-                    "end": 5491,
+                    "commentStart": 5497,
+                    "end": 5502,
                     "moduleId": 0,
-                    "start": 5486,
+                    "start": 5497,
                     "type": "TagDeclarator",
                     "value": "line9"
                   },
@@ -7480,10 +7480,10 @@ description: Variables in memory after executing teapot.kcl
                     6.0
                   ],
                   "tag": {
-                    "commentStart": 5596,
-                    "end": 5602,
+                    "commentStart": 5607,
+                    "end": 5613,
                     "moduleId": 0,
-                    "start": 5596,
+                    "start": 5607,
                     "type": "TagDeclarator",
                     "value": "line10"
                   },
@@ -7608,10 +7608,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1031,
-            "end": 1038,
+            "commentStart": 1042,
+            "end": 1049,
             "moduleId": 0,
-            "start": 1031,
+            "start": 1042,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7639,10 +7639,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 5.999999999999995,
             "tag": {
-              "commentStart": 1031,
-              "end": 1038,
+              "commentStart": 1042,
+              "end": 1049,
               "moduleId": 0,
-              "start": 1031,
+              "start": 1042,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -7669,10 +7669,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 4.500000000000028,
             "tag": {
-              "commentStart": 1116,
-              "end": 1123,
+              "commentStart": 1127,
+              "end": 1134,
               "moduleId": 0,
-              "start": 1116,
+              "start": 1127,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -7773,10 +7773,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4088,
-            "end": 4095,
+            "commentStart": 4099,
+            "end": 4106,
             "moduleId": 0,
-            "start": 4088,
+            "start": 4099,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7804,10 +7804,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 6.0,
             "tag": {
-              "commentStart": 4088,
-              "end": 4095,
+              "commentStart": 4099,
+              "end": 4106,
               "moduleId": 0,
-              "start": 4088,
+              "start": 4099,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -8449,10 +8449,10 @@ description: Variables in memory after executing teapot.kcl
                     26.0
                   ],
                   "tag": {
-                    "commentStart": 379,
-                    "end": 384,
+                    "commentStart": 390,
+                    "end": 395,
                     "moduleId": 0,
-                    "start": 379,
+                    "start": 390,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -8479,10 +8479,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 29.999530826986835,
                   "tag": {
-                    "commentStart": 457,
-                    "end": 461,
+                    "commentStart": 468,
+                    "end": 472,
                     "moduleId": 0,
-                    "start": 457,
+                    "start": 468,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -8503,10 +8503,10 @@ description: Variables in memory after executing teapot.kcl
                     66.26004355634166
                   ],
                   "tag": {
-                    "commentStart": 611,
-                    "end": 616,
+                    "commentStart": 622,
+                    "end": 627,
                     "moduleId": 0,
-                    "start": 611,
+                    "start": 622,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -8533,10 +8533,10 @@ description: Variables in memory after executing teapot.kcl
                   ],
                   "radius": 29.997698493965864,
                   "tag": {
-                    "commentStart": 740,
-                    "end": 744,
+                    "commentStart": 751,
+                    "end": 755,
                     "moduleId": 0,
-                    "start": 740,
+                    "start": 751,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -8646,10 +8646,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1533,
-            "end": 1538,
+            "commentStart": 1544,
+            "end": 1549,
             "moduleId": 0,
-            "start": 1533,
+            "start": 1544,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -8660,10 +8660,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1603,
-            "end": 1607,
+            "commentStart": 1614,
+            "end": 1618,
             "moduleId": 0,
-            "start": 1603,
+            "start": 1614,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -8674,10 +8674,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1748,
-            "end": 1752,
+            "commentStart": 1759,
+            "end": 1763,
             "moduleId": 0,
-            "start": 1748,
+            "start": 1759,
             "type": "TagDeclarator",
             "value": "arc3"
           },
@@ -8688,10 +8688,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1905,
-            "end": 1909,
+            "commentStart": 1916,
+            "end": 1920,
             "moduleId": 0,
-            "start": 1905,
+            "start": 1916,
             "type": "TagDeclarator",
             "value": "arc4"
           },
@@ -8702,10 +8702,10 @@ description: Variables in memory after executing teapot.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2059,
-            "end": 2064,
+            "commentStart": 2070,
+            "end": 2075,
             "moduleId": 0,
-            "start": 2059,
+            "start": 2070,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -8727,10 +8727,10 @@ description: Variables in memory after executing teapot.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1533,
-              "end": 1538,
+              "commentStart": 1544,
+              "end": 1549,
               "moduleId": 0,
-              "start": 1533,
+              "start": 1544,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -8757,10 +8757,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 44.77723286484254,
             "tag": {
-              "commentStart": 1603,
-              "end": 1607,
+              "commentStart": 1614,
+              "end": 1618,
               "moduleId": 0,
-              "start": 1603,
+              "start": 1614,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -8787,10 +8787,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 206.30120022252223,
             "tag": {
-              "commentStart": 1748,
-              "end": 1752,
+              "commentStart": 1759,
+              "end": 1763,
               "moduleId": 0,
-              "start": 1748,
+              "start": 1759,
               "type": "TagDeclarator",
               "value": "arc3"
             },
@@ -8817,10 +8817,10 @@ description: Variables in memory after executing teapot.kcl
             ],
             "radius": 26.529417081759483,
             "tag": {
-              "commentStart": 1905,
-              "end": 1909,
+              "commentStart": 1916,
+              "end": 1920,
               "moduleId": 0,
-              "start": 1905,
+              "start": 1916,
               "type": "TagDeclarator",
               "value": "arc4"
             },
@@ -8841,10 +8841,10 @@ description: Variables in memory after executing teapot.kcl
               129.99939480072032
             ],
             "tag": {
-              "commentStart": 2059,
-              "end": 2064,
+              "commentStart": 2070,
+              "end": 2075,
               "moduleId": 0,
-              "start": 2059,
+              "start": 2070,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -8865,10 +8865,10 @@ description: Variables in memory after executing teapot.kcl
               130.0
             ],
             "tag": {
-              "commentStart": 2171,
-              "end": 2176,
+              "commentStart": 2182,
+              "end": 2187,
               "moduleId": 0,
-              "start": 2171,
+              "start": 2182,
               "type": "TagDeclarator",
               "value": "line6"
             },

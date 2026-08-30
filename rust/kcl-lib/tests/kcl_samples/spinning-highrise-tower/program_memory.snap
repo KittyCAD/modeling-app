@@ -217,10 +217,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 881,
-            "end": 886,
+            "commentStart": 929,
+            "end": 934,
             "moduleId": 0,
-            "start": 881,
+            "start": 929,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -241,10 +241,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 949,
-            "end": 954,
+            "commentStart": 997,
+            "end": 1002,
             "moduleId": 0,
-            "start": 949,
+            "start": 997,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -265,10 +265,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 1015,
-            "end": 1020,
+            "commentStart": 1063,
+            "end": 1068,
             "moduleId": 0,
-            "start": 1015,
+            "start": 1063,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -289,10 +289,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 1081,
-            "end": 1086,
+            "commentStart": 1129,
+            "end": 1134,
             "moduleId": 0,
-            "start": 1081,
+            "start": 1129,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -877,10 +877,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -15.0
                   ],
                   "tag": {
-                    "commentStart": 881,
-                    "end": 886,
+                    "commentStart": 929,
+                    "end": 934,
                     "moduleId": 0,
-                    "start": 881,
+                    "start": 929,
                     "type": "TagDeclarator",
                     "value": "edge1"
                   },
@@ -901,10 +901,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -15.0
                   ],
                   "tag": {
-                    "commentStart": 949,
-                    "end": 954,
+                    "commentStart": 997,
+                    "end": 1002,
                     "moduleId": 0,
-                    "start": 949,
+                    "start": 997,
                     "type": "TagDeclarator",
                     "value": "edge2"
                   },
@@ -925,10 +925,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     15.0
                   ],
                   "tag": {
-                    "commentStart": 1015,
-                    "end": 1020,
+                    "commentStart": 1063,
+                    "end": 1068,
                     "moduleId": 0,
-                    "start": 1015,
+                    "start": 1063,
                     "type": "TagDeclarator",
                     "value": "edge3"
                   },
@@ -949,10 +949,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     15.0
                   ],
                   "tag": {
-                    "commentStart": 1081,
-                    "end": 1086,
+                    "commentStart": 1129,
+                    "end": 1134,
                     "moduleId": 0,
-                    "start": 1081,
+                    "start": 1129,
                     "type": "TagDeclarator",
                     "value": "edge4"
                   },
@@ -1053,10 +1053,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 881,
-            "end": 886,
+            "commentStart": 929,
+            "end": 934,
             "moduleId": 0,
-            "start": 881,
+            "start": 929,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -1067,10 +1067,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 949,
-            "end": 954,
+            "commentStart": 997,
+            "end": 1002,
             "moduleId": 0,
-            "start": 949,
+            "start": 997,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -1081,10 +1081,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1015,
-            "end": 1020,
+            "commentStart": 1063,
+            "end": 1068,
             "moduleId": 0,
-            "start": 1015,
+            "start": 1063,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -1095,10 +1095,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1081,
-            "end": 1086,
+            "commentStart": 1129,
+            "end": 1134,
             "moduleId": 0,
-            "start": 1081,
+            "start": 1129,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -1120,10 +1120,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -15.0
             ],
             "tag": {
-              "commentStart": 881,
-              "end": 886,
+              "commentStart": 929,
+              "end": 934,
               "moduleId": 0,
-              "start": 881,
+              "start": 929,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -1144,10 +1144,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -15.0
             ],
             "tag": {
-              "commentStart": 949,
-              "end": 954,
+              "commentStart": 997,
+              "end": 1002,
               "moduleId": 0,
-              "start": 949,
+              "start": 997,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -1168,10 +1168,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               15.0
             ],
             "tag": {
-              "commentStart": 1015,
-              "end": 1020,
+              "commentStart": 1063,
+              "end": 1068,
               "moduleId": 0,
-              "start": 1015,
+              "start": 1063,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -1192,10 +1192,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               15.0
             ],
             "tag": {
-              "commentStart": 1081,
-              "end": 1086,
+              "commentStart": 1129,
+              "end": 1134,
               "moduleId": 0,
-              "start": 1081,
+              "start": 1129,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -1304,10 +1304,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2847,
-            "end": 2852,
+            "commentStart": 2895,
+            "end": 2900,
             "moduleId": 0,
-            "start": 2847,
+            "start": 2895,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -1318,10 +1318,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2915,
-            "end": 2920,
+            "commentStart": 2963,
+            "end": 2968,
             "moduleId": 0,
-            "start": 2915,
+            "start": 2963,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -1332,10 +1332,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2981,
-            "end": 2986,
+            "commentStart": 3029,
+            "end": 3034,
             "moduleId": 0,
-            "start": 2981,
+            "start": 3029,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -1346,10 +1346,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3047,
-            "end": 3052,
+            "commentStart": 3095,
+            "end": 3100,
             "moduleId": 0,
-            "start": 3047,
+            "start": 3095,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -1371,10 +1371,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -4.0
             ],
             "tag": {
-              "commentStart": 2847,
-              "end": 2852,
+              "commentStart": 2895,
+              "end": 2900,
               "moduleId": 0,
-              "start": 2847,
+              "start": 2895,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -1395,10 +1395,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -4.0
             ],
             "tag": {
-              "commentStart": 2915,
-              "end": 2920,
+              "commentStart": 2963,
+              "end": 2968,
               "moduleId": 0,
-              "start": 2915,
+              "start": 2963,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -1419,10 +1419,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               4.0
             ],
             "tag": {
-              "commentStart": 2981,
-              "end": 2986,
+              "commentStart": 3029,
+              "end": 3034,
               "moduleId": 0,
-              "start": 2981,
+              "start": 3029,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -1443,10 +1443,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               4.0
             ],
             "tag": {
-              "commentStart": 3047,
-              "end": 3052,
+              "commentStart": 3095,
+              "end": 3100,
               "moduleId": 0,
-              "start": 3047,
+              "start": 3095,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -1568,10 +1568,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -4.0
           ],
           "tag": {
-            "commentStart": 2847,
-            "end": 2852,
+            "commentStart": 2895,
+            "end": 2900,
             "moduleId": 0,
-            "start": 2847,
+            "start": 2895,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -1592,10 +1592,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -4.0
           ],
           "tag": {
-            "commentStart": 2915,
-            "end": 2920,
+            "commentStart": 2963,
+            "end": 2968,
             "moduleId": 0,
-            "start": 2915,
+            "start": 2963,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -1616,10 +1616,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             4.0
           ],
           "tag": {
-            "commentStart": 2981,
-            "end": 2986,
+            "commentStart": 3029,
+            "end": 3034,
             "moduleId": 0,
-            "start": 2981,
+            "start": 3029,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -1640,10 +1640,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             4.0
           ],
           "tag": {
-            "commentStart": 3047,
-            "end": 3052,
+            "commentStart": 3095,
+            "end": 3100,
             "moduleId": 0,
-            "start": 3047,
+            "start": 3095,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -2228,10 +2228,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -4.0
                   ],
                   "tag": {
-                    "commentStart": 2847,
-                    "end": 2852,
+                    "commentStart": 2895,
+                    "end": 2900,
                     "moduleId": 0,
-                    "start": 2847,
+                    "start": 2895,
                     "type": "TagDeclarator",
                     "value": "edge1"
                   },
@@ -2252,10 +2252,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -4.0
                   ],
                   "tag": {
-                    "commentStart": 2915,
-                    "end": 2920,
+                    "commentStart": 2963,
+                    "end": 2968,
                     "moduleId": 0,
-                    "start": 2915,
+                    "start": 2963,
                     "type": "TagDeclarator",
                     "value": "edge2"
                   },
@@ -2276,10 +2276,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     4.0
                   ],
                   "tag": {
-                    "commentStart": 2981,
-                    "end": 2986,
+                    "commentStart": 3029,
+                    "end": 3034,
                     "moduleId": 0,
-                    "start": 2981,
+                    "start": 3029,
                     "type": "TagDeclarator",
                     "value": "edge3"
                   },
@@ -2300,10 +2300,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     4.0
                   ],
                   "tag": {
-                    "commentStart": 3047,
-                    "end": 3052,
+                    "commentStart": 3095,
+                    "end": 3100,
                     "moduleId": 0,
-                    "start": 3047,
+                    "start": 3095,
                     "type": "TagDeclarator",
                     "value": "edge4"
                   },
@@ -2446,10 +2446,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -12.0
           ],
           "tag": {
-            "commentStart": 5893,
-            "end": 5898,
+            "commentStart": 5941,
+            "end": 5946,
             "moduleId": 0,
-            "start": 5893,
+            "start": 5941,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -2470,10 +2470,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -12.0
           ],
           "tag": {
-            "commentStart": 5961,
-            "end": 5966,
+            "commentStart": 6009,
+            "end": 6014,
             "moduleId": 0,
-            "start": 5961,
+            "start": 6009,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -2494,10 +2494,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             12.0
           ],
           "tag": {
-            "commentStart": 6027,
-            "end": 6032,
+            "commentStart": 6075,
+            "end": 6080,
             "moduleId": 0,
-            "start": 6027,
+            "start": 6075,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -2518,10 +2518,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             12.0
           ],
           "tag": {
-            "commentStart": 6093,
-            "end": 6098,
+            "commentStart": 6141,
+            "end": 6146,
             "moduleId": 0,
-            "start": 6093,
+            "start": 6141,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -3106,10 +3106,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -12.0
                   ],
                   "tag": {
-                    "commentStart": 5893,
-                    "end": 5898,
+                    "commentStart": 5941,
+                    "end": 5946,
                     "moduleId": 0,
-                    "start": 5893,
+                    "start": 5941,
                     "type": "TagDeclarator",
                     "value": "edge1"
                   },
@@ -3130,10 +3130,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -12.0
                   ],
                   "tag": {
-                    "commentStart": 5961,
-                    "end": 5966,
+                    "commentStart": 6009,
+                    "end": 6014,
                     "moduleId": 0,
-                    "start": 5961,
+                    "start": 6009,
                     "type": "TagDeclarator",
                     "value": "edge2"
                   },
@@ -3154,10 +3154,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     12.0
                   ],
                   "tag": {
-                    "commentStart": 6027,
-                    "end": 6032,
+                    "commentStart": 6075,
+                    "end": 6080,
                     "moduleId": 0,
-                    "start": 6027,
+                    "start": 6075,
                     "type": "TagDeclarator",
                     "value": "edge3"
                   },
@@ -3178,10 +3178,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     12.0
                   ],
                   "tag": {
-                    "commentStart": 6093,
-                    "end": 6098,
+                    "commentStart": 6141,
+                    "end": 6146,
                     "moduleId": 0,
-                    "start": 6093,
+                    "start": 6141,
                     "type": "TagDeclarator",
                     "value": "edge4"
                   },
@@ -3282,10 +3282,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5893,
-            "end": 5898,
+            "commentStart": 5941,
+            "end": 5946,
             "moduleId": 0,
-            "start": 5893,
+            "start": 5941,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -3296,10 +3296,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5961,
-            "end": 5966,
+            "commentStart": 6009,
+            "end": 6014,
             "moduleId": 0,
-            "start": 5961,
+            "start": 6009,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -3310,10 +3310,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6027,
-            "end": 6032,
+            "commentStart": 6075,
+            "end": 6080,
             "moduleId": 0,
-            "start": 6027,
+            "start": 6075,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -3324,10 +3324,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6093,
-            "end": 6098,
+            "commentStart": 6141,
+            "end": 6146,
             "moduleId": 0,
-            "start": 6093,
+            "start": 6141,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -3349,10 +3349,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -12.0
             ],
             "tag": {
-              "commentStart": 5893,
-              "end": 5898,
+              "commentStart": 5941,
+              "end": 5946,
               "moduleId": 0,
-              "start": 5893,
+              "start": 5941,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -3373,10 +3373,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -12.0
             ],
             "tag": {
-              "commentStart": 5961,
-              "end": 5966,
+              "commentStart": 6009,
+              "end": 6014,
               "moduleId": 0,
-              "start": 5961,
+              "start": 6009,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -3397,10 +3397,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               12.0
             ],
             "tag": {
-              "commentStart": 6027,
-              "end": 6032,
+              "commentStart": 6075,
+              "end": 6080,
               "moduleId": 0,
-              "start": 6027,
+              "start": 6075,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -3421,10 +3421,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               12.0
             ],
             "tag": {
-              "commentStart": 6093,
-              "end": 6098,
+              "commentStart": 6141,
+              "end": 6146,
               "moduleId": 0,
-              "start": 6093,
+              "start": 6141,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -3527,10 +3527,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -3541,10 +3541,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -3555,10 +3555,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -3569,10 +3569,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -3594,10 +3594,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -3618,10 +3618,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -3642,10 +3642,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -3666,10 +3666,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -3769,10 +3769,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -3783,10 +3783,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -3797,10 +3797,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -3811,10 +3811,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -3836,10 +3836,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -3860,10 +3860,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -3884,10 +3884,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -3908,10 +3908,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -4011,10 +4011,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -4025,10 +4025,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -4039,10 +4039,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -4053,10 +4053,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -4078,10 +4078,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -4102,10 +4102,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -4126,10 +4126,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -4150,10 +4150,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -4253,10 +4253,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -4267,10 +4267,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -4281,10 +4281,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -4295,10 +4295,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -4320,10 +4320,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -4344,10 +4344,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -4368,10 +4368,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -4392,10 +4392,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -4495,10 +4495,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -4509,10 +4509,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -4523,10 +4523,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -4537,10 +4537,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -4562,10 +4562,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -4586,10 +4586,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -4610,10 +4610,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -4634,10 +4634,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -4737,10 +4737,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -4751,10 +4751,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -4765,10 +4765,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -4779,10 +4779,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -4804,10 +4804,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -4828,10 +4828,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -4852,10 +4852,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -4876,10 +4876,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -4979,10 +4979,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -4993,10 +4993,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5007,10 +5007,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5021,10 +5021,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5046,10 +5046,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -5070,10 +5070,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5094,10 +5094,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -5118,10 +5118,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -5221,10 +5221,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -5235,10 +5235,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5249,10 +5249,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5263,10 +5263,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5288,10 +5288,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -5312,10 +5312,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5336,10 +5336,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -5360,10 +5360,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -5463,10 +5463,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -5477,10 +5477,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5491,10 +5491,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5505,10 +5505,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5530,10 +5530,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -5554,10 +5554,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5578,10 +5578,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -5602,10 +5602,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -5705,10 +5705,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -5719,10 +5719,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5733,10 +5733,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5747,10 +5747,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5772,10 +5772,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -5796,10 +5796,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5820,10 +5820,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -5844,10 +5844,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -5947,10 +5947,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -5961,10 +5961,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5975,10 +5975,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5989,10 +5989,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -6014,10 +6014,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -6038,10 +6038,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -6062,10 +6062,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -6086,10 +6086,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6189,10 +6189,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -6203,10 +6203,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -6217,10 +6217,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -6231,10 +6231,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -6256,10 +6256,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -6280,10 +6280,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -6304,10 +6304,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -6328,10 +6328,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6431,10 +6431,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -6445,10 +6445,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -6459,10 +6459,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -6473,10 +6473,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -6498,10 +6498,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -6522,10 +6522,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -6546,10 +6546,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -6570,10 +6570,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6673,10 +6673,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -6687,10 +6687,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -6701,10 +6701,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -6715,10 +6715,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -6740,10 +6740,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -6764,10 +6764,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -6788,10 +6788,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -6812,10 +6812,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6915,10 +6915,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -6929,10 +6929,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -6943,10 +6943,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -6957,10 +6957,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -6982,10 +6982,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -7006,10 +7006,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -7030,10 +7030,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -7054,10 +7054,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -7157,10 +7157,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -7171,10 +7171,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -7185,10 +7185,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -7199,10 +7199,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -7224,10 +7224,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -7248,10 +7248,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -7272,10 +7272,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -7296,10 +7296,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -7399,10 +7399,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5893,
-                "end": 5898,
+                "commentStart": 5941,
+                "end": 5946,
                 "moduleId": 0,
-                "start": 5893,
+                "start": 5941,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -7413,10 +7413,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5961,
-                "end": 5966,
+                "commentStart": 6009,
+                "end": 6014,
                 "moduleId": 0,
-                "start": 5961,
+                "start": 6009,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -7427,10 +7427,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6027,
-                "end": 6032,
+                "commentStart": 6075,
+                "end": 6080,
                 "moduleId": 0,
-                "start": 6027,
+                "start": 6075,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -7441,10 +7441,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6093,
-                "end": 6098,
+                "commentStart": 6141,
+                "end": 6146,
                 "moduleId": 0,
-                "start": 6093,
+                "start": 6141,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -7466,10 +7466,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5893,
-                  "end": 5898,
+                  "commentStart": 5941,
+                  "end": 5946,
                   "moduleId": 0,
-                  "start": 5893,
+                  "start": 5941,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -7490,10 +7490,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -12.0
                 ],
                 "tag": {
-                  "commentStart": 5961,
-                  "end": 5966,
+                  "commentStart": 6009,
+                  "end": 6014,
                   "moduleId": 0,
-                  "start": 5961,
+                  "start": 6009,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -7514,10 +7514,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6027,
-                  "end": 6032,
+                  "commentStart": 6075,
+                  "end": 6080,
                   "moduleId": 0,
-                  "start": 6027,
+                  "start": 6075,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -7538,10 +7538,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 6093,
-                  "end": 6098,
+                  "commentStart": 6141,
+                  "end": 6146,
                   "moduleId": 0,
-                  "start": 6093,
+                  "start": 6141,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -7652,10 +7652,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3857,
-            "end": 3862,
+            "commentStart": 3905,
+            "end": 3910,
             "moduleId": 0,
-            "start": 3857,
+            "start": 3905,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -7666,10 +7666,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3925,
-            "end": 3930,
+            "commentStart": 3973,
+            "end": 3978,
             "moduleId": 0,
-            "start": 3925,
+            "start": 3973,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -7680,10 +7680,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3991,
-            "end": 3996,
+            "commentStart": 4039,
+            "end": 4044,
             "moduleId": 0,
-            "start": 3991,
+            "start": 4039,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -7694,10 +7694,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4057,
-            "end": 4062,
+            "commentStart": 4105,
+            "end": 4110,
             "moduleId": 0,
-            "start": 4057,
+            "start": 4105,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -7719,10 +7719,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -15.0
             ],
             "tag": {
-              "commentStart": 3857,
-              "end": 3862,
+              "commentStart": 3905,
+              "end": 3910,
               "moduleId": 0,
-              "start": 3857,
+              "start": 3905,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -7743,10 +7743,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -15.0
             ],
             "tag": {
-              "commentStart": 3925,
-              "end": 3930,
+              "commentStart": 3973,
+              "end": 3978,
               "moduleId": 0,
-              "start": 3925,
+              "start": 3973,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -7767,10 +7767,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               15.0
             ],
             "tag": {
-              "commentStart": 3991,
-              "end": 3996,
+              "commentStart": 4039,
+              "end": 4044,
               "moduleId": 0,
-              "start": 3991,
+              "start": 4039,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -7791,10 +7791,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               15.0
             ],
             "tag": {
-              "commentStart": 4057,
-              "end": 4062,
+              "commentStart": 4105,
+              "end": 4110,
               "moduleId": 0,
-              "start": 4057,
+              "start": 4105,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -7898,10 +7898,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 3857,
-            "end": 3862,
+            "commentStart": 3905,
+            "end": 3910,
             "moduleId": 0,
-            "start": 3857,
+            "start": 3905,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -7922,10 +7922,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 3925,
-            "end": 3930,
+            "commentStart": 3973,
+            "end": 3978,
             "moduleId": 0,
-            "start": 3925,
+            "start": 3973,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -7946,10 +7946,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 3991,
-            "end": 3996,
+            "commentStart": 4039,
+            "end": 4044,
             "moduleId": 0,
-            "start": 3991,
+            "start": 4039,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -7970,10 +7970,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 4057,
-            "end": 4062,
+            "commentStart": 4105,
+            "end": 4110,
             "moduleId": 0,
-            "start": 4057,
+            "start": 4105,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -8558,10 +8558,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -15.0
                   ],
                   "tag": {
-                    "commentStart": 3857,
-                    "end": 3862,
+                    "commentStart": 3905,
+                    "end": 3910,
                     "moduleId": 0,
-                    "start": 3857,
+                    "start": 3905,
                     "type": "TagDeclarator",
                     "value": "edge1"
                   },
@@ -8582,10 +8582,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -15.0
                   ],
                   "tag": {
-                    "commentStart": 3925,
-                    "end": 3930,
+                    "commentStart": 3973,
+                    "end": 3978,
                     "moduleId": 0,
-                    "start": 3925,
+                    "start": 3973,
                     "type": "TagDeclarator",
                     "value": "edge2"
                   },
@@ -8606,10 +8606,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     15.0
                   ],
                   "tag": {
-                    "commentStart": 3991,
-                    "end": 3996,
+                    "commentStart": 4039,
+                    "end": 4044,
                     "moduleId": 0,
-                    "start": 3991,
+                    "start": 4039,
                     "type": "TagDeclarator",
                     "value": "edge3"
                   },
@@ -8630,10 +8630,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     15.0
                   ],
                   "tag": {
-                    "commentStart": 4057,
-                    "end": 4062,
+                    "commentStart": 4105,
+                    "end": 4110,
                     "moduleId": 0,
-                    "start": 4057,
+                    "start": 4105,
                     "type": "TagDeclarator",
                     "value": "edge4"
                   },
@@ -8751,10 +8751,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4870,
-            "end": 4875,
+            "commentStart": 4918,
+            "end": 4923,
             "moduleId": 0,
-            "start": 4870,
+            "start": 4918,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -8765,10 +8765,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4938,
-            "end": 4943,
+            "commentStart": 4986,
+            "end": 4991,
             "moduleId": 0,
-            "start": 4938,
+            "start": 4986,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -8779,10 +8779,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5004,
-            "end": 5009,
+            "commentStart": 5052,
+            "end": 5057,
             "moduleId": 0,
-            "start": 5004,
+            "start": 5052,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -8793,10 +8793,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5070,
-            "end": 5075,
+            "commentStart": 5118,
+            "end": 5123,
             "moduleId": 0,
-            "start": 5070,
+            "start": 5118,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -8818,10 +8818,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -14.7
             ],
             "tag": {
-              "commentStart": 4870,
-              "end": 4875,
+              "commentStart": 4918,
+              "end": 4923,
               "moduleId": 0,
-              "start": 4870,
+              "start": 4918,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -8842,10 +8842,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -14.7
             ],
             "tag": {
-              "commentStart": 4938,
-              "end": 4943,
+              "commentStart": 4986,
+              "end": 4991,
               "moduleId": 0,
-              "start": 4938,
+              "start": 4986,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -8866,10 +8866,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               14.7
             ],
             "tag": {
-              "commentStart": 5004,
-              "end": 5009,
+              "commentStart": 5052,
+              "end": 5057,
               "moduleId": 0,
-              "start": 5004,
+              "start": 5052,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -8890,10 +8890,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               14.7
             ],
             "tag": {
-              "commentStart": 5070,
-              "end": 5075,
+              "commentStart": 5118,
+              "end": 5123,
               "moduleId": 0,
-              "start": 5070,
+              "start": 5118,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -8990,10 +8990,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -9004,10 +9004,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -9018,10 +9018,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -9032,10 +9032,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -9057,10 +9057,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -9081,10 +9081,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -9105,10 +9105,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -9129,10 +9129,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -9226,10 +9226,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -9240,10 +9240,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -9254,10 +9254,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -9268,10 +9268,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -9293,10 +9293,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -9317,10 +9317,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -9341,10 +9341,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -9365,10 +9365,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -9462,10 +9462,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -9476,10 +9476,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -9490,10 +9490,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -9504,10 +9504,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -9529,10 +9529,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -9553,10 +9553,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -9577,10 +9577,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -9601,10 +9601,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -9698,10 +9698,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -9712,10 +9712,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -9726,10 +9726,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -9740,10 +9740,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -9765,10 +9765,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -9789,10 +9789,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -9813,10 +9813,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -9837,10 +9837,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -9934,10 +9934,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -9948,10 +9948,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -9962,10 +9962,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -9976,10 +9976,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -10001,10 +10001,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -10025,10 +10025,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -10049,10 +10049,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -10073,10 +10073,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -10170,10 +10170,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -10184,10 +10184,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -10198,10 +10198,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -10212,10 +10212,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -10237,10 +10237,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -10261,10 +10261,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -10285,10 +10285,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -10309,10 +10309,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -10406,10 +10406,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -10420,10 +10420,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -10434,10 +10434,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -10448,10 +10448,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -10473,10 +10473,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -10497,10 +10497,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -10521,10 +10521,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -10545,10 +10545,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -10642,10 +10642,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -10656,10 +10656,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -10670,10 +10670,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -10684,10 +10684,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -10709,10 +10709,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -10733,10 +10733,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -10757,10 +10757,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -10781,10 +10781,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -10878,10 +10878,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -10892,10 +10892,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -10906,10 +10906,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -10920,10 +10920,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -10945,10 +10945,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -10969,10 +10969,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -10993,10 +10993,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -11017,10 +11017,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -11114,10 +11114,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -11128,10 +11128,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -11142,10 +11142,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -11156,10 +11156,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -11181,10 +11181,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -11205,10 +11205,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -11229,10 +11229,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -11253,10 +11253,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -11350,10 +11350,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -11364,10 +11364,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -11378,10 +11378,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -11392,10 +11392,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -11417,10 +11417,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -11441,10 +11441,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -11465,10 +11465,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -11489,10 +11489,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -11586,10 +11586,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -11600,10 +11600,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -11614,10 +11614,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -11628,10 +11628,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -11653,10 +11653,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -11677,10 +11677,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -11701,10 +11701,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -11725,10 +11725,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -11822,10 +11822,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -11836,10 +11836,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -11850,10 +11850,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -11864,10 +11864,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -11889,10 +11889,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -11913,10 +11913,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -11937,10 +11937,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -11961,10 +11961,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -12058,10 +12058,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -12072,10 +12072,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -12086,10 +12086,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -12100,10 +12100,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -12125,10 +12125,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -12149,10 +12149,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -12173,10 +12173,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -12197,10 +12197,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -12294,10 +12294,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -12308,10 +12308,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -12322,10 +12322,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -12336,10 +12336,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -12361,10 +12361,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -12385,10 +12385,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -12409,10 +12409,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -12433,10 +12433,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -12530,10 +12530,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -12544,10 +12544,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -12558,10 +12558,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -12572,10 +12572,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -12597,10 +12597,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -12621,10 +12621,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -12645,10 +12645,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -12669,10 +12669,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -12766,10 +12766,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4870,
-                "end": 4875,
+                "commentStart": 4918,
+                "end": 4923,
                 "moduleId": 0,
-                "start": 4870,
+                "start": 4918,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -12780,10 +12780,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4938,
-                "end": 4943,
+                "commentStart": 4986,
+                "end": 4991,
                 "moduleId": 0,
-                "start": 4938,
+                "start": 4986,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -12794,10 +12794,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5004,
-                "end": 5009,
+                "commentStart": 5052,
+                "end": 5057,
                 "moduleId": 0,
-                "start": 5004,
+                "start": 5052,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -12808,10 +12808,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5070,
-                "end": 5075,
+                "commentStart": 5118,
+                "end": 5123,
                 "moduleId": 0,
-                "start": 5070,
+                "start": 5118,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -12833,10 +12833,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4870,
-                  "end": 4875,
+                  "commentStart": 4918,
+                  "end": 4923,
                   "moduleId": 0,
-                  "start": 4870,
+                  "start": 4918,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -12857,10 +12857,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   -14.7
                 ],
                 "tag": {
-                  "commentStart": 4938,
-                  "end": 4943,
+                  "commentStart": 4986,
+                  "end": 4991,
                   "moduleId": 0,
-                  "start": 4938,
+                  "start": 4986,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -12881,10 +12881,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5004,
-                  "end": 5009,
+                  "commentStart": 5052,
+                  "end": 5057,
                   "moduleId": 0,
-                  "start": 5004,
+                  "start": 5052,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -12905,10 +12905,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   14.7
                 ],
                 "tag": {
-                  "commentStart": 5070,
-                  "end": 5075,
+                  "commentStart": 5118,
+                  "end": 5123,
                   "moduleId": 0,
-                  "start": 5070,
+                  "start": 5118,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -13008,10 +13008,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -14.7
           ],
           "tag": {
-            "commentStart": 4870,
-            "end": 4875,
+            "commentStart": 4918,
+            "end": 4923,
             "moduleId": 0,
-            "start": 4870,
+            "start": 4918,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -13032,10 +13032,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -14.7
           ],
           "tag": {
-            "commentStart": 4938,
-            "end": 4943,
+            "commentStart": 4986,
+            "end": 4991,
             "moduleId": 0,
-            "start": 4938,
+            "start": 4986,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -13056,10 +13056,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             14.7
           ],
           "tag": {
-            "commentStart": 5004,
-            "end": 5009,
+            "commentStart": 5052,
+            "end": 5057,
             "moduleId": 0,
-            "start": 5004,
+            "start": 5052,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -13080,10 +13080,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             14.7
           ],
           "tag": {
-            "commentStart": 5070,
-            "end": 5075,
+            "commentStart": 5118,
+            "end": 5123,
             "moduleId": 0,
-            "start": 5070,
+            "start": 5118,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -13638,10 +13638,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -14.7
                   ],
                   "tag": {
-                    "commentStart": 4870,
-                    "end": 4875,
+                    "commentStart": 4918,
+                    "end": 4923,
                     "moduleId": 0,
-                    "start": 4870,
+                    "start": 4918,
                     "type": "TagDeclarator",
                     "value": "edge1"
                   },
@@ -13662,10 +13662,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -14.7
                   ],
                   "tag": {
-                    "commentStart": 4938,
-                    "end": 4943,
+                    "commentStart": 4986,
+                    "end": 4991,
                     "moduleId": 0,
-                    "start": 4938,
+                    "start": 4986,
                     "type": "TagDeclarator",
                     "value": "edge2"
                   },
@@ -13686,10 +13686,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     14.7
                   ],
                   "tag": {
-                    "commentStart": 5004,
-                    "end": 5009,
+                    "commentStart": 5052,
+                    "end": 5057,
                     "moduleId": 0,
-                    "start": 5004,
+                    "start": 5052,
                     "type": "TagDeclarator",
                     "value": "edge3"
                   },
@@ -13710,10 +13710,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     14.7
                   ],
                   "tag": {
-                    "commentStart": 5070,
-                    "end": 5075,
+                    "commentStart": 5118,
+                    "end": 5123,
                     "moduleId": 0,
-                    "start": 5070,
+                    "start": 5118,
                     "type": "TagDeclarator",
                     "value": "edge4"
                   },
@@ -13808,10 +13808,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1876,
-            "end": 1881,
+            "commentStart": 1924,
+            "end": 1929,
             "moduleId": 0,
-            "start": 1876,
+            "start": 1924,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -13822,10 +13822,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1944,
-            "end": 1949,
+            "commentStart": 1992,
+            "end": 1997,
             "moduleId": 0,
-            "start": 1944,
+            "start": 1992,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -13836,10 +13836,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2010,
-            "end": 2015,
+            "commentStart": 2058,
+            "end": 2063,
             "moduleId": 0,
-            "start": 2010,
+            "start": 2058,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -13850,10 +13850,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2076,
-            "end": 2081,
+            "commentStart": 2124,
+            "end": 2129,
             "moduleId": 0,
-            "start": 2076,
+            "start": 2124,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -13875,10 +13875,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -25.0
             ],
             "tag": {
-              "commentStart": 1876,
-              "end": 1881,
+              "commentStart": 1924,
+              "end": 1929,
               "moduleId": 0,
-              "start": 1876,
+              "start": 1924,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -13899,10 +13899,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               -25.0
             ],
             "tag": {
-              "commentStart": 1944,
-              "end": 1949,
+              "commentStart": 1992,
+              "end": 1997,
               "moduleId": 0,
-              "start": 1944,
+              "start": 1992,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -13923,10 +13923,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               25.0
             ],
             "tag": {
-              "commentStart": 2010,
-              "end": 2015,
+              "commentStart": 2058,
+              "end": 2063,
               "moduleId": 0,
-              "start": 2010,
+              "start": 2058,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -13947,10 +13947,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               25.0
             ],
             "tag": {
-              "commentStart": 2076,
-              "end": 2081,
+              "commentStart": 2124,
+              "end": 2129,
               "moduleId": 0,
-              "start": 2076,
+              "start": 2124,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -14063,10 +14063,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -25.0
           ],
           "tag": {
-            "commentStart": 1876,
-            "end": 1881,
+            "commentStart": 1924,
+            "end": 1929,
             "moduleId": 0,
-            "start": 1876,
+            "start": 1924,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -14087,10 +14087,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -25.0
           ],
           "tag": {
-            "commentStart": 1944,
-            "end": 1949,
+            "commentStart": 1992,
+            "end": 1997,
             "moduleId": 0,
-            "start": 1944,
+            "start": 1992,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -14111,10 +14111,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             25.0
           ],
           "tag": {
-            "commentStart": 2010,
-            "end": 2015,
+            "commentStart": 2058,
+            "end": 2063,
             "moduleId": 0,
-            "start": 2010,
+            "start": 2058,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -14135,10 +14135,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             25.0
           ],
           "tag": {
-            "commentStart": 2076,
-            "end": 2081,
+            "commentStart": 2124,
+            "end": 2129,
             "moduleId": 0,
-            "start": 2076,
+            "start": 2124,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -14732,10 +14732,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -25.0
                   ],
                   "tag": {
-                    "commentStart": 1876,
-                    "end": 1881,
+                    "commentStart": 1924,
+                    "end": 1929,
                     "moduleId": 0,
-                    "start": 1876,
+                    "start": 1924,
                     "type": "TagDeclarator",
                     "value": "edge1"
                   },
@@ -14756,10 +14756,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     -25.0
                   ],
                   "tag": {
-                    "commentStart": 1944,
-                    "end": 1949,
+                    "commentStart": 1992,
+                    "end": 1997,
                     "moduleId": 0,
-                    "start": 1944,
+                    "start": 1992,
                     "type": "TagDeclarator",
                     "value": "edge2"
                   },
@@ -14780,10 +14780,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     25.0
                   ],
                   "tag": {
-                    "commentStart": 2010,
-                    "end": 2015,
+                    "commentStart": 2058,
+                    "end": 2063,
                     "moduleId": 0,
-                    "start": 2010,
+                    "start": 2058,
                     "type": "TagDeclarator",
                     "value": "edge3"
                   },
@@ -14804,10 +14804,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     25.0
                   ],
                   "tag": {
-                    "commentStart": 2076,
-                    "end": 2081,
+                    "commentStart": 2124,
+                    "end": 2129,
                     "moduleId": 0,
-                    "start": 2076,
+                    "start": 2124,
                     "type": "TagDeclarator",
                     "value": "edge4"
                   },
@@ -14930,10 +14930,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 881,
-            "end": 886,
+            "commentStart": 929,
+            "end": 934,
             "moduleId": 0,
-            "start": 881,
+            "start": 929,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -14954,10 +14954,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 949,
-            "end": 954,
+            "commentStart": 997,
+            "end": 1002,
             "moduleId": 0,
-            "start": 949,
+            "start": 997,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -14978,10 +14978,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 1015,
-            "end": 1020,
+            "commentStart": 1063,
+            "end": 1068,
             "moduleId": 0,
-            "start": 1015,
+            "start": 1063,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -15002,10 +15002,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 1081,
-            "end": 1086,
+            "commentStart": 1129,
+            "end": 1134,
             "moduleId": 0,
-            "start": 1081,
+            "start": 1129,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -15104,10 +15104,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -4.0
           ],
           "tag": {
-            "commentStart": 2847,
-            "end": 2852,
+            "commentStart": 2895,
+            "end": 2900,
             "moduleId": 0,
-            "start": 2847,
+            "start": 2895,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -15128,10 +15128,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -4.0
           ],
           "tag": {
-            "commentStart": 2915,
-            "end": 2920,
+            "commentStart": 2963,
+            "end": 2968,
             "moduleId": 0,
-            "start": 2915,
+            "start": 2963,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -15152,10 +15152,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             4.0
           ],
           "tag": {
-            "commentStart": 2981,
-            "end": 2986,
+            "commentStart": 3029,
+            "end": 3034,
             "moduleId": 0,
-            "start": 2981,
+            "start": 3029,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -15176,10 +15176,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             4.0
           ],
           "tag": {
-            "commentStart": 3047,
-            "end": 3052,
+            "commentStart": 3095,
+            "end": 3100,
             "moduleId": 0,
-            "start": 3047,
+            "start": 3095,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -15278,10 +15278,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -12.0
           ],
           "tag": {
-            "commentStart": 5893,
-            "end": 5898,
+            "commentStart": 5941,
+            "end": 5946,
             "moduleId": 0,
-            "start": 5893,
+            "start": 5941,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -15302,10 +15302,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -12.0
           ],
           "tag": {
-            "commentStart": 5961,
-            "end": 5966,
+            "commentStart": 6009,
+            "end": 6014,
             "moduleId": 0,
-            "start": 5961,
+            "start": 6009,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -15326,10 +15326,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             12.0
           ],
           "tag": {
-            "commentStart": 6027,
-            "end": 6032,
+            "commentStart": 6075,
+            "end": 6080,
             "moduleId": 0,
-            "start": 6027,
+            "start": 6075,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -15350,10 +15350,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             12.0
           ],
           "tag": {
-            "commentStart": 6093,
-            "end": 6098,
+            "commentStart": 6141,
+            "end": 6146,
             "moduleId": 0,
-            "start": 6093,
+            "start": 6141,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -15452,10 +15452,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 3857,
-            "end": 3862,
+            "commentStart": 3905,
+            "end": 3910,
             "moduleId": 0,
-            "start": 3857,
+            "start": 3905,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -15476,10 +15476,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -15.0
           ],
           "tag": {
-            "commentStart": 3925,
-            "end": 3930,
+            "commentStart": 3973,
+            "end": 3978,
             "moduleId": 0,
-            "start": 3925,
+            "start": 3973,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -15500,10 +15500,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 3991,
-            "end": 3996,
+            "commentStart": 4039,
+            "end": 4044,
             "moduleId": 0,
-            "start": 3991,
+            "start": 4039,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -15524,10 +15524,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             15.0
           ],
           "tag": {
-            "commentStart": 4057,
-            "end": 4062,
+            "commentStart": 4105,
+            "end": 4110,
             "moduleId": 0,
-            "start": 4057,
+            "start": 4105,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -15626,10 +15626,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -14.7
           ],
           "tag": {
-            "commentStart": 4870,
-            "end": 4875,
+            "commentStart": 4918,
+            "end": 4923,
             "moduleId": 0,
-            "start": 4870,
+            "start": 4918,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -15650,10 +15650,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -14.7
           ],
           "tag": {
-            "commentStart": 4938,
-            "end": 4943,
+            "commentStart": 4986,
+            "end": 4991,
             "moduleId": 0,
-            "start": 4938,
+            "start": 4986,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -15674,10 +15674,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             14.7
           ],
           "tag": {
-            "commentStart": 5004,
-            "end": 5009,
+            "commentStart": 5052,
+            "end": 5057,
             "moduleId": 0,
-            "start": 5004,
+            "start": 5052,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -15698,10 +15698,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             14.7
           ],
           "tag": {
-            "commentStart": 5070,
-            "end": 5075,
+            "commentStart": 5118,
+            "end": 5123,
             "moduleId": 0,
-            "start": 5070,
+            "start": 5118,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -15794,10 +15794,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -25.0
           ],
           "tag": {
-            "commentStart": 1876,
-            "end": 1881,
+            "commentStart": 1924,
+            "end": 1929,
             "moduleId": 0,
-            "start": 1876,
+            "start": 1924,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -15818,10 +15818,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             -25.0
           ],
           "tag": {
-            "commentStart": 1944,
-            "end": 1949,
+            "commentStart": 1992,
+            "end": 1997,
             "moduleId": 0,
-            "start": 1944,
+            "start": 1992,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -15842,10 +15842,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             25.0
           ],
           "tag": {
-            "commentStart": 2010,
-            "end": 2015,
+            "commentStart": 2058,
+            "end": 2063,
             "moduleId": 0,
-            "start": 2010,
+            "start": 2058,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -15866,10 +15866,10 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             25.0
           ],
           "tag": {
-            "commentStart": 2076,
-            "end": 2081,
+            "commentStart": 2124,
+            "end": 2129,
             "moduleId": 0,
-            "start": 2076,
+            "start": 2124,
             "type": "TagDeclarator",
             "value": "edge4"
           },

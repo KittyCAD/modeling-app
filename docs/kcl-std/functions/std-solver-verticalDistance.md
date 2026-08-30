@@ -20,6 +20,8 @@ Y coordinate. A positive value places the second point at a greater Y
 than the first, and swapping the points negates the sign. For example,
 `verticalDistance([ORIGIN, point]) == 5mm` places `point` at Y = 5mm,
 while `verticalDistance([point, ORIGIN]) == 5mm` places it at Y = -5mm.
+Negative values are valid: if the second point is below the first, use a
+negative value (or swap the points and use the corresponding positive value).
 
 ### Arguments
 
