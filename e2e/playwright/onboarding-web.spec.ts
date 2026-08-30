@@ -4,6 +4,7 @@ import {
   createRemoteListGate,
   opfsPathExists,
   PROJECT_DIR,
+  readCloudSyncProjectState,
   readOpfsTextFiles,
   routeCloudProjects,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
@@ -143,15 +144,24 @@ test(
     await expect(
       tutorialProjectLink.getByTestId('project-file-count')
     ).toHaveText('1')
+    const cloudSyncStatus = page.getByTestId('cloud-library-sync-status')
+    await expect(cloudSyncStatus).toContainText('Cloud syncing')
     remoteListGate.release()
     await expect.poll(() => apiCalls.creates.length).toBe(1)
     expect(apiCalls.creates[0]).toContain('tutorial-project')
     await expect
       .poll(() => apiCalls.remoteListResponses)
       .toBeGreaterThanOrEqual(1)
-    await expect(page.getByTestId('cloud-library-sync-status')).toContainText(
-      'Cloud synced'
-    )
+    const firstProjectPath = `${PROJECT_DIR}/tutorial-project`
+    await expect
+      .poll(() => readCloudSyncProjectState(page, firstProjectPath))
+      .toMatchObject({
+        remoteProjectId: TUTORIAL_PROJECT_IDS[0],
+        remoteRevision: `${TUTORIAL_PROJECT_IDS[0]}-rev-1`,
+        hasBaseManifest: true,
+        pendingOutboxCount: 0,
+      })
+    await expect(cloudSyncStatus).toContainText('Cloud synced')
     await expect(tutorialProjectLink).toHaveCount(1)
     await expect(
       tutorialProjectLink.getByTestId('project-file-count')
@@ -165,6 +175,18 @@ test(
     const firstProjectUpdatesBeforeEdit = apiCalls.updates.filter(
       ({ projectId }) => projectId === TUTORIAL_PROJECT_IDS[0]
     ).length
+    const firstProjectStateBeforeEdit = await readCloudSyncProjectState(
+      page,
+      firstProjectPath
+    )
+    expect(firstProjectStateBeforeEdit?.remoteRevision).toBeDefined()
+    const firstProjectUpdateResponse = page.waitForResponse((response) => {
+      const url = new URL(response.url())
+      return (
+        response.request().method() === 'PUT' &&
+        url.pathname.endsWith(`/user/projects/${TUTORIAL_PROJECT_IDS[0]}`)
+      )
+    })
     await editor.replaceCode('', 'changed = true')
     await expect
       .poll(async () => {
@@ -174,14 +196,28 @@ test(
         return files.main
       })
       .toBe('changed = true')
+    expect((await firstProjectUpdateResponse).ok()).toBe(true)
+    expect(
+      apiCalls.updates.filter(
+        ({ projectId }) => projectId === TUTORIAL_PROJECT_IDS[0]
+      ).length
+    ).toBeGreaterThan(firstProjectUpdatesBeforeEdit)
     await expect
-      .poll(
-        () =>
-          apiCalls.updates.filter(
-            ({ projectId }) => projectId === TUTORIAL_PROJECT_IDS[0]
-          ).length
-      )
-      .toBeGreaterThan(firstProjectUpdatesBeforeEdit)
+      .poll(async () => {
+        const state = await readCloudSyncProjectState(page, firstProjectPath)
+        return {
+          ...state,
+          remoteRevisionChanged:
+            state?.remoteRevision !==
+            firstProjectStateBeforeEdit?.remoteRevision,
+        }
+      })
+      .toMatchObject({
+        remoteProjectId: TUTORIAL_PROJECT_IDS[0],
+        remoteRevisionChanged: true,
+        hasBaseManifest: true,
+        pendingOutboxCount: 0,
+      })
 
     await replayOnboardingFromSettings(page, 'tutorial-project-1')
     await expect.poll(() => apiCalls.creates.length).toBe(2)
