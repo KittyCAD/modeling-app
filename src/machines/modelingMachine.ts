@@ -159,6 +159,7 @@ import {
   EXECUTION_TYPE_REAL,
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
+  PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { exportMake } from '@src/lib/exportMake'
@@ -4504,6 +4505,7 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+              fileName?: string
             }
           | undefined
       }) => {
@@ -4524,10 +4526,11 @@ export const modelingMachine = setup({
           return new Error(errorMessage)
         }
 
-        let fileName = (kclManager.currentFileName ?? 'output.kcl')?.replace(
-          '.kcl',
-          `.${data.type}`
-        )
+        let fileName = (
+          input.fileName ??
+          kclManager.currentFileName ??
+          'output.kcl'
+        ).replace('.kcl', `.${data.type}`)
         // Ensure the file has an extension.
         if (!fileName.includes('.')) {
           fileName += `.${data.type}`
@@ -7445,12 +7448,16 @@ export const modelingMachine = setup({
         id: 'exportFromEngine',
         input: ({ event, context }) => {
           if (event.type !== 'Export') return undefined
+          const project = context.projectRef?.current
           return {
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
             defaultUnit: context.store.defaultUnit,
-            fileName: context.fileName,
+            fileName:
+              context.fileName === PROJECT_ENTRYPOINT && project
+                ? `${project.title?.trim() || project.name}.kcl`
+                : context.fileName,
           }
         },
         onDone: ['idle'],
