@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
 import {
   type NavigateFunction,
   type useLocation,
@@ -323,6 +323,30 @@ export interface OnboardingUtilDeps {
 }
 
 let pendingOnboardingStart: Promise<void> | undefined
+const onboardingStartListeners = new Set<() => void>()
+
+function emitOnboardingStartPendingChange() {
+  for (const listener of onboardingStartListeners) {
+    listener()
+  }
+}
+
+function subscribeToOnboardingStartPending(listener: () => void) {
+  onboardingStartListeners.add(listener)
+  return () => onboardingStartListeners.delete(listener)
+}
+
+function getOnboardingStartPendingSnapshot() {
+  return pendingOnboardingStart !== undefined
+}
+
+export function useOnboardingStartPending() {
+  return useSyncExternalStore(
+    subscribeToOnboardingStartPending,
+    getOnboardingStartPendingSnapshot,
+    () => false
+  )
+}
 
 async function createOnboardingProject(
   deps: OnboardingUtilDeps,
@@ -403,9 +427,11 @@ export function acceptOnboarding(deps: OnboardingUtilDeps): Promise<void> {
   const trackedStart = start.finally(() => {
     if (pendingOnboardingStart === trackedStart) {
       pendingOnboardingStart = undefined
+      emitOnboardingStartPendingChange()
     }
   })
   pendingOnboardingStart = trackedStart
+  emitOnboardingStartPendingChange()
   return trackedStart
 }
 
