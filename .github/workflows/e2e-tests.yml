@@ -442,7 +442,7 @@ jobs:
 
   vercel:
     name: e2e:web (vercel)
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
 
     steps:
