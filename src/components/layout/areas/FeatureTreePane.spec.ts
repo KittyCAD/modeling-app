@@ -35,10 +35,9 @@ describe('FeatureTreePane', () => {
       }
     }
 
-    it('uses the live modeling state when a feature tree row render is stale after Start Sketch', () => {
+    it('uses the live modeling state when a feature tree row render has not caught up to Start Sketch', () => {
       expect(
         getFeatureTreeSketchSelectionContext({
-          renderedSketchNoFace: false,
           modelingActor: modelingActor({
             liveSketchNoFace: true,
             useSketchSolveMode: true,
@@ -47,16 +46,15 @@ describe('FeatureTreePane', () => {
       ).toEqual({ sketchNoFace: true, useSketchSolveMode: true })
     })
 
-    it('still honors the rendered sketch mode state when it is already current', () => {
+    it('does not keep selecting sketch planes after the live state has left Sketch no face', () => {
       expect(
         getFeatureTreeSketchSelectionContext({
-          renderedSketchNoFace: true,
           modelingActor: modelingActor({
             liveSketchNoFace: false,
             useSketchSolveMode: false,
           }),
         })
-      ).toEqual({ sketchNoFace: true, useSketchSolveMode: false })
+      ).toEqual({ sketchNoFace: false, useSketchSolveMode: false })
     })
   })
 

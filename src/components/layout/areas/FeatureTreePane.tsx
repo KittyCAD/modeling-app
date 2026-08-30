@@ -852,10 +852,8 @@ interface OperationProps {
 }
 
 export function getFeatureTreeSketchSelectionContext({
-  renderedSketchNoFace,
   modelingActor,
 }: {
-  renderedSketchNoFace: boolean
   modelingActor: {
     getSnapshot: () => {
       matches: (state: 'Sketch no face') => boolean
@@ -869,8 +867,7 @@ export function getFeatureTreeSketchSelectionContext({
 }) {
   const modelingSnapshot = modelingActor.getSnapshot()
   return {
-    sketchNoFace:
-      renderedSketchNoFace || modelingSnapshot.matches('Sketch no face'),
+    sketchNoFace: modelingSnapshot.matches('Sketch no face'),
     useSketchSolveMode:
       modelingSnapshot.context.store.useSketchSolveMode?.current,
   }
@@ -1058,7 +1055,6 @@ const OperationItem = ({
         return
       }
       const sketchSelectionContext = getFeatureTreeSketchSelectionContext({
-        renderedSketchNoFace: sketchNoFace,
         modelingActor,
       })
       if (sketchSelectionContext.sketchNoFace) {
@@ -1085,7 +1081,7 @@ const OperationItem = ({
         onSelect(sourceRangeFromRust(item.sourceRange))
       }
     },
-    [isModuleOwned, sketchNoFace, modelingActor, onSelect, item, kclManager]
+    [isModuleOwned, modelingActor, onSelect, item, kclManager]
   )
 
   const viewOperationSource = useCallback(
