@@ -876,6 +876,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           override?: boolean
           requestedFileNameWithExtension: string
           requestedSubRoute?: string
+          onSuccess?: () => void
         }
       }) => {
         const wasmInstance = await input.context.wasmInstancePromise
@@ -891,6 +892,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           projectName: input.requestedProjectName,
           fileName: input.requestedFileNameWithExtension || '',
           subRoute: input.requestedSubRoute || '',
+          ...(input.onSuccess
+            ? { onProjectLoaderComplete: input.onSuccess }
+            : {}),
         }
       }
     ),

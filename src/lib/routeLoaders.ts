@@ -10,6 +10,9 @@ import fsZds from '@src/lib/fs-zds'
 import {
   getParentAbsolutePath,
   getRouterSearchFromRequestUrl,
+  joinOSPaths,
+  joinRouterPaths,
+  normalizeFilesystemPathForComparison,
   PATHS,
   parseProjectRoute,
   safeEncodeForRouterPaths,
@@ -53,6 +56,11 @@ type CanonicalWebProjectLibrary = {
   library: ProjectLibrarySetting
   projectPath: string
   defaultFilePath: string
+}
+
+type RequestedFileNavigation = {
+  project: string
+  file: string
 }
 
 function loadRouteSettings(
@@ -125,6 +133,49 @@ async function fileExists(filePath: string) {
 function redirectToFile(filePath: string, routerSearch: string) {
   return redirect(
     `${PATHS.FILE}/${encodeURIComponent(filePath)}${routerSearch}`
+  )
+}
+
+export function getOnboardingChildRoute(requestUrl: string, routeId: string) {
+  const url = new URL(requestUrl)
+  const fileRoutePrefix = joinRouterPaths(
+    PATHS.FILE,
+    safeEncodeForRouterPaths(routeId)
+  )
+  const childRoute = url.pathname.startsWith(`${fileRoutePrefix}/`)
+    ? url.pathname.slice(fileRoutePrefix.length)
+    : ''
+
+  return childRoute === PATHS.ONBOARDING ||
+    childRoute.startsWith(`${PATHS.ONBOARDING}/`)
+    ? childRoute
+    : ''
+}
+
+export function isRequestedFileLoaded({
+  requestedFileName,
+  projectName,
+  projectPath,
+  currentFilePath,
+}: {
+  requestedFileName: RequestedFileNavigation
+  projectName: string | null
+  projectPath: string
+  currentFilePath: string | null
+}) {
+  if (
+    !requestedFileName.project ||
+    !requestedFileName.file ||
+    requestedFileName.project !== projectName ||
+    !currentFilePath
+  ) {
+    return false
+  }
+
+  const requestedFilePath = joinOSPaths(projectPath, requestedFileName.file)
+  return (
+    normalizeFilesystemPathForComparison(currentFilePath) ===
+    normalizeFilesystemPathForComparison(requestedFilePath)
   )
 }
 
@@ -264,8 +315,13 @@ export const fileLoader =
           routerData.request.url,
           Boolean(window.electron)
         )
+        const onboardingChildRoute = params.id
+          ? getOnboardingChildRoute(routerData.request.url, params.id)
+          : ''
         return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${routerSearch}`
+          `${PATHS.FILE}/${encodeURIComponent(
+            fallbackFile
+          )}${onboardingChildRoute}${routerSearch}`
         )
       }
     }
@@ -311,7 +367,14 @@ export const fileLoader =
 
     const requestedFileName =
       app.systemIOActor.getSnapshot().context.requestedFileName
-    if (requestedFileName.project === projectName) {
+    if (
+      isRequestedFileLoaded({
+        requestedFileName,
+        projectName,
+        projectPath,
+        currentFilePath,
+      })
+    ) {
       requestedFileName.onProjectLoaderComplete?.()
     }
 

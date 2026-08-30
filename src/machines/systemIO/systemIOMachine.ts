@@ -173,11 +173,17 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension: string
             override?: boolean
             requestedSubRoute?: string
+            onSuccess?: () => void
           }
         }
       | {
           type: SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile
-          output: { projectName: string; fileName: string; subRoute?: string }
+          output: {
+            projectName: string
+            fileName: string
+            subRoute?: string
+            onProjectLoaderComplete?: () => void
+          }
         }
       | {
           type: SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
@@ -680,12 +686,14 @@ export const systemIOMachine = setup({
           requestedProjectName: string
           requestedFileNameWithExtension: string
           requestedSubRoute?: string
+          onSuccess?: () => void
         }
       }): Promise<{
         message: string
         fileName: string
         projectName: string
         subRoute: string
+        onProjectLoaderComplete?: () => void
       }> => {
         return { message: '', fileName: '', projectName: '', subRoute: '' }
       }
@@ -1593,6 +1601,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
+            onSuccess: event.data.onSuccess,
           }
         },
         onDone: {
@@ -1612,6 +1621,7 @@ export const systemIOMachine = setup({
                       projectName: string
                       fileName: string
                       subRoute?: string
+                      onProjectLoaderComplete?: () => void
                     }
                   }
                 ).output
@@ -1623,6 +1633,11 @@ export const systemIOMachine = setup({
                   project: output.projectName,
                   file,
                   subRoute: output.subRoute,
+                  ...(output.onProjectLoaderComplete
+                    ? {
+                        onProjectLoaderComplete: output.onProjectLoaderComplete,
+                      }
+                    : {}),
                 }
               },
             }),

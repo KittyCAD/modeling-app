@@ -986,17 +986,19 @@ describe('systemIOMachine - XState', () => {
         }
       })
       it('should identify a completed bulk-created file navigation', async () => {
+        const onSuccess = vi.fn()
         const actor = createActor(
           systemIOMachine.provide({
             actors: {
               [SystemIOMachineActors.readFoldersFromProjectDirectory]:
                 fromPromise(async () => [] as Project[]),
               [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]:
-                fromPromise(async () => ({
+                fromPromise(async ({ input }) => ({
                   message: 'Created',
                   projectName: 'tutorial-project',
                   fileName: 'blank.kcl',
                   subRoute: '/onboarding/desktop/scene',
+                  onProjectLoaderComplete: input.onSuccess,
                 })),
             },
           }),
@@ -1023,6 +1025,7 @@ describe('systemIOMachine - XState', () => {
               requestedProjectName: 'tutorial-project',
               requestedFileNameWithExtension: 'blank.kcl',
               requestedSubRoute: '/onboarding/desktop/scene',
+              onSuccess,
             },
           })
 
@@ -1037,8 +1040,10 @@ describe('systemIOMachine - XState', () => {
               project: 'tutorial-project',
               file: 'blank.kcl',
               subRoute: '/onboarding/desktop/scene',
+              onProjectLoaderComplete: onSuccess,
             },
           })
+          expect(onSuccess).not.toHaveBeenCalled()
         } finally {
           actor.stop()
         }

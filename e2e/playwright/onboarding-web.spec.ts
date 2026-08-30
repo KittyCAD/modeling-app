@@ -7,8 +7,13 @@ import {
   projectToml,
   readOpfsTextFiles,
   routeCloudProjects,
+  seedCloudSyncState,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
-import { expectCloudFeatureEnabled, setup } from '@e2e/playwright/test-utils'
+import {
+  expectCloudFeatureEnabled,
+  mockClientErrorReports,
+  setup,
+} from '@e2e/playwright/test-utils'
 import { expect, type Page, test } from '@playwright/test'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
@@ -46,6 +51,63 @@ async function expectBackDoesNotReopenOnboarding(page: Page) {
   await page.goForward()
   await expect(page).toHaveURL(/\/home$/)
 }
+
+test(
+  'Onboarding Scene creates and opens blank.kcl before allowing advance',
+  { tag: '@web' },
+  async ({ context, page }, testInfo) => {
+    const tutorialProjectFiles = {
+      'main.kcl': 'plateLength = 10\n',
+      'project.toml': projectToml('tutorial-project', TUTORIAL_PROJECT_IDS[0]),
+    }
+    const remoteProjects: CloudProject[] = [
+      {
+        id: TUTORIAL_PROJECT_IDS[0],
+        title: 'tutorial-project',
+        revision: `${TUTORIAL_PROJECT_IDS[0]}-rev-1`,
+        files: tutorialProjectFiles,
+      },
+    ]
+    await mockClientErrorReports(context)
+    await routeCloudProjects(context, { remoteProjects })
+    await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
+    await page.goto('/')
+
+    await seedCloudSyncState(page, {
+      projects: [
+        {
+          projectName: 'tutorial-project',
+          files: tutorialProjectFiles,
+        },
+      ],
+      metadata: [
+        {
+          projectName: 'tutorial-project',
+          remoteProjectId: TUTORIAL_PROJECT_IDS[0],
+          remoteRevision: `${TUTORIAL_PROJECT_IDS[0]}-rev-1`,
+          baseFiles: tutorialProjectFiles,
+        },
+      ],
+    })
+
+    await page.goto(
+      `/file/${encodeURIComponent(
+        `${PROJECT_DIR}/tutorial-project/main.kcl`
+      )}/onboarding/desktop/scene`
+    )
+
+    await expect(page.getByRole('heading', { name: 'Scene' })).toBeVisible()
+    await expect(page).toHaveURL(
+      /tutorial-project%2Fblank\.kcl\/onboarding\/desktop\/scene/
+    )
+    await expect
+      .poll(() =>
+        opfsPathExists(page, `${PROJECT_DIR}/tutorial-project/blank.kcl`)
+      )
+      .toBe(true)
+    await expect(page.getByTestId('onboarding-next')).toBeVisible()
+  }
+)
 
 test(
   'Replay onboarding creates a uniquely named Personal Cloud tutorial',
