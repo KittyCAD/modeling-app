@@ -1,6 +1,6 @@
 import type { Diagnostic } from '@codemirror/lint'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -14,28 +14,28 @@ import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import {
-  ROOT_MODULE_ID,
-  type SourceRange,
   base64Decode,
   countOperations,
   emptyOperationsByModule,
   getAllOperations,
+  ROOT_MODULE_ID,
+  type SourceRange,
 } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
-  type OperationTreeNode,
   buildOperationTree,
   findSameVisibleStdLibOperationAfterSourceChange,
   getOperationKey,
   getOperationTreeNodeKey,
   isOperationTreeBranch,
+  type OperationTreeNode,
 } from '@src/lib/featureTreeOperationTree'
 import {
-  getOpTypeLabel,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
+  getOpTypeLabel,
   onHide,
   onUnhide,
   stdLibMap,
@@ -47,16 +47,18 @@ import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { ComponentProps, ReactNode } from 'react'
 import { memo, use, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
+
 export { buildOperationTree } from '@src/lib/featureTreeOperationTree'
+
 import { Disclosure } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import usePlatform from '@src/hooks/usePlatform'
 import { sourceRangeToUtf16, toUtf16 } from '@src/lang/errors'
 import {
@@ -64,6 +66,7 @@ import {
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
   prepareEditCommand,
@@ -74,14 +77,13 @@ import {
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
-  type Layout,
   getOpenPanes,
+  type Layout,
   togglePaneLayoutNode,
 } from '@src/lib/layout'
 import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
@@ -849,6 +851,31 @@ interface OperationProps {
   referenceModuleId?: number
 }
 
+export function getFeatureTreeSketchSelectionContext({
+  renderedSketchNoFace,
+  modelingActor,
+}: {
+  renderedSketchNoFace: boolean
+  modelingActor: {
+    getSnapshot: () => {
+      matches: (state: 'Sketch no face') => boolean
+      context: {
+        store: {
+          useSketchSolveMode?: { current?: boolean }
+        }
+      }
+    }
+  }
+}) {
+  const modelingSnapshot = modelingActor.getSnapshot()
+  return {
+    sketchNoFace:
+      renderedSketchNoFace || modelingSnapshot.matches('Sketch no face'),
+    useSketchSolveMode:
+      modelingSnapshot.context.store.useSketchSolveMode?.current,
+  }
+}
+
 function getFeatureTreeArtifactForEditOperation(
   operation: Operation,
   artifactGraph: SystemDeps['kclManager']['artifactGraph']
@@ -1030,7 +1057,11 @@ const OperationItem = ({
       if (isModuleOwned) {
         return
       }
-      if (sketchNoFace) {
+      const sketchSelectionContext = getFeatureTreeSketchSelectionContext({
+        renderedSketchNoFace: sketchNoFace,
+        modelingActor,
+      })
+      if (sketchSelectionContext.sketchNoFace) {
         if (isOffsetPlane(item)) {
           const artifact = findOperationPlaneArtifact(
             item,
@@ -1038,7 +1069,7 @@ const OperationItem = ({
           )
           const result = await selectSketchPlane(
             artifact?.id,
-            useSketchSolveMode,
+            sketchSelectionContext.useSketchSolveMode,
             kclManager
           )
           if (err(result)) {
@@ -1054,14 +1085,7 @@ const OperationItem = ({
         onSelect(sourceRangeFromRust(item.sourceRange))
       }
     },
-    [
-      isModuleOwned,
-      sketchNoFace,
-      onSelect,
-      item,
-      kclManager,
-      useSketchSolveMode,
-    ]
+    [isModuleOwned, sketchNoFace, modelingActor, onSelect, item, kclManager]
   )
 
   const viewOperationSource = useCallback(

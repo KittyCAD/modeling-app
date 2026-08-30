@@ -1,15 +1,65 @@
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
   buildOperationTree,
+  getFeatureTreeSketchSelectionContext,
   getFeatureTreeValueDetail,
   namedViewTooltipText,
   supportsZ0006AutoFixBeforeFeatureTreeEdit,
 } from '@src/components/layout/areas/FeatureTreePane'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import { type OperationsByModule, defaultNodePath } from '@src/lang/wasm'
+import { defaultNodePath, type OperationsByModule } from '@src/lang/wasm'
 import { describe, expect, it } from 'vitest'
 
 describe('FeatureTreePane', () => {
+  describe('getFeatureTreeSketchSelectionContext', () => {
+    function modelingActor({
+      liveSketchNoFace,
+      useSketchSolveMode,
+    }: {
+      liveSketchNoFace: boolean
+      useSketchSolveMode?: boolean
+    }) {
+      return {
+        getSnapshot: () => ({
+          matches: (state: 'Sketch no face') =>
+            state === 'Sketch no face' && liveSketchNoFace,
+          context: {
+            store: {
+              useSketchSolveMode:
+                useSketchSolveMode === undefined
+                  ? undefined
+                  : { current: useSketchSolveMode },
+            },
+          },
+        }),
+      }
+    }
+
+    it('uses the live modeling state when a feature tree row render is stale after Start Sketch', () => {
+      expect(
+        getFeatureTreeSketchSelectionContext({
+          renderedSketchNoFace: false,
+          modelingActor: modelingActor({
+            liveSketchNoFace: true,
+            useSketchSolveMode: true,
+          }),
+        })
+      ).toEqual({ sketchNoFace: true, useSketchSolveMode: true })
+    })
+
+    it('still honors the rendered sketch mode state when it is already current', () => {
+      expect(
+        getFeatureTreeSketchSelectionContext({
+          renderedSketchNoFace: true,
+          modelingActor: modelingActor({
+            liveSketchNoFace: false,
+            useSketchSolveMode: false,
+          }),
+        })
+      ).toEqual({ sketchNoFace: true, useSketchSolveMode: false })
+    })
+  })
+
   describe('supportsZ0006AutoFixBeforeFeatureTreeEdit', () => {
     function stdLibCall(name: string): Operation {
       return {
