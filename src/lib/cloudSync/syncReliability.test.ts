@@ -197,5 +197,6 @@ describe('cloud sync reliability', () => {
       ).toHaveLength(1)
     })
     expect(uploadedDeletedPaths).toEqual(['obsolete.kcl'])
+    await expect(getAllOutboxEntries()).resolves.toEqual([])
   })
 })
