@@ -7455,9 +7455,10 @@ export const modelingMachine = setup({
             rustContext: context.rustContext,
             defaultUnit: context.store.defaultUnit,
             fileName:
-              context.fileName === PROJECT_ENTRYPOINT && project
+              context.kclManager.currentFileName === PROJECT_ENTRYPOINT &&
+              project
                 ? `${project.title?.trim() || project.name}.kcl`
-                : context.fileName,
+                : undefined,
           }
         },
         onDone: ['idle'],
