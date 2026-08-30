@@ -86,4 +86,14 @@ describe('createOnWebSocketMessage', () => {
 
     expect(reportClientError).not.toHaveBeenCalled()
   })
+
+  it('does not throw when an unsuccessful response has no errors', () => {
+    const handler = createMessageHandler()
+    const event = new MessageEvent('message', {
+      data: JSON.stringify({ success: false, errors: [] }),
+    })
+
+    expect(() => handler(event)).not.toThrow()
+    expect(reportClientError).not.toHaveBeenCalled()
+  })
 })
