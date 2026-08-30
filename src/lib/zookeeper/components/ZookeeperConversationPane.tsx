@@ -1,5 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import {
+  CMD_GROUP_QUERY_PARAM,
+  CMD_NAME_QUERY_PARAM,
   LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
   SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
@@ -127,6 +129,16 @@ export const ZookeeperConversationPane = (props: {
     }
 
     setDefaultPrompt(promptParam)
+    // A generic command may still be consuming its own query parameters from
+    // an earlier snapshot. Let it finish before replacing the URL so this
+    // effect cannot restore cmd/groupId while removing the prompt.
+    if (
+      searchParams.has(CMD_NAME_QUERY_PARAM) &&
+      searchParams.has(CMD_GROUP_QUERY_PARAM)
+    ) {
+      return
+    }
+
     const nextSearchParams = new URLSearchParams(searchParams)
     nextSearchParams.delete(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
     nextSearchParams.delete(LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY)
