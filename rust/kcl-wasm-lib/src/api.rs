@@ -580,6 +580,55 @@ impl Context {
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
+    /// Add constraints to a sketch in one atomic execution.
+    #[wasm_bindgen]
+    pub async fn add_constraints(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        constraints_json: &str,
+        settings: &str,
+        create_checkpoint: bool,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let constraints: Vec<kcl_lib::front::Constraint> =
+            serde_json::from_str(constraints_json).map_err(|e| format!("Could not deserialize Constraints: {e}"))?;
+
+        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!("Could not create KCL executor context for add constraints. {TRUE_BUG} Details: {e}")
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let (source_delta, scene_graph_delta) = guard
+            .add_constraints(&ctx, version, sketch, constraints)
+            .await
+            .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
+        let checkpoint_id = if create_checkpoint {
+            Some(
+                guard
+                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .await
+                    .map_err(|e: Error| js_value_from_serde(&e))?,
+            )
+        } else {
+            None
+        };
+        let result = kcl_lib::front::SketchMutationOutcome {
+            source_delta,
+            scene_graph_delta,
+            checkpoint_id,
+        };
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize add constraints result. {TRUE_BUG} Details: {e}"))?)
+    }
+
     /// Edit a constraint value in a sketch.
     #[wasm_bindgen]
     pub async fn edit_constraint_value(

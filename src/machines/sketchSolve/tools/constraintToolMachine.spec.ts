@@ -245,9 +245,9 @@ describe('constraintToolMachine', () => {
       childMachine: equalLengthConstraintTool,
       objects,
     })
-    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+    const addConstraintsMock = vi.spyOn(rustContext, 'addConstraints')
 
-    addConstraintMock.mockResolvedValue({
+    addConstraintsMock.mockResolvedValue({
       kclSource: { text: 'next' },
       sceneGraphDelta: createSceneGraphDelta(objects),
       checkpointId: 1,
@@ -261,15 +261,17 @@ describe('constraintToolMachine', () => {
       modifierKeepSelection: false,
     })
 
-    await waitFor(child, () => addConstraintMock.mock.calls.length > 0)
+    await waitFor(child, () => addConstraintsMock.mock.calls.length > 0)
 
-    expect(addConstraintMock).toHaveBeenCalledWith(
+    expect(addConstraintsMock).toHaveBeenCalledWith(
       0,
       0,
-      {
-        type: 'LinesEqualLength',
-        lines: [10, 11, 12],
-      },
+      [
+        {
+          type: 'LinesEqualLength',
+          lines: [10, 11, 12],
+        },
+      ],
       expect.anything(),
       true
     )
@@ -343,19 +345,13 @@ describe('constraintToolMachine', () => {
       childMachine: horizontalConstraintTool,
       objects,
     })
-    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+    const addConstraintsMock = vi.spyOn(rustContext, 'addConstraints')
 
-    addConstraintMock
-      .mockResolvedValueOnce({
-        kclSource: { text: 'next-1' },
-        sceneGraphDelta: createSceneGraphDelta(objects),
-        checkpointId: null,
-      })
-      .mockResolvedValueOnce({
-        kclSource: { text: 'next-2' },
-        sceneGraphDelta: createSceneGraphDelta(objects),
-        checkpointId: 2,
-      })
+    addConstraintsMock.mockResolvedValue({
+      kclSource: { text: 'next' },
+      sceneGraphDelta: createSceneGraphDelta(objects),
+      checkpointId: 2,
+    })
 
     child.send({
       type: 'commit area selection',
@@ -365,27 +361,21 @@ describe('constraintToolMachine', () => {
       modifierKeepSelection: false,
     })
 
-    await waitFor(child, () => addConstraintMock.mock.calls.length === 2)
+    await waitFor(child, () => addConstraintsMock.mock.calls.length === 1)
 
-    expect(addConstraintMock).toHaveBeenNthCalledWith(
-      1,
+    expect(addConstraintsMock).toHaveBeenCalledWith(
       0,
       0,
-      {
-        type: 'Horizontal',
-        line: 10,
-      },
-      expect.anything(),
-      false
-    )
-    expect(addConstraintMock).toHaveBeenNthCalledWith(
-      2,
-      0,
-      0,
-      {
-        type: 'Horizontal',
-        line: 11,
-      },
+      [
+        {
+          type: 'Horizontal',
+          line: 10,
+        },
+        {
+          type: 'Horizontal',
+          line: 11,
+        },
+      ],
       expect.anything(),
       true
     )
@@ -398,9 +388,9 @@ describe('constraintToolMachine', () => {
       childMachine: fixedConstraintTool,
       objects,
     })
-    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+    const addConstraintsMock = vi.spyOn(rustContext, 'addConstraints')
 
-    addConstraintMock.mockResolvedValue({
+    addConstraintsMock.mockResolvedValue({
       kclSource: { text: 'fixed' },
       sceneGraphDelta: createSceneGraphDelta(objects),
       checkpointId: 3,
@@ -414,23 +404,25 @@ describe('constraintToolMachine', () => {
       modifierKeepSelection: false,
     })
 
-    await waitFor(child, () => addConstraintMock.mock.calls.length === 1)
+    await waitFor(child, () => addConstraintsMock.mock.calls.length === 1)
 
-    expect(addConstraintMock).toHaveBeenCalledWith(
+    expect(addConstraintsMock).toHaveBeenCalledWith(
       0,
       0,
-      {
-        type: 'Fixed',
-        points: [
-          {
-            point: 10,
-            position: {
-              x: { value: 3, units: 'Mm' },
-              y: { value: 4, units: 'Mm' },
+      [
+        {
+          type: 'Fixed',
+          points: [
+            {
+              point: 10,
+              position: {
+                x: { value: 3, units: 'Mm' },
+                y: { value: 4, units: 'Mm' },
+              },
             },
-          },
-        ],
-      },
+          ],
+        },
+      ],
       expect.anything(),
       true
     )
@@ -449,9 +441,9 @@ describe('constraintToolMachine', () => {
       childMachine: parallelConstraintTool,
       objects,
     })
-    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+    const addConstraintsMock = vi.spyOn(rustContext, 'addConstraints')
 
-    addConstraintMock.mockResolvedValue({
+    addConstraintsMock.mockResolvedValue({
       kclSource: { text: 'parallel' },
       sceneGraphDelta: createSceneGraphDelta(objects),
       checkpointId: 5,
@@ -479,7 +471,7 @@ describe('constraintToolMachine', () => {
       modifierKeepSelection: true,
     })
 
-    await waitFor(child, () => addConstraintMock.mock.calls.length === 1)
+    await waitFor(child, () => addConstraintsMock.mock.calls.length === 1)
     await waitFor(
       actor,
       (snapshot) =>
@@ -522,9 +514,9 @@ describe('constraintToolMachine', () => {
       childMachine: tangentConstraintTool,
       objects,
     })
-    const addConstraintMock = vi.spyOn(rustContext, 'addConstraint')
+    const addConstraintsMock = vi.spyOn(rustContext, 'addConstraints')
 
-    addConstraintMock.mockResolvedValue({
+    addConstraintsMock.mockResolvedValue({
       kclSource: { text: 'tangent' },
       sceneGraphDelta: createSceneGraphDelta(objects),
       checkpointId: 4,
@@ -580,15 +572,17 @@ describe('constraintToolMachine', () => {
       modifierKeepSelection: false,
     })
 
-    await waitFor(child, () => addConstraintMock.mock.calls.length === 1)
+    await waitFor(child, () => addConstraintsMock.mock.calls.length === 1)
 
-    expect(addConstraintMock).toHaveBeenCalledWith(
+    expect(addConstraintsMock).toHaveBeenCalledWith(
       0,
       0,
-      {
-        type: 'Tangent',
-        input: [11, 10],
-      },
+      [
+        {
+          type: 'Tangent',
+          input: [11, 10],
+        },
+      ],
       expect.anything(),
       true
     )
