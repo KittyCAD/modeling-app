@@ -11,7 +11,6 @@ import {
 import { expectCloudFeatureEnabled, setup } from '@e2e/playwright/test-utils'
 import { expect, type Page, test } from '@playwright/test'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 
 const TUTORIAL_PROJECT_IDS = [
   '12902000-0000-4000-8000-000000000001',
@@ -199,9 +198,8 @@ test(
         }
       )
       .toMatchObject({
-        state: SystemIOMachineStates.idle,
-        lastOperation:
-          SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
+        state: 'idle',
+        lastOperation: 'bulkCreatingKCLFilesAndNavigateToFile',
         requestedFileName: {
           project: 'tutorial-project-1',
           file: 'blank.kcl',
