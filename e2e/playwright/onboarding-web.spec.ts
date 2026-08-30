@@ -15,6 +15,13 @@ const TUTORIAL_PROJECT_IDS = [
   '12902000-0000-4000-8000-000000000002',
 ] as const
 
+async function waitForKclWasm(page: Page) {
+  await page.waitForFunction(() => Boolean(window.app?.singletons?.kclManager))
+  await page.evaluate(async () => {
+    await window.app.singletons.kclManager.wasmInstancePromise
+  })
+}
+
 async function replayOnboardingFromSettings(
   page: Page,
   expectedProjectName: string
@@ -30,6 +37,7 @@ async function replayOnboardingFromSettings(
   await expect(
     page.getByRole('heading', { name: 'Settings', exact: true })
   ).toBeVisible()
+  await waitForKclWasm(page)
   await page.getByRole('button', { name: 'Replay onboarding' }).click()
 
   await expect(page).toHaveURL(
