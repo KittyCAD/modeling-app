@@ -104,14 +104,7 @@ sha2 = "0.11.0"
 tempfile = "3.27"
 thiserror = "2.0.18"
 toml = "1.1.0"
-ts-rs = { version = "12.0.1", features = [
-  "uuid-impl",
-  "url-impl",
-  "chrono-impl",
-  "indexmap-impl",
-  "no-serde-warnings",
-  "serde-json-impl",
-] }
+ts-rs = { workspace = true }
 typed-path = "0.12.3"
 unicase = "2.9.0"
 url = { version = "2.5.8", features = ["serde"] }
