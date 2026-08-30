@@ -5,7 +5,10 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
 
 import { toUtf16 } from '@src/lang/errors'
-import { convertLegacyAngleToAngleDimension } from '@src/lang/modifyAst/angle'
+import {
+  convertLegacyAngleToAngleDimension,
+  convertLegacyAngleToParallel,
+} from '@src/lang/modifyAst/angle'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import type {
   ArtifactGraph,
@@ -296,6 +299,41 @@ function createZ0007Actions({
   }
 }
 
+function createZ0008Actions({
+  lint,
+  ast,
+  sourceCode,
+  instance,
+}: RefactorLintActionsParams): RefactorLintActionsResult {
+  if (lint.finding.code !== 'Z0008') return {}
+
+  const modifiedAst = convertLegacyAngleToParallel(ast, lint.pos)
+  if (err(modifiedAst)) return {}
+
+  const convertedSource = recast(modifiedAst, instance)
+  if (err(convertedSource)) return {}
+
+  return {
+    actions: [
+      {
+        name: 'Convert to parallel',
+        apply: (view: EditorView, _from: number, _to: number) => {
+          if (view.state.doc.toString() !== sourceCode) return
+
+          view.dispatch({
+            changes: {
+              from: 0,
+              to: view.state.doc.length,
+              insert: convertedSource,
+            },
+            annotations: [lspCodeActionEvent],
+          })
+        },
+      },
+    ],
+  }
+}
+
 export async function resolveRefactorLintActions(
   params: RefactorLintActionsParams
 ): Promise<RefactorLintActionsResult> {
@@ -307,6 +345,9 @@ export async function resolveRefactorLintActions(
 
   const z0007 = createZ0007Actions(params)
   if (z0007.actions || z0007.messageOverride) return z0007
+
+  const z0008 = createZ0008Actions(params)
+  if (z0008.actions || z0008.messageOverride) return z0008
 
   return {}
 }
