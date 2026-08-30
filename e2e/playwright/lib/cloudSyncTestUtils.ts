@@ -130,6 +130,7 @@ export async function routeCloudProjects(
   const listedProjects = options.listedProjects ?? options.remoteProjects
   const brokenArchiveProjectIds = new Set(options.brokenArchiveProjectIds ?? [])
   const calls = {
+    completedCreates: [] as string[],
     creates: [] as string[],
     downloads: [] as string[],
     remoteListResponses: 0,
@@ -160,15 +161,18 @@ export async function routeCloudProjects(
     if (pathname === '/user/projects' && request.method() === 'POST') {
       const postData = request.postData() || ''
       calls.creates.push(postData)
-      await fulfillJson(
-        route,
-        options.createProject?.(postData) ?? {
-          id: 'created-project',
-          title: 'Created project',
-          revision: 'created-rev-1',
-          files: {},
-        }
+      const createdProject = options.createProject?.(postData) ?? {
+        id: 'created-project',
+        title: 'Created project',
+        revision: 'created-rev-1',
+        files: {},
+      }
+      remoteArchives.set(
+        createdProject.id,
+        await zipProject(createdProject.files)
       )
+      await fulfillJson(route, createdProject)
+      calls.completedCreates.push(createdProject.id)
       return
     }
 

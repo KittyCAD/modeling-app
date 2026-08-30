@@ -1599,6 +1599,8 @@ export const systemIOMachine = setup({
           target: SystemIOMachineStates.readingFolders,
           actions: [
             assign({
+              lastOperation:
+                SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
               requestedFileName: ({ event }) => {
                 assertEvent(
                   event,
