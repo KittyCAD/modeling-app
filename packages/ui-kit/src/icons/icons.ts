@@ -54,8 +54,10 @@ export const iconPaths = {
   // Chevrons pointing inward: the tree folding up, not a pane closing.
   collapse: 'M4.5 3 8 6.5 11.5 3M4.5 13 8 9.5 11.5 13',
   play: 'M5.5 3.5l7 4.5-7 4.5z',
-  command:
-    'M5.5 3.5a1.5 1.5 0 1 0 1.5 1.5v6a1.5 1.5 0 1 0 1.5-1.5H5a1.5 1.5 0 1 1 1.5 1.5V5A1.5 1.5 0 1 1 5 6.5h6',
+  // A prompt, not the ⌘ key: the same glyph the existing app draws for
+  // `command`, and the one `terminal` boxes. Naming it after the keycap and
+  // drawing a looped square would promise a Mac-only shortcut.
+  command: 'M3.5 5 6.5 8 3.5 11M8 9.5h4.25',
 
   // Chrome
   sidebarLeft: 'M2.5 3h11v10h-11zM6.5 3v10',
