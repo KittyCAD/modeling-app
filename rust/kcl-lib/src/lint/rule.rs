@@ -9,9 +9,9 @@ use tower_lsp::lsp_types::DiagnosticSeverity;
 
 use crate::SourceRange;
 use crate::errors::Suggestion;
-use crate::lsp::IntoDiagnostic;
-use crate::lsp::ToLspRange;
-use crate::lsp::to_lsp_edit;
+use crate::lsp_types::IntoDiagnostic;
+use crate::lsp_types::ToLspRange;
+use crate::lsp_types::to_lsp_edit;
 use crate::parsing::ast::types::Node as AstNode;
 use crate::parsing::ast::types::Program;
 use crate::walk::Node;

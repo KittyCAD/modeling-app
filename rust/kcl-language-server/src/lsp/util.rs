@@ -1,7 +1,7 @@
 //! Utility functions for working with ropes and positions.
 
+pub use kcl_lib::IntoDiagnostic;
 use ropey::Rope;
-use tower_lsp::lsp_types::Diagnostic;
 use tower_lsp::lsp_types::Position;
 
 pub fn position_to_offset(position: Position, rope: &Rope) -> Option<usize> {
@@ -31,16 +31,4 @@ pub fn get_line_before(pos: Position, rope: &Rope) -> Option<String> {
     }
     let line_start = offset - char_offset;
     Some(rope.slice(line_start..offset).to_string())
-}
-
-/// Convert an object into a [lsp_types::Diagnostic] given the
-/// [TextDocumentItem]'s `.text` field.
-pub trait IntoDiagnostic {
-    /// Convert the traited object to a vector of [lsp_types::Diagnostic].
-    /// `uri` is the document the diagnostics are published under, used to
-    /// locate related information in the top-level file.
-    fn to_lsp_diagnostics(&self, text: &str, uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic>;
-
-    /// Get the severity of the diagnostic.
-    fn severity(&self) -> tower_lsp::lsp_types::DiagnosticSeverity;
 }
