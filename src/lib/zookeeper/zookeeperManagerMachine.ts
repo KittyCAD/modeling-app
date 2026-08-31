@@ -16,10 +16,9 @@ import { cleanErrs, isErr } from '@src/lib/trap'
 import { isArray, isRecord, uuidv4 } from '@src/lib/utils'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
-import { createActorContext } from '@xstate/react'
 import ms from 'ms'
 import type { ActorRefFrom } from 'xstate'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import { assertEvent, assign, createActor, fromPromise, setup } from 'xstate'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
@@ -2104,6 +2103,33 @@ export const zookeeperManagerMachine = setup({
 })
 
 export type ZookeeperManagerActor = ActorRefFrom<typeof zookeeperManagerMachine>
-export const ZookeeperManagerReactContext = createActorContext(
-  zookeeperManagerMachine
-)
+
+export function createZookeeperManagerActor(
+  apiToken: string
+): ZookeeperManagerActor {
+  return createActor(zookeeperManagerMachine, {
+    input: { apiToken },
+  }).start()
+}
+
+export function updateZookeeperManagerAuthToken(
+  actor: ZookeeperManagerActor,
+  apiToken: string
+) {
+  actor.send({
+    type: ZookeeperManagerTransitions.AuthTokenChanged,
+    apiToken,
+  })
+}
+
+/**
+ * Stop a project-owned Zookeeper session and close its live transport.
+ *
+ * XState does not run root exit actions when an actor is stopped directly, so
+ * runtime owners must close the resolved socket before stopping the actor.
+ * Connecting sockets are still closed by the setup actor's abort handler.
+ */
+export function stopZookeeperManagerActor(actor: ZookeeperManagerActor) {
+  closeZookeeperWebSocket(actor.getSnapshot().context.ws)
+  actor.stop()
+}

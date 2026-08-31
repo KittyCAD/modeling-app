@@ -14,6 +14,7 @@ import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
+import type { QueuedMessage } from '@src/lib/zookeeper/registry/controller'
 import {
   type Conversation,
   type Exchange,
@@ -32,13 +33,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 const noop = () => {}
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
-
-export interface QueuedMessage {
-  id: string
-  text: string
-  mode?: MlCopilotModeId
-  attachments: File[]
-}
+export type { QueuedMessage }
 
 export interface ZookeeperConversationProps {
   isLoading: boolean
