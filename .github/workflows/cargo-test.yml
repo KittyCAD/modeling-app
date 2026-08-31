@@ -173,7 +173,7 @@ jobs:
           path: rust/nextest-archive.tar.zst
   run-test-artifacts:
     name: cargo test (${{ matrix.executor }}, shard ${{ matrix.partitionIndex}})
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     needs: build-test-artifacts
     strategy:
       fail-fast: false
