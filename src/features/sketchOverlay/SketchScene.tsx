@@ -10,7 +10,7 @@ import type { SketchScene as Scene } from '@src/features/sketchOverlay/createSke
 import type { drawSketch } from '@src/features/sketchOverlay/sketchSegments'
 import { draftSegmentIds } from '@src/lib/sketch/draft'
 import { drawingOf } from '@src/lib/sketch/drawing'
-import { SKETCH_HOVER_DISTANCE_PX, pickInSketch } from '@src/lib/sketch/hitTest'
+import { ORIGIN_ID, originVertex, previewShapes } from '@src/lib/sketch/preview'
 import './sketchOverlay.css'
 
 /**
@@ -137,30 +137,56 @@ export function SketchScene({ pointer }: { pointer: SketchPointer }) {
     const drawing = drawingOf(graph, open.sketchId)
 
     /*
-     * The hover is worked out here rather than passed in, because it depends on
-     * the same drawing that is about to be built — computing it anywhere else
-     * would mean building the drawing twice, or marking a segment that is not the
-     * one under the pointer.
+     * The hover comes from the interaction, which is where the pointer is.
+     *
+     * It used to be worked out here, from the drawing about to be built. That was
+     * one hit test too many once the badges needed the same answer: two of them
+     * are two answers whenever the graph changes between reads.
      */
     const where = pointer.at.value
-    const scale = where
-      ? projection.scaleOn(plane, where, {
-          width: host.current?.clientWidth ?? 0,
-          height: host.current?.clientHeight ?? 0,
-        })
-      : 0
-    const hovered =
-      where && scale > 0
-        ? pickInSketch(drawing, where, SKETCH_HOVER_DISTANCE_PX / scale)
-        : null
+    const hovered = pointer.hovered.value
+
+    /*
+     * The shape-to-be, for the tools whose first click is not yet a shape.
+     *
+     * Added after the hover is worked out, on purpose: a preview is not
+     * something you can hover, pick or snap to, and including it in the drawing
+     * the hit test reads would offer all three.
+     */
+    const preview = previewShapes(
+      sessions.draft.value,
+      sessions.tool.value,
+      where
+    )
 
     paint(
       built.group,
-      drawing,
+      {
+        ...drawing,
+        shapes: [...drawing.shapes, ...preview],
+        // The origin is drawn here rather than in `drawingOf`, because it is not
+        // in the graph and the hit test reads the graph's drawing: adding it
+        // there would make it pickable as a segment it is not.
+        vertices: [...drawing.vertices, originVertex()],
+      },
       {
         theme,
-        drafts: new Set(draftSegmentIds(sessions.draft.value)),
-        hoveredId: hovered?.id ?? null,
+        drafts: new Set([
+          ...draftSegmentIds(sessions.draft.value),
+          // Drawn grey, like any other uncommitted geometry.
+          ...preview.map((shape) => shape.id),
+        ]),
+        hoveredId: hovered,
+        /*
+         * The origin is dropped here rather than filtered upstream: it is a real
+         * selection and the session is right to hold it, but it is not in the
+         * drawing, so nothing here could colour it.
+         */
+        selected: new Set(
+          sessions.selection.value.map((id) =>
+            id === 'origin' ? ORIGIN_ID : id
+          )
+        ),
       },
       built.viewport()
     )

@@ -19,4 +19,29 @@ export const faceOnWhenEnteringSketchSetting = booleanSetting({
   toml: ['settings', 'sketching', 'face_on_when_entering'],
 })
 
-export const sketchingSettings = [faceOnWhenEnteringSketchSetting]
+/**
+ * Whether every constraint is drawn all the time.
+ *
+ * Off, because a sketch with thirty constraints in it is a sketch you cannot
+ * see: the badges cover the geometry they are about. By default they are revealed
+ * by hovering the segment they constrain, which shows the few that are relevant
+ * and none of the rest.
+ *
+ * On is for reading somebody else's sketch, or checking your own is fully
+ * constrained — the moments when the constraints *are* what you are looking at.
+ */
+export const showConstraintsSetting = booleanSetting({
+  id: 'sketching.showConstraints',
+  section: 'sketching',
+  title: 'Show all constraints',
+  description:
+    'Draw every constraint in an open sketch, rather than revealing them by hovering the segment they belong to. Useful for reading a sketch; noisy while drawing one.',
+  order: 1,
+  defaultValue: false,
+  toml: ['settings', 'sketching', 'show_constraints'],
+})
+
+export const sketchingSettings = [
+  faceOnWhenEnteringSketchSetting,
+  showConstraintsSetting,
+]

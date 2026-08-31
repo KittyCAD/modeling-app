@@ -26,6 +26,7 @@ import {
   highlightEdgesSetting,
   showScaleGridSetting,
 } from '@src/features/engineScene/settings'
+import { defaultLengthUnitSetting } from '@src/features/units/settings'
 import type { KclCompilationIssue } from '@src/features/kclAnalysis/diagnostics'
 import { createKclContextOwner } from '@src/features/kclExecution/createKclContext'
 import {
@@ -198,6 +199,7 @@ export default defineRegistryItemFactory((ctx) => {
       highlightEdges: resolved.read(highlightEdgesSetting),
       enableSsao: resolved.read(enableSsaoSetting),
       showScaleGrid: resolved.read(showScaleGridSetting),
+      baseUnit: resolved.read(defaultLengthUnitSetting),
     }
   }
 

@@ -46,3 +46,107 @@
   min-inline-size: 0;
   font-size: var(--zds-font-size-small);
 }
+
+/*
+ * Constraint badges and dimension labels.
+ *
+ * A sheet across the viewport that takes no pointer events, with each annotation
+ * taking its own — so clicking a badge selects a constraint and clicking beside
+ * one still orbits the model. Positioned by `transform` rather than by `inset`,
+ * because a transform is the one property that moves an element without asking
+ * the browser to lay anything out again, and these move on every camera echo.
+ */
+.zds-sketch-annotations {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.zds-sketch-badge,
+.zds-sketch-dimension {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  pointer-events: auto;
+}
+
+.zds-sketch-badge {
+  display: grid;
+  place-items: center;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  padding: 0;
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-overlay);
+  color: var(--zds-text-secondary);
+  cursor: pointer;
+}
+
+.zds-sketch-badge:hover {
+  border-color: var(--zds-border-strong);
+  color: var(--zds-text-primary);
+}
+
+/*
+ * Selected badges take the sketch selection colour rather than a theme accent,
+ * so a selected constraint and a selected segment read as the same state. The
+ * colour is set on the container from `appearance.ts`, which is the one place
+ * that decides what "selected" looks like in a sketch.
+ */
+.zds-sketch-badge[data-selected="true"] {
+  border-color: var(--zds-sketch-selection);
+  background: var(--zds-sketch-selection);
+  color: var(--zds-text-inverse);
+}
+
+.zds-sketch-dimension__value,
+.zds-sketch-dimension__field {
+  min-inline-size: 2.5rem;
+  padding-block: 0;
+  padding-inline: var(--zds-space-1);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  background: var(--zds-surface-overlay);
+  color: var(--zds-text-primary);
+  font: inherit;
+  font-size: var(--zds-font-size-small);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.zds-sketch-dimension__value {
+  cursor: pointer;
+}
+
+.zds-sketch-dimension[data-selected="true"] .zds-sketch-dimension__value {
+  border-color: var(--zds-sketch-selection);
+  color: var(--zds-sketch-selection);
+}
+
+.zds-sketch-dimension__field {
+  inline-size: 5rem;
+}
+
+/*
+ * The area-select box.
+ *
+ * Dashed when it is the crossing reading — dragged right to left, taking
+ * everything it touches — and solid when it takes only what is wholly inside.
+ * That pairing is the existing app's, and every other CAD package's: the border
+ * is how you tell which of the two you are doing without looking away from what
+ * you are selecting.
+ */
+.zds-sketch-area-select {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  border: 1px solid var(--zds-sketch-selection);
+  background: color-mix(in oklch, var(--zds-sketch-selection) 12%, transparent);
+  pointer-events: none;
+}
+
+.zds-sketch-area-select[data-crossing="true"] {
+  border-style: dashed;
+}

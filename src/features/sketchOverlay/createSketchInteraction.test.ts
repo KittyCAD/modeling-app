@@ -55,6 +55,12 @@ function setup(
     from?: { x: number; y: number }
   }>({ kind: 'idle' })
 
+  const select = vi.fn()
+  const clearSelection = vi.fn()
+  const cancelTool = vi.fn(() => {
+    draft.value = { kind: 'idle' }
+  })
+
   const session = {
     open,
     tool,
@@ -64,6 +70,9 @@ function setup(
     finishChain,
     beginDrag,
     endDrag,
+    select,
+    clearSelection,
+    cancelTool,
   } as unknown as SketchSessionService
 
   // The identity projection: an element pixel is a plane millimetre, which
@@ -107,6 +116,9 @@ function setup(
     finishChain,
     beginDrag,
     endDrag,
+    select,
+    clearSelection,
+    cancelTool,
     draft,
     dispose: () => {
       dispose()
@@ -524,5 +536,265 @@ describe('dragging a point', () => {
     app.element.dispatchEvent(pointer('pointerdown', 20, 20))
 
     expect(app.beginDrag).not.toHaveBeenCalled()
+  })
+})
+
+describe('selecting by clicking', () => {
+  const clickable = () =>
+    setup({
+      graph: sketchGraph,
+      open: { sketchId: 3, name: 's', plane, planeProblem: null },
+    })
+
+  /*
+   * A press on a segment starts a drag, because it might become one — so what
+   * makes it a selection instead is the release without movement.
+   */
+  it('selects what was pressed when the pointer did not move', () => {
+    const app = clickable()
+
+    // Two millimetres off the middle of the line: near enough to the body, far
+    // enough from either end that a point does not win the pick.
+    app.element.dispatchEvent(pointer('pointerdown', 30, 22))
+    app.element.dispatchEvent(pointer('pointerup', 30, 22))
+
+    expect(app.select).toHaveBeenCalledWith(2, { add: false })
+    // Abandoned rather than committed, so a click costs no solve and cannot
+    // nudge geometry by a pixel.
+    expect(app.cancelTool).toHaveBeenCalled()
+    expect(app.endDrag).not.toHaveBeenCalled()
+  })
+
+  it('adds to the selection with shift held', () => {
+    const app = clickable()
+    const press = pointer('pointerdown', 20, 20)
+    const release = new MouseEvent('pointerup', {
+      bubbles: true,
+      clientX: 20,
+      clientY: 20,
+      button: 0,
+      shiftKey: true,
+    }) as unknown as PointerEvent
+
+    app.element.dispatchEvent(press)
+    app.element.dispatchEvent(release)
+
+    expect(app.select).toHaveBeenCalledWith(0, { add: true })
+  })
+
+  it('drags rather than selects once the pointer has moved', () => {
+    const app = clickable()
+
+    app.element.dispatchEvent(pointer('pointerdown', 30, 22))
+    app.element.dispatchEvent(pointer('pointermove', 60, 40))
+    app.element.dispatchEvent(pointer('pointerup', 60, 40))
+
+    expect(app.endDrag).toHaveBeenCalled()
+    expect(app.select).not.toHaveBeenCalled()
+  })
+
+  it('clears the selection when the click was on nothing', () => {
+    const app = clickable()
+
+    app.picked.dispatchEvent(pointer('pointerdown', 150, 90))
+    app.picked.dispatchEvent(pointer('pointerup', 150, 90))
+
+    expect(app.clearSelection).toHaveBeenCalled()
+  })
+
+  /*
+   * This handler runs *behind* the camera, so a press that turned into an orbit
+   * arrives here on release like any other. Clearing the selection because
+   * somebody looked at the model from another angle would be its own bug.
+   */
+  it('leaves the selection alone after an orbit', () => {
+    const app = clickable()
+
+    app.picked.dispatchEvent(pointer('pointerdown', 150, 90))
+    app.picked.dispatchEvent(pointer('pointerup', 60, 20))
+
+    expect(app.clearSelection).not.toHaveBeenCalled()
+  })
+
+  it('selects the origin, which is not in the graph at all', () => {
+    const app = clickable()
+
+    app.picked.dispatchEvent(pointer('pointerdown', 0, 0))
+    app.picked.dispatchEvent(pointer('pointerup', 0, 0))
+
+    expect(app.select).toHaveBeenCalledWith('origin', { add: false })
+    expect(app.clearSelection).not.toHaveBeenCalled()
+  })
+
+  it('keeps a shift-click on nothing from clearing what is selected', () => {
+    const app = clickable()
+    const press = pointer('pointerdown', 150, 90)
+    const release = new MouseEvent('pointerup', {
+      bubbles: true,
+      clientX: 150,
+      clientY: 90,
+      button: 0,
+      shiftKey: true,
+    }) as unknown as PointerEvent
+
+    app.picked.dispatchEvent(press)
+    app.picked.dispatchEvent(release)
+
+    expect(app.clearSelection).not.toHaveBeenCalled()
+  })
+})
+
+describe('selecting with a box', () => {
+  const boxable = () =>
+    setup({
+      graph: sketchGraph,
+      open: { sketchId: 3, name: 's', plane, planeProblem: null },
+    })
+
+  /*
+   * Not claimed on the press: a press that never moves is a click on nothing,
+   * which belongs to the handler behind the camera.
+   */
+  it('leaves the press alone until the pointer has moved', () => {
+    const app = boxable()
+    const press = pointer('pointerdown', 150, 90)
+    const claimed = vi.spyOn(press, 'stopImmediatePropagation')
+
+    app.element.dispatchEvent(press)
+
+    expect(claimed).not.toHaveBeenCalled()
+    expect(app.interaction.pointer.box.value).toBeNull()
+  })
+
+  it('grows a box once the pointer has gone far enough', () => {
+    const app = boxable()
+    app.element.dispatchEvent(pointer('pointerdown', 150, 90))
+
+    app.element.dispatchEvent(pointer('pointermove', 100, 40))
+
+    expect(app.interaction.pointer.box.value).toEqual({
+      from: { x: 150, y: 90 },
+      to: { x: 100, y: 40 },
+      // Dragged right to left, so everything it touches.
+      mode: 'crossing',
+    })
+  })
+
+  it('reads a left-to-right drag as containment', () => {
+    const app = boxable()
+    app.element.dispatchEvent(pointer('pointerdown', 10, 10))
+
+    app.element.dispatchEvent(pointer('pointermove', 100, 90))
+
+    expect(app.interaction.pointer.box.value?.mode).toBe('contains')
+  })
+
+  it('selects what the box covers on release', () => {
+    const app = boxable()
+    // A box around the whole line fixture, dragged left to right.
+    app.element.dispatchEvent(pointer('pointerdown', 10, 10))
+    app.element.dispatchEvent(pointer('pointermove', 60, 30))
+    app.element.dispatchEvent(pointer('pointerup', 60, 30))
+
+    // Points 0 and 1 and the line 2 between them.
+    expect(app.select.mock.calls.map((call) => call[0])).toEqual([0, 1, 2])
+    // The first replaces, the rest add — so the box is one selection, not three.
+    expect(app.select.mock.calls.map((call) => call[1])).toEqual([
+      { add: false },
+      { add: true },
+      { add: true },
+    ])
+    expect(app.interaction.pointer.box.value).toBeNull()
+  })
+
+  it('adds to the selection when shift is held', () => {
+    const app = boxable()
+    app.element.dispatchEvent(pointer('pointerdown', 10, 10))
+    app.element.dispatchEvent(pointer('pointermove', 60, 30))
+    app.element.dispatchEvent(
+      new MouseEvent('pointerup', {
+        bubbles: true,
+        clientX: 60,
+        clientY: 30,
+        button: 0,
+        shiftKey: true,
+      }) as unknown as PointerEvent
+    )
+
+    expect(app.select.mock.calls.every((call) => call[1]?.add)).toBe(true)
+  })
+
+  it('clears the selection when the box covered nothing', () => {
+    const app = boxable()
+    app.element.dispatchEvent(pointer('pointerdown', 120, 70))
+    app.element.dispatchEvent(pointer('pointermove', 180, 95))
+    app.element.dispatchEvent(pointer('pointerup', 180, 95))
+
+    expect(app.clearSelection).toHaveBeenCalled()
+    expect(app.select).not.toHaveBeenCalled()
+  })
+
+  /*
+   * Several control schemes make a modified left drag a camera gesture, and the
+   * camera sits behind this handler — so a modified press must fall through.
+   */
+  it('leaves a modified drag to the camera', () => {
+    const app = boxable()
+    app.element.dispatchEvent(
+      new MouseEvent('pointerdown', {
+        bubbles: true,
+        clientX: 150,
+        clientY: 90,
+        button: 0,
+        altKey: true,
+      }) as unknown as PointerEvent
+    )
+
+    app.element.dispatchEvent(pointer('pointermove', 100, 40))
+
+    expect(app.interaction.pointer.box.value).toBeNull()
+  })
+
+  it('abandons the box if the pointer leaves the surface', () => {
+    const app = boxable()
+    app.element.dispatchEvent(pointer('pointerdown', 150, 90))
+    app.element.dispatchEvent(pointer('pointermove', 100, 40))
+
+    app.element.dispatchEvent(pointer('pointerleave'))
+
+    // The release will happen somewhere this cannot see, and a box applied from
+    // the last position it *did* see would select from a rectangle nobody saw
+    // finish.
+    expect(app.interaction.pointer.box.value).toBeNull()
+  })
+
+  it('answers nothing else while a box is being dragged', () => {
+    const app = boxable()
+    app.element.dispatchEvent(pointer('pointermove', 20, 20))
+    expect(app.interaction.pointer.hovered.value).toBe(0)
+
+    app.element.dispatchEvent(pointer('pointerdown', 150, 90))
+    app.element.dispatchEvent(pointer('pointermove', 20, 20))
+
+    /*
+     * Otherwise a row of constraint badges flashes up for every segment the box
+     * is dragged across, and the snap indicator marks places nothing will land.
+     */
+    expect(app.interaction.pointer.hovered.value).toBeNull()
+    expect(app.interaction.pointer.snap.value).toBeNull()
+  })
+
+  it('does not box while a tool is equipped', () => {
+    const app = setup({
+      tool: 'line',
+      graph: sketchGraph,
+      open: { sketchId: 3, name: 's', plane, planeProblem: null },
+    })
+
+    app.element.dispatchEvent(pointer('pointerdown', 150, 90))
+    app.element.dispatchEvent(pointer('pointermove', 100, 40))
+
+    // The press belongs to the tool: it is drawing a line, not a box.
+    expect(app.interaction.pointer.box.value).toBeNull()
   })
 })

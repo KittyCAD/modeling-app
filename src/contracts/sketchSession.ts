@@ -2,6 +2,7 @@ import { defineContract, defineService } from '@kittycad/registry'
 import type { ApiObjectId } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { ReadonlySignal } from '@preact/signals'
 import type { PlaneFrame, PlanePoint } from '@src/lib/scene/projection'
+import type { ConstraintToolId } from '@src/lib/sketch/constraints'
 import type { DraftState } from '@src/lib/sketch/draft'
 import type { SketchToolId } from '@src/lib/sketch/tools'
 
@@ -26,6 +27,17 @@ export interface OpenSketch {
   /** Why there is no plane, when there is none. */
   planeProblem: string | null
 }
+
+/**
+ * Something selected inside a sketch.
+ *
+ * Its own id space, and the reason is the origin: it is a real thing to select —
+ * constraints name it, `ConstraintSegment` has a literal for it — and it is the
+ * one such thing that is *not* an object in the graph. Modelling it as an object
+ * id would mean inventing an id for it, and then keeping the invention out of
+ * every lookup.
+ */
+export type SketchSelectionId = ApiObjectId | 'origin'
 
 /**
  * Editing one sketch, from opening it to writing it back.
@@ -76,6 +88,18 @@ export interface SketchSessionService {
   readonly draft: ReadonlySignal<DraftState>
 
   /**
+   * What is selected, in the order it was picked.
+   *
+   * Order matters and is not decoration: a constraint's meaning depends on it —
+   * a midpoint takes a point *and* a line and would be a different request the
+   * other way round — so this is a list rather than a set.
+   *
+   * Dropped whenever a solve renumbers the graph, because an id that survives a
+   * renumbering names whatever now sits in that slot.
+   */
+  readonly selection: ReadonlySignal<readonly SketchSelectionId[]>
+
+  /**
    * Open the sketch the cursor or selection is in.
    *
    * No argument, because "which sketch" is already answered by where the user is
@@ -122,6 +146,55 @@ export interface SketchSessionService {
   endDrag(at: PlanePoint): void
   /** Abandon what the tool was part way through, keeping it equipped. */
   cancelTool(): void
+
+  /**
+   * Select something, or add it to what is selected.
+   *
+   * `add` is the shift-click reading: extend rather than replace, and toggle
+   * something already in the list, which is how a selection is corrected without
+   * starting again.
+   */
+  select(id: SketchSelectionId, options?: { add?: boolean }): void
+  /** Select nothing. */
+  clearSelection(): void
+  /**
+   * Apply a constraint to what is selected.
+   *
+   * The tool decides what the selection means — a point and a line make a
+   * different midpoint request in each order — and refuses rather than guesses
+   * when the selection does not make one. Whether it *can* be applied is a pure
+   * question anybody can ask, which is what lets the button be disabled instead
+   * of the click failing.
+   */
+  applyConstraint(tool: ConstraintToolId): void
+
+  /**
+   * Dimension what is selected.
+   *
+   * Exactly two things, and what they are decides what the dimension is: two
+   * points give their separation, a point and a line the distance between them,
+   * two parallel lines their separation, and two lines that cross the angle
+   * between them. The value is measured off the geometry as it is now, because
+   * that is what applying a dimension means — *this* distance, from here on.
+   */
+  applyDimension(): void
+  /**
+   * Change what a dimension says.
+   *
+   * An expression rather than a number, because that is what goes into the file:
+   * `2 * width` is as valid as `40`, and being able to type the second and later
+   * edit it into the first is how a sketch becomes parametric.
+   */
+  setDimension(constraintId: ApiObjectId, expression: string): void
+
+  /**
+   * Delete what is selected.
+   *
+   * Segments and constraints both, because both are selectable and both are
+   * things a user means to remove — taking a constraint off is as ordinary an
+   * edit as taking a line out.
+   */
+  deleteSelection(): void
 }
 
 export const sketchSessionContract = defineContract({

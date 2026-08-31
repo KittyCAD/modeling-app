@@ -121,6 +121,9 @@ describe('resolving a point', () => {
       // readout needs whatever the file was written in.
       units: 'Mm',
       freedom: 'Free',
+      // Nothing owns a line's end. A spline's control point is owned, and that
+      // is what tells an area select to offer the spline instead.
+      owner: null,
     })
   })
 

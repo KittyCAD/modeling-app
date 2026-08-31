@@ -993,6 +993,40 @@ stays live for the session either way.
 so writing the title merges rather than replaces. Before, a rename would have
 silently reset the project's preferences.
 
+### Units are the one setting that changes the geometry
+
+Every other preference in the cascade changes how something is drawn. The default
+length unit changes what the file *means*: an unsuffixed `10` is ten of whatever
+the app says, so a wrong answer here makes every dimension wrong by a constant
+factor with nothing on screen to explain it.
+
+Which is why it appears in four places and why they must agree:
+
+| Where | What it does |
+| --- | --- |
+| `base_unit` in the executor's settings | what an unsuffixed number means to kcl-lib |
+| the same, in the sketch frontend | so a solve agrees with the execution |
+| the unit sketch tools write | `10in` in an inch file, not `10mm` |
+| `@settings(defaultLengthUnit)` in a new file | so the file keeps its meaning elsewhere |
+
+The fourth is the one worth dwelling on. A file that declares no unit means
+whatever the app is configured for, so a part drawn in inches stays inches only
+for as long as nobody opens it with different preferences. So a new file in a
+project whose unit is not millimetres gets the unit *written into it*, and a file
+in a millimetre project gets nothing — an annotation that repeats kcl-lib's own
+default is noise in every file, and it cannot disagree with the default.
+
+Both levels are real and the ordering matters: the user's setting is "what I work
+in", the project's is "what this part is drawn in", and the project's winning is
+what keeps a part in the unit it was drawn in.
+
+The annotation is written by kcl-lib — `change_default_units`, `change_kcl_version`
+— rather than by string surgery here. Both parse, edit the attribute and recast,
+so a file with a comment above its annotation keeps the comment. The KCL *version*
+is app-controlled and always written: a project-level "which language version" is
+a reasonable thing to want, but a project written against a version the app cannot
+execute is worse than no setting at all.
+
 ### The dialog is a route, not a screen
 
 `/settings/:section` is addressable, and the location source sits at the front of
@@ -1272,6 +1306,133 @@ moved into a sketch block is exactly the signal being followed.
 Offsets are compared against the last *executed* program, so a sketch written a
 moment ago becomes a place to be one run later. That is why writing one is
 followed by a run rather than by a mode change.
+
+### Drawing in a sketch
+
+The idea everything else follows from: **the rubber band is a real segment**. The
+first click does not remember a position, it writes a zero-length line into the
+sketch and keeps hold of its end point; every pointer move asks the solver to
+move that point and draws whatever comes back. So the line being dragged out is
+already constrained, already snapped, and already the thing you will get — there
+is no second geometry model that can disagree with the solver. `draft.ts` is that
+state machine, as a discriminated union rather than a machine library: the states
+are real and worth naming, the transitions are a `switch`.
+
+Not every shape can be written from one click, which is what the phases are for:
+
+| State | What exists | What a move does |
+| --- | --- | --- |
+| `pending` | nothing yet | nothing — the preview is drawn from the clicks |
+| `drawing` | a segment | moves one *point* of it |
+| `shaping` | a segment | respecifies it *whole* |
+| `chaining` | the last segment | creates the next one |
+| `dragging` | existing geometry | moves it, planned against the last solve |
+
+A circle needs `pending` because a circle of no radius has no rim point for the
+solver to hold an opinion about. An arc needs `shaping` because its centre and its
+sweep direction are derived from all three points at once, which no point-move can
+express. A rectangle needs `shaping` over four targets, because it is four lines
+and eight constraints — a rectangle *is* four lines described as a rectangle, and
+without the description the first drag would prove it.
+
+`pending` is also the one exception to "everything on screen is the solver's
+answer": between the two clicks of a circle there is nothing in the sketch, so
+there is nothing the solver could be asked. The preview is kept as far from the
+real geometry as possible — a negative sentinel id, which the flat-array graph can
+never contain, so anything that looks it up finds nothing and a preview is
+unpickable and undraggable for free.
+
+### Constraints are a declarative model, not ten tools
+
+A constraint tool is a list of *modes*; a mode is a list of *slots*; a slot is a
+list of kinds it accepts. So "can this be applied to what is selected?" is a pure
+function, which is what lets a button be disabled *before* the click rather than
+the click failing. Ported from the existing app's `constraintToolModel.ts`, which
+is the same shape `MODELING_TOOLS` has.
+
+Two things in the data are easy to miss. `repeatableLastSlot` is how a tool takes
+any number of the same thing — parallel across five lines is one constraint naming
+five, not four naming pairs. And a mode's slot order *is* the selection order,
+which is why the selection is a list rather than a set: a midpoint of a point and
+a line is a different request from a midpoint of a line and a point.
+
+Dimensions are the same objects with a value, and the value is a KCL
+*expression* — `2 * width` as readily as `40`, which is what makes a sketch
+parametric rather than a set of numbers.
+
+Both are drawn as **DOM over the scene**, not as sprites: a badge is a `<button>`
+with a title and a focus ring, a dimension is a value you double-click and type
+over. The existing app makes them sprites and then rebuilds click handling,
+tooltips, focus and row layout by hand in screen space. What the DOM cannot do is
+know where they go, which is the projection's job — so the component is a
+positioning loop and nothing else. It is not decoration: a constraint that is not
+drawn cannot be selected, and one that cannot be selected cannot be deleted.
+
+Badges are **hidden until asked for**, because a sketch with thirty constraints in
+it is a sketch you cannot see. Hovering a segment reveals the constraints that say
+something about *that* segment — a point brings its whole coincident cluster,
+since a corner's constraints are spread across the points that meet there — in a
+row *beside* the cursor, so what is being annotated stays visible while the
+annotation is read. The row is pinned where the pointer was rather than following
+it: a row that slides along is a row you chase instead of one you move onto.
+
+Which creates the problem the linger solves. Reaching a badge means leaving the
+segment that revealed it, so a reveal outlives its hover by two seconds, and the
+clock is cancelled while the pointer is on the segment *or* on one of the badges
+it revealed. Several segments can be showing at once, each on its own clock, so a
+row does not vanish because the pointer crossed something else on the way to it.
+A drag dismisses them all — geometry moving under a row pinned to where the
+pointer was reads as a bug rather than as a hint. "Show all constraints" turns the
+whole policy off for reading a sketch rather than drawing one.
+
+### Selecting by box has two readings
+
+Drag left to right and you get what is wholly inside; drag right to left and you
+get everything the box touches. Which one you meant is read off the direction your
+hand went rather than from a modifier, which is a CAD convention older than any of
+these apps — and the border says which, solid or dashed, so you can tell without
+looking away.
+
+The arithmetic is where the care goes. Containment of a *line* is both ends
+inside, but containment of an *arc* is both ends plus wherever it crosses a
+compass point, because the ends alone would call a half circle contained by a box
+its bulge sticks out of. Touching a rim means solving the circle against each of
+the box's four edges and keeping only crossings that land within the arc's own
+sweep: an arc is not its circle, and a box beside the missing part of one touches
+nothing. A box floating *inside* a circle touches nothing either.
+
+The box is dragged in the sketch plane, where it is axis-aligned, and drawn as a
+screen rectangle between its two projected corners. Those agree exactly when the
+plane is square to the camera, which is where sketching happens; the existing app
+makes the same trade.
+
+Its place in the pointer order is the subtle part. The press is recorded but not
+claimed — a press that never moves is a click on nothing, which belongs behind the
+camera, and a modified left drag is a camera gesture in several control schemes.
+Only past the click threshold is the move claimed, and from then the box answers
+nothing else: no hover, so badge rows do not flash up along the way, and no snap,
+because a box does not snap.
+
+### Dragging is three ideas, not one
+
+Grabbing an end means "put this end there", so the cursor position is what is
+asked for. Grabbing the *middle* means "move this line", so every point of it
+moves by the same vector. And a body also gets a **drag anchor** — kcl-lib's own
+mechanism, a hidden fixed point the segment must pass through — because
+translating a constrained segment's points is a request the constraints are free
+to refuse outright, while an anchor asks the solver to slide it along whatever
+freedom is left.
+
+Coincident points move together, transitively: a profile's corner is several
+points at one place, and moving only the one under the cursor asks the solver to
+break the coincidence, which it can satisfy by moving the *other* segment — so the
+corner appears to tear.
+
+The drag vector is measured from where the last *accepted* solve left the pointer,
+not from where the drag began. kcl-lib reports a refused solve in the outcome
+rather than by rejecting, so `SketchOutcome.problem` exists to tell them apart —
+without it, a refusal would leave the pointer and the geometry offset by the
+refused distance for the rest of the drag.
 
 ### Tools are derived, and their absences are deliberate
 

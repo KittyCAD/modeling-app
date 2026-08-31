@@ -32,6 +32,8 @@ import {
   sketchingSettings,
 } from '@src/features/sketchMode/settings'
 import { sketchContextAt } from '@src/features/sketchMode/sketchContext'
+import { unitsService } from '@src/contracts/units'
+import { suffixForUnitName } from '@src/lib/kcl/units'
 
 /**
  * Sketching as a place, not a state.
@@ -113,6 +115,16 @@ export default defineRegistryItemFactory((ctx) => {
       ctx.services
         .optional(settingsService)
         ?.read(faceOnWhenEnteringSketchSetting) ?? true,
+    /*
+     * The project's unit, in the numeric model's spelling.
+     *
+     * `Mm` when there is no units service, which is the same answer the service
+     * itself gives before anybody has expressed a preference.
+     */
+    defaultUnit: () =>
+      suffixForUnitName(
+        ctx.services.optional(unitsService)?.defaultLengthUnit.value ?? null
+      ) ?? 'Mm',
   })
 
   /**

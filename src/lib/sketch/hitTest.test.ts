@@ -94,8 +94,8 @@ describe('distanceToShape', () => {
 const drawing: SketchDrawing = {
   shapes: [line],
   vertices: [
-    { id: 10, at: { x: 0, y: 0 }, freedom: 'Fixed' },
-    { id: 11, at: { x: 10, y: 0 }, freedom: 'Free' },
+    { id: 10, at: { x: 0, y: 0 }, freedom: 'Fixed', owner: null },
+    { id: 11, at: { x: 10, y: 0 }, freedom: 'Free', owner: null },
   ],
 }
 
@@ -124,8 +124,8 @@ describe('pickInSketch', () => {
     const crowded: SketchDrawing = {
       shapes: [],
       vertices: [
-        { id: 10, at: { x: 0, y: 0 }, freedom: 'Free' },
-        { id: 11, at: { x: 1, y: 0 }, freedom: 'Free' },
+        { id: 10, at: { x: 0, y: 0 }, freedom: 'Free', owner: null },
+        { id: 11, at: { x: 1, y: 0 }, freedom: 'Free', owner: null },
       ],
     }
 
@@ -149,8 +149,8 @@ describe('the tie-breaks ported from the existing app', () => {
     const coincident: SketchDrawing = {
       shapes: [],
       vertices: [
-        { id: 3, at: { x: 5, y: 5 }, freedom: 'Free' },
-        { id: 9, at: { x: 5, y: 5 }, freedom: 'Free' },
+        { id: 3, at: { x: 5, y: 5 }, freedom: 'Free', owner: null },
+        { id: 9, at: { x: 5, y: 5 }, freedom: 'Free', owner: null },
       ],
     }
 

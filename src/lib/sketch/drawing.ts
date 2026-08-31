@@ -27,6 +27,8 @@ export interface SketchVertex {
   id: ApiObjectId
   at: PlanePoint
   freedom: Freedom
+  /** The segment it belongs to, when it belongs to one. See `SketchPoint`. */
+  owner: ApiObjectId | null
 }
 
 interface ShapeBase {
@@ -92,6 +94,7 @@ export function drawingOf(
         id: point.id,
         at: positionOf(point),
         freedom: point.freedom,
+        owner: point.owner,
       })
     }
 

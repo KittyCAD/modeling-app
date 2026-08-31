@@ -21,9 +21,13 @@ import {
   SKETCHING_MODE,
   SKETCHING_SCOPE,
 } from '@src/features/sceneToolbar/modes'
+import { createBadgeReveal } from '@src/features/sketchOverlay/createBadgeReveal'
 import { createSketchInteraction } from '@src/features/sketchOverlay/createSketchInteraction'
 import { SketchScene } from '@src/features/sketchOverlay/SketchScene'
+import { SketchAnnotations } from '@src/features/sketchOverlay/SketchAnnotations'
 import { SketchProblem } from '@src/features/sketchOverlay/SketchProblem'
+import { CONSTRAINT_TOOLS, matchConstraint } from '@src/lib/sketch/constraints'
+import { SKETCH_TOOLS, type SketchToolId } from '@src/lib/sketch/tools'
 
 /**
  * Drawing in a sketch: what it looks like, and what the pointer does.
@@ -49,20 +53,122 @@ export default defineRegistryItemFactory((ctx) => {
       ctx.services.optional(kclFrontendService)?.sceneGraph.value ?? null,
   })
 
+  /**
+   * Which segment's constraints are showing.
+   *
+   * Held here rather than in the component so it survives a re-render and can be
+   * disposed with the feature: it owns timers, and a timer that outlives the
+   * thing that set it fires into nothing.
+   */
+  const reveal = createBadgeReveal()
+
   /** True once there is a sketch open with a plane to draw on. */
   const drawable = computed(() => sessions()?.open.value?.plane != null)
 
-  const equip = (tool: 'line') => () => {
+  const equip = (tool: SketchToolId) => () => {
     const session = sessions()
     // A second press of the same tool puts it down, which is how somebody stops
     // drawing without reaching for anything.
     session?.equip(session.tool.value === tool ? null : tool)
   }
 
+  /**
+   * One command, one toolbar slot and one key per tool.
+   *
+   * Generated from the table rather than written out, because every tool wants
+   * exactly the same three things and the only differences — the name, the icon,
+   * the letter — are what the table holds. Adding a tool is then a row plus its
+   * behaviour in `draft.ts`, with nothing to keep in step by hand.
+   */
+  const toolContributions = SKETCH_TOOLS.flatMap((tool) => {
+    const commandId = `sketch.tool.${tool.id}`
+
+    return [
+      provide(commandsValueSpec, {
+        id: commandId,
+        title: tool.title,
+        category: 'Sketch',
+        icon: tool.icon,
+        description: tool.description,
+        enabled: drawable,
+        active: computed(() => sessions()?.tool.value === tool.id),
+        run: equip(tool.id),
+      }),
+
+      provide(toolbarItemsValueSpec, {
+        kind: 'command' as const,
+        id: commandId,
+        mode: SKETCHING_MODE,
+        section: 'draw',
+        order: tool.order,
+        commandId,
+      }),
+
+      provide(keybindingsValueSpec, {
+        keystrokes: [tool.key],
+        commandId,
+        scopes: [SKETCHING_SCOPE],
+      }),
+    ]
+  })
+
+  /**
+   * One command and one key per constraint, plus a group to hold them.
+   *
+   * Each button knows whether it can be applied, because that is a pure question
+   * over the selection — which is the point of the declarative model: the answer
+   * is available before the click rather than discovered by it.
+   */
+  const constraintContributions = [
+    ...CONSTRAINT_TOOLS.flatMap((tool) => {
+      const commandId = `sketch.constrain.${tool.id}`
+
+      return [
+        provide(commandsValueSpec, {
+          id: commandId,
+          title: tool.title,
+          category: 'Sketch',
+          icon: tool.icon,
+          description: tool.description,
+          enabled: computed(() => {
+            const session = sessions()
+            const graph =
+              ctx.services.optional(kclFrontendService)?.sceneGraph.value
+            if (!session?.open.value || !graph) return false
+
+            return (
+              matchConstraint(tool.id, graph, session.selection.value)
+                .status === 'complete'
+            )
+          }),
+          run: () => sessions()?.applyConstraint(tool.id),
+        }),
+
+        provide(keybindingsValueSpec, {
+          keystrokes: [tool.key],
+          commandId,
+          scopes: [SKETCHING_SCOPE],
+        }),
+      ]
+    }),
+
+    provide(toolbarItemsValueSpec, {
+      kind: 'group' as const,
+      id: 'sketch.constraints',
+      mode: SKETCHING_MODE,
+      section: 'constrain',
+      order: 10,
+      title: 'Constraints',
+      icon: 'coincident',
+      commandIds: CONSTRAINT_TOOLS.map((tool) => `sketch.constrain.${tool.id}`),
+    }),
+  ]
+
   return {
     model: { pointer: interaction.pointer },
     item: defineRuntimeRegistryItem({
       id: 'sketchOverlay',
+      dispose: () => reveal.dispose(),
       provides: [
         provide(sceneItemsValueSpec, {
           id: 'sketch.overlay',
@@ -72,6 +178,24 @@ export default defineRegistryItemFactory((ctx) => {
           // not consulted — or subscribed to — the rest of the time.
           visible: drawable,
           render: () => <SketchScene pointer={interaction.pointer} />,
+        }),
+
+        /**
+         * Constraints and dimensions, as DOM over the scene.
+         *
+         * A second item rather than part of the overlay, because it is a
+         * different kind of thing: the overlay is a canvas that takes no pointer
+         * events, and these are buttons and fields that must. In the same zone,
+         * so they sit over the geometry they annotate.
+         */
+        provide(sceneItemsValueSpec, {
+          id: 'sketch.annotations',
+          zone: 'fill',
+          order: 1,
+          visible: drawable,
+          render: () => (
+            <SketchAnnotations pointer={interaction.pointer} reveal={reveal} />
+          ),
         }),
 
         /**
@@ -122,29 +246,41 @@ export default defineRegistryItemFactory((ctx) => {
           attach: interaction.attachPick,
         }),
 
+        ...toolContributions,
+        ...constraintContributions,
+
+        /**
+         * Dimension what is selected.
+         *
+         * Beside the constraints rather than in the group, because it is the one
+         * everybody reaches for and because what it produces is different in
+         * kind: a value that can be typed over afterwards.
+         */
         provide(commandsValueSpec, {
-          id: 'sketch.tool.line',
-          title: 'Line',
+          id: 'sketch.dimension',
+          title: 'Dimension',
           category: 'Sketch',
-          icon: 'line',
-          description: 'Draw a line between two points in the open sketch.',
-          enabled: drawable,
-          active: computed(() => sessions()?.tool.value === 'line'),
-          run: equip('line'),
+          icon: 'dimension',
+          description:
+            'Constrain a distance or an angle between two selected things.',
+          enabled: computed(
+            () => (sessions()?.selection.value.length ?? 0) === 2
+          ),
+          run: () => sessions()?.applyDimension(),
         }),
 
         provide(toolbarItemsValueSpec, {
           kind: 'command',
-          id: 'sketch.tool.line',
+          id: 'sketch.dimension',
           mode: SKETCHING_MODE,
-          section: 'draw',
-          order: 10,
-          commandId: 'sketch.tool.line',
+          section: 'constrain',
+          order: 20,
+          commandId: 'sketch.dimension',
         }),
 
         provide(keybindingsValueSpec, {
-          keystrokes: ['l'],
-          commandId: 'sketch.tool.line',
+          keystrokes: ['d'],
+          commandId: 'sketch.dimension',
           scopes: [SKETCHING_SCOPE],
         }),
 
@@ -183,6 +319,13 @@ export default defineRegistryItemFactory((ctx) => {
               session?.equip(null)
               return
             }
+            if ((session?.selection.value.length ?? 0) > 0) {
+              // After the tool, because a tool is the more active thing to be
+              // holding — and before the mode, because leaving now writes the
+              // sketch back and runs the program.
+              session?.clearSelection()
+              return
+            }
 
             /*
              * Nothing sketch-specific left to stop, so this means what Escape
@@ -196,6 +339,36 @@ export default defineRegistryItemFactory((ctx) => {
         provide(keybindingsValueSpec, {
           keystrokes: ['Escape'],
           commandId: 'sketch.tool.cancel',
+          scopes: [SKETCHING_SCOPE],
+        }),
+
+        /**
+         * Delete what is selected.
+         *
+         * Two keys, because both are the delete key depending on the keyboard,
+         * and a Mac keyboard's Backspace is where a PC's Delete is.
+         */
+        provide(commandsValueSpec, {
+          id: 'sketch.delete',
+          title: 'Delete selected',
+          category: 'Sketch',
+          icon: 'close',
+          description: 'Remove the selected segments and constraints.',
+          enabled: computed(
+            () => (sessions()?.selection.value.length ?? 0) > 0
+          ),
+          run: () => sessions()?.deleteSelection(),
+        }),
+
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Delete'],
+          commandId: 'sketch.delete',
+          scopes: [SKETCHING_SCOPE],
+        }),
+
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Backspace'],
+          commandId: 'sketch.delete',
           scopes: [SKETCHING_SCOPE],
         }),
       ],

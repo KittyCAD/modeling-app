@@ -48,12 +48,12 @@ export function lengthUnitOf(suffix: NumericSuffix): UnitLength | null {
  * A length in millimetres.
  *
  * A unit that names no length — `None`, `Count`, an angle — leaves the value
- * alone. That is a guess, and the honest version of it: such a number has
- * already been resolved against the file's default length unit by whoever
- * produced it, and this has no way to ask what that was. It is right for the
- * common case of a file in millimetres and wrong by a constant factor for a file
- * that sets `defaultLengthUnit` to something else, which is the bug to look for
- * if a sketch draws at the wrong scale.
+ * alone, and that is now the right answer rather than a hopeful one. Every
+ * length kcl-lib reports has been resolved against the file's effective unit
+ * during execution, and the app tells it what that is: the declared
+ * `@settings(defaultLengthUnit)` if the file has one, else `base_unit` from the
+ * project's or the user's preference. So a number arriving here with no length
+ * unit is a number that is not a length.
  */
 export function millimetres(
   value: number,
@@ -94,3 +94,27 @@ export function suffixForUnitName(name: string | null): NumericSuffix | null {
       return null
   }
 }
+
+/**
+ * A measurement as a person reads it.
+ *
+ * Degrees get their symbol, because an angle without one reads as a length.
+ * Lengths get the bare number: the sketch is written in the file's own unit, so
+ * repeating it on every label says the same thing over and over — and the label
+ * is edited as a KCL *expression*, where a stray `mm` would change the meaning.
+ */
+export function formatMeasure(
+  value: number,
+  units: NumericSuffix | string
+): string {
+  const shown = Number.isInteger(value) ? `${value}` : `${value}`
+  return units === 'Deg' ? `${shown}°` : shown
+}
+
+/**
+ * The same measurement, as the text that would produce it.
+ *
+ * What goes into an edit field, which is not always what is shown: a degree
+ * symbol is for reading, and typing it back into the file would not parse.
+ */
+export const editableMeasure = (value: number): string => `${value}`

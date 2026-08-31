@@ -6,6 +6,7 @@ import {
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
 import { authService } from '@src/contracts/auth'
+import { unitsService } from '@src/contracts/units'
 import { commandsValueSpec } from '@src/contracts/commands'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import {
@@ -40,7 +41,14 @@ export default defineRegistryItemFactory((ctx) => {
       types,
       defaults,
       ctx.services.get(runtimeService).info.value.target,
-      ctx.services.get(authService).status
+      ctx.services.get(authService).status,
+      /*
+       * The same annotation a file created inside a project gets. Optional
+       * service, so a build without units still makes projects — with an empty
+       * `main.kcl`, which is what it made before.
+       */
+      async () =>
+        (await ctx.services.optional(unitsService)?.newFileContents()) ?? ''
     )
     return service
   }

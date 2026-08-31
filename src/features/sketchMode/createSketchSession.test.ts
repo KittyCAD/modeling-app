@@ -1,4 +1,5 @@
 import type { SceneGraph } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import { signal } from '@preact/signals'
 import { describe, expect, it, vi } from 'vitest'
 import { combineCapabilities } from '@src/contracts/buffers'
@@ -127,6 +128,55 @@ const drawnOutcome = () => ({
           },
         },
       },
+      // A second line, so a constraint tool can be given two of something.
+      {
+        id: 3,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Point',
+            position: {
+              x: { value: 5, units: 'Mm' },
+              y: { value: 5, units: 'Mm' },
+            },
+            freedom: 'Free',
+            constraints: [],
+            ctor: null,
+            owner: null,
+          },
+        },
+      },
+      {
+        id: 4,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Point',
+            position: {
+              x: { value: 9, units: 'Mm' },
+              y: { value: 5, units: 'Mm' },
+            },
+            freedom: 'Free',
+            constraints: [],
+            ctor: null,
+            owner: null,
+          },
+        },
+      },
+      {
+        id: 5,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Line',
+            start: 3,
+            end: 4,
+            ctor: { type: 'Line' },
+            ctor_applicable: true,
+            construction: false,
+          },
+        },
+      },
     ],
     sketch_mode: 0,
   },
@@ -141,6 +191,8 @@ const setup = (
     artifacts?: ArtifactMap
     projection?: SceneProjection
     faceOnEntry?: boolean
+    /** The project's unit, for a file that declares none. */
+    defaultUnit?: NumericSuffix
     addSegment?: (calls: string[]) => Promise<unknown>
     /** Makes a preview solve take long enough for moves to pile up behind it. */
     slowEdit?: boolean
@@ -148,6 +200,10 @@ const setup = (
     bufferGone?: { value: boolean }
     /** Makes every solve report that it could not satisfy the constraints. */
     editProblem?: string
+    /** Makes every mutation report that every id has become meaningless. */
+    renumbers?: boolean
+    /** Makes every constraint report that it could not be satisfied. */
+    constraintProblem?: string
   } = {}
 ) => {
   const buffer = createFileBackedTextBuffer({
@@ -196,8 +252,23 @@ const setup = (
     }),
     addSegment: vi.fn(async () => {
       calls.push('addSegment')
-      return (await (options.addSegment?.(calls) ??
-        Promise.resolve(drawnOutcome()))) as never
+      const outcome = await (options.addSegment?.(calls) ??
+        Promise.resolve(drawnOutcome()))
+      return {
+        ...(outcome as object),
+        ...(options.renumbers ? { invalidatesIds: true } : {}),
+      } as never
+    }),
+    editConstraintValue: vi.fn(async () => {
+      calls.push('editConstraintValue')
+      return drawnOutcome() as never
+    }),
+    addConstraint: vi.fn(async () => {
+      calls.push('addConstraint')
+      return {
+        ...drawnOutcome(),
+        problem: options.constraintProblem ?? null,
+      } as never
     }),
     editSegments: vi.fn(async () => {
       calls.push('editSegments')
@@ -234,6 +305,7 @@ const setup = (
     projection: () => options.projection,
     camera: () => camera,
     faceOnEntry: () => options.faceOnEntry ?? true,
+    defaultUnit: () => options.defaultUnit ?? 'Mm',
   })
 
   return { session, buffer, frontend, calls, camera }
@@ -662,6 +734,7 @@ describe('drawing in a sketch', () => {
 
     expect(app.frontend.deleteObjects).toHaveBeenCalledWith(0, {
       segmentIds: [0, 1, 2],
+      constraintIds: [],
     })
     expect(app.session.draft.value).toEqual({ kind: 'idle' })
   })
@@ -724,6 +797,155 @@ describe('turning to face the plane', () => {
     // overlay — but there is no plane to point a camera at.
     expect(app.session.open.value).not.toBeNull()
     expect(app.camera.faceOn).not.toHaveBeenCalled()
+  })
+})
+
+describe('the other tools', () => {
+  /** Long enough for the action queue to drain. */
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  it('writes a point and stays ready for the next one', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('point')
+
+    app.session.place({ x: 4, y: 5 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addSegment).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledWith(
+      0,
+      {
+        type: 'Point',
+        position: {
+          x: { type: 'Var', value: 4, units: 'Mm' },
+          y: { type: 'Var', value: 5, units: 'Mm' },
+        },
+      },
+      { label: 'point', checkpoint: true }
+    )
+    // Nothing to drag open, so nothing is held and the tool is ready again.
+    expect(app.session.draft.value).toEqual({ kind: 'idle' })
+    expect(app.session.tool.value).toBe('point')
+  })
+
+  it('writes a circle only once its radius is known', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('circle')
+
+    app.session.place({ x: 0, y: 0 })
+    await settled()
+
+    // A circle of no radius is degenerate, so the centre click writes nothing.
+    expect(app.frontend.addSegment).not.toHaveBeenCalled()
+    expect(app.session.draft.value).toEqual({
+      kind: 'pending',
+      points: [{ x: 0, y: 0 }],
+    })
+
+    app.session.place({ x: 10, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addSegment).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledWith(
+      0,
+      expect.objectContaining({
+        type: 'Circle',
+        center: {
+          x: { type: 'Var', value: 0, units: 'Mm' },
+          y: { type: 'Var', value: 0, units: 'Mm' },
+        },
+        start: {
+          x: { type: 'Var', value: 10, units: 'Mm' },
+          y: { type: 'Var', value: 0, units: 'Mm' },
+        },
+      }),
+      { label: 'circle', checkpoint: true }
+    )
+  })
+
+  it('builds a rectangle as four lines and eight constraints', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('cornerRectangle')
+
+    app.session.place({ x: 0, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addConstraint).toHaveBeenCalledTimes(8)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledTimes(4)
+    // A rectangle is four lines that are *described* as a rectangle; written
+    // any other way the first drag would prove it is not one.
+    expect(
+      vi
+        .mocked(app.frontend.addConstraint)
+        .mock.calls.map((call) => call[1].type)
+    ).toEqual([
+      'Coincident',
+      'Coincident',
+      'Coincident',
+      'Coincident',
+      'Parallel',
+      'Parallel',
+      'Perpendicular',
+      'Horizontal',
+    ])
+    expect(app.session.draft.value).toMatchObject({ kind: 'shaping' })
+  })
+
+  it('drags the rectangle out by respecifying all four sides', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('cornerRectangle')
+    app.session.place({ x: 0, y: 0 })
+    await vi.waitFor(() => expect(app.session.draft.value.kind).toBe('shaping'))
+
+    app.session.moveTo({ x: 10, y: 5 })
+    await vi.waitFor(() =>
+      expect(app.frontend.editSegments).toHaveBeenCalledTimes(1)
+    )
+
+    const [, edits] = vi.mocked(app.frontend.editSegments).mock.calls[0] ?? []
+    expect(edits).toHaveLength(4)
+  })
+
+  it('takes a rectangle away again when it was abandoned while being built', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('cornerRectangle')
+
+    app.session.place({ x: 0, y: 0 })
+    // Escape, before any of the twelve calls has come back.
+    app.session.cancelTool()
+    await vi.waitFor(() =>
+      expect(app.frontend.deleteObjects).toHaveBeenCalled()
+    )
+
+    /*
+     * The discard that ran on Escape had nothing to delete — the rectangle did
+     * not exist yet — so without this it would be left in the sketch with a
+     * state pointing at it.
+     */
+    expect(app.session.draft.value).toEqual({ kind: 'idle' })
+  })
+
+  it('forgets a half-started circle when the tool changes', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('circle')
+    app.session.place({ x: 0, y: 0 })
+    await settled()
+
+    app.session.equip('line')
+    await settled()
+
+    expect(app.session.draft.value).toEqual({ kind: 'idle' })
+    // Nothing was written, so nothing has to be deleted.
+    expect(app.frontend.deleteObjects).not.toHaveBeenCalled()
   })
 })
 
@@ -865,6 +1087,309 @@ describe('dragging a point', () => {
 
     // The draft state is the gate, and idle means there is nothing to move.
     expect(app.frontend.editSegments).not.toHaveBeenCalled()
+  })
+})
+
+describe('selecting things in a sketch', () => {
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  it('replaces the selection by default and extends it on request', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.select(2)
+    expect(app.session.selection.value).toEqual([2])
+
+    app.session.select(5)
+    expect(app.session.selection.value).toEqual([5])
+
+    app.session.select(2, { add: true })
+    expect(app.session.selection.value).toEqual([5, 2])
+  })
+
+  /*
+   * Order is not decoration: a constraint's meaning depends on it — a midpoint
+   * takes a point *and* a line and would be a different request the other way
+   * round.
+   */
+  it('keeps what was picked in the order it was picked', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.select(9, { add: true })
+    app.session.select(3, { add: true })
+    app.session.select('origin', { add: true })
+
+    expect(app.session.selection.value).toEqual([9, 3, 'origin'])
+  })
+
+  it('takes something out when it is picked again', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select(2)
+    app.session.select(5, { add: true })
+
+    app.session.select(2, { add: true })
+
+    // Which is how a selection is corrected without starting again.
+    expect(app.session.selection.value).toEqual([5])
+  })
+
+  it('selects nothing with no sketch open', () => {
+    const app = setup()
+
+    app.session.select(2)
+
+    expect(app.session.selection.value).toEqual([])
+  })
+
+  it('deletes the segments and constraints it is holding', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select(2)
+
+    app.session.deleteSelection()
+    await vi.waitFor(() =>
+      expect(app.frontend.deleteObjects).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.deleteObjects).toHaveBeenCalledWith(0, {
+      segmentIds: [2],
+      constraintIds: [],
+    })
+    expect(app.session.selection.value).toEqual([])
+  })
+
+  it('will not delete the origin, which is not deletable', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select('origin')
+
+    app.session.deleteSelection()
+    await settled()
+
+    expect(app.frontend.deleteObjects).not.toHaveBeenCalled()
+  })
+
+  /*
+   * An id that survives a renumbering names whatever now sits in that slot, so a
+   * selection kept across one would silently point at the wrong geometry — and
+   * the next constraint would be applied to it.
+   */
+  it('drops the selection when a solve renumbers the graph', async () => {
+    const app = setup({ renumbers: true })
+    await app.session.enter()
+    app.session.select(2)
+    app.session.equip('point')
+
+    app.session.place({ x: 1, y: 1 })
+    await vi.waitFor(() => expect(app.session.selection.value).toEqual([]))
+  })
+
+  it('forgets the selection on the way out', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select(2)
+
+    await app.session.exit()
+
+    expect(app.session.selection.value).toEqual([])
+  })
+})
+
+describe('the unit numbers are written in', () => {
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  /*
+   * A sketch drawn in a file that works in inches is written in inches. `10mm`
+   * would be arithmetically correct and read as though the app had a different
+   * idea of the drawing than its author does.
+   */
+  it('uses the unit the file declares', async () => {
+    const app = setup({
+      program: {
+        body: [],
+        innerAttrs: [
+          {
+            name: { name: 'settings' },
+            properties: [
+              {
+                key: { name: 'defaultLengthUnit' },
+                value: { type: 'Name', name: { name: 'in' } },
+              },
+            ],
+          },
+        ],
+      },
+      defaultUnit: 'Mm',
+    })
+    await app.session.enter()
+    app.session.equip('point')
+
+    app.session.place({ x: 2, y: 3 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addSegment).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledWith(
+      0,
+      {
+        type: 'Point',
+        position: {
+          x: { type: 'Var', value: 2, units: 'Inch' },
+          y: { type: 'Var', value: 3, units: 'Inch' },
+        },
+      },
+      expect.anything()
+    )
+  })
+
+  /*
+   * The project's, not millimetres: the same value is threaded into the executor
+   * as `base_unit`, so the file's unsuffixed numbers already mean this — and
+   * writing anything else would make the sketch disagree with the geometry it
+   * was drawn on.
+   */
+  it('falls back to the project’s unit when the file declares none', async () => {
+    const app = setup({ defaultUnit: 'Cm' })
+    await app.session.enter()
+    app.session.equip('point')
+
+    app.session.place({ x: 2, y: 3 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addSegment).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledWith(
+      0,
+      expect.objectContaining({
+        position: {
+          x: { type: 'Var', value: 2, units: 'Cm' },
+          y: { type: 'Var', value: 3, units: 'Cm' },
+        },
+      }),
+      expect.anything()
+    )
+  })
+})
+
+describe('constraining a selection', () => {
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  it('writes the constraint the selection asked for', async () => {
+    const app = setup()
+    await app.session.enter()
+    // Two points, which is a coincidence.
+    app.session.select(0)
+    app.session.select(1, { add: true })
+
+    app.session.applyConstraint('coincident')
+    await vi.waitFor(() =>
+      expect(app.frontend.addConstraint).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addConstraint).toHaveBeenCalledWith(
+      0,
+      { type: 'Coincident', segments: [0, 1] },
+      { checkpoint: true }
+    )
+  })
+
+  /*
+   * Refused rather than attempted, and with the one message a user can act on:
+   * what is selected is not something this constraint applies to.
+   */
+  it('says so when the selection cannot take that constraint', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select(0)
+
+    app.session.applyConstraint('perpendicular')
+    await settled()
+
+    expect(app.frontend.addConstraint).not.toHaveBeenCalled()
+    expect(app.session.error.value).toMatch(/perpendicular/)
+  })
+
+  it('stops at the first constraint the solver refuses', async () => {
+    const app = setup({ constraintProblem: 'Those cannot both be true.' })
+    await app.session.enter()
+    // Two lines: one horizontal each, so two constraints from one press.
+    app.session.select(2)
+    app.session.select(5, { add: true })
+
+    app.session.applyConstraint('horizontal')
+    await vi.waitFor(() =>
+      expect(app.session.error.value).toBe('Those cannot both be true.')
+    )
+
+    /*
+     * kcl-lib reports a constraint it cannot satisfy in the outcome rather than
+     * by rejecting, so without stopping we would pile more onto a sketch that
+     * already cannot be solved.
+     */
+    expect(app.frontend.addConstraint).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('dimensioning a selection', () => {
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  it('measures the selection and writes the constraint', async () => {
+    const app = setup()
+    await app.session.enter()
+    // Points 0 at the origin and 1 at (0,0) in the fixture are coincident, so
+    // dimension the two ends of the second line instead: (5,5) to (9,5).
+    app.session.select(3)
+    app.session.select(4, { add: true })
+
+    app.session.applyDimension()
+    await vi.waitFor(() =>
+      expect(app.frontend.addConstraint).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addConstraint).toHaveBeenCalledWith(
+      0,
+      expect.objectContaining({
+        type: 'Distance',
+        segments: [3, 4],
+        distance: { value: 4, units: 'Mm' },
+      }),
+      { checkpoint: true }
+    )
+  })
+
+  it('says what to select when the selection is not dimensionable', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select(3)
+
+    app.session.applyDimension()
+    await settled()
+
+    expect(app.frontend.addConstraint).not.toHaveBeenCalled()
+    expect(app.session.error.value).toMatch(/two points/)
+  })
+
+  /*
+   * An expression, not a number: dimensions are written into the KCL, so the
+   * value can be `2 * width` as easily as `40`.
+   */
+  it('sets a dimension from an expression', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.setDimension(7, '2 * width')
+    await vi.waitFor(() =>
+      expect(app.frontend.editConstraintValue).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.editConstraintValue).toHaveBeenCalledWith(
+      0,
+      7,
+      '2 * width',
+      { checkpoint: true }
+    )
   })
 })
 
