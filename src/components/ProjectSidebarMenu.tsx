@@ -14,7 +14,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
@@ -103,35 +102,6 @@ export function canNavigateHome({
   hasCloudSyncFeature: boolean
 }) {
   return isDesktopApp || hasCloudSyncFeature
-}
-
-export async function duplicateProjectAfterKclFlush({
-  app,
-  project,
-}: {
-  app: App
-  project: Project
-}) {
-  try {
-    await app.singletons.kclManager.flushWriteToFile(
-      app.singletons.kclManager.code,
-      undefined,
-      {
-        suppressConflictToast: true,
-      }
-    )
-  } catch (error) {
-    reportRejection(error)
-  }
-
-  app.systemIOActor.send({
-    type: SystemIOMachineEvents.duplicateProject,
-    data: {
-      projectName: project.name,
-      projectPath: project.path,
-      requestedProjectName: getProjectDisplayName(project),
-    },
-  })
 }
 
 const ProjectSidebarMenu = ({
@@ -257,7 +227,6 @@ function ProjectMenuPopover({
 }) {
   useSignals()
   const { machineManager, commands, settings } = app
-  const { kclManager } = app.singletons
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()
@@ -345,9 +314,13 @@ function ProjectMenuPopover({
                 </span>
               ),
               onClick: () => {
-                void duplicateProjectAfterKclFlush({
-                  app,
-                  project,
+                app.systemIOActor.send({
+                  type: SystemIOMachineEvents.duplicateProject,
+                  data: {
+                    projectName: project.name,
+                    projectPath: project.path,
+                    requestedProjectName: getProjectDisplayName(project),
+                  },
                 })
               },
             }
@@ -557,7 +530,6 @@ function ProjectMenuPopover({
       contributedProjectMenuItems,
       commands.actor,
       app.systemIOActor,
-      kclManager,
       file,
       filePath,
       machineCount,
