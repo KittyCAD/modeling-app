@@ -1374,18 +1374,27 @@ sketch001 = startSketchOn(XZ)
   |> line(end = [0, -height], tag = $fillet2)
   |> close()
 
-baseExtrusion = extrude(sketch001, length = width)
+unfilletedExtrusion = extrude(sketch001, length = width)
+
+cornerFillet1OppositeEdge = getOppositeEdge(cornerFillet1)
+cornerFillet2OppositeEdge = getOppositeEdge(cornerFillet2)
+fillet1PreviousAdjacentEdge = getPreviousAdjacentEdge(fillet1)
+fillet2PreviousAdjacentEdge = getPreviousAdjacentEdge(fillet2)
+fillet1NextAdjacentEdge = getNextAdjacentEdge(fillet1)
+fillet2NextAdjacentEdge = getNextAdjacentEdge(fillet2)
+
+baseExtrusion = unfilletedExtrusion
   |> fillet(
     radius = cornerFilletRad,
-    tags = [cornerFillet1, cornerFillet2, getOppositeEdge(cornerFillet1), getOppositeEdge(cornerFillet2)],
+    tags = [cornerFillet1, cornerFillet2, cornerFillet1OppositeEdge, cornerFillet2OppositeEdge],
   )
   |> fillet(
     radius = filletRad,
-    tags = [getPreviousAdjacentEdge(fillet1), getPreviousAdjacentEdge(fillet2)]
+    tags = [fillet1PreviousAdjacentEdge, fillet2PreviousAdjacentEdge]
   )
   |> fillet(
    radius = filletRad + thickness,
-   tags = [getNextAdjacentEdge(fillet1), getNextAdjacentEdge(fillet2)],
+   tags = [fillet1NextAdjacentEdge, fillet2NextAdjacentEdge],
  )
 "#;
 

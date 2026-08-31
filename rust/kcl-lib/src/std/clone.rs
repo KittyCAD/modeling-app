@@ -1110,38 +1110,45 @@ clonedCube = clone(cube)
     // WITH TAGS AND EDGE CUTS.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_solid_with_edge_cuts() {
-        let code = r#"cube = startSketchOn(XY)
+        let code = r#"baseCube = startSketchOn(XY)
     |> startProfile(at = [0,0]) // tag this one
     |> line(end = [0, 10], tag = $tag02)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)
     |> close(tag = $tag05)
     |> extrude(length = 5) // TODO: Tag these
+
+tag02NextAdjacentEdge = getNextAdjacentEdge(tag02)
+tag03NextAdjacentEdge = getNextAdjacentEdge(tag03)
+tag04NextAdjacentEdge = getNextAdjacentEdge(tag04)
+tag05NextAdjacentEdge = getNextAdjacentEdge(tag05)
+
+cube = baseCube
   |> fillet(
     radius = 2,
     tags = [
-      getNextAdjacentEdge(tag02),
+      tag02NextAdjacentEdge,
     ],
     tag = $fillet01,
   )
   |> fillet(
     radius = 2,
     tags = [
-      getNextAdjacentEdge(tag04),
+      tag04NextAdjacentEdge,
     ],
     tag = $fillet02,
   )
   |> chamfer(
     length = 2,
     tags = [
-      getNextAdjacentEdge(tag03),
+      tag03NextAdjacentEdge,
     ],
     tag = $chamfer01,
   )
   |> chamfer(
     length = 2,
     tags = [
-      getNextAdjacentEdge(tag05),
+      tag05NextAdjacentEdge,
     ],
     tag = $chamfer02,
   )
