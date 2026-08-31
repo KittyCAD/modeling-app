@@ -1,56 +1,21 @@
 /*
- * The sketch drawn over the scene.
+ * Where the sketch is drawn.
  *
- * Deliberately thin. Colour, width, radius and the dash pattern are set from
- * `src/lib/sketch/appearance.ts` — the port of the existing app's
- * `segmentsUtils` — because which of draft, hover, selection, conflict and
- * freedom wins is an ordered decision with five inputs, and selectors cannot say
- * "in this order". What is left here is what is genuinely presentational.
+ * A host for two canvases — the WebGL one and the DOM-label one — rather than the
+ * drawing itself: colour, width, radius and the dash pattern are all set from
+ * `src/lib/sketch/appearance.ts`, because which of draft, hover, selection,
+ * conflict and freedom wins is an ordered decision with five inputs and a
+ * stylesheet cannot say "in this order".
+ *
+ * Takes no pointer events. Input arrives through a scene interaction on the
+ * surface below, because a sheet across the viewport that accepted clicks would
+ * swallow every orbit.
  */
 .zds-sketch {
   position: absolute;
   inset: 0;
-  inline-size: 100%;
-  block-size: 100%;
-  overflow: visible;
+  overflow: hidden;
   pointer-events: none;
-}
-
-.zds-sketch__segment {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  /* Drawn over a live video, which can be any colour behind any pixel. */
-  paint-order: stroke;
-}
-
-.zds-sketch__vertex {
-  /* A filled dot, as the existing app draws it — not a ring. A ring reads as a
-     hole in the geometry at the size a point is drawn. */
-  stroke: none;
-}
-
-/*
- * Where the point will actually land.
- *
- * A ring around the snapped position rather than a change to the point under the
- * pointer, because the message is "not there, here".
- */
-.zds-sketch__snap {
-  fill: none;
-  stroke-width: 1.5;
-}
-
-/*
- * The axis a snap is following.
- *
- * Dashed and thin: it is a statement about alignment, not a piece of the sketch,
- * and it must not be mistaken for a construction line.
- */
-.zds-sketch__guide {
-  stroke-width: 1;
-  stroke-dasharray: 2 3;
-  opacity: 0.8;
 }
 
 /*

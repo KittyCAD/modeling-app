@@ -22,7 +22,7 @@ import {
   SKETCHING_SCOPE,
 } from '@src/features/sceneToolbar/modes'
 import { createSketchInteraction } from '@src/features/sketchOverlay/createSketchInteraction'
-import { SketchOverlay } from '@src/features/sketchOverlay/SketchOverlay'
+import { SketchScene } from '@src/features/sketchOverlay/SketchScene'
 import { SketchProblem } from '@src/features/sketchOverlay/SketchProblem'
 
 /**
@@ -71,7 +71,7 @@ export default defineRegistryItemFactory((ctx) => {
           // Mounted only while there is something to draw, so the projection is
           // not consulted — or subscribed to — the rest of the time.
           visible: drawable,
-          render: () => <SketchOverlay pointer={interaction.pointer} />,
+          render: () => <SketchScene pointer={interaction.pointer} />,
         }),
 
         /**

@@ -2,6 +2,7 @@ import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals'
 import type { ScenePoint } from '@src/contracts/scene'
 import type {
+  CameraFrame,
   PlaneFrame,
   PlanePoint,
   Vector3,
@@ -37,11 +38,24 @@ export interface SceneProjection {
   /**
    * Bumps whenever the view changed.
    *
-   * A counter rather than the camera itself, because what a drawing needs is
-   * "redraw now" and exposing the camera would invite everything to re-implement
-   * the projection. Read it to subscribe, then call `project`.
+   * A counter, because what most consumers need is "redraw now": read it to
+   * subscribe, then call `project`.
    */
   readonly epoch: ReadonlySignal<number>
+  /**
+   * The camera itself, for whoever has to build one of their own.
+   *
+   * This was deliberately absent, on the grounds that exposing the camera would
+   * invite callers to re-implement the projection. That reasoning holds for
+   * *placing* things — `project`, `unproject` and `orientationOf` are still what
+   * a caller should reach for, and each exists so nobody has to do the arithmetic
+   * twice. It does not hold for a second renderer drawing into the same view: a
+   * projection matrix cannot be assembled out of point queries, and a THREE
+   * camera needs the vantage, the centre, the roll and the frustum.
+   *
+   * Null until a camera has been heard from.
+   */
+  readonly frame: ReadonlySignal<CameraFrame | null>
 
   /**
    * Which way a world direction points on screen, and how far from the viewer.

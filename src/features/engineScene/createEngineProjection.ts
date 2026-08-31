@@ -58,6 +58,7 @@ export function createEngineProjection(
     id: 'engine',
     ready: computed(() => camera.frame.value !== null),
     epoch: camera.epoch,
+    frame: camera.frame,
 
     orientationOf(direction: Vector3) {
       const current = camera.frame.peek()

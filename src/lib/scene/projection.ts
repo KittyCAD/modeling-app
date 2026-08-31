@@ -234,12 +234,16 @@ const halfFovTangent = (camera: CameraFrame): number =>
 /**
  * Half the world height the viewport covers, at a given depth.
  *
+ * Exported because a THREE camera drawn over the same scene has to agree with
+ * this exactly or nothing lines up: sharing the function is the only way to be
+ * sure the overlay and the projection cannot drift.
+ *
  * The one place the two projections differ: under perspective the visible height
  * grows with distance, and under orthographic it is fixed by how far the camera
  * was pulled back. Both are the same formula with a different depth, which is
  * why `fovY` survives into ortho.
  */
-function halfViewHeight(camera: CameraFrame, depth: number): number {
+export function halfViewHeight(camera: CameraFrame, depth: number): number {
   const distance = camera.orthographic
     ? magnitude(subtract(camera.target, camera.position))
     : depth
