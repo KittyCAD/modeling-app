@@ -108,6 +108,29 @@ export interface ScenePicker {
   /** The entity under a point, or null for empty space. */
   pick(at: ScenePoint): Promise<string | null>
   /**
+   * The entity under a point, shown as hovered while you ask.
+   *
+   * Beside `pick` rather than folded into it because the two differ in what they
+   * *do*, not in what they answer: one selects and one hovers, and on this engine
+   * they are different commands. Hover is also asked continuously as the pointer
+   * moves, so an implementation is free to coalesce — the caller wants the latest
+   * answer, never a queue of stale ones.
+   */
+  hover(at: ScenePoint): Promise<string | null>
+  /**
+   * Show exactly these as hovered, replacing whatever was.
+   *
+   * The direction the existing app has no command path for: highlighting driven
+   * by something other than the pointer being over the scene. Pointing at a line
+   * of code should light everything that line made, and only the renderer can do
+   * that.
+   *
+   * An empty list clears. Fire and forget, like every other appearance command —
+   * the answer is a confirmation nobody reads, and a hover behind a round trip
+   * would lag the pointer.
+   */
+  highlight(entityIds: readonly string[]): void
+  /**
    * How to write this entity as a region, if it is one.
    *
    * Asked only when the artifact graph cannot name the entity, because that is

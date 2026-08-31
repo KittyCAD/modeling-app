@@ -15,6 +15,7 @@ import {
   keybindingScopesValueSpec,
   keybindingService,
 } from '@src/contracts/keybindings'
+import { pointingService } from '@src/contracts/pointing'
 import { projectHistoryService } from '@src/contracts/projectHistory'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { selectionService } from '@src/contracts/selection'
@@ -32,6 +33,7 @@ import {
 import { languageCapability } from '@src/features/editorCapabilities/language'
 import { createProjectUndoCapability } from '@src/features/editorCapabilities/projectUndo'
 import { createPersistenceCapability } from '@src/features/editorCapabilities/persistence'
+import { createProvenanceHighlightCapability } from '@src/features/editorCapabilities/provenanceHighlight'
 import { createSelectionRevealCapability } from '@src/features/editorCapabilities/selectionReveal'
 import { zooEditorTheme } from '@src/features/editorCapabilities/theme'
 
@@ -73,6 +75,17 @@ export default defineRegistryItemFactory((ctx) => {
    */
   const selectionReveal = createSelectionRevealCapability({
     selection: () => ctx.services.optional(selectionService),
+  })
+
+  /**
+   * Point at code, and see what it made.
+   *
+   * Optional, so a build with no pointing feature has an editor that behaves
+   * exactly as it did. Executing buffer only, for the same reason as the reveal
+   * above it: the artifact graph describes one program.
+   */
+  const provenanceHighlight = createProvenanceHighlightCapability({
+    pointing: () => ctx.services.optional(pointingService),
   })
 
   const keymapScope = createKeymapScopeCapability({
@@ -122,6 +135,7 @@ export default defineRegistryItemFactory((ctx) => {
         provide(editorCapabilitiesValueSpec, focusRequestCapability),
         provide(editorCapabilitiesValueSpec, attributionCapability),
         provide(editorCapabilitiesValueSpec, selectionReveal),
+        provide(editorCapabilitiesValueSpec, provenanceHighlight),
         provide(editorCapabilitiesValueSpec, readOnlyCapability),
         provide(editorCapabilitiesValueSpec, baselineCapability),
         provide(editorCapabilitiesValueSpec, languageCapability),

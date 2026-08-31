@@ -59,6 +59,8 @@ function setup(
       if (options.fail) throw new Error('the engine went away')
       return queue.shift() ?? null
     },
+    hover: async () => null,
+    highlight: () => {},
     describeRegion: async (entityId) => {
       described.push(entityId)
       return options.region ?? null
@@ -484,6 +486,8 @@ describe('asking the engine which curve made a face', () => {
       id: 'fake',
       ready: computed(() => true),
       pick: async () => 'wall',
+      hover: async () => null,
+      highlight: () => {},
       describeRegion: async () => null,
       sweptFaces: async (solidId) => {
         askedForFaces.push(solidId)
@@ -596,6 +600,8 @@ describe('asking the engine which curve made a face', () => {
       id: 'fake',
       ready: computed(() => true),
       pick: async () => 'wall',
+      hover: async () => null,
+      highlight: () => {},
       describeRegion: async () => null,
       sweptFaces: async () => {
         throw new Error('the engine went away')
@@ -704,6 +710,8 @@ describe('finding the engine face index', () => {
       id: 'fake',
       ready: computed(() => true),
       pick: async () => 'wall',
+      hover: async () => null,
+      highlight: () => {},
       describeRegion: async () => null,
       sweptFaces: async () => wallFaces,
       faceUuid: async (_solidId, index) => {

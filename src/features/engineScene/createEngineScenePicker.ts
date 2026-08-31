@@ -28,6 +28,33 @@ export function createEngineScenePicker(
     () => getConnection().state.value.status === 'connected'
   )
 
+  /** The point still to be asked about, and the question in the air. */
+  let latest: ScenePoint | null = null
+  let asking: Promise<string | null> | null = null
+
+  const askHover = async (at: ScenePoint): Promise<string | null> => {
+    const connection = getConnection()
+    const bytes = await connection.sendCommand({
+      type: 'highlight_set_entity',
+      selected_at_window: toStreamWindow(at, connection.viewportSize.peek()),
+      sequence: null,
+    })
+
+    const message = msgpackDecode(bytes) as {
+      resp?: {
+        data?: {
+          modeling_response?: { type?: string; data?: { entity_id?: string } }
+        }
+      }
+    }
+
+    const response = message.resp?.data?.modeling_response
+    if (response?.type !== 'highlight_set_entity') return null
+
+    // Absent rather than empty when the ray hit nothing, as with `pick`.
+    return response.data?.entity_id ?? null
+  }
+
   return {
     id: 'engine',
     ready,
@@ -59,6 +86,59 @@ export function createEngineScenePicker(
       // Absent rather than empty for a click on nothing, which is the engine's
       // way of saying the ray hit no geometry.
       return response.data?.entity_id ?? null
+    },
+
+    /**
+     * What is under the pointer, lit up while we ask.
+     *
+     * `highlight_set_entity` both highlights and answers, which is why hovering
+     * needs no rendering here: the engine owns what is lit, exactly as it does
+     * for selection.
+     *
+     * Single-flight, and the latest point wins. The pointer produces moves far
+     * faster than a round trip completes, and the two failure modes of not
+     * saying so are a queue of stale answers arriving after the pointer has left,
+     * and a socket full of questions nobody will read. So one is in the air at a
+     * time, the most recent point waits, and everything in between is dropped —
+     * a skipped intermediate hover is invisible, a late one is a highlight
+     * flickering onto something the pointer has already left.
+     */
+    async hover(at: ScenePoint) {
+      if (!ready.peek()) return null
+
+      latest = at
+      if (asking) return asking
+
+      asking = (async () => {
+        try {
+          let answer: string | null = null
+
+          while (latest) {
+            const point = latest
+            latest = null
+            answer = await askHover(point)
+          }
+
+          return answer
+        } finally {
+          asking = null
+        }
+      })()
+
+      return asking
+    },
+
+    highlight(entityIds) {
+      if (!ready.peek()) return
+
+      /*
+       * Fired rather than sent. Awaiting a confirmation would put every hover
+       * behind a round trip, and there is nothing in the answer to act on.
+       */
+      getConnection().fireCommand({
+        type: 'highlight_set_entities',
+        entities: [...entityIds],
+      })
     },
 
     /**
