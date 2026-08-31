@@ -710,6 +710,73 @@ describe('turning to face the plane', () => {
   })
 })
 
+describe('dragging a point', () => {
+  /*
+   * The bug this covers is the whole reason dragging felt broken: `moveTo`
+   * required an equipped tool, a drag equips nothing, and so nothing moved until
+   * the release — when the geometry jumped to where the pointer had ended up.
+   */
+  it('previews every move, with no tool equipped', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.beginDrag(1)
+    app.session.moveTo({ x: 3, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.editSegments).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.session.tool.value).toBeNull()
+    expect(app.frontend.editSegments).toHaveBeenCalledWith(
+      0,
+      [{ id: 1, ctor: expect.objectContaining({ type: 'Point' }) }],
+      // A preview: solved and drawn, but not settled and not written to the
+      // file, because the next move throws it away.
+      { commit: false, checkpoint: false }
+    )
+  })
+
+  it('commits where the release landed', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.beginDrag(1)
+    app.session.moveTo({ x: 3, y: 0 })
+    app.session.endDrag({ x: 4, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.editSegments).toHaveBeenCalledWith(
+        0,
+        [
+          {
+            id: 1,
+            ctor: {
+              type: 'Point',
+              position: {
+                x: { type: 'Var', value: 4, units: 'Mm' },
+                y: { type: 'Var', value: 0, units: 'Mm' },
+              },
+            },
+          },
+        ],
+        { commit: true, checkpoint: true }
+      )
+    )
+
+    expect(app.session.draft.value).toEqual({ kind: 'idle' })
+  })
+
+  it('still ignores a move when nothing is being moved', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.moveTo({ x: 1, y: 1 })
+    await new Promise((resolve) => setTimeout(resolve, 20))
+
+    // The draft state is the gate, and idle means there is nothing to move.
+    expect(app.frontend.editSegments).not.toHaveBeenCalled()
+  })
+})
+
 describe('owning the camera', () => {
   it('takes the camera on the way in and hands it back on the way out', async () => {
     const app = setup()

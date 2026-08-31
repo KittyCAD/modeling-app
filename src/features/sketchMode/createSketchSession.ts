@@ -601,12 +601,22 @@ export function createSketchSession(
     },
 
     moveTo(at: PlanePoint) {
-      const current = tool.peek()
-      if (!current || !open.peek()) return
-      if (draft.peek().kind === 'idle') return
+      if (!open.peek()) return
 
-      const step = moveDraft(draft.peek(), at, {
-        tool: current,
+      /*
+       * Gated on there being something to move, not on there being a tool.
+       *
+       * This used to require an equipped tool, which is what made dragging a
+       * point look broken: a drag equips nothing, so every move was dropped and
+       * the geometry only jumped at the release. The draft state is the honest
+       * question — `idle` means nothing is being moved — and `moveTo` in
+       * `draft.ts` is where a tool is asked for by the one state that needs one.
+       */
+      const state = draft.peek()
+      if (state.kind === 'idle') return
+
+      const step = moveDraft(state, at, {
+        tool: tool.peek(),
         units: units(),
       })
       draft.value = step.state

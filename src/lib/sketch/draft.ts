@@ -139,7 +139,14 @@ export const pointAt = (at: PlanePoint, units: NumericSuffix): SegmentCtor => ({
 })
 
 export interface DraftContext {
-  tool: SketchToolId
+  /**
+   * The equipped tool, or none.
+   *
+   * Nullable because dragging is not a tool. Moving a committed point happens
+   * with the pointer alone — there is nothing to equip for it, and requiring a
+   * tool is what used to stop a drag previewing at all.
+   */
+  tool: SketchToolId | null
   units: NumericSuffix
 }
 
@@ -216,7 +223,11 @@ export function moveTo(
         ],
       }
 
-    case 'chaining':
+    case 'chaining': {
+      // The only state whose next step is to *create* something, so the only
+      // one that needs to know what tool is drawing.
+      if (!context.tool) return { state, actions: [] }
+
       return {
         state,
         actions: [
@@ -228,6 +239,7 @@ export function moveTo(
           },
         ],
       }
+    }
 
     case 'dragging':
       return {
