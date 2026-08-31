@@ -1,0 +1,43 @@
+/*
+ * The Bevy surface fills the viewport and takes the mouse.
+ *
+ * `pointer-events` is stated because the `fill` scene zone turns them off for
+ * everything it holds — an invisible sheet over the viewport would otherwise
+ * swallow every orbit. This item is the exception: bevy-zoo's camera reads the
+ * pointer itself.
+ */
+.zds-bevy {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+}
+
+/*
+ * Sized in CSS, not in attributes. The embed build sets Bevy's
+ * `fit_canvas_to_parent`, so the backing buffer follows the element rather than
+ * the element being stretched to fit a fixed buffer.
+ */
+.zds-bevy__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+.zds-bevy__notice {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--surface-raised, rgb(0 0 0 / 0.72));
+  color: var(--text-inverse, white);
+  font-size: 12px;
+  /* Reporting, not interactive: a click here belongs to the scene. */
+  pointer-events: none;
+}
+
+.zds-bevy__notice--error {
+  background: var(--danger, rgb(160 24 24 / 0.9));
+}

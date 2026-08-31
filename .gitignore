@@ -97,3 +97,8 @@ $RECYCLE.BIN/
 # Claude Code scratch space: agent worktrees and local session state, which
 # are per-checkout and per-machine.
 .claude/
+
+# bevy-zoo renderer (built by scripts/build-bevy.sh)
+vendor/
+public/bevy/
+public/assets/

@@ -1,16 +1,20 @@
-import { useComputed } from '@preact/signals'
-import type { ComponentChildren } from 'preact'
-import { useEffect, useRef } from 'preact/hooks'
 import { Button, EmptyState, Spinner } from '@kittycad/ui-kit'
+import { useComputed } from '@preact/signals'
 import { useService } from '@src/app/context'
 import { authService } from '@src/contracts/auth'
 import { commandService } from '@src/contracts/commands'
 import { engineConnectionService } from '@src/contracts/engine'
-import { executionCoordinatorService } from '@src/contracts/execution'
-import { idleExecutionState } from '@src/contracts/execution'
+import {
+  executionCoordinatorService,
+  idleExecutionState,
+} from '@src/contracts/execution'
 import { projectSessionService } from '@src/contracts/projectSession'
+import { settingsService } from '@src/contracts/settings'
+import { rendererSetting } from '@src/features/bevyScene/settings'
 import { EngineStream } from '@src/features/engineScene/EngineStream'
 import { SceneZones } from '@src/features/engineScene/SceneZones'
+import type { ComponentChildren } from 'preact'
+import { useEffect, useRef } from 'preact/hooks'
 import '../project.css'
 
 /**
@@ -111,10 +115,12 @@ export function ViewportArea() {
   const engine = useService(engineConnectionService)
   const auth = useService(authService)
   const commands = useService(commandService)
+  const settings = useService(settingsService)
 
   /** One path for every "connect" affordance, so sign-in is never skipped. */
   const connect = () => commands.run('engine.connect')
 
+  const renderer = useComputed(() => settings.value(rendererSetting).value)
   const session = useComputed(() => sessions.current.value)
   const executing = useComputed(
     () => session.value?.executingBuffer.value ?? null
@@ -132,6 +138,27 @@ export function ViewportArea() {
   )
   const engineState = useComputed(() => engine.state.value)
   const streaming = useComputed(() => engine.mediaStream.value !== null)
+
+  /**
+   * A local renderer draws its own surface, so none of the states below apply.
+   *
+   * The frame stays — it owns the `ResizeObserver` — and so do the scene zones,
+   * which is where that surface is contributed from. What goes is the stream and
+   * the engine's empty states: "not connected to the engine" underneath an opaque
+   * canvas is a puzzle, not a message.
+   *
+   * Below every hook rather than beside the service reads, because the value
+   * flips once settings hydrate from disk — returning early above the `useComputed`
+   * calls would change how many hooks this component ran between two renders.
+   *
+   * The import direction here is wrong: `project` should not know a particular
+   * renderer's setting. The right answer is a renderer-contributed surface this
+   * asks for by role, and it belongs with the camera-driver increment rather than
+   * being paid for by a spike.
+   */
+  if (renderer.value === 'bevy') {
+    return <ViewportFrame grid={false}>{null}</ViewportFrame>
+  }
 
   /**
    * Once the stream is live it stays on screen.
