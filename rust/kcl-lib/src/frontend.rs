@@ -99,6 +99,7 @@ use crate::walk::Visitable;
 use crate::walk::traverse::MutateBodyItem;
 use crate::walk::traverse::TraversalReturn;
 use crate::walk::traverse::Visitor;
+use crate::walk::traverse::delete_body_item_preserving_pre_comments;
 use crate::walk::traverse::dfs_mut;
 
 pub(crate) mod api;
@@ -932,8 +933,12 @@ impl SketchApi for FrontendState {
         };
 
         // Modify the AST to remove the sketch.
-        self.mutate_ast(&mut new_ast, sketch_id, AstMutateCommand::DeleteNode)
+        let (_, delete_return) = self
+            .mutate_ast(&mut new_ast, sketch_id, AstMutateCommand::DeleteNode)
             .map_err(KclErrorWithOutputs::no_outputs)?;
+        if let AstMutateCommandReturn::Name(name) = delete_return {
+            delete_dependent_body_items(&mut new_ast, &name);
+        }
 
         self.execute_after_delete_sketch(ctx, &mut new_ast).await
     }
@@ -6007,9 +6012,13 @@ fn filter_and_process(
             if let AstMutateCommand::DeleteNode = &ctx.command {
                 // We found the variable declaration. Delete the variable along
                 // with the segment.
+                let deleted_name = var_decl.name().to_owned();
                 return TraversalReturn {
                     mutate_body_item: MutateBodyItem::Delete,
-                    control_flow: ControlFlow::Break(Ok((AstNodeRef::from(&*ctx), AstMutateCommandReturn::None))),
+                    control_flow: ControlFlow::Break(Ok((
+                        AstNodeRef::from(&*ctx),
+                        AstMutateCommandReturn::Name(deleted_name),
+                    ))),
                 };
             }
         }
@@ -6549,9 +6558,14 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
             }
         }
         AstMutateCommand::DeleteNode => {
+            let command_return = if let NodeMut::VariableDeclaration(var_decl) = &node {
+                AstMutateCommandReturn::Name(var_decl.name().to_owned())
+            } else {
+                AstMutateCommandReturn::None
+            };
             return TraversalReturn {
                 mutate_body_item: MutateBodyItem::Delete,
-                control_flow: ControlFlow::Break(Ok(AstMutateCommandReturn::None)),
+                control_flow: ControlFlow::Break(Ok(command_return)),
             };
         }
     }
@@ -6735,6 +6749,118 @@ fn format_compilation_issues(prefix: &str, issues: &[CompilationIssue]) -> Strin
     } else {
         format!("{prefix}: {message}")
     }
+}
+
+fn delete_dependent_body_items(program: &mut ast::Node<ast::Program>, deleted_name: &str) {
+    let mut deleted_names = HashSet::from([deleted_name.to_owned()]);
+    let mut index = 0;
+    while index < program.body.len() {
+        let should_delete = body_item_references_any(&program.body[index], &deleted_names);
+        if should_delete {
+            if let Some(name) = body_item_declared_name(&program.body[index]) {
+                deleted_names.insert(name.to_owned());
+            }
+            delete_body_item_preserving_pre_comments(&mut program.inner.body, &mut program.inner.non_code_meta, index);
+            continue;
+        }
+
+        if let Some(name) = body_item_declared_name(&program.body[index])
+            && deleted_names.contains(name)
+        {
+            // A later independent declaration shadows the deleted name for
+            // following statements.
+            deleted_names.remove(name);
+        }
+
+        index += 1;
+    }
+}
+
+fn body_item_declared_name(item: &ast::BodyItem) -> Option<&str> {
+    match item {
+        ast::BodyItem::VariableDeclaration(declaration) => Some(declaration.name()),
+        _ => None,
+    }
+}
+
+fn body_item_references_any(item: &ast::BodyItem, names: &HashSet<String>) -> bool {
+    match item {
+        ast::BodyItem::ExpressionStatement(statement) => expr_references_any(&statement.expression, names),
+        ast::BodyItem::VariableDeclaration(declaration) => expr_references_any(&declaration.declaration.init, names),
+        ast::BodyItem::ReturnStatement(statement) => expr_references_any(&statement.argument, names),
+        ast::BodyItem::ImportStatement(_) | ast::BodyItem::TypeDeclaration(_) => false,
+    }
+}
+
+fn expr_references_any(expr: &ast::Expr, names: &HashSet<String>) -> bool {
+    match expr {
+        ast::Expr::Literal(_)
+        | ast::Expr::TagDeclarator(_)
+        | ast::Expr::PipeSubstitution(_)
+        | ast::Expr::SketchVar(_)
+        | ast::Expr::None(_) => false,
+        ast::Expr::Name(name) => name.local_ident().is_some_and(|name| names.contains(name.inner)),
+        ast::Expr::BinaryExpression(expression) => {
+            binary_part_references_any(&expression.left, names) || binary_part_references_any(&expression.right, names)
+        }
+        ast::Expr::FunctionExpression(_) => false,
+        ast::Expr::CallExpressionKw(expression) => {
+            expression
+                .unlabeled
+                .as_ref()
+                .is_some_and(|argument| expr_references_any(argument, names))
+                || expression
+                    .arguments
+                    .iter()
+                    .any(|argument| expr_references_any(&argument.arg, names))
+        }
+        ast::Expr::PipeExpression(expression) => expression.body.iter().any(|item| expr_references_any(item, names)),
+        ast::Expr::ArrayExpression(expression) => {
+            expression.elements.iter().any(|item| expr_references_any(item, names))
+        }
+        ast::Expr::ArrayRangeExpression(expression) => {
+            expr_references_any(&expression.start_element, names) || expr_references_any(&expression.end_element, names)
+        }
+        ast::Expr::ObjectExpression(expression) => expression
+            .properties
+            .iter()
+            .any(|property| expr_references_any(&property.value, names)),
+        ast::Expr::MemberExpression(expression) => {
+            expr_references_any(&expression.object, names)
+                || (expression.computed && expr_references_any(&expression.property, names))
+        }
+        ast::Expr::UnaryExpression(expression) => binary_part_references_any(&expression.argument, names),
+        ast::Expr::IfExpression(expression) => {
+            expr_references_any(&expression.cond, names)
+                || program_references_any(&expression.then_val, names)
+                || expression.else_ifs.iter().any(|else_if| {
+                    expr_references_any(&else_if.cond, names) || program_references_any(&else_if.then_val, names)
+                })
+                || program_references_any(&expression.final_else, names)
+        }
+        ast::Expr::LabelledExpression(expression) => expr_references_any(&expression.expr, names),
+        ast::Expr::AscribedExpression(expression) => expr_references_any(&expression.expr, names),
+        ast::Expr::SketchBlock(expression) => {
+            expression
+                .arguments
+                .iter()
+                .any(|argument| expr_references_any(&argument.arg, names))
+                || expression
+                    .body
+                    .items
+                    .iter()
+                    .any(|item| body_item_references_any(item, names))
+        }
+    }
+}
+
+fn binary_part_references_any(part: &ast::BinaryPart, names: &HashSet<String>) -> bool {
+    let expr = ast::Expr::from(part);
+    expr_references_any(&expr, names)
+}
+
+fn program_references_any(program: &ast::Program, names: &HashSet<String>) -> bool {
+    program.body.iter().any(|item| body_item_references_any(item, names))
 }
 
 fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
@@ -8802,6 +8928,52 @@ foo = 1
             "test_delete_sketch_preserves_pre_comment_when_followed_by_code",
             src_delta.text.as_str()
         );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_sketch_with_region_extrude_dependents() {
+        let initial_source = "\
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -2.6mm, var 2.85mm], end = [var 2.6mm, var 2.85mm])
+  line2 = line(start = [var 2.6mm, var 2.85mm], end = [var 2.6mm, var -2.85mm])
+  line3 = line(start = [var 2.6mm, var -2.85mm], end = [var -2.6mm, var -2.85mm])
+  line4 = line(start = [var -2.6mm, var -2.85mm], end = [var -2.6mm, var 2.85mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 5mm)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_engine(sync::Arc::new(EngineManager::new_mock()), Default::default());
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+
+        let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
+        assert!(
+            !src_delta.text.contains("sketch001 ="),
+            "sketch was not deleted: {}",
+            src_delta.text
+        );
+        assert!(!src_delta.text.contains("hidden001 ="));
+        assert!(!src_delta.text.contains("region001 ="));
+        assert!(!src_delta.text.contains("extrude001 ="));
+        assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
     }
