@@ -6,6 +6,7 @@ import type { FileBackedTextBuffer } from '@src/contracts/buffers'
 import { layoutService } from '@src/contracts/layout'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { EXPLORER_AREA_ID } from '@src/features/project/areaIds'
+import { BufferTabs } from '@src/features/project/areas/BufferTabs'
 import '../project.css'
 
 /**
@@ -35,18 +36,21 @@ function BufferView({ buffer }: { buffer: FileBackedTextBuffer }) {
 /**
  * The editor pane.
  *
- * "No active buffer" is where a freshly opened project lands, so it is treated
- * as a destination with an action rather than as a blank.
+ * "No file open" is where a freshly opened project lands, so it is treated as a
+ * destination with an action rather than as a blank. Once anything is open the
+ * frame stays — the tab strip is part of the panel, not part of the file, so it
+ * must not come and go with the selection.
  */
 export function EditorArea() {
   const sessions = useService(projectSessionService)
   const layout = useService(layoutService)
 
-  const buffer = useComputed(
-    () => sessions.current.value?.activeBuffer.value ?? null
-  )
+  const session = useComputed(() => sessions.current.value)
+  const buffers = useComputed(() => session.value?.buffers.value ?? [])
+  const buffer = useComputed(() => session.value?.activeBuffer.value ?? null)
 
-  if (!buffer.value) {
+  const current = session.value
+  if (!current || buffers.value.length === 0) {
     return (
       <EmptyState
         scale="page"
@@ -70,22 +74,14 @@ export function EditorArea() {
     )
   }
 
-  return <BufferEditor buffer={buffer.value} />
-}
-
-function BufferEditor({ buffer }: { buffer: FileBackedTextBuffer }) {
-  const sessions = useService(projectSessionService)
-  const layout = useService(layoutService)
-
-  const divergence = useComputed(() => buffer.divergence.value)
-
   return (
     <div class="zds-editor">
       <header class="zds-editor__bar">
         {/*
-          The file tree's hide/show, in the bar of the panel it lives in rather
-          than out on the rail. The tree is part of reading code, so its
-          affordance belongs where the code is.
+          The file tree's hide/show, outside the scrolling strip so it stays
+          reachable however many files are open. In the bar of the panel the tree
+          lives in rather than out on the rail: the tree is part of reading code,
+          so its affordance belongs where the code is.
         */}
         <Button
           variant="ghost"
@@ -96,25 +92,33 @@ function BufferEditor({ buffer }: { buffer: FileBackedTextBuffer }) {
           pressed={layout.isAreaOpen(EXPLORER_AREA_ID)}
           onClick={() => layout.toggleArea(EXPLORER_AREA_ID)}
         />
-        <span class="zds-label">{buffer.languageId}</span>
-        <span class="zds-editor__path zds-value">
-          {sessions.current.value?.relativePathFor(buffer) ?? 'scratch buffer'}
-        </span>
-        {buffer.dirty.value ? (
-          <span class="zds-editor__dirty zds-label" title="Unsaved changes">
-            Unsaved
-          </span>
-        ) : null}
-        <Button
-          variant="ghost"
-          size="small"
-          iconOnly
-          icon="close"
-          label={`Close ${buffer.name.value}`}
-          onClick={() => sessions.current.value?.closeBuffer(buffer.id)}
-        />
+        <BufferTabs session={current} />
       </header>
 
+      {buffer.value ? (
+        <BufferEditor buffer={buffer.value} />
+      ) : (
+        /*
+         * Open files, none selected. Reachable by deselecting rather than by
+         * closing, so it says how to get back rather than how to start.
+         */
+        <EmptyState
+          scale="page"
+          icon="fileCode"
+          eyebrow="Editor"
+          title="Nothing selected"
+          description="Choose one of the open files above."
+        />
+      )}
+    </div>
+  )
+}
+
+function BufferEditor({ buffer }: { buffer: FileBackedTextBuffer }) {
+  const divergence = useComputed(() => buffer.divergence.value)
+
+  return (
+    <>
       {/*
         A file changed underneath unsaved edits. Nothing was overwritten, so the
         choice is the user's — and it is presented as a choice rather than as an
@@ -143,6 +147,6 @@ function BufferEditor({ buffer }: { buffer: FileBackedTextBuffer }) {
 
       {/* Keyed so a buffer switch rebuilds the view rather than reusing it. */}
       <BufferView buffer={buffer} key={buffer.id} />
-    </div>
+    </>
   )
 }

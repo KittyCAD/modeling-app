@@ -264,14 +264,132 @@
   background: var(--zds-surface-panel);
 }
 
+/*
+ * The bar holds the tab strip, so it stops being a row of labels.
+ *
+ * No inline padding any more: a tab has to be able to sit flush against the
+ * panel edge, and the file toggle brings its own. No gap either, for the same
+ * reason — tabs meet each other.
+ */
 .zds-editor__bar {
   display: flex;
-  align-items: center;
-  gap: var(--zds-space-3);
+  align-items: stretch;
   flex: none;
-  block-size: var(--zds-size-statusbar);
-  padding-inline: var(--zds-space-3);
+  min-inline-size: 0;
+  block-size: var(--zds-size-control-md);
+  padding-inline-start: var(--zds-space-1);
   border-block-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+}
+
+/* Tabs ------------------------------------------------------------- */
+
+/*
+ * Scrolls rather than wraps or shrinks.
+ *
+ * A wrapped strip changes the height of the panel as files open, which moves the
+ * code; tabs that shrink to fit turn ten files into ten unreadable slivers.
+ * Scrolling keeps every tab the size it needs and puts the cost where it belongs
+ * — on getting to the ones off the end, which is what `scrollIntoView` on the
+ * selection is for.
+ */
+.zds-tabs {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  min-inline-size: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.zds-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.zds-tabs__tab {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--zds-space-1);
+  max-inline-size: 14rem;
+  padding-inline: var(--zds-space-2);
+  border-inline-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  color: var(--zds-text-secondary);
+  font-size: var(--zds-font-size-small);
+  white-space: nowrap;
+  user-select: none;
+  cursor: default;
+}
+
+.zds-tabs__tab:hover {
+  background: var(--zds-surface-hover);
+  color: var(--zds-text-primary);
+}
+
+.zds-tabs__tab[data-active="true"] {
+  background: var(--zds-surface-panel);
+  color: var(--zds-text-primary);
+  /* A stripe along the top, so the selected tab reads as attached to the code
+     below it rather than as a highlighted button. */
+  box-shadow: inset 0 var(--zds-size-datum-stripe) 0 0 var(--zds-accent);
+}
+
+.zds-tabs__tab:focus-visible {
+  outline: 2px solid var(--zds-border-focus);
+  outline-offset: -2px;
+}
+
+/*
+ * The executing file, marked whether or not it is the one being read.
+ *
+ * The distinction this app is built on: a tab says what you are looking at, and
+ * exactly one file — not necessarily that one — is what the engine is building.
+ * A different edge from the selection's, so the two can be true at once and
+ * still be told apart.
+ */
+.zds-tabs__tab[data-executing="true"] {
+  box-shadow: inset 0 calc(-1 * var(--zds-size-datum-stripe)) 0 0
+    var(--zds-status-ok);
+}
+
+.zds-tabs__tab[data-executing="true"][data-active="true"] {
+  box-shadow:
+    inset 0 var(--zds-size-datum-stripe) 0 0 var(--zds-accent),
+    inset 0 calc(-1 * var(--zds-size-datum-stripe)) 0 0 var(--zds-status-ok);
+}
+
+.zds-tabs__name {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zds-tabs__dirty {
+  flex: none;
+  inline-size: var(--zds-space-2);
+  block-size: var(--zds-space-2);
+  border-radius: var(--zds-radius-pill);
+  background: currentcolor;
+}
+
+.zds-tabs__close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--zds-size-icon-md);
+  block-size: var(--zds-size-icon-md);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--zds-radius-content);
+  background: transparent;
+  color: var(--zds-text-tertiary);
+  cursor: default;
+}
+
+.zds-tabs__close:hover {
+  background: var(--zds-surface-active);
+  color: var(--zds-text-primary);
 }
 
 .zds-editor__path {
