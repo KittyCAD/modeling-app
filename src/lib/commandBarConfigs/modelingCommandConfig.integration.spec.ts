@@ -508,6 +508,7 @@ describe('stdlib command arg derivation', () => {
 
   it('derives command status from KCL stdlib metadata', () => {
     expect(modelingStdLibCommandStatus('Helical Gear')).toBe('experimental')
+    expect(modelingStdLibCommandStatus('Delete')).toBeUndefined()
     expect(modelingStdLibCommandStatus('Extrude')).toBeUndefined()
     expect(stdLibCommandStatus('startSketchOn')).toBe('deprecated')
   })
