@@ -172,6 +172,9 @@ export const createOnWebSocketMessage = ({
       }
 
       const firstError = message.errors[0]
+      if (!firstError) {
+        return
+      }
       if (firstError.error_code === 'auth_token_invalid') {
         notifySessionExpired('engine-websocket')
         disconnectAll()
