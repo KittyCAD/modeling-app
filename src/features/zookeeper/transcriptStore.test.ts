@@ -31,6 +31,7 @@ const turn = (overrides: Partial<Turn> = {}): Turn => ({
   conflicts: [],
   waiting: [],
   reasoning: [],
+  unapplied: [],
   ...overrides,
 })
 

@@ -14,6 +14,10 @@ import { createConversation } from '@src/features/zookeeper/createConversation'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
 import { createChangeHistory } from '@src/lib/collab/changeHistory'
 import { createWriteClaims } from '@src/lib/collab/claims'
+import type {
+  ProjectMutation,
+  ProjectMutationResult,
+} from '@src/contracts/projectSession'
 
 const PATH = 'main.kcl'
 const BASE = 'width = 10\n'
@@ -23,6 +27,9 @@ const historyCapability: EditorCapability = {
   id: 'history',
   extension: () => history(),
 }
+
+/** Let the queued apply — which now awaits the filesystem — finish. */
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 const textOf = (buffer: FileBackedTextBuffer) =>
   buffer.state.peek().doc.toString()
@@ -49,16 +56,85 @@ function fakeTransport() {
   }
 }
 
-function setup(options: { contents?: string; withClaims?: boolean } = {}) {
+function setup(
+  options: {
+    contents?: string
+    withClaims?: boolean
+    /** Leave the project out, as a caller that cannot touch the filesystem. */
+    withoutProject?: boolean
+    /** Extra files that exist in the project but are not open in the editor. */
+    closed?: Record<string, string>
+  } = {}
+) {
   const buffer = createFileBackedTextBuffer({
     path: PATH,
     contents: options.contents ?? BASE,
     languageId: 'kcl',
     capabilities: combineCapabilities([historyCapability]),
   })
+
+  /** Open buffers, and a project that can open or create more. */
+  const buffers = new Map<string, FileBackedTextBuffer>([[PATH, buffer]])
+  const onDisk = new Map<string, string>(Object.entries(options.closed ?? {}))
+
+  const openBuffer = (path: string, contents: string) => {
+    const created = createFileBackedTextBuffer({
+      path,
+      contents,
+      languageId: 'kcl',
+      capabilities: combineCapabilities([historyCapability]),
+    })
+    buffers.set(path, created)
+    return created
+  }
+
   const target: ApplyTarget = {
-    bufferForPath: (path) => (path === PATH ? buffer : undefined),
+    bufferForPath: (path) => buffers.get(path),
     executingBufferId: () => null,
+  }
+
+  const project = {
+    openFile: async (path: string) => {
+      const contents = onDisk.get(path)
+      if (contents === undefined) throw new Error(`${path} is not on disk`)
+      return openBuffer(path, contents)
+    },
+    applyMutation: async (mutation: ProjectMutation) => {
+      const created: string[] = []
+      const deleted: string[] = []
+      const failed: { path: string; reason: string }[] = []
+
+      for (const each of mutation.creates ?? []) {
+        if (buffers.has(each.path) || onDisk.has(each.path)) {
+          failed.push({ path: each.path, reason: 'That name is taken.' })
+          continue
+        }
+        onDisk.set(each.path, each.contents)
+        // As the real one does: a created file is opened, so the same mutation's
+        // edits have somewhere to go.
+        openBuffer(each.path, each.contents)
+        created.push(each.path)
+      }
+      for (const path of mutation.deletes ?? []) {
+        buffers.delete(path)
+        onDisk.delete(path)
+        deleted.push(path)
+      }
+
+      return {
+        before: {
+          operationId: 'op',
+          capturedAt: 0,
+          projectPath: '/projects/bracket',
+          buffers: [],
+        },
+        touched: [],
+        created,
+        deleted,
+        failed,
+        contributionId: mutation.origin?.contributionId ?? 'c',
+      } as unknown as ProjectMutationResult
+    },
   }
   const wire = fakeTransport()
   const changeHistory = createChangeHistory()
@@ -71,10 +147,20 @@ function setup(options: { contents?: string; withClaims?: boolean } = {}) {
     target,
     changeHistory,
     ...(claims === undefined ? {} : { claims }),
-    captureProject: async () => new Map([[PATH, textOf(buffer)]]),
+    ...(options.withoutProject === true ? {} : { project }),
+    captureProject: async () => new Map([[PATH, textOf(buffer)], ...onDisk]),
   })
 
-  return { buffer, target, wire, changeHistory, claims, conversation }
+  return {
+    buffer,
+    buffers,
+    onDisk,
+    target,
+    wire,
+    changeHistory,
+    claims,
+    conversation,
+  }
 }
 
 const output = (contents: string): MlCopilotServerMessage => ({
@@ -112,7 +198,9 @@ describe('createConversation', () => {
     await conversation.send('make it wider')
 
     wire.receive({ delta: { delta: 'Making ' } })
+    await settle()
     wire.receive({ delta: { delta: 'it wider.' } })
+    await settle()
 
     expect(conversation.transcript.value[0].response).toBe('Making it wider.')
     expect(conversation.status.value).toBe('streaming')
@@ -128,7 +216,9 @@ describe('createConversation', () => {
     await conversation.send('make it wider')
 
     wire.receive({ reasoning: { type: 'text', content: 'Looking at ' } })
+    await settle()
     wire.receive({ reasoning: { type: 'text', content: 'the wall.' } })
+    await settle()
     wire.receive({
       reasoning: {
         type: 'design_plan',
@@ -136,6 +226,7 @@ describe('createConversation', () => {
       },
     })
     wire.receive({ delta: { delta: 'Widening.' } })
+    await settle()
 
     const turn = conversation.transcript.value[0]
     expect(turn.response).toBe('Widening.')
@@ -150,6 +241,7 @@ describe('createConversation', () => {
     await conversation.send('make it wider')
 
     wire.receive({ reasoning: { type: 'text', content: '' } })
+    await settle()
 
     expect(conversation.transcript.value[0].reasoning).toEqual([])
   })
@@ -164,6 +256,7 @@ describe('createConversation', () => {
     conversation.interrupt()
 
     wire.receive({ reasoning: { type: 'text', content: 'still thinking' } })
+    await settle()
 
     expect(conversation.transcript.value[0].reasoning).toEqual([])
   })
@@ -175,17 +268,113 @@ describe('createConversation', () => {
 
     await conversation.send('make it wider')
     wire.receive(output('width = 24\n'))
+    await settle()
 
     expect(textOf(buffer)).toBe('width = 24\n')
     expect(seen).toEqual([AUTHOR])
     expect(conversation.transcript.value[0].paths).toEqual([PATH])
   })
 
+  /**
+   * Frank's report, reduced. `applyChanges` is synchronous by design and defers
+   * every filesystem change back to the caller — and the caller never did them,
+   * so a turn that created a file computed the change, dropped it, and reported
+   * success. The next turn's `current_files` then had no such file, and the
+   * agent reasonably concluded somebody had deleted it.
+   */
+  it('creates a file the turn asked for', async () => {
+    const app = setup()
+    await app.conversation.send('add a plate')
+
+    app.wire.receive({
+      project_updated: { files: { 'plate.kcl': 'thickness = 3\n' } },
+    })
+    await settle()
+
+    expect(app.onDisk.get('plate.kcl')).toBe('thickness = 3\n')
+    expect(app.conversation.transcript.value[0].paths).toContain('plate.kcl')
+    expect(app.conversation.transcript.value[0].unapplied).toEqual([])
+  })
+
+  /** And a second output in the same turn edits it rather than re-creating it. */
+  it('edits a file it created earlier in the same turn', async () => {
+    const app = setup()
+    await app.conversation.send('add a plate and thicken it')
+
+    app.wire.receive({
+      project_updated: { files: { 'plate.kcl': 'thickness = 3\n' } },
+    })
+    await settle()
+    app.wire.receive({
+      project_updated: { files: { 'plate.kcl': 'thickness = 6\n' } },
+    })
+    await settle()
+
+    expect(textOf(app.buffers.get('plate.kcl') as FileBackedTextBuffer)).toBe(
+      'thickness = 6\n'
+    )
+    expect(app.conversation.transcript.value[0].unapplied).toEqual([])
+  })
+
+  /**
+   * The other half of the same bug, and the one that bites more often: every
+   * project file is in the view because `captureProject` reads the project, but
+   * only the open ones have a buffer to dispatch into.
+   */
+  it('edits a file that is not open in the editor', async () => {
+    const app = setup({ closed: { 'lid.kcl': 'depth = 2\n' } })
+    await app.conversation.send('deepen the lid')
+
+    app.wire.receive({
+      project_updated: { files: { 'lid.kcl': 'depth = 4\n' } },
+    })
+    await settle()
+
+    expect(textOf(app.buffers.get('lid.kcl') as FileBackedTextBuffer)).toBe(
+      'depth = 4\n'
+    )
+    expect(app.conversation.transcript.value[0].paths).toContain('lid.kcl')
+  })
+
+  /** Silence is what made this hard to diagnose, so refusals are recorded. */
+  it('records a path it could not change instead of claiming success', async () => {
+    const app = setup({ withoutProject: true })
+    await app.conversation.send('add a plate')
+
+    app.wire.receive({
+      project_updated: { files: { 'plate.kcl': 'thickness = 3\n' } },
+    })
+    await settle()
+
+    const turn = app.conversation.transcript.value[0]
+    expect(turn.paths).not.toContain('plate.kcl')
+    expect(turn.unapplied).toEqual([{ path: 'plate.kcl', reason: 'noProject' }])
+  })
+
+  /**
+   * The write must not land after the user stopped the turn. Applying can now
+   * await the filesystem, which opens exactly the window live-apply must close.
+   */
+  it('does not create a file for a turn that was interrupted', async () => {
+    const app = setup()
+    await app.conversation.send('add a plate')
+
+    app.wire.receive({
+      project_updated: { files: { 'plate.kcl': 'thickness = 3\n' } },
+    })
+    app.conversation.interrupt()
+    await settle()
+
+    expect(app.buffers.has('plate.kcl')).toBe(false)
+  })
+
   it('completes the turn on end of stream', async () => {
     const { wire, conversation } = setup()
     await conversation.send('make it wider')
     wire.receive(output('width = 24\n'))
+    await settle()
     wire.receive(endOfStream)
+    await settle()
 
     expect(conversation.transcript.value[0].status).toBe('complete')
     expect(conversation.status.value).toBe('idle')
@@ -201,8 +390,11 @@ describe('createConversation', () => {
     await conversation.send('add two lines')
 
     wire.receive(output('width = 10\ndepth = 2\n'))
+    await settle()
     wire.receive(output('width = 10\ndepth = 2\nheight = 4\n'))
+    await settle()
     wire.receive(endOfStream)
+    await settle()
 
     const text = textOf(buffer)
     expect(text).toBe('width = 10\ndepth = 2\nheight = 4\n')
@@ -218,7 +410,9 @@ describe('createConversation', () => {
     // The user prepends a line mid-turn.
     buffer.dispatch({ changes: { from: 0, insert: '// mine\n' } })
     wire.receive(output('width = 10\ndepth = 7\n'))
+    await settle()
     wire.receive(endOfStream)
+    await settle()
 
     expect(textOf(buffer)).toBe('// mine\nwidth = 10\ndepth = 7\n')
   })
@@ -232,6 +426,7 @@ describe('createConversation', () => {
     // The user rewrites the very line the service is about to.
     buffer.dispatch({ changes: { from: 11, to: 20, insert: 'depth = 99' } })
     wire.receive(output('width = 10\ndepth = 7\n'))
+    await settle()
 
     expect(conversation.conflicts.value).toHaveLength(1)
     expect(textOf(buffer)).toContain('depth = 99')
@@ -248,6 +443,7 @@ describe('createConversation', () => {
     conversation.interrupt()
 
     wire.receive(output('width = 24\n'))
+    await settle()
 
     expect(textOf(buffer)).toBe(BASE)
     expect(conversation.transcript.value[0].status).toBe('interrupted')
@@ -268,8 +464,10 @@ describe('createConversation', () => {
     const { buffer, wire, conversation } = setup()
     await conversation.send('make it wider')
     wire.receive(endOfStream)
+    await settle()
 
     wire.receive(output('width = 24\n'))
+    await settle()
 
     expect(textOf(buffer)).toBe(BASE)
   })
@@ -279,6 +477,7 @@ describe('createConversation', () => {
     await conversation.send('make it wider')
 
     wire.receive({ error: { detail: 'the model gave up' } })
+    await settle()
 
     expect(conversation.transcript.value[0].status).toBe('failed')
     expect(conversation.status.value).toBe('failed')
@@ -364,7 +563,9 @@ describe('createConversation', () => {
     const { buffer, wire, conversation } = setup()
     await conversation.send('add a line')
     wire.receive(output('width = 10\ndepth = 2\n'))
+    await settle()
     wire.receive(endOfStream)
+    await settle()
 
     buffer.dispatch({ changes: { from: 0, insert: '// mine\n' } })
 
@@ -389,6 +590,7 @@ describe('createConversation', () => {
 
     await conversation.send('make it wider')
     wire.receive(output('width = 24\n'))
+    await settle()
 
     expect(textOf(buffer)).toBe(BASE)
     const turn = conversation.transcript.value[0]
@@ -400,6 +602,7 @@ describe('createConversation', () => {
 
     // Ending the stream does not turn a held turn into a completed one.
     wire.receive(endOfStream)
+    await settle()
     expect(conversation.transcript.value[0].status).toBe('waiting')
     expect(conversation.status.value).toBe('waiting')
   })
@@ -410,9 +613,11 @@ describe('createConversation', () => {
 
     await conversation.send('make it wider')
     wire.receive(output('width = 24\n'))
+    await settle()
     expect(claims.holder(PATH)).toBe(AUTHOR)
 
     wire.receive(endOfStream)
+    await settle()
     expect(claims.holder(PATH)).toBeNull()
   })
 
@@ -422,9 +627,11 @@ describe('createConversation', () => {
 
     await conversation.send('make it wider')
     wire.receive(output('width = 24\n'))
+    await settle()
     conversation.dispose()
 
     wire.receive(output('width = 99\n'))
+    await settle()
 
     expect(textOf(buffer)).toBe('width = 24\n')
     expect(claims.holder(PATH)).toBeNull()

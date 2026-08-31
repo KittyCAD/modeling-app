@@ -4,6 +4,7 @@ import type {
   ConversationId,
   ReasoningEntry,
   Turn,
+  UnappliedChange,
 } from '@src/contracts/zookeeper'
 import { hashString } from '@src/lib/hash'
 import { joinPath } from '@src/lib/paths'
@@ -41,8 +42,11 @@ interface MetaLine {
 interface TurnLine {
   v: number
   kind: 'turn'
-  /** `reasoning` is optional on the way in: files written before it exist. */
-  turn: Omit<Turn, 'reasoning'> & { reasoning?: readonly ReasoningEntry[] }
+  /** Fields added later are optional on the way in: older files lack them. */
+  turn: Omit<Turn, 'reasoning' | 'unapplied'> & {
+    reasoning?: readonly ReasoningEntry[]
+    unapplied?: readonly UnappliedChange[]
+  }
 }
 
 /**
@@ -113,7 +117,11 @@ export function createTranscriptStore(dependencies: {
        * conversation anybody had already had. A version bump is for a change that
        * makes an old line *wrong*, not one that makes it incomplete.
        */ else
-        turns.push({ ...parsed.turn, reasoning: parsed.turn.reasoning ?? [] })
+        turns.push({
+          ...parsed.turn,
+          reasoning: parsed.turn.reasoning ?? [],
+          unapplied: parsed.turn.unapplied ?? [],
+        })
     }
 
     if (meta === null) return null

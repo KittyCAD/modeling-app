@@ -319,6 +319,47 @@ export function createZookeeperService(
         executingBufferId: () =>
           sessions.current.peek()?.executingBuffer.peek()?.id ?? null,
       },
+      /*
+       * The half of applying that has to await. `applyChanges` refuses to touch
+       * the filesystem so that no `await` can land between a rebase and its
+       * dispatch; this is where creating a file, deleting one, and opening one
+       * so it can be edited actually happen.
+       */
+      project: {
+        openFile: async (path) => {
+          const session = sessions.current.peek()
+          if (session === undefined || session === null) return
+          return session.openFile(path)
+        },
+        applyMutation: async (mutation) => {
+          const session = sessions.current.peek()
+          if (session === undefined || session === null) {
+            return {
+              before: {
+                operationId: '',
+                capturedAt: Date.now(),
+                projectPath: '',
+                buffers: [],
+              },
+              touched: [],
+              created: [],
+              deleted: [],
+              failed: [
+                ...(mutation.creates ?? []).map((each) => ({
+                  path: each.path,
+                  reason: 'No project is open.',
+                })),
+                ...(mutation.deletes ?? []).map((path) => ({
+                  path,
+                  reason: 'No project is open.',
+                })),
+              ],
+              contributionId: mutation.origin?.contributionId ?? '',
+            }
+          }
+          return session.applyMutation(mutation)
+        },
+      },
       changeHistory,
       claims,
       presence,

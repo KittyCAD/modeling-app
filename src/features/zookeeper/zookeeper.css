@@ -377,3 +377,20 @@
   background: var(--zds-surface-sunken);
   border: 1px solid var(--zds-border-subtle);
 }
+
+/* The way back to an earlier conversation, beside a live one. */
+.zds-zoo__storedToggle {
+  margin: 0;
+  padding: var(--zds-space-2) var(--zds-space-3);
+  border: none;
+  border-block-start: 1px solid var(--zds-border-subtle);
+  background: none;
+  cursor: pointer;
+  text-align: start;
+  color: var(--zds-text-tertiary);
+  font-size: var(--zds-font-size-mini);
+}
+
+.zds-zoo__storedToggle:hover {
+  color: var(--zds-text-secondary);
+}

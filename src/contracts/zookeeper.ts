@@ -80,6 +80,22 @@ export interface Turn {
   /** Paths another writer was holding. */
   waiting: readonly string[]
   /**
+   * Paths the turn meant to change and did not, with the reason verbatim.
+   *
+   * Separate from `conflicts`, which means "your edit and mine disagree". This
+   * means the change never got as far as being attempted — no baseline, no
+   * project to create a file in. Recorded because the alternative was what sent
+   * Frank asking: a turn that reported success while a file it created never
+   * appeared, and an agent that read the next turn's `current_files`, saw the
+   * file missing, and reasonably concluded somebody had deleted it.
+   *
+   * The reason is a bare string on purpose: it comes from two enums a layer
+   * apart (`RefusalReason` when deriving, `DeferralReason` when applying) and
+   * uniting them in the contract would make every consumer care which layer
+   * failed, which is not a thing anybody reading a transcript wants to know.
+   */
+  unapplied: readonly UnappliedChange[]
+  /**
    * The turn's working, in arrival order.
    *
    * Kept on the turn rather than in a side channel because it is the answer to
@@ -87,6 +103,12 @@ export interface Turn {
    * particular turn. It persists with the turn for the same reason.
    */
   reasoning: readonly ReasoningEntry[]
+}
+
+/** A path a turn intended to change but did not. */
+export interface UnappliedChange {
+  path: string
+  reason: string
 }
 
 /** Whatever carries messages to and from the service. */

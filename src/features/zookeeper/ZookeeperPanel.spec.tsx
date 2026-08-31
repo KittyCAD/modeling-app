@@ -157,6 +157,7 @@ const turn = (overrides: Partial<Turn> = {}): Turn => ({
   conflicts: [],
   waiting: [],
   reasoning: [],
+  unapplied: [],
   ...overrides,
 })
 
@@ -166,6 +167,76 @@ afterEach(() => {
     host.remove()
     host = null
   }
+})
+
+describe('what a turn could not do', () => {
+  /**
+   * The silence that made Frank's report hard to diagnose: a turn created a
+   * file, nothing happened, and the transcript said nothing at all — so the only
+   * account of it came from the agent, which could only infer from the next
+   * turn's `current_files` that somebody had deleted it.
+   */
+  it('names a path the turn did not change, and why', () => {
+    const view = mount({
+      conversation: fakeConversation({
+        turns: [
+          turn({
+            unapplied: [{ path: 'plate.kcl', reason: 'noProject' }],
+          }),
+        ],
+      }),
+    })
+
+    expect(view.textContent).toContain('plate.kcl')
+    expect(view.textContent).toContain('noProject')
+  })
+
+  it('says nothing when everything landed', () => {
+    const view = mount({
+      conversation: fakeConversation({ turns: [turn({ unapplied: [] })] }),
+    })
+
+    expect(view.textContent).not.toContain('Did not change')
+  })
+})
+
+describe('getting back to an earlier conversation', () => {
+  const stored = [
+    {
+      id: 'old',
+      remoteId: null,
+      createdAt: 0,
+      turns: [turn({ prompt: 'the first thing I asked' })],
+    },
+  ]
+
+  /** The whole argument for writing transcripts to disk. */
+  it('offers earlier conversations while one is already open', () => {
+    const view = mount({ conversation: fakeConversation({}), stored })
+
+    const toggle = view.querySelector('.zds-zoo__storedToggle')
+    expect(toggle?.textContent).toContain('Earlier conversations (1)')
+
+    void act(() => {
+      ;(toggle as HTMLButtonElement).click()
+    })
+
+    expect(view.textContent).toContain('the first thing I asked')
+  })
+
+  /** With no conversation open the list is the only thing to do, so show it. */
+  it('shows them outright when nothing is open', () => {
+    const view = mount({ conversation: null, stored })
+
+    expect(view.querySelector('.zds-zoo__storedToggle')).toBeNull()
+    expect(view.textContent).toContain('the first thing I asked')
+  })
+
+  it('offers nothing when there are no earlier conversations', () => {
+    const view = mount({ conversation: fakeConversation({}), stored: [] })
+
+    expect(view.querySelector('.zds-zoo__storedToggle')).toBeNull()
+  })
 })
 
 describe('switching conversations', () => {

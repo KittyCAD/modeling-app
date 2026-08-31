@@ -12,11 +12,16 @@ import {
   applyChanges,
 } from '@src/features/zookeeper/applyChanges'
 import {
+  type ProposedFileChange,
   deriveChanges,
   manifestOf,
   outputsOf,
   toolResultFailed,
 } from '@src/features/zookeeper/deriveEdit'
+import type {
+  ProjectMutation,
+  ProjectMutationResult,
+} from '@src/contracts/projectSession'
 import type { ChangeHistory } from '@src/lib/collab/changeHistory'
 import type { Presence } from '@src/lib/collab/presence'
 import type { WriteClaims } from '@src/lib/collab/claims'
@@ -55,6 +60,25 @@ export interface ConversationDependencies {
    * snapshot alone is not enough.
    */
   captureProject: () => Promise<ReadonlyMap<string, string>>
+  /**
+   * Project operations a buffer dispatch cannot make.
+   *
+   * `applyChanges` is synchronous by design — there must be no `await` between
+   * rebasing a path and dispatching it — so it *defers* everything that touches
+   * the filesystem back to here, which is the only place allowed to await. This
+   * is that half of the bargain. Without it a turn's `create` and `delete`
+   * changes are computed correctly and then dropped, and a modify to a file that
+   * merely is not open in the editor is dropped too.
+   *
+   * Optional so a test can leave it out, and a conversation without one records
+   * those paths as unapplied rather than pretending they landed.
+   */
+  project?: {
+    /** Open a file so a modify has a buffer to dispatch into. */
+    openFile(path: string): Promise<unknown>
+    /** Create and delete files, in the one order that works. */
+    applyMutation(mutation: ProjectMutation): Promise<ProjectMutationResult>
+  }
   /**
    * The socket's state, for the panel to show.
    *
@@ -118,6 +142,7 @@ export function createConversation(
     target,
     changeHistory,
     claims,
+    project,
     presence,
     captureProject,
     connection,
@@ -186,20 +211,210 @@ export function createConversation(
     view.delete(path)
   }
 
+  /**
+   * Applies run one at a time, in arrival order.
+   *
+   * Needed the moment applying can await — creating a file and opening one both
+   * do — because two outputs of the same turn would otherwise interleave, and
+   * the second would derive its edits against a view the first had not finished
+   * updating.
+   */
+  let applying: Promise<void> = Promise.resolve()
+
+  /**
+   * Turns whose remaining output must be thrown away.
+   *
+   * Interrupted or failed, never merely completed — see the guard in
+   * `applyOutputsInTurn` for why the difference matters now that applying awaits.
+   */
+  const abandoned = new Set<string>()
+
   const applyOutputs = (
     turnId: string,
     outputs: Readonly<Record<string, string>>,
     manifest?: ReturnType<typeof manifestOf>
   ) => {
+    applying = applying
+      .then(() => applyOutputsInTurn(turnId, outputs, manifest))
+      .catch(() => {
+        /*
+         * Swallowed rather than unhandled: a filesystem refusal is already
+         * recorded on the turn as an unapplied path, and an unhandled rejection
+         * would take down the chain every later output rides on.
+         */
+      })
+  }
+
+  const noteUnapplied = (
+    turnId: string,
+    entries: readonly { path: string; reason: string }[]
+  ) => {
+    if (entries.length === 0) return
+    updateTurn(turnId, (previous) => ({
+      ...previous,
+      unapplied: [...previous.unapplied, ...entries],
+    }))
+  }
+
+  /**
+   * The filesystem half of a turn: create what it added, remove what it deleted.
+   *
+   * Runs before the text half so a file created by this output has a buffer by
+   * the time the same output's edits are dispatched — `applyMutation` opens what
+   * it creates, which is exactly why the edits are re-derived afterwards rather
+   * than computed up front.
+   */
+  const applyStructural = async (
+    turnId: string,
+    changes: readonly ProposedFileChange[]
+  ) => {
+    const creates = changes.filter(
+      (change): change is Extract<ProposedFileChange, { kind: 'create' }> =>
+        change.kind === 'create'
+    )
+    const deletes = changes.filter((change) => change.kind === 'delete')
+    if (creates.length === 0 && deletes.length === 0) return
+
+    if (project === undefined) {
+      noteUnapplied(
+        turnId,
+        [...creates, ...deletes].map((change) => ({
+          path: change.path,
+          reason: 'noProject',
+        }))
+      )
+      return
+    }
+
+    const result = await project.applyMutation({
+      label: 'Zookeeper',
+      creates: creates.map((change) => ({
+        path: change.path,
+        contents: change.contents,
+      })),
+      deletes: deletes.map((change) => change.path),
+      origin: { role: 'semantic', author, contributionId: turnId },
+    })
+
+    for (const change of creates) {
+      if (!result.created.includes(change.path)) continue
+      // Now that it exists and is open, it is a path this writer follows like
+      // any other, and its contents are exactly what the service last saw.
+      track(change.path, change.contents)
+    }
+    for (const path of result.deleted) untrack(path)
+
+    if (result.created.length > 0 || result.deleted.length > 0) {
+      updateTurn(turnId, (previous) => ({
+        ...previous,
+        paths: [
+          ...new Set([...previous.paths, ...result.created, ...result.deleted]),
+        ],
+      }))
+    }
+
+    noteUnapplied(
+      turnId,
+      result.failed.map((failure) => ({
+        path: failure.path,
+        reason: failure.reason,
+      }))
+    )
+  }
+
+  /**
+   * Open any file a text change needs, so the dispatch has somewhere to go.
+   *
+   * The other half of what `applyChanges` defers. Every project file is in the
+   * view — `captureProject` reads the whole project, not just what is on screen
+   * — but only the open ones have buffers, so without this a turn editing a file
+   * the user happens not to have open does nothing at all and says nothing.
+   */
+  const openForModify = async (
+    turnId: string,
+    changes: readonly ProposedFileChange[]
+  ) => {
+    for (const change of changes) {
+      if (change.kind !== 'modify') continue
+      if (target.bufferForPath(change.path) !== undefined) continue
+
+      if (project === undefined) {
+        noteUnapplied(turnId, [{ path: change.path, reason: 'noProject' }])
+        continue
+      }
+
+      try {
+        await project.openFile(change.path)
+      } catch {
+        noteUnapplied(turnId, [{ path: change.path, reason: 'couldNotOpen' }])
+        continue
+      }
+
+      const seen = view.get(change.path)
+      const buffer = target.bufferForPath(change.path)
+      if (seen === undefined || buffer === undefined) continue
+      /*
+       * Re-tracked now that there is a buffer to follow. Safe to reset the
+       * ledger to the seen content because the view for a closed file came from
+       * the same disk read `openFile` just performed, so there is genuinely no
+       * divergence yet.
+       */
+      track(change.path, seen)
+    }
+  }
+
+  const applyOutputsInTurn = async (
+    turnId: string,
+    outputs: Readonly<Record<string, string>>,
+    manifest?: ReturnType<typeof manifestOf>
+  ) => {
+    /*
+     * Checked before anything is written, and again after the awaits below.
+     * Queued work can be overtaken by an interrupt at either moment, and the
+     * first version of this only checked afterwards — which created the file and
+     * then declined to edit it, the worst of both.
+     */
+    if (abandoned.has(turnId)) return
+
     const derived = deriveChanges({
       baseline: view,
       outputs,
       ...(manifest === undefined ? {} : { manifest }),
     })
+    noteUnapplied(turnId, derived.refused)
     if (derived.changes.length === 0) return
 
+    await applyStructural(turnId, derived.changes)
+    await openForModify(turnId, derived.changes)
+
+    /*
+     * Abandoned, not merely over.
+     *
+     * Applying awaits the filesystem now, so a turn can finish while its last
+     * output is still in the queue — and `end_of_stream` is handled
+     * synchronously, so by the time this runs `turn` is routinely already null
+     * for a turn that completed perfectly well. Guarding on "is this still the
+     * live turn" would therefore throw away the final output of almost every
+     * turn. What live-apply must not do is write for a turn the user *stopped*,
+     * which is what `abandoned` records.
+     */
+    if (abandoned.has(turnId)) return
+
+    /*
+     * Re-derived against the view as it now stands. A file created a moment ago
+     * is tracked with exactly the contents the service sent, so it produces no
+     * edits the second time round rather than an edit against an empty baseline.
+     */
+    const again = deriveChanges({
+      baseline: view,
+      outputs,
+      ...(manifest === undefined ? {} : { manifest }),
+    })
+    const edits = again.changes.filter((change) => change.kind === 'modify')
+    if (edits.length === 0) return
+
     const outcome = applyChanges({
-      changes: derived.changes,
+      changes: edits,
       baseline: view,
       target,
       ledger,
@@ -221,6 +436,11 @@ export function createConversation(
     if (outcome.conflicts.length > 0) {
       conflicts.value = [...conflicts.peek(), ...outcome.conflicts]
     }
+
+    // Whatever is still deferred after creating and opening is genuinely stuck,
+    // and saying so is the difference between a turn that failed and a turn that
+    // appeared to succeed while changing nothing.
+    noteUnapplied(turnId, outcome.deferred)
 
     updateTurn(turnId, (previous) => ({
       ...previous,
@@ -246,6 +466,12 @@ export function createConversation(
   }
 
   const finish = (turnId: string, status: TurnStatus) => {
+    /*
+     * A turn that was stopped or failed must not go on writing; one that simply
+     * completed must still be allowed to land what it already sent.
+     */
+    if (status === 'interrupted' || status === 'failed') abandoned.add(turnId)
+
     updateTurn(turnId, (previous) => ({
       ...previous,
       // A turn held off a file did not complete, whatever the service says.
@@ -253,7 +479,12 @@ export function createConversation(
     }))
     claims?.release(author)
     if (turn?.id === turnId) turn = null
-    onTurnSettled?.()
+
+    /*
+     * After the queue drains, so the transcript records the paths the turn's
+     * last output actually touched rather than the state a microtask too early.
+     */
+    void applying.then(() => onTurnSettled?.())
   }
 
   const stopListening = transport.onMessage((message) => {
@@ -379,6 +610,7 @@ export function createConversation(
           conflicts: [],
           waiting: [],
           reasoning: [],
+          unapplied: [],
         },
       ]
 

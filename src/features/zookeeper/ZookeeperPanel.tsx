@@ -129,6 +129,14 @@ export function ZookeeperPanel() {
         another's composer, one Enter away from going to the wrong one.
       */}
       <ConversationView key={active.value.id} conversation={active.value} />
+      {/*
+        Reachable while a conversation is open, not only from the empty state.
+        Earlier conversations used to appear only on a fresh panel, which made
+        getting back to one a matter of closing everything first — and the whole
+        argument for writing transcripts to disk is that a conversation you
+        cannot get back to is only an audit trail.
+      */}
+      <StoredConversations collapsed />
     </div>
   )
 }
@@ -145,11 +153,32 @@ export function ZookeeperPanel() {
  * list says so rather than offering a button that would quietly do something
  * weaker than it claims.
  */
-function StoredConversations() {
+function StoredConversations({ collapsed = false }: { collapsed?: boolean }) {
   const zookeeper = useService(zookeeperService)
   const stored = useComputed(() => zookeeper.stored.value)
+  const open = useSignal(false)
 
   if (stored.value.length === 0) return null
+
+  /*
+   * Behind a disclosure once a conversation is open, and shown outright when
+   * there is none. In the empty state the list is the only thing to do; beside a
+   * live transcript it is a way back, and a way back should not take up the room
+   * the conversation needs.
+   */
+  if (collapsed && !open.value) {
+    return (
+      <button
+        type="button"
+        class="zds-zoo__storedToggle"
+        onClick={() => {
+          open.value = true
+        }}
+      >
+        {`Earlier conversations (${stored.value.length})`}
+      </button>
+    )
+  }
 
   return (
     <section class="zds-zoo__stored">
@@ -481,6 +510,17 @@ function TurnView({ turn, onRevert }: { turn: Turn; onRevert: () => void }) {
             {turn.conflicts.map((each) => each.path).join(', ')}
             {' — '}
             you edited it first.
+          </p>
+        </div>
+      ) : null}
+
+      {turn.unapplied.length > 0 ? (
+        <div class="zds-zoo__note zds-zoo__note--conflict">
+          <p>
+            Did not change {turn.unapplied.map((each) => each.path).join(', ')}
+            {' — '}
+            {[...new Set(turn.unapplied.map((each) => each.reason))].join(', ')}
+            .
           </p>
         </div>
       ) : null}

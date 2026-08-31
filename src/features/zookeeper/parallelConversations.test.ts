@@ -29,6 +29,9 @@ const historyCapability: EditorCapability = {
   extension: () => history(),
 }
 
+/** Let the queued apply finish: applying awaits the filesystem now. */
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
+
 const textOf = (buffer: FileBackedTextBuffer) =>
   buffer.state.peek().doc.toString()
 
@@ -115,6 +118,7 @@ describe('two conversations at once', () => {
 
     await a.conversation.send('make it wider')
     a.wire.receive({ delta: { delta: 'Working on it' } })
+    await settle()
     expect(a.conversation.status.value).toBe('streaming')
 
     await b.conversation.send('add a fillet')
@@ -136,7 +140,9 @@ describe('two conversations at once', () => {
     await b.conversation.send('deepen the bracket')
 
     a.wire.receive(updated({ 'main.kcl': 'width = 20\n' }))
+    await settle()
     b.wire.receive(updated({ 'bracket.kcl': 'depth = 4\n' }))
+    await settle()
 
     expect(textOf(app.buffer('main.kcl'))).toBe('width = 20\n')
     expect(textOf(app.buffer('bracket.kcl'))).toBe('depth = 4\n')
@@ -159,7 +165,9 @@ describe('two conversations at once', () => {
     await b.conversation.send('make it wider too')
 
     a.wire.receive(updated({ 'main.kcl': 'width = 20\n' }))
+    await settle()
     b.wire.receive(updated({ 'main.kcl': 'width = 30\n' }))
+    await settle()
 
     expect(textOf(app.buffer('main.kcl'))).toBe('width = 20\n')
     expect(b.conversation.transcript.value[0].waiting).toEqual(['main.kcl'])
