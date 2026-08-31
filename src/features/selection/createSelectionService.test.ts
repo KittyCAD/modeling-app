@@ -75,6 +75,7 @@ function setup(
     // Selection reads the graph, not the program.
     program: computed(() => null),
     operations: computed(() => ({ map: {} })),
+    defaultPlanes: computed(() => null),
   }
 
   const selection = createSelectionService({
@@ -454,6 +455,7 @@ describe('asking the engine which curve made a face', () => {
         options.program === undefined ? executed : options.program
       ),
       operations: computed(() => ({ map: {} })),
+      defaultPlanes: computed(() => null),
     }
 
     const selection = createSelectionService({
@@ -563,6 +565,7 @@ describe('asking the engine which curve made a face', () => {
         sourceRangeFor: (id: string) => sourceRangeFor(map, id),
         program: computed(() => executed),
         operations: computed(() => ({ map: {} })),
+        defaultPlanes: computed(() => null),
       }),
     })
 
@@ -670,6 +673,7 @@ describe('finding the engine face index', () => {
         sourceRangeFor: (id: string) => sourceRangeFor(map, id),
         program: computed(() => executed),
         operations: computed(() => ({ map: {} })),
+        defaultPlanes: computed(() => null),
       }),
     })
 

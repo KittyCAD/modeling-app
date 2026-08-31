@@ -5,6 +5,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { OperationsByModule } from '@rust/kcl-lib/bindings/OperationsByModule'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { engineConnectionService } from '@src/contracts/engine'
@@ -72,6 +73,7 @@ export default defineRegistryItemFactory((ctx) => {
   const artifacts = signal<ArtifactMap>(new Map())
   const program = signal<ExecutedProgram | null>(null)
   const operations = signal<OperationsByModule>({ map: {} })
+  const defaultPlanes = signal<DefaultPlanes | null>(null)
   /** Whether a context exists, for anything that must not create one. */
   const contextReady = signal(false)
 
@@ -182,6 +184,7 @@ export default defineRegistryItemFactory((ctx) => {
       program.value = null
       artifacts.value = new Map()
       operations.value = { map: {} }
+      defaultPlanes.value = null
 
       engine().disconnect()
     })
@@ -317,6 +320,15 @@ export default defineRegistryItemFactory((ctx) => {
         // selection cannot name what was clicked without it.
         artifacts.value = artifactsFrom(outcome.artifactGraph)
         operations.value = outcome.operations ?? { map: {} }
+        /*
+         * Kept across a run that reports none. kcl-lib creates the planes at the
+         * start of every execution, so an outcome without them is a run that
+         * failed before it got there — and the planes from the previous run are
+         * still on the engine, still valid, and still the ones to address.
+         */
+        if (outcome.defaultPlanes) {
+          defaultPlanes.value = outcome.defaultPlanes as DefaultPlanes
+        }
 
         return {
           requestId: request.requestId,
@@ -347,6 +359,7 @@ export default defineRegistryItemFactory((ctx) => {
     sourceRangeFor: (entityId) => sourceRangeFor(artifacts.value, entityId),
     program: computed(() => program.value),
     operations: computed(() => operations.value),
+    defaultPlanes: computed(() => defaultPlanes.value),
   }
 
   return {

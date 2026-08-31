@@ -734,6 +734,7 @@ describe('answering from the scene', () => {
     // program it was handed.
     program: computed(() => null),
     operations: computed(() => ({ map: {} })),
+    defaultPlanes: computed(() => null),
   })
 
   const resolverFor = (
