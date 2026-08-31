@@ -3,6 +3,229 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
 ---
 {
+  "baseExtrude": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 148,
+            "end": 169,
+            "moduleId": 0,
+            "start": 148,
+            "type": "TagDeclarator",
+            "value": "rectangleSegmentA001"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 253,
+            "end": 259,
+            "moduleId": 0,
+            "start": 253,
+            "type": "TagDeclarator",
+            "value": "seg01"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 423,
+            "end": 429,
+            "moduleId": 0,
+            "start": 423,
+            "type": "TagDeclarator",
+            "value": "seg02"
+          },
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "creatorType": "sketch",
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              75.8,
+              317.2
+            ],
+            "tag": {
+              "commentStart": 148,
+              "end": 169,
+              "moduleId": 0,
+              "start": 148,
+              "type": "TagDeclarator",
+              "value": "rectangleSegmentA001"
+            },
+            "to": [
+              344.23,
+              317.2
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              344.23,
+              317.2
+            ],
+            "tag": {
+              "commentStart": 253,
+              "end": 259,
+              "moduleId": 0,
+              "start": 253,
+              "type": "TagDeclarator",
+              "value": "seg01"
+            },
+            "to": [
+              344.23,
+              99.94
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              344.23,
+              99.94
+            ],
+            "tag": null,
+            "to": [
+              75.80000000000001,
+              99.94
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              75.80000000000001,
+              99.94
+            ],
+            "tag": {
+              "commentStart": 423,
+              "end": 429,
+              "moduleId": 0,
+              "start": 423,
+              "type": "TagDeclarator",
+              "value": "seg02"
+            },
+            "to": [
+              75.8,
+              317.2
+            ],
+            "type": "ToPoint",
+            "units": "mm"
+          }
+        ],
+        "on": {
+          "artifactId": "[uuid]",
+          "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": "mm"
+          },
+          "type": "plane",
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": null
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 1.0,
+            "units": null
+          },
+          "zAxis": {
+            "x": 0.0,
+            "y": -1.0,
+            "z": 0.0,
+            "units": null
+          }
+        },
+        "start": {
+          "from": [
+            75.8,
+            317.2
+          ],
+          "to": [
+            75.8,
+            317.2
+          ],
+          "units": "mm",
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "rectangleSegmentA001": {
+            "type": "TagIdentifier",
+            "value": "rectangleSegmentA001"
+          },
+          "seg01": {
+            "type": "TagIdentifier",
+            "value": "seg01"
+          },
+          "seg02": {
+            "type": "TagIdentifier",
+            "value": "seg02"
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": "mm"
+      },
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "units": "mm",
+      "sectional": false
+    }
+  },
   "extrude001": {
     "type": "Solid",
     "value": {
@@ -64,10 +287,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 580,
-            "end": 586,
+            "commentStart": 650,
+            "end": 656,
             "moduleId": 0,
-            "start": 580,
+            "start": 650,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -78,10 +301,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 653,
-            "end": 659,
+            "commentStart": 718,
+            "end": 724,
             "moduleId": 0,
-            "start": 653,
+            "start": 718,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -296,10 +519,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           },
           "edgeId": "[uuid]",
           "tag": {
-            "commentStart": 580,
-            "end": 586,
+            "commentStart": 650,
+            "end": 656,
             "moduleId": 0,
-            "start": 580,
+            "start": 650,
             "type": "TagDeclarator",
             "value": "seg04"
           }
@@ -317,10 +540,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           },
           "edgeId": "[uuid]",
           "tag": {
-            "commentStart": 653,
-            "end": 659,
+            "commentStart": 718,
+            "end": 724,
             "moduleId": 0,
-            "start": 653,
+            "start": 718,
             "type": "TagDeclarator",
             "value": "seg03"
           }
@@ -342,10 +565,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1271,
-            "end": 1292,
+            "commentStart": 1336,
+            "end": 1357,
             "moduleId": 0,
-            "start": 1271,
+            "start": 1336,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -356,10 +579,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1376,
-            "end": 1397,
+            "commentStart": 1441,
+            "end": 1462,
             "moduleId": 0,
-            "start": 1376,
+            "start": 1441,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -370,10 +593,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1499,
-            "end": 1520,
+            "commentStart": 1564,
+            "end": 1585,
             "moduleId": 0,
-            "start": 1499,
+            "start": 1564,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -402,10 +625,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               278.35
             ],
             "tag": {
-              "commentStart": 1271,
-              "end": 1292,
+              "commentStart": 1336,
+              "end": 1357,
               "moduleId": 0,
-              "start": 1271,
+              "start": 1336,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -426,10 +649,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               278.35
             ],
             "tag": {
-              "commentStart": 1376,
-              "end": 1397,
+              "commentStart": 1441,
+              "end": 1462,
               "moduleId": 0,
-              "start": 1376,
+              "start": 1441,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -450,10 +673,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               146.08
             ],
             "tag": {
-              "commentStart": 1499,
-              "end": 1520,
+              "commentStart": 1564,
+              "end": 1585,
               "moduleId": 0,
-              "start": 1499,
+              "start": 1564,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -591,6 +814,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "seg01"
+  },
+  "seg01OppositeEdge": {
+    "type": "Uuid",
+    "value": "[uuid]"
   },
   "seg02": {
     "type": "TagIdentifier",
@@ -793,10 +1020,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             278.35
           ],
           "tag": {
-            "commentStart": 1271,
-            "end": 1292,
+            "commentStart": 1336,
+            "end": 1357,
             "moduleId": 0,
-            "start": 1271,
+            "start": 1336,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -817,10 +1044,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             278.35
           ],
           "tag": {
-            "commentStart": 1376,
-            "end": 1397,
+            "commentStart": 1441,
+            "end": 1462,
             "moduleId": 0,
-            "start": 1376,
+            "start": 1441,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -841,10 +1068,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             146.08
           ],
           "tag": {
-            "commentStart": 1499,
-            "end": 1520,
+            "commentStart": 1564,
+            "end": 1585,
             "moduleId": 0,
-            "start": 1499,
+            "start": 1564,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -954,10 +1181,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             277.34
           ],
           "tag": {
-            "commentStart": 803,
-            "end": 824,
+            "commentStart": 868,
+            "end": 889,
             "moduleId": 0,
-            "start": 803,
+            "start": 868,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -978,10 +1205,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             277.34
           ],
           "tag": {
-            "commentStart": 907,
-            "end": 928,
+            "commentStart": 972,
+            "end": 993,
             "moduleId": 0,
-            "start": 907,
+            "start": 972,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -1002,10 +1229,10 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             172.53999999999996
           ],
           "tag": {
-            "commentStart": 1030,
-            "end": 1051,
+            "commentStart": 1095,
+            "end": 1116,
             "moduleId": 0,
-            "start": 1030,
+            "start": 1095,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },

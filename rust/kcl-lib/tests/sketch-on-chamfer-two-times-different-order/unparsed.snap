@@ -9,9 +9,12 @@ sketch001 = startSketchOn(XZ)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
-extrude001 = extrude(sketch001, length = 100)
+baseExtrude = extrude(sketch001, length = 100)
+seg01OppositeEdge = getOppositeEdge(seg01)
+
+extrude001 = baseExtrude
   |> fillet(radius = 20, tags = [seg01])
-  |> chamfer(length = 50, tags = [getOppositeEdge(seg01)], tag = $seg03)
+  |> chamfer(length = 50, tags = [seg01OppositeEdge], tag = $seg03)
   |> chamfer(length = 50, tags = [seg02], tag = $seg04)
 
 sketch003 = startSketchOn(extrude001, face = seg04)
