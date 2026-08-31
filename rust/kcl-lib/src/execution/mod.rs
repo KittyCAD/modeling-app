@@ -50,11 +50,6 @@ use serde::Deserialize;
 use serde::Serialize;
 pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
 pub(crate) use sketch_solve::solver_numeric_type;
-pub use sketch_transpiler::pre_execute_transpile;
-pub use sketch_transpiler::transpile_all_old_sketches_to_new;
-pub use sketch_transpiler::transpile_old_sketch_to_new;
-pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
-pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
 pub(crate) use solver_arc::SolverArc;
 pub(crate) use state::ConstraintKey;
 pub(crate) use state::ConstraintState;
@@ -172,7 +167,6 @@ mod memory;
 mod modeling;
 mod named_views;
 mod sketch_solve;
-mod sketch_transpiler;
 mod solver_arc;
 mod state;
 pub mod typed_path;
@@ -2909,25 +2903,6 @@ segLength = segLen(seg01)
         let (_, first_variables) = results.first().expect("expected at least one memory backend");
         assert_number_variable(first_variables, "segLength", 10.0);
         assert_backend_results_match(&results);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn sketch_transpiler_exec_outcome_variables_match_between_memory_backends() {
-        let code = r#"
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [1, 0])
-"#;
-        let program = crate::Program::parse_no_errs(code).unwrap();
-
-        let outcomes = collect_backend_results(|kind| execute_outcome_with_backend(code, kind)).await;
-        let mut transpiled = Vec::with_capacity(outcomes.len());
-        for (kind, outcome) in &outcomes {
-            let sketch = transpile_old_sketch_to_new(outcome, &program, "sketch001").unwrap();
-            transpiled.push((*kind, sketch));
-        }
-
-        assert_backend_results_match(&transpiled);
     }
 
     #[tokio::test(flavor = "multi_thread")]
