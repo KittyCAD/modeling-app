@@ -31,9 +31,11 @@ const STORAGE_KEY = 'zds.layout'
  *   middle.
  * - 2: the code panel (editor, hosting the file tree) in the start rail, with
  *   the viewport taking the whole centre.
+ * - 3: Zookeeper on the end rail, ahead of the title block, and that rail given
+ *   room for a conversation rather than a column of short fields.
  */
 interface PersistedLayout {
-  version: 2
+  version: 3
   presetId: string | null
   root: LayoutNode | null
   sizes: Record<string, number[]>
@@ -45,7 +47,7 @@ function readPersisted(): PersistedLayout | null {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as PersistedLayout
-    return parsed.version === 2 ? parsed : null
+    return parsed.version === 3 ? parsed : null
   } catch {
     return null
   }
@@ -145,7 +147,7 @@ export function createLayoutService(
   const persist = () => {
     try {
       const payload: PersistedLayout = {
-        version: 2,
+        version: 3,
         presetId: presetId.peek(),
         root: root.peek(),
         sizes: Object.fromEntries(

@@ -71,7 +71,7 @@ function setup(options: { contents?: string; withClaims?: boolean } = {}) {
     target,
     changeHistory,
     ...(claims === undefined ? {} : { claims }),
-    captureProject: () => new Map([[PATH, textOf(buffer)]]),
+    captureProject: async () => new Map([[PATH, textOf(buffer)]]),
   })
 
   return { buffer, target, wire, changeHistory, claims, conversation }
@@ -84,17 +84,17 @@ const output = (contents: string): MlCopilotServerMessage => ({
 const endOfStream: MlCopilotServerMessage = { end_of_stream: {} }
 
 describe('createConversation', () => {
-  it('is idle with nothing in the transcript', () => {
+  it('is idle with nothing in the transcript', async () => {
     const { conversation } = setup()
 
     expect(conversation.status.value).toBe('idle')
     expect(conversation.transcript.value).toEqual([])
   })
 
-  it('sends the prompt with the project as it stands', () => {
+  it('sends the prompt with the project as it stands', async () => {
     const { wire, conversation } = setup()
 
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
 
     expect(wire.sent).toHaveLength(1)
     const message = wire.sent[0]
@@ -107,9 +107,9 @@ describe('createConversation', () => {
     )
   })
 
-  it('accumulates streamed text onto the turn', () => {
+  it('accumulates streamed text onto the turn', async () => {
     const { wire, conversation } = setup()
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
 
     wire.receive({ delta: { delta: 'Making ' } })
     wire.receive({ delta: { delta: 'it wider.' } })
@@ -118,12 +118,12 @@ describe('createConversation', () => {
     expect(conversation.status.value).toBe('streaming')
   })
 
-  it('applies a mid-turn output to the buffer, attributed', () => {
+  it('applies a mid-turn output to the buffer, attributed', async () => {
     const { buffer, wire, conversation } = setup()
     const seen: (string | undefined)[] = []
     buffer.onChange((change) => seen.push(change.author))
 
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
     wire.receive(output('width = 24\n'))
 
     expect(textOf(buffer)).toBe('width = 24\n')
@@ -131,9 +131,9 @@ describe('createConversation', () => {
     expect(conversation.transcript.value[0].paths).toEqual([PATH])
   })
 
-  it('completes the turn on end of stream', () => {
+  it('completes the turn on end of stream', async () => {
     const { wire, conversation } = setup()
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
     wire.receive(output('width = 24\n'))
     wire.receive(endOfStream)
 
@@ -146,9 +146,9 @@ describe('createConversation', () => {
    * second output describes a document built on the first, so diffing it against
    * the start of the turn would re-apply the first output's work.
    */
-  it('applies two outputs in one turn without double-applying', () => {
+  it('applies two outputs in one turn without double-applying', async () => {
     const { buffer, wire, conversation } = setup()
-    conversation.send('add two lines')
+    await conversation.send('add two lines')
 
     wire.receive(output('width = 10\ndepth = 2\n'))
     wire.receive(output('width = 10\ndepth = 2\nheight = 4\n'))
@@ -159,11 +159,11 @@ describe('createConversation', () => {
     expect(text.match(/depth = 2/g)).toHaveLength(1)
   })
 
-  it('rebases an output around typing that happened while it streamed', () => {
+  it('rebases an output around typing that happened while it streamed', async () => {
     const { buffer, wire, conversation } = setup({
       contents: 'width = 10\ndepth = 2\n',
     })
-    conversation.send('change depth')
+    await conversation.send('change depth')
 
     // The user prepends a line mid-turn.
     buffer.dispatch({ changes: { from: 0, insert: '// mine\n' } })
@@ -173,11 +173,11 @@ describe('createConversation', () => {
     expect(textOf(buffer)).toBe('// mine\nwidth = 10\ndepth = 7\n')
   })
 
-  it('records a conflict without writing, when the user got there first', () => {
+  it('records a conflict without writing, when the user got there first', async () => {
     const { buffer, wire, conversation } = setup({
       contents: 'width = 10\ndepth = 2\n',
     })
-    conversation.send('change depth')
+    await conversation.send('change depth')
 
     // The user rewrites the very line the service is about to.
     buffer.dispatch({ changes: { from: 11, to: 20, insert: 'depth = 99' } })
@@ -192,9 +192,9 @@ describe('createConversation', () => {
    * but cannot stop a frame already in flight, and without the turn check a late
    * output would write to the file *after* the user asked us to stop.
    */
-  it('ignores an output that arrives after the turn was interrupted', () => {
+  it('ignores an output that arrives after the turn was interrupted', async () => {
     const { buffer, wire, conversation } = setup()
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
     conversation.interrupt()
 
     wire.receive(output('width = 24\n'))
@@ -203,9 +203,9 @@ describe('createConversation', () => {
     expect(conversation.transcript.value[0].status).toBe('interrupted')
   })
 
-  it('tells the service to stop as well as stopping itself', () => {
+  it('tells the service to stop as well as stopping itself', async () => {
     const { wire, conversation } = setup()
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
     conversation.interrupt()
 
     const last = wire.sent.at(-1)
@@ -214,9 +214,9 @@ describe('createConversation', () => {
     expect(last.command).toBe('interrupt')
   })
 
-  it('ignores an output arriving after the stream already ended', () => {
+  it('ignores an output arriving after the stream already ended', async () => {
     const { buffer, wire, conversation } = setup()
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
     wire.receive(endOfStream)
 
     wire.receive(output('width = 24\n'))
@@ -224,9 +224,9 @@ describe('createConversation', () => {
     expect(textOf(buffer)).toBe(BASE)
   })
 
-  it('fails the turn on an error, without writing', () => {
+  it('fails the turn on an error, without writing', async () => {
     const { buffer, wire, conversation } = setup()
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
 
     wire.receive({ error: { detail: 'the model gave up' } })
 
@@ -235,9 +235,9 @@ describe('createConversation', () => {
     expect(textOf(buffer)).toBe(BASE)
   })
 
-  it('does not apply the outputs of a tool that failed', () => {
+  it('does not apply the outputs of a tool that failed', async () => {
     const { buffer, wire, conversation } = setup()
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
 
     wire.receive({
       tool_output: {
@@ -253,10 +253,10 @@ describe('createConversation', () => {
     expect(conversation.transcript.value[0].status).toBe('failed')
   })
 
-  it('supersedes a turn still running when a new prompt arrives', () => {
+  it('supersedes a turn still running when a new prompt arrives', async () => {
     const { wire, conversation } = setup()
-    conversation.send('first')
-    conversation.send('second')
+    await conversation.send('first')
+    await conversation.send('second')
 
     const transcript = conversation.transcript.value
     expect(transcript).toHaveLength(2)
@@ -266,9 +266,53 @@ describe('createConversation', () => {
     expect(wire.sent.some((message) => message.type === 'system')).toBe(true)
   })
 
-  it('reverts one turn, keeping what the user did after it', () => {
+  /**
+   * Capturing the project reads the disk, so a turn can be superseded while it is
+   * happening. Sending anyway would have the service work on a question the user
+   * has already replaced.
+   */
+  it('does not send a turn superseded while the project was being read', async () => {
+    const buffer = createFileBackedTextBuffer({
+      path: PATH,
+      contents: BASE,
+      languageId: 'kcl',
+      capabilities: combineCapabilities([historyCapability]),
+    })
+    const target: ApplyTarget = {
+      bufferForPath: (path) => (path === PATH ? buffer : undefined),
+      executingBufferId: () => null,
+    }
+    const wire = fakeTransport()
+
+    // Held open so the test controls when the "disk" answers.
+    let release = () => {}
+    const reading = new Promise<ReadonlyMap<string, string>>((resolve) => {
+      release = () => resolve(new Map([[PATH, BASE]]))
+    })
+
+    const conversation = createConversation({
+      id: 'c1',
+      author: AUTHOR,
+      transport: wire.transport,
+      target,
+      changeHistory: createChangeHistory(),
+      captureProject: () => reading,
+    })
+
+    const first = conversation.send('first')
+    // Superseded before the disk came back.
+    conversation.interrupt()
+    release()
+    await first
+
+    // No prompt went out for the abandoned turn.
+    expect(wire.sent.filter((message) => message.type === 'user')).toEqual([])
+    expect(conversation.transcript.value[0].status).toBe('interrupted')
+  })
+
+  it('reverts one turn, keeping what the user did after it', async () => {
     const { buffer, wire, conversation } = setup()
-    conversation.send('add a line')
+    await conversation.send('add a line')
     wire.receive(output('width = 10\ndepth = 2\n'))
     wire.receive(endOfStream)
 
@@ -285,7 +329,7 @@ describe('createConversation', () => {
    * honour it: a held path's view is stale by definition, so it is dropped rather
    * than kept for a replay.
    */
-  it('drops its view of a path another writer is holding', () => {
+  it('drops its view of a path another writer is holding', async () => {
     const { buffer, wire, conversation, claims } = setup({ withClaims: true })
     expect(claims).toBeDefined()
     if (claims === undefined) return
@@ -293,7 +337,7 @@ describe('createConversation', () => {
     // Somebody else is mid-turn on the file.
     claims.claim(PATH, 'zookeeper:c2')
 
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
     wire.receive(output('width = 24\n'))
 
     expect(textOf(buffer)).toBe(BASE)
@@ -310,11 +354,11 @@ describe('createConversation', () => {
     expect(conversation.status.value).toBe('waiting')
   })
 
-  it('releases its claims when a turn ends', () => {
+  it('releases its claims when a turn ends', async () => {
     const { wire, conversation, claims } = setup({ withClaims: true })
     if (claims === undefined) return
 
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
     wire.receive(output('width = 24\n'))
     expect(claims.holder(PATH)).toBe(AUTHOR)
 
@@ -322,11 +366,11 @@ describe('createConversation', () => {
     expect(claims.holder(PATH)).toBeNull()
   })
 
-  it('stops listening and releases everything on dispose', () => {
+  it('stops listening and releases everything on dispose', async () => {
     const { buffer, wire, conversation, claims } = setup({ withClaims: true })
     if (claims === undefined) return
 
-    conversation.send('make it wider')
+    await conversation.send('make it wider')
     wire.receive(output('width = 24\n'))
     conversation.dispose()
 

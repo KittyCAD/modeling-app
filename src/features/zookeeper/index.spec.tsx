@@ -1,0 +1,141 @@
+import {
+  Registry,
+  defineRegistryItem,
+  provideService,
+} from '@kittycad/registry'
+import { computed, signal } from '@preact/signals'
+import { describe, expect, it } from 'vitest'
+import type { AuthService } from '@src/contracts/auth'
+import { authService } from '@src/contracts/auth'
+import { commandsValueSpec } from '@src/contracts/commands'
+import type { FileSystem } from '@src/contracts/fileSystem'
+import { fileSystemService } from '@src/contracts/fileSystem'
+import { layoutAreasValueSpec, layoutService } from '@src/contracts/layout'
+import type {
+  ProjectSession,
+  ProjectSessionService,
+} from '@src/contracts/projectSession'
+import { projectSessionService } from '@src/contracts/projectSession'
+import type { LayoutService } from '@src/contracts/layout'
+import { ZOOKEEPER_AREA_ID, zookeeperService } from '@src/contracts/zookeeper'
+import zookeeperFeature from '@src/features/zookeeper'
+
+/**
+ * The registry item, built by the real container.
+ *
+ * Worth an integration test rather than only unit ones, because the two mistakes
+ * the container forbids are both invisible to a unit test: resolving a service
+ * inside the factory body, and starting an effect that reads a value spec
+ * inline. Both throw when the graph is flattened, which is what `configure` does
+ * here.
+ */
+function harness(
+  options: { token?: string | null; session?: ProjectSession | null } = {}
+) {
+  const token = signal<string | null>(options.token ?? 'tok-1')
+  const current = signal<ProjectSession | null>(options.session ?? null)
+  const toggled: string[] = []
+
+  const auth = {
+    token: computed(() => token.value),
+    // The rest of the surface is not reached by this feature.
+  } as unknown as AuthService
+
+  const sessions = {
+    current: computed(() => current.value),
+  } as unknown as ProjectSessionService
+
+  const fileSystem = {} as unknown as FileSystem
+
+  const layout = {
+    isAreaOpen: () => computed(() => false),
+    toggleArea: (areaId: string) => toggled.push(areaId),
+  } as unknown as LayoutService
+
+  const registry = new Registry()
+  registry.configure([
+    zookeeperFeature,
+    defineRegistryItem({
+      id: 'test.stubs',
+      providesServices: [
+        provideService(authService, auth),
+        provideService(projectSessionService, sessions),
+        provideService(fileSystemService, fileSystem),
+        provideService(layoutService, layout),
+      ],
+      provides: [],
+    }),
+  ])
+
+  return { registry, token, current, toggled }
+}
+
+describe('zookeeper feature', () => {
+  it('configures without resolving a service too early', () => {
+    // The whole assertion: flattening the graph does not throw. Resolving a
+    // service in a factory body would fail right here.
+    expect(() => harness()).not.toThrow()
+  })
+
+  it('contributes a panel on its own area id', () => {
+    const { registry } = harness()
+
+    const areas = registry.get(layoutAreasValueSpec)
+    const area = areas.find((each) => each.id === ZOOKEEPER_AREA_ID)
+
+    expect(area).toBeDefined()
+    expect(area?.title).toBe('Zookeeper')
+    expect(area?.icon).toBe('elephant')
+  })
+
+  it('exposes the service', () => {
+    const { registry } = harness()
+
+    expect(registry.get(zookeeperService)).toBeDefined()
+  })
+
+  it('contributes a toggle and a new-conversation command', () => {
+    const { registry } = harness()
+
+    const ids = registry.get(commandsValueSpec).map((command) => command.id)
+
+    expect(ids).toContain('zookeeper.toggle')
+    expect(ids).toContain('zookeeper.newConversation')
+  })
+
+  it('toggles its own area from the command', () => {
+    const { registry, toggled } = harness()
+
+    const toggle = registry
+      .get(commandsValueSpec)
+      .find((command) => command.id === 'zookeeper.toggle')
+    void toggle?.run()
+
+    expect(toggled).toEqual([ZOOKEEPER_AREA_ID])
+  })
+
+  /**
+   * Reading the service is what builds it, so this is also the assertion that
+   * building it late — after flattening — works at all.
+   *
+   * The *reason* it is unavailable here is that no service URL is configured in
+   * a test build, which is a supported state rather than a misconfiguration.
+   * Which reason wins over which is the service's own business and is tested in
+   * `createZookeeperService.test.ts`, where the URL can be injected.
+   */
+  it('builds the service lazily and reports why it is unavailable', () => {
+    const { registry } = harness()
+
+    const zookeeper = registry.get(zookeeperService)
+
+    expect(zookeeper.available.value).toBe(false)
+    expect(zookeeper.unavailableReason.value).toMatch(/no zookeeper service/i)
+  })
+
+  it('refuses to open a conversation while unavailable', () => {
+    const { registry } = harness({ token: null })
+
+    expect(registry.get(zookeeperService).open()).toBeNull()
+    expect(registry.get(zookeeperService).conversations.value.size).toBe(0)
+  })
+})

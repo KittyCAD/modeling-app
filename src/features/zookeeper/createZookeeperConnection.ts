@@ -4,7 +4,7 @@ import type {
 } from '@kittycad/lib'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { type ReadonlySignal, computed, signal } from '@preact/signals'
-import type { ZookeeperTransport } from '@src/features/zookeeper/createConversation'
+import type { ZookeeperTransport } from '@src/contracts/zookeeper'
 
 /** How long to wait for the service to assign a conversation before giving up. */
 const CONNECT_TIMEOUT_MS = 120_000

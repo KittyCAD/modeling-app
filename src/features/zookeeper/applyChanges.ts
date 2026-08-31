@@ -1,12 +1,12 @@
 import { isolateHistory } from '@codemirror/commands'
 import { ChangeSet } from '@codemirror/state'
 import type { FileBackedTextBuffer } from '@src/contracts/buffers'
-import type { TextEdit } from '@src/contracts/modelingOperations'
+import type { PathConflict } from '@src/contracts/zookeeper'
 import type { ProposedFileChange } from '@src/features/zookeeper/deriveEdit'
 import { bufferOrigin } from '@src/lib/buffers/annotations'
 import type { WriteClaims } from '@src/lib/collab/claims'
 import type { DivergenceLedger } from '@src/lib/collab/divergence'
-import { type ConflictReason, rebaseEdits } from '@src/lib/collab/rebase'
+import { rebaseEdits } from '@src/lib/collab/rebase'
 
 /**
  * The bit of the session this needs.
@@ -21,13 +21,6 @@ export interface ApplyTarget {
   bufferForPath(path: string): FileBackedTextBuffer | undefined
   /** Which buffer the engine is running, if any. */
   executingBufferId(): string | null
-}
-
-export interface PathConflict {
-  path: string
-  reason: ConflictReason
-  /** In the writer's coordinates, so a conflict UI can offer its version. */
-  edits: readonly TextEdit[]
 }
 
 export type DeferralReason =

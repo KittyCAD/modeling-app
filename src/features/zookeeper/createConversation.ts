@@ -1,11 +1,14 @@
-import type {
-  MlCopilotClientMessage,
-  MlCopilotServerMessage,
-} from '@kittycad/lib'
 import { type ReadonlySignal, computed, signal } from '@preact/signals'
+import type {
+  Conversation,
+  ConversationConnection,
+  PathConflict,
+  Turn,
+  TurnStatus,
+  ZookeeperTransport,
+} from '@src/contracts/zookeeper'
 import {
   type ApplyTarget,
-  type PathConflict,
   applyChanges,
 } from '@src/features/zookeeper/applyChanges'
 import {
@@ -19,64 +22,6 @@ import type { WriteClaims } from '@src/lib/collab/claims'
 import { createDivergenceLedger } from '@src/lib/collab/divergence'
 import { followLocalChanges } from '@src/lib/collab/followLocalChanges'
 import { inverseForContribution } from '@src/lib/collab/revert'
-
-/**
- * Whatever carries messages to and from the service.
- *
- * A port rather than a socket, so a conversation can be driven in a test without
- * one — and so the socket's lifetime is somebody else's problem. A conversation
- * outlives a disconnection; it should not own the thing that disconnected.
- */
-export interface ZookeeperTransport {
-  send(message: MlCopilotClientMessage): void
-  onMessage(listener: (message: MlCopilotServerMessage) => void): () => void
-}
-
-export type TurnStatus =
-  | 'streaming'
-  | 'complete'
-  | 'interrupted'
-  | 'failed'
-  /** Held off a file another writer is mid-turn on. Needs a resync, not a retry. */
-  | 'waiting'
-
-export interface Turn {
-  id: string
-  prompt: string
-  /** Accumulated `delta` text. */
-  response: string
-  at: number
-  status: TurnStatus
-  /** Paths this turn changed, in the order they first landed. */
-  paths: readonly string[]
-  /** Paths it could not change, and why. */
-  conflicts: readonly PathConflict[]
-  /** Paths another writer was holding. */
-  waiting: readonly string[]
-}
-
-export interface Conversation {
-  readonly id: string
-  /** The collaborator id every edit of this conversation is attributed to. */
-  readonly author: string
-  readonly transcript: ReadonlySignal<readonly Turn[]>
-  /**
-   * What the pane shows.
-   *
-   * `waiting` is distinct from `idle` on purpose: a turn held off a file has not
-   * finished and is not working either, and the user needs to be told which —
-   * "Zookeeper (2) is waiting for main.kcl" is only renderable if this says so.
-   */
-  readonly status: ReadonlySignal<'idle' | 'streaming' | 'waiting' | 'failed'>
-  /** Conflicts from the most recent turn, for a non-blocking bar. */
-  readonly conflicts: ReadonlySignal<readonly PathConflict[]>
-  send(prompt: string): void
-  /** Stop the current turn, locally and at the service. */
-  interrupt(): void
-  /** Undo one turn's edits, keeping everything that happened since. */
-  revert(turnId: string): void
-  dispose(): void
-}
 
 export interface ConversationDependencies {
   id: string
@@ -96,7 +41,15 @@ export interface ConversationDependencies {
    * in both places — see `captureBaseline` in the design notes for why a buffer
    * snapshot alone is not enough.
    */
-  captureProject: () => ReadonlyMap<string, string>
+  captureProject: () => Promise<ReadonlyMap<string, string>>
+  /**
+   * The socket's state, for the panel to show.
+   *
+   * Optional because a conversation does not care: it sends through the
+   * transport and reads what comes back. Defaults to reporting connected, which
+   * is what a test with a fake transport means.
+   */
+  connection?: ReadonlySignal<ConversationConnection>
   /** Ids for turns. Injected so a test can read them. */
   nextTurnId?: () => string
 }
@@ -136,6 +89,7 @@ export function createConversation(
     changeHistory,
     claims,
     captureProject,
+    connection,
     nextTurnId,
   } = dependencies
 
@@ -326,6 +280,13 @@ export function createConversation(
     author,
     transcript: computed(() => transcript.value),
     conflicts: computed(() => conflicts.value),
+    connection:
+      connection ??
+      computed(() => ({
+        status: 'connected' as const,
+        error: null,
+        superseded: false,
+      })),
     status: computed(() => {
       const latest = transcript.value.at(-1)
       if (latest === undefined) return 'idle'
@@ -335,7 +296,7 @@ export function createConversation(
       return 'idle'
     }),
 
-    send(prompt) {
+    async send(prompt) {
       // One turn at a time per conversation. A second prompt supersedes the
       // first rather than racing it, which is also what the service assumes.
       if (turn !== null) interrupt()
@@ -345,13 +306,10 @@ export function createConversation(
       conflicts.value = []
 
       /*
-       * Captured before sending, and the same content is used for every diff this
-       * turn produces. Sending one thing and diffing against another is the bug
-       * that makes the model and the app disagree about what is on disk.
+       * The turn goes into the transcript before anything is awaited, so the
+       * pane shows the prompt the moment it is sent rather than after the
+       * project has been read off disk.
        */
-      const project = captureProject()
-      for (const [path, contents] of project) track(path, contents)
-
       transcript.value = [
         ...transcript.peek(),
         {
@@ -365,6 +323,22 @@ export function createConversation(
           waiting: [],
         },
       ]
+
+      /*
+       * Captured before sending, and the same content is used for every diff this
+       * turn produces. Sending one thing and diffing against another is the bug
+       * that makes the model and the app disagree about what is on disk.
+       *
+       * Awaiting here is safe in a way awaiting between a rebase and a dispatch
+       * is not — no edit exists yet. But the turn *can* be superseded while the
+       * disk is read, so it is checked afterwards: sending a prompt for a turn
+       * the user has already replaced would have the service work on a question
+       * nobody asked.
+       */
+      const project = await captureProject()
+      if (turn?.id !== turnId) return
+
+      for (const [path, contents] of project) track(path, contents)
 
       transport.send({
         type: 'user',

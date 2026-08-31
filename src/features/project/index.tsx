@@ -24,6 +24,7 @@ import {
 } from '@src/contracts/navigation'
 import type { ProjectSession } from '@src/contracts/projectSession'
 import { projectSessionService } from '@src/contracts/projectSession'
+import { ZOOKEEPER_AREA_ID } from '@src/contracts/zookeeper'
 import { screensValueSpec, statusBarItemsValueSpec } from '@src/contracts/shell'
 import {
   CODE_AREA_ID,
@@ -86,10 +87,15 @@ function buildModelingLayout(): LayoutNode {
       type: 'rail',
       id: 'project.rail.end',
       side: 'inline-end',
-      areaIds: [INFO_AREA_ID],
+      // Zookeeper first: it is the one somebody opens on purpose, and the title
+      // block is a reference panel you glance at.
+      areaIds: [ZOOKEEPER_AREA_ID, INFO_AREA_ID],
       openAreaIds: [],
-      size: 300,
-      maxExtent: 420,
+      size: 380,
+      // A conversation needs more room than a title block. The per-node bounds
+      // exist for exactly this: 420 was chosen for a panel of short fields.
+      minExtent: 300,
+      maxExtent: 720,
     },
     center: {
       type: 'area',
