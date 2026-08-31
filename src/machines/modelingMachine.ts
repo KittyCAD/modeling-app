@@ -7446,7 +7446,7 @@ export const modelingMachine = setup({
           let fileName = currentFileName
           if (currentFileName === PROJECT_ENTRYPOINT && project) {
             // currentFileName is "main.kcl"
-            
+
             const projectRelativePath = toProjectRelativePath(
               project.path,
               context.kclManager.path
