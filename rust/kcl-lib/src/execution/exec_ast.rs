@@ -6861,7 +6861,7 @@ pub(super) fn if_arm_scope_begin(exec_state: &mut ExecState) -> Result<bool, Kcl
     if !exec_state.use_kcl_v3_control_flow() {
         return Ok(false);
     }
-    exec_state.mut_stack().push_new_env_for_scope()?;
+    exec_state.mut_stack().push_new_env_for_block()?;
     Ok(true)
 }
 
