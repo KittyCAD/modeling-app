@@ -50,6 +50,23 @@ describe('the shape being started', () => {
     ).toEqual([])
   })
 
+  /*
+   * Two points do not pick an arc — every arc through them is equally valid
+   * until the third click says which — so the chord is what is actually known.
+   */
+  it('draws the chord for an arc, not a guess at the arc', () => {
+    expect(previewShapes(pending, 'threePointArc', { x: 3, y: 4 })).toEqual([
+      {
+        id: PREVIEW_ID,
+        construction: false,
+        freedom: null,
+        kind: 'line',
+        from: { x: 0, y: 0 },
+        to: { x: 3, y: 4 },
+      },
+    ])
+  })
+
   it('draws nothing for a tool that collects no clicks', () => {
     expect(previewShapes(pending, 'line', { x: 1, y: 1 })).toEqual([])
     expect(previewShapes(pending, null, { x: 1, y: 1 })).toEqual([])

@@ -12,7 +12,7 @@ import type { IconName } from '@kittycad/ui-kit'
  * Names, icons and keys are the existing app's. Somebody switching between the
  * two should not have to relearn which letter draws a circle.
  */
-export type SketchToolId = 'line' | 'point' | 'circle'
+export type SketchToolId = 'line' | 'point' | 'circle' | 'threePointArc'
 
 export interface SketchToolInfo {
   id: SketchToolId
@@ -54,6 +54,14 @@ export const SKETCH_TOOLS: readonly SketchToolInfo[] = [
     description: 'Draw a circle from its centre and a point on it.',
     key: 'c',
     order: 30,
+  },
+  {
+    id: 'threePointArc',
+    title: '3-point arc',
+    icon: 'arc',
+    description: 'Draw an arc through a start, an end, and a point between.',
+    key: 'Alt+A',
+    order: 40,
   },
 ]
 

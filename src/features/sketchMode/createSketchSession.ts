@@ -34,10 +34,11 @@ import { planDrag } from '@src/lib/sketch/drag'
 import {
   type DraftAction,
   type DraftState,
+  type HoldAfter,
+  held,
   abandon,
   advanceDrag,
   beginDrag as beginDragState,
-  begun,
   endDrag as endDragState,
   moveTo as moveDraft,
   place as placeDraft,
@@ -263,7 +264,7 @@ export function createSketchSession(
         // Only a shape that is dragged open has something to take hold of. A
         // point or a finished circle is done, and the tool stays equipped for
         // the next one.
-        if (action.hold === 'end') settleDraft(outcome)
+        settleDraft(outcome, action.hold)
         return
       }
 
@@ -275,7 +276,9 @@ export function createSketchSession(
           { label: action.label, checkpoint: true }
         )
         write(outcome)
-        settleDraft(outcome)
+        // A chain always takes hold of the new line's end: that is what makes
+        // the next segment continue from it.
+        settleDraft(outcome, { kind: 'end' })
         return
       }
 
@@ -343,6 +346,17 @@ export function createSketchSession(
         return
       }
 
+      case 'reshape': {
+        const outcome = await api.editSegments(session.sketchId, action.edits, {
+          commit: action.commit,
+          checkpoint: action.commit,
+        })
+        // Same as a point move: a preview is thrown away on the next one, so
+        // writing its text would churn the document once per pointer event.
+        if (action.commit) write(outcome)
+        return
+      }
+
       case 'discard': {
         if (action.segmentIds.length === 0) return
         const outcome = await api.deleteObjects(session.sketchId, {
@@ -361,15 +375,8 @@ export function createSketchSession(
    * settled here rather than by the transition — and if no line came back the
    * draft is dropped rather than pointed at something that may not exist.
    */
-  const settleDraft = (outcome: SketchOutcome) => {
-    const found = begun(outcome.graph, outcome.newObjects)
-    draft.value = found
-      ? {
-          kind: 'drawing',
-          pointId: found.pointId,
-          segmentIds: found.segmentIds,
-        }
-      : { kind: 'idle' }
+  const settleDraft = (outcome: SketchOutcome, hold: HoldAfter) => {
+    draft.value = held(outcome.graph, outcome.newObjects, hold)
   }
 
   /** The most recent rubber-band request, waiting for the solver to be free. */
@@ -398,7 +405,9 @@ export function createSketchSession(
          * normal thing.
          */
         const kind = draft.peek().kind
-        if (kind !== 'drawing' && kind !== 'dragging') break
+        if (kind !== 'drawing' && kind !== 'dragging' && kind !== 'shaping') {
+          break
+        }
         await perform(action)
       }
     } catch (caught) {
@@ -684,7 +693,10 @@ export function createSketchSession(
        */
       const preview = step.actions.find(
         (action) =>
-          (action.kind === 'move' || action.kind === 'drag') && !action.commit
+          (action.kind === 'move' ||
+            action.kind === 'drag' ||
+            action.kind === 'reshape') &&
+          !action.commit
       )
       if (preview) {
         latestMove = preview

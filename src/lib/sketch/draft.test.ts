@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  ARC_SEGMENT_LABEL,
   CIRCLE_SEGMENT_LABEL,
   LINE_SEGMENT_LABEL,
   POINT_SEGMENT_LABEL,
@@ -39,7 +40,7 @@ describe('the first click', () => {
         kind: 'begin',
         segment: zeroLengthLine({ x: 3, y: 4 }, 'Mm'),
         label: LINE_SEGMENT_LABEL,
-        hold: 'end',
+        hold: { kind: 'end' },
       },
     ])
 
@@ -254,7 +255,7 @@ describe('the point tool', () => {
         kind: 'begin',
         segment: pointSegment({ x: 3, y: 4 }, 'Mm'),
         label: POINT_SEGMENT_LABEL,
-        hold: 'none',
+        hold: { kind: 'none' },
       },
     ])
     expect(step.state).toEqual(idle)
@@ -293,7 +294,7 @@ describe('the circle tool', () => {
         kind: 'begin',
         segment: circleFrom({ x: 0, y: 0 }, { x: 5, y: 0 }, 'Mm'),
         label: CIRCLE_SEGMENT_LABEL,
-        hold: 'none',
+        hold: { kind: 'none' },
       },
     ])
     expect(step.state).toEqual(idle)
@@ -325,5 +326,126 @@ describe('the circle tool', () => {
 
     // Nothing was written, so there is nothing to take away.
     expect(abandon(pending)).toEqual({ state: idle, actions: [] })
+  })
+})
+
+describe('the three-point arc tool', () => {
+  const context = { tool: 'threePointArc' as const, units: 'Mm' as const }
+  const start = { x: 0, y: 0 }
+  const end = { x: 10, y: 0 }
+
+  it('collects the first click, because one point is not an arc', () => {
+    expect(place(idle, start, context)).toEqual({
+      state: { kind: 'pending', points: [start] },
+      actions: [],
+    })
+  })
+
+  /*
+   * The same idea as the line's zero-length segment: from the second click on,
+   * what is on screen is the solver's arc rather than a drawing of one.
+   */
+  it('writes a half circle on the chord at the second click', () => {
+    const step = place({ kind: 'pending', points: [start] }, end, context)
+
+    expect(step.actions).toEqual([
+      {
+        kind: 'begin',
+        segment: {
+          type: 'Arc',
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: 10, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          center: {
+            x: { type: 'Var', value: 5, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+        },
+        label: ARC_SEGMENT_LABEL,
+        // The clicks travel with the hold: the third point is worked out
+        // against them, and the frontend does not know about either.
+        hold: { kind: 'shape', points: [start, end] },
+      },
+    ])
+  })
+
+  const shaping = {
+    kind: 'shaping' as const,
+    segmentId: 4,
+    points: [start, end],
+    segmentIds: [4],
+  }
+
+  it('bends the whole arc as the pointer moves, rather than moving a point', () => {
+    const step = moveTo(shaping, { x: 5, y: 5 }, context)
+
+    expect(step.actions).toEqual([
+      {
+        kind: 'reshape',
+        edits: [
+          {
+            id: 4,
+            ctor: {
+              type: 'Arc',
+              start: {
+                x: { type: 'Var', value: 0, units: 'Mm' },
+                y: { type: 'Var', value: 0, units: 'Mm' },
+              },
+              end: {
+                x: { type: 'Var', value: 10, units: 'Mm' },
+                y: { type: 'Var', value: 0, units: 'Mm' },
+              },
+              center: {
+                x: { type: 'Var', value: 5, units: 'Mm' },
+                y: { type: 'Var', value: 0, units: 'Mm' },
+              },
+              // Start is on the left, so a sweep that passes above the chord
+              // runs clockwise.
+              direction: 'cw',
+            },
+          },
+        ],
+        commit: false,
+      },
+    ])
+  })
+
+  it('sweeps the other way when the pointer is on the other side', () => {
+    const step = moveTo(shaping, { x: 5, y: -5 }, context)
+    const [action] = step.actions
+    if (action?.kind !== 'reshape') throw new Error('expected a reshape')
+
+    expect(action.edits[0]?.ctor).toMatchObject({ direction: 'ccw' })
+  })
+
+  it('keeps the last arc that made sense when the points fall in a line', () => {
+    // Flattening the arc as the pointer crosses the chord would make it vanish
+    // and come back, which reads as the tool failing.
+    expect(moveTo(shaping, { x: 5, y: 0 }, context).actions).toEqual([])
+  })
+
+  it('commits on the third click and finishes', () => {
+    const step = place(shaping, { x: 5, y: 5 }, context)
+    const [action] = step.actions
+
+    expect(action?.kind).toBe('reshape')
+    expect(action).toMatchObject({ commit: true })
+    expect(step.state).toEqual(idle)
+  })
+
+  it('throws the arc away when it is abandoned half-bent', () => {
+    expect(abandon(shaping)).toEqual({
+      state: idle,
+      actions: [{ kind: 'discard', segmentIds: [4] }],
+    })
+  })
+
+  it('draws the arc as a draft until it is committed', () => {
+    expect(draftSegmentIds(shaping)).toEqual([4])
   })
 })

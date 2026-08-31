@@ -63,6 +63,17 @@ export function previewShapes(
       return [{ ...base, kind: 'circle', center: start, radius }]
     }
 
+    case 'threePointArc':
+      /*
+       * The chord, not an arc.
+       *
+       * Two points do not pick an arc — every arc through them is equally valid
+       * until the third click says which — so drawing one would be choosing on
+       * the user's behalf and then changing its mind. The chord is what is
+       * actually known, and it is what the second click will span.
+       */
+      return [{ ...base, kind: 'line', from: start, to: pointer }]
+
     default:
       return []
   }
