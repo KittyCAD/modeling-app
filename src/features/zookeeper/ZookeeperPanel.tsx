@@ -1,8 +1,16 @@
 import { useComputed, useSignal } from '@preact/signals'
 import { Button, EmptyState, Icon, Spinner } from '@kittycad/ui-kit'
 import { useService } from '@src/app/context'
-import type { Conversation, Turn } from '@src/contracts/zookeeper'
+import type {
+  Conversation,
+  ReasoningEntry,
+  Turn,
+} from '@src/contracts/zookeeper'
 import { zookeeperService } from '@src/contracts/zookeeper'
+import {
+  describeReasoning,
+  reasoningHeadline,
+} from '@src/features/zookeeper/reasoning'
 import './zookeeper.css'
 
 /**
@@ -330,6 +338,104 @@ function ConversationView({ conversation }: { conversation: Conversation }) {
   )
 }
 
+/**
+ * What the service showed of its working.
+ *
+ * Open while the turn runs, collapsed once it settles — the reasoning is how you
+ * follow a turn in progress and clutter once you know the answer. Native
+ * `<details>`, so the disclosure is keyboard-reachable and announced without
+ * this file reimplementing any of that.
+ *
+ * The auto-collapse yields to a person: once they have opened or closed it
+ * themselves, `choice` holds and the turn settling no longer moves it. A pane
+ * that snapped shut on something being read would be worse than one that never
+ * collapsed at all.
+ */
+function ReasoningView({ turn }: { turn: Turn }) {
+  const choice = useSignal<boolean | null>(null)
+
+  if (turn.reasoning.length === 0) return null
+
+  const streaming = turn.status === 'streaming'
+  const open = choice.value ?? streaming
+
+  return (
+    <details
+      class="zds-zoo__reasoning"
+      open={open}
+      onToggle={(event) => {
+        choice.value = event.currentTarget.open
+      }}
+    >
+      <summary class="zds-zoo__reasoningSummary">
+        {reasoningHeadline(turn.reasoning, streaming)}
+      </summary>
+      <ol class="zds-zoo__reasoningSteps">
+        {turn.reasoning.map((entry, index) => (
+          // Index as key: the list is append-only and entries have no identity
+          // of their own, so position is the only stable thing about them.
+          // biome-ignore lint/suspicious/noArrayIndexKey: append-only, no id
+          <li class="zds-zoo__reasoningStep" key={index}>
+            <ReasoningEntryView entry={entry} />
+          </li>
+        ))}
+      </ol>
+    </details>
+  )
+}
+
+function ReasoningEntryView({ entry }: { entry: ReasoningEntry }) {
+  if (entry.kind === 'text') {
+    return <p class="zds-zoo__reasoningText">{entry.content}</p>
+  }
+
+  if (entry.kind === 'plan') {
+    /*
+     * Rendered as a list of files rather than folded into prose, because this is
+     * the only thing in the protocol that names what a turn intends to touch
+     * *before* it touches it — the one honest form of "which file is it working
+     * on" that does not mean scraping filenames out of streamed text.
+     */
+    return (
+      <div class="zds-zoo__reasoningPlan">
+        <p class="zds-zoo__reasoningLabel">Plan</p>
+        <ul class="zds-zoo__reasoningPlanSteps">
+          {entry.steps.map((step) => (
+            <li key={`${step.path}:${step.instructions}`}>
+              <span class="zds-zoo__reasoningPath">{step.path}</span>
+              <span class="zds-zoo__reasoningText">{step.instructions}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  if (entry.kind === 'code') {
+    return <pre class="zds-zoo__reasoningCode">{entry.content}</pre>
+  }
+
+  if (entry.kind === 'error') {
+    return <p class="zds-zoo__note zds-zoo__note--conflict">{entry.message}</p>
+  }
+
+  if (entry.kind === 'file') {
+    return <p class="zds-zoo__reasoningFile">{describeReasoning(entry)}</p>
+  }
+
+  /*
+   * A reference can be a whole documentation dump, so it stays behind its own
+   * disclosure. Knowing that it looked something up is usually the whole point;
+   * what it read is available if you want it.
+   */
+  return (
+    <details class="zds-zoo__reasoningReference">
+      <summary class="zds-zoo__reasoningLabel">{entry.label}</summary>
+      <pre class="zds-zoo__reasoningCode">{entry.content}</pre>
+    </details>
+  )
+}
+
 function TurnView({ turn, onRevert }: { turn: Turn; onRevert: () => void }) {
   const zookeeper = useService(zookeeperService)
   // Exact revert survives a reload now, but not a file edited outside the app or
@@ -339,6 +445,8 @@ function TurnView({ turn, onRevert }: { turn: Turn; onRevert: () => void }) {
   return (
     <article class="zds-zoo__turn" data-status={turn.status}>
       <p class="zds-zoo__prompt">{turn.prompt}</p>
+
+      <ReasoningView turn={turn} />
 
       {turn.response === '' ? null : (
         <p class="zds-zoo__response">{turn.response}</p>

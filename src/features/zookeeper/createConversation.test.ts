@@ -118,6 +118,56 @@ describe('createConversation', () => {
     expect(conversation.status.value).toBe('streaming')
   })
 
+  /**
+   * Reasoning is its own field, not folded into the response. `delta` is the
+   * answer; this is the route to it, and the pane collapses one without hiding
+   * the other.
+   */
+  it('collects streamed reasoning separately from the response', async () => {
+    const { wire, conversation } = setup()
+    await conversation.send('make it wider')
+
+    wire.receive({ reasoning: { type: 'text', content: 'Looking at ' } })
+    wire.receive({ reasoning: { type: 'text', content: 'the wall.' } })
+    wire.receive({
+      reasoning: {
+        type: 'design_plan',
+        steps: [{ filepath_to_edit: PATH, edit_instructions: 'Widen it' }],
+      },
+    })
+    wire.receive({ delta: { delta: 'Widening.' } })
+
+    const turn = conversation.transcript.value[0]
+    expect(turn.response).toBe('Widening.')
+    expect(turn.reasoning).toEqual([
+      { kind: 'text', content: 'Looking at the wall.' },
+      { kind: 'plan', steps: [{ path: PATH, instructions: 'Widen it' }] },
+    ])
+  })
+
+  it('ignores a reasoning message it cannot read', async () => {
+    const { wire, conversation } = setup()
+    await conversation.send('make it wider')
+
+    wire.receive({ reasoning: { type: 'text', content: '' } })
+
+    expect(conversation.transcript.value[0].reasoning).toEqual([])
+  })
+
+  /**
+   * The turn-id guard applies here too: a reasoning frame from an interrupted
+   * turn must not append to whatever is running now.
+   */
+  it('drops reasoning that arrives after the turn was interrupted', async () => {
+    const { wire, conversation } = setup()
+    await conversation.send('make it wider')
+    conversation.interrupt()
+
+    wire.receive({ reasoning: { type: 'text', content: 'still thinking' } })
+
+    expect(conversation.transcript.value[0].reasoning).toEqual([])
+  })
+
   it('applies a mid-turn output to the buffer, attributed', async () => {
     const { buffer, wire, conversation } = setup()
     const seen: (string | undefined)[] = []

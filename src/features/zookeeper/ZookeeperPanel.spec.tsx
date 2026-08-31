@@ -111,8 +111,11 @@ function fakeConversation(options: {
   onSend?: (prompt: string) => void
   onInterrupt?: () => void
   onRevert?: (turnId: string) => void
+  /** Supply one to change the turns after mounting. */
+  transcript?: Signal<readonly Turn[]>
 }): Conversation {
-  const transcript: Signal<readonly Turn[]> = signal(options.turns ?? [])
+  const transcript: Signal<readonly Turn[]> =
+    options.transcript ?? signal(options.turns ?? [])
   const id = options.id ?? 'c1'
   return {
     id,
@@ -144,6 +147,7 @@ const turn = (overrides: Partial<Turn> = {}): Turn => ({
   paths: [],
   conflicts: [],
   waiting: [],
+  reasoning: [],
   ...overrides,
 })
 
@@ -153,6 +157,116 @@ afterEach(() => {
     host.remove()
     host = null
   }
+})
+
+describe('the reasoning disclosure', () => {
+  const working: Turn['reasoning'] = [
+    { kind: 'text', content: 'Looking at the wall.' },
+    {
+      kind: 'plan',
+      steps: [{ path: 'main.kcl', instructions: 'Thicken it' }],
+    },
+    { kind: 'reference', label: 'KCL documentation', content: 'docs body' },
+  ]
+
+  /** Open while it runs: this is how you follow a turn in progress. */
+  it('is open, and names the newest step, while the turn streams', () => {
+    const view = mount({
+      conversation: fakeConversation({
+        turns: [turn({ status: 'streaming', reasoning: working })],
+      }),
+    })
+
+    const details = view.querySelector('.zds-zoo__reasoning')
+    expect(details).not.toBeNull()
+    expect((details as HTMLDetailsElement).open).toBe(true)
+    expect(view.querySelector('.zds-zoo__reasoningSummary')?.textContent).toBe(
+      'Reading kcl documentation'
+    )
+  })
+
+  /** Collapsed once it is over: clutter, next to an answer you already have. */
+  it('collapses once the turn settles, and counts what it did', () => {
+    const view = mount({
+      conversation: fakeConversation({
+        turns: [turn({ status: 'complete', reasoning: working })],
+      }),
+    })
+
+    const details = view.querySelector('.zds-zoo__reasoning')
+    expect((details as HTMLDetailsElement).open).toBe(false)
+    expect(view.querySelector('.zds-zoo__reasoningSummary')?.textContent).toBe(
+      'Working — 3 steps'
+    )
+  })
+
+  it('shows the plan as the files it means to edit', () => {
+    const view = mount({
+      conversation: fakeConversation({
+        turns: [turn({ status: 'complete', reasoning: working })],
+      }),
+    })
+
+    const plan = view.querySelector('.zds-zoo__reasoningPlan')
+    expect(plan?.textContent).toContain('main.kcl')
+    expect(plan?.textContent).toContain('Thicken it')
+  })
+
+  /**
+   * A reference can be a whole documentation dump, so it keeps its own
+   * disclosure — that it looked something up is usually the whole point.
+   */
+  it('keeps a reference body behind its own disclosure', () => {
+    const view = mount({
+      conversation: fakeConversation({
+        turns: [turn({ status: 'complete', reasoning: working })],
+      }),
+    })
+
+    const reference = view.querySelector('.zds-zoo__reasoningReference')
+    expect(reference).not.toBeNull()
+    expect((reference as HTMLDetailsElement).open).toBe(false)
+    expect(reference?.textContent).toContain('KCL documentation')
+  })
+
+  /**
+   * The auto-collapse yields to a person. Snapping shut on something being read
+   * is worse than never collapsing at all, so once they have touched it the turn
+   * settling no longer moves it.
+   */
+  it('leaves it open if the reader opened it themselves', () => {
+    const transcript: Signal<readonly Turn[]> = signal([
+      turn({ status: 'streaming', reasoning: working }),
+    ])
+    const view = mount({ conversation: fakeConversation({ transcript }) })
+
+    const details = view.querySelector(
+      '.zds-zoo__reasoning'
+    ) as HTMLDetailsElement
+    expect(details.open).toBe(true)
+
+    // The reader says "keep this open" by toggling it while it is already open.
+    void act(() => {
+      details.dispatchEvent(new Event('toggle'))
+    })
+
+    void act(() => {
+      transcript.value = [turn({ status: 'complete', reasoning: working })]
+    })
+
+    const after = view.querySelector(
+      '.zds-zoo__reasoning'
+    ) as HTMLDetailsElement
+    expect(after.open).toBe(true)
+  })
+
+  it('is absent for a turn that showed no working', () => {
+    const view = mount({
+      conversation: fakeConversation({ turns: [turn({ reasoning: [] })] }),
+    })
+
+    expect(view.querySelector('.zds-zoo__reasoning')).toBeNull()
+  })
 })
 
 describe('ZookeeperPanel', () => {

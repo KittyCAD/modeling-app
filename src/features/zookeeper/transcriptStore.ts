@@ -1,6 +1,10 @@
 import type { FileSystem } from '@src/contracts/fileSystem'
 import type { FsOperationQueue } from '@src/contracts/fsOperations'
-import type { ConversationId, Turn } from '@src/contracts/zookeeper'
+import type {
+  ConversationId,
+  ReasoningEntry,
+  Turn,
+} from '@src/contracts/zookeeper'
 import { hashString } from '@src/lib/hash'
 import { joinPath } from '@src/lib/paths'
 
@@ -37,7 +41,8 @@ interface MetaLine {
 interface TurnLine {
   v: number
   kind: 'turn'
-  turn: Turn
+  /** `reasoning` is optional on the way in: files written before it exist. */
+  turn: Omit<Turn, 'reasoning'> & { reasoning?: readonly ReasoningEntry[] }
 }
 
 /**
@@ -97,7 +102,18 @@ export function createTranscriptStore(dependencies: {
 
       if (parsed.v !== FORMAT_VERSION) continue
       if (parsed.kind === 'meta') meta = parsed
-      else turns.push(parsed.turn)
+      /*
+       * `reasoning` is normalised rather than trusted, because turns written
+       * before it existed do not have it and `Turn` says they must.
+       *
+       * And the version is deliberately **not** bumped for it. A line whose
+       * version is unrecognised is skipped, which for an older file means every
+       * line — including the meta line, without which the whole transcript reads
+       * as absent. Bumping to add an optional field would silently delete every
+       * conversation anybody had already had. A version bump is for a change that
+       * makes an old line *wrong*, not one that makes it incomplete.
+       */ else
+        turns.push({ ...parsed.turn, reasoning: parsed.turn.reasoning ?? [] })
     }
 
     if (meta === null) return null

@@ -35,6 +35,38 @@ export type TurnStatus =
   /** Held off a file another writer is mid-turn on. Needs a resync, not a retry. */
   | 'waiting'
 
+/** One step the service said it intends to take, before it takes it. */
+export interface ReasoningPlanStep {
+  /** The file it means to edit, as the service names it. */
+  path: string
+  instructions: string
+}
+
+/**
+ * What the service showed of its working, in our own shape.
+ *
+ * Six kinds for the protocol's fifteen `ReasoningMessage` arms, because the
+ * distinctions the protocol draws are mostly about *provenance* — `kcl_docs`
+ * versus `kcl_code_examples` versus `feature_tree_outline` are three ways of
+ * saying "here is something I looked at" — and a pane that rendered fifteen
+ * things fifteen ways would be a worse explanation than one that renders six.
+ *
+ * Ours rather than the generated union, for the reason the transcript format
+ * already gives: a local copy of a protocol type is a migration liability, and
+ * these get written to disk.
+ */
+export type ReasoningEntry =
+  /** Prose, streamed. Adjacent chunks are joined rather than listed. */
+  | { kind: 'text'; content: string }
+  /** `design_plan`: which files it intends to touch, and why. */
+  | { kind: 'plan'; steps: readonly ReasoningPlanStep[] }
+  | { kind: 'code'; content: string }
+  | { kind: 'error'; message: string }
+  /** A file the service says it created, changed or removed on its side. */
+  | { kind: 'file'; action: 'created' | 'updated' | 'deleted'; path: string }
+  /** Something it consulted: docs, examples, the feature tree. */
+  | { kind: 'reference'; label: string; content: string }
+
 export interface Turn {
   id: string
   prompt: string
@@ -47,6 +79,14 @@ export interface Turn {
   conflicts: readonly PathConflict[]
   /** Paths another writer was holding. */
   waiting: readonly string[]
+  /**
+   * The turn's working, in arrival order.
+   *
+   * Kept on the turn rather than in a side channel because it is the answer to
+   * "what does *working* mean", and that question is only ever asked about a
+   * particular turn. It persists with the turn for the same reason.
+   */
+  reasoning: readonly ReasoningEntry[]
 }
 
 /** Whatever carries messages to and from the service. */

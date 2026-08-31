@@ -20,6 +20,10 @@ import {
 import type { ChangeHistory } from '@src/lib/collab/changeHistory'
 import type { Presence } from '@src/lib/collab/presence'
 import type { WriteClaims } from '@src/lib/collab/claims'
+import {
+  appendReasoning,
+  reasoningEntryFrom,
+} from '@src/features/zookeeper/reasoning'
 import { createDivergenceLedger } from '@src/lib/collab/divergence'
 import { followLocalChanges } from '@src/lib/collab/followLocalChanges'
 import { revertContribution } from '@src/lib/collab/revertContribution'
@@ -281,6 +285,23 @@ export function createConversation(
       return
     }
 
+    /*
+     * The service's working, which is the only thing that answers "what does
+     * *working* mean" while a turn is in flight. Its own field on the turn
+     * rather than folded into `response`: `delta` is the answer, this is the
+     * route to it, and a pane that ran them together could not collapse one
+     * without hiding the other.
+     */
+    if ('reasoning' in message) {
+      const entry = reasoningEntryFrom(message.reasoning)
+      if (entry === null) return
+      updateTurn(turnId, (previous) => ({
+        ...previous,
+        reasoning: appendReasoning(previous.reasoning, entry),
+      }))
+      return
+    }
+
     if ('project_updated' in message) {
       // Mid-turn output. Carries no statuses, so it can never delete.
       applyOutputs(turnId, message.project_updated.files)
@@ -307,8 +328,8 @@ export function createConversation(
       return
     }
 
-    // Everything else — reasoning, usage, mode lists, replay — belongs to
-    // somebody other than a turn's edit stream.
+    // Everything else — usage, mode lists, replay — belongs to somebody other
+    // than a turn's edit stream.
   })
 
   return {
@@ -357,6 +378,7 @@ export function createConversation(
           paths: [],
           conflicts: [],
           waiting: [],
+          reasoning: [],
         },
       ]
 

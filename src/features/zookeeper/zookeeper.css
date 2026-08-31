@@ -297,3 +297,83 @@
   font-size: var(--zds-font-size-mini);
   color: var(--zds-text-secondary);
 }
+
+/*
+ * The service's working.
+ *
+ * A native disclosure, styled down rather than up: it sits between the prompt
+ * and the answer, and anything that competes with those two for attention is
+ * making the pane harder to read, not easier.
+ */
+.zds-zoo__reasoning {
+  font-size: var(--zds-font-size-mini);
+  color: var(--zds-text-secondary);
+}
+
+.zds-zoo__reasoningSummary {
+  cursor: pointer;
+  color: var(--zds-text-tertiary);
+  list-style-position: inside;
+}
+
+.zds-zoo__reasoningSummary:hover {
+  color: var(--zds-text-secondary);
+}
+
+.zds-zoo__reasoningSteps {
+  margin: var(--zds-space-2) 0 0;
+  padding: 0 0 0 var(--zds-space-3);
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-2);
+  /* The datum motif again, one level in: this is subordinate to the turn. */
+  box-shadow: inset var(--zds-size-datum-stripe) 0 0 0 var(--zds-border-subtle);
+}
+
+.zds-zoo__reasoningText {
+  margin: 0;
+  line-height: var(--zds-line-height-body);
+  white-space: pre-wrap;
+}
+
+.zds-zoo__reasoningLabel {
+  margin: 0;
+  color: var(--zds-text-secondary);
+  font-weight: var(--zds-font-weight-medium);
+  cursor: pointer;
+}
+
+.zds-zoo__reasoningPlanSteps {
+  margin: var(--zds-space-1) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+}
+
+.zds-zoo__reasoningPlanSteps li {
+  display: flex;
+  flex-direction: column;
+}
+
+.zds-zoo__reasoningPath,
+.zds-zoo__reasoningFile {
+  margin: 0;
+  font-family: var(--zds-font-mono);
+  color: var(--zds-text-secondary);
+}
+
+.zds-zoo__reasoningCode {
+  margin: var(--zds-space-1) 0 0;
+  padding: var(--zds-space-2);
+  overflow-x: auto;
+  /* Bounded: a documentation dump must not turn the pane into a scroll well. */
+  max-height: 12rem;
+  overflow-y: auto;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  background: var(--zds-surface-sunken);
+  border: 1px solid var(--zds-border-subtle);
+}

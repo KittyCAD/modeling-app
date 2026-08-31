@@ -30,6 +30,7 @@ const turn = (overrides: Partial<Turn> = {}): Turn => ({
   paths: ['main.kcl'],
   conflicts: [],
   waiting: [],
+  reasoning: [],
   ...overrides,
 })
 
@@ -120,6 +121,74 @@ describe('createTranscriptStore', () => {
    * a partial last line; losing the two hundred turns before it because of that
    * would defeat the format.
    */
+  it('keeps the reasoning a turn showed its working with', async () => {
+    const { store } = setup()
+
+    await store.save(
+      transcript({
+        turns: [
+          turn({
+            reasoning: [
+              { kind: 'text', content: 'Looking at the wall.' },
+              {
+                kind: 'plan',
+                steps: [{ path: 'main.kcl', instructions: 'Widen it' }],
+              },
+              { kind: 'file', action: 'updated', path: 'main.kcl' },
+            ],
+          }),
+        ],
+      })
+    )
+
+    const read = await store.read('c1')
+    expect(read?.turns[0].reasoning).toEqual([
+      { kind: 'text', content: 'Looking at the wall.' },
+      { kind: 'plan', steps: [{ path: 'main.kcl', instructions: 'Widen it' }] },
+      { kind: 'file', action: 'updated', path: 'main.kcl' },
+    ])
+  })
+
+  /**
+   * A transcript written before reasoning existed. The version was deliberately
+   * not bumped to add the field: an unrecognised version skips every line
+   * including the meta one, so bumping would have made every conversation
+   * anybody had already had read as absent.
+   */
+  it('reads a transcript written before reasoning existed', async () => {
+    const legacy = [
+      JSON.stringify({
+        v: 1,
+        kind: 'meta',
+        id: 'c1',
+        remoteId: 'remote-1',
+        createdAt: 1000,
+      }),
+      JSON.stringify({
+        v: 1,
+        kind: 'turn',
+        turn: {
+          id: 'turn-1',
+          prompt: 'make it thicker',
+          response: 'Done.',
+          at: 1000,
+          status: 'complete',
+          paths: ['main.kcl'],
+          conflicts: [],
+          waiting: [],
+        },
+      }),
+    ].join('\n')
+
+    const { store } = setup({ [FILE]: `${legacy}\n` })
+
+    const read = await store.read('c1')
+    expect(read?.turns).toHaveLength(1)
+    expect(read?.turns[0].prompt).toBe('make it thicker')
+    // Normalised, so nothing downstream has to guard for a missing array.
+    expect(read?.turns[0].reasoning).toEqual([])
+  })
+
   it('recovers the turns before a truncated final line', async () => {
     const { store, fileSystem } = setup()
     await store.save(
