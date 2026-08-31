@@ -4,6 +4,15 @@ import type { ChangeHistory } from '@src/lib/collab/changeHistory'
 import type { RevertOutcome } from '@src/lib/collab/revertContribution'
 
 /**
+ * The panel that draws the history.
+ *
+ * Here rather than in the feature because an area is addressed by things that
+ * must not import its implementation — the project's layout preset places it,
+ * and a command toggles it.
+ */
+export const HISTORY_AREA_ID = 'project.history'
+
+/**
  * One coordinated change to the project.
  *
  * A modelling operation, an agent turn, a project mutation — anything that wrote

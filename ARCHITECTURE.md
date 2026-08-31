@@ -1139,13 +1139,55 @@ scene. Automatic framing needs an engine-idle signal, which is not built.
 
 Also outstanding:
 
-- `ProjectActionHistory` and the `HistoryCoordinator` (#13353) — local buffer
-  undo works; coordinated multi-buffer undo does not exist
 - Prepared project mutations (#13354) — the snapshot half is done, the
   `PreparedProjectMutation` half is not
 - LSP as a capability, and a filesystem watcher. `reconcileExternalChange` and
   the queue's write tokens are the seams a watcher will use
 - `kcl_lint`, for warnings beyond what the parser reports
+
+## The project's history
+
+Two logs, and the split is the design. `ChangeHistory` holds **every** change
+applied to every open buffer, in order, each tagged with the contribution id of
+whoever made it — including the user's own typing, because undoing anybody's work
+means projecting its inverse through everything that happened afterwards.
+`ProjectActionHistory` is a *labelled index* over that: one row per coordinated
+change, holding an id, a label, a time, an author and the paths it touched. It
+deliberately holds no copy of the edits, because a parallel copy's only
+distinctive ability would be disagreeing with the first.
+
+### The panel is a reading of the log, not a second record
+
+`features/projectHistory/HistoryPanel.tsx` draws the action log as a vertical
+timeline, newest first — the thing you want to undo is nearly always the thing
+that just happened. Everything it shows is derived:
+
+- **Author** comes from the opaque id the writer recorded: `null` is you,
+  `zookeeper:<conversation>` is one agent conversation. Each gets a **lane**,
+  assigned by first appearance in chronological order so it never moves under
+  them, which is what makes several Zookeepers working at once legible rather
+  than an undifferentiated list.
+- **Revert** is offered only while the change log can still undo the action
+  *exactly*, which is asked of the log rather than assumed from age: what ends
+  revertibility is the file moving on — a horizon, a closed buffer, an edit made
+  outside the app. An entry past that point stays and says so, because "cannot"
+  and "cannot exactly" are different claims.
+- **The outcome is reported.** Partial success is normal: an action spanning
+  three files can be undone in two, and text typed *inside* a reverted block is
+  kept rather than deleted. Both are said out loud.
+
+What it is not is every keystroke. Your own typing belongs to the buffer's undo
+stack; a thousand of those rows would bury the twelve things somebody meant to
+do. The empty state says which of the two this is.
+
+### Exporting it is the point
+
+`formatHistoryExport` writes the log as tab-separated rows with a comment header:
+ISO timestamps, the full author id, the full contribution id, and every path. The
+full ids are the reason it is worth having — that id is what identifies the change
+in the change log and on every transaction it dispatched, so a shortened one would
+make the export tidy and stop it being evidence. A history you have to be looking
+at the panel to believe is not a claim anybody can check.
 
 ## Layout is data
 

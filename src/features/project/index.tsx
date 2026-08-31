@@ -24,6 +24,7 @@ import {
 } from '@src/contracts/navigation'
 import type { ProjectSession } from '@src/contracts/projectSession'
 import { projectSessionService } from '@src/contracts/projectSession'
+import { HISTORY_AREA_ID } from '@src/contracts/projectHistory'
 import { ZOOKEEPER_AREA_ID } from '@src/contracts/zookeeper'
 import { screensValueSpec, statusBarItemsValueSpec } from '@src/contracts/shell'
 import {
@@ -87,9 +88,12 @@ function buildModelingLayout(): LayoutNode {
       type: 'rail',
       id: 'project.rail.end',
       side: 'inline-end',
-      // Zookeeper first: it is the one somebody opens on purpose, and the title
-      // block is a reference panel you glance at.
-      areaIds: [ZOOKEEPER_AREA_ID, INFO_AREA_ID],
+      /*
+       * Zookeeper first: it is the one somebody opens on purpose. History sits
+       * next to it because it is where you look *after* it has done something,
+       * and the title block is a reference panel you glance at.
+       */
+      areaIds: [ZOOKEEPER_AREA_ID, HISTORY_AREA_ID, INFO_AREA_ID],
       openAreaIds: [],
       size: 380,
       // A conversation needs more room than a title block. The per-node bounds

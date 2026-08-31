@@ -1,0 +1,182 @@
+/*
+ * The project's history, as a vertical timeline.
+ *
+ * A spine with a mark per entry rather than a plain list, because the thing the
+ * list has to make legible is *concurrency*: two Zookeepers editing at once are
+ * two colours down one line, which a row of identical bullets cannot show.
+ *
+ * The lane colours are hues off one token rather than six chosen colours. Six
+ * chosen colours would be a second palette to maintain and would fight the
+ * theme; a rotation keeps them related and keeps the count open.
+ */
+.zds-history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-2);
+  padding: var(--zds-space-2);
+}
+
+.zds-history__authors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--zds-space-1);
+  margin: 0;
+}
+
+.zds-history__author,
+.zds-history__who {
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  letter-spacing: var(--zds-tracking-label);
+  text-transform: uppercase;
+  color: var(--zds-text-tertiary);
+}
+
+.zds-history__author {
+  padding-inline: var(--zds-space-1);
+  border: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  border-radius: var(--zds-radius-content);
+  border-inline-start-width: 2px;
+  border-inline-start-color: var(--zds-history-lane);
+}
+
+.zds-history__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * The spine is drawn by the entries, not behind them: a pseudo-element on each
+ * row means it starts at the first mark and ends at the last, with no separate
+ * element to keep the same height as a list that changes length.
+ */
+.zds-history__entry {
+  position: relative;
+  display: flex;
+  gap: var(--zds-space-2);
+  padding-block: var(--zds-space-2);
+  padding-inline-start: var(--zds-space-1);
+}
+
+.zds-history__entry:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  inset-block-start: calc(var(--zds-space-2) + 0.75rem);
+  inset-block-end: 0;
+  inset-inline-start: calc(var(--zds-space-1) + 0.25rem);
+  inline-size: var(--zds-size-hairline);
+  background: var(--zds-border-subtle);
+}
+
+.zds-history__mark {
+  flex: none;
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  margin-block-start: 0.5rem;
+  border-radius: 50%;
+  background: var(--zds-history-lane);
+}
+
+.zds-history__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+  min-inline-size: 0;
+  flex: 1;
+  align-items: start;
+}
+
+.zds-history__label {
+  margin: 0;
+  color: var(--zds-text-primary);
+}
+
+.zds-history__meta {
+  display: flex;
+  gap: var(--zds-space-2);
+  align-items: baseline;
+  margin: 0;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-tertiary);
+}
+
+.zds-history__who {
+  color: var(--zds-history-lane);
+}
+
+.zds-history__paths {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--zds-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-secondary);
+}
+
+.zds-history__paths li:not(:last-child)::after {
+  content: ",";
+}
+
+.zds-history__note {
+  margin: 0;
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-tertiary);
+}
+
+.zds-history__note--done {
+  color: var(--zds-status-ok);
+}
+
+.zds-history__note--partial {
+  color: var(--zds-status-warn);
+}
+
+.zds-history__note--partial p {
+  margin: 0;
+}
+
+/*
+ * Lanes. The first is the local user and takes the theme's own accent, so "me"
+ * is not one colour among several.
+ */
+.zds-history__entry,
+.zds-history__author {
+  --zds-history-lane: var(--zds-text-tertiary);
+}
+
+.zds-history__entry[data-lane="0"],
+.zds-history__author[data-lane="0"] {
+  --zds-history-lane: var(--zds-text-secondary);
+}
+
+.zds-history__entry[data-lane="1"],
+.zds-history__author[data-lane="1"] {
+  --zds-history-lane: oklch(70% 0.15 250);
+}
+
+.zds-history__entry[data-lane="2"],
+.zds-history__author[data-lane="2"] {
+  --zds-history-lane: oklch(72% 0.15 150);
+}
+
+.zds-history__entry[data-lane="3"],
+.zds-history__author[data-lane="3"] {
+  --zds-history-lane: oklch(75% 0.15 60);
+}
+
+.zds-history__entry[data-lane="4"],
+.zds-history__author[data-lane="4"] {
+  --zds-history-lane: oklch(70% 0.15 330);
+}
+
+.zds-history__entry[data-lane="5"],
+.zds-history__author[data-lane="5"] {
+  --zds-history-lane: oklch(72% 0.15 200);
+}
