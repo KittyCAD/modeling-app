@@ -4526,15 +4526,9 @@ export const modelingMachine = setup({
           return new Error(errorMessage)
         }
 
-        let fileName = (
-          input.fileName ??
-          kclManager.currentFileName ??
-          'output.kcl'
-        ).replace('.kcl', `.${data.type}`)
-        // Ensure the file has an extension.
-        if (!fileName.includes('.')) {
-          fileName += `.${data.type}`
-        }
+        let fileName = input.fileName ?? kclManager.currentFileName ?? 'output'
+        fileName = fileName.replace(/\.kcl$/i, '') // remove trailing .kcl
+        fileName += `.${data.type}` // add file extension
 
         const { up, scale, ...formatData } = data
         const format = {
