@@ -20,7 +20,7 @@ import type {
 import { hashString } from '@src/lib/hash'
 import { minimalChange } from '@src/lib/buffers/minimalChange'
 import { basename } from '@src/lib/paths'
-import { bufferOrigin } from '@src/lib/buffers/annotations'
+import { bufferOrigin, originOf } from '@src/lib/buffers/annotations'
 
 export interface CreateBufferOptions {
   id?: BufferId
@@ -148,14 +148,27 @@ export function createFileBackedTextBuffer(
     const docChanged = transactions.some(
       (transaction) => transaction.docChanged
     )
+    /*
+     * The last transaction speaks for the batch, and a batch that changed no
+     * text was somebody asking for something rather than editing — a re-run
+     * request, a focus request — so it reads as a command rather than a user
+     * edit.
+     */
+    const origin = originOf(
+      transactions.at(-1),
+      docChanged ? 'user' : 'command'
+    )
+
     const change: BufferChange = {
       bufferId: id,
       docChanged,
       version: version.peek(),
       pathRevision: pathRevision.peek(),
-      origin:
-        transactions.at(-1)?.annotation(bufferOrigin) ??
-        (docChanged ? 'user' : 'command'),
+      origin: origin.role,
+      ...(origin.author === undefined ? {} : { author: origin.author }),
+      ...(origin.contributionId === undefined
+        ? {}
+        : { contributionId: origin.contributionId }),
       transactions,
     }
 

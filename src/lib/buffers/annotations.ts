@@ -8,7 +8,33 @@ import { Annotation } from '@codemirror/state'
  * writes, reconciliation must not look like a user edit, and history must not
  * record a reconciliation as something to undo.
  */
-export const bufferOrigin = Annotation.define<BufferOrigin>()
+export const bufferOrigin = Annotation.define<
+  BufferOrigin | BufferOriginValue
+>()
+
+/**
+ * An origin that also says *who*.
+ *
+ * The role answers "what kind of change is this", which is what persistence,
+ * reconciliation and history switch on. It is not an identity, and widening the
+ * role union to hold one would break both: every consumer would need a new case,
+ * and there would still be nowhere to put a contribution id.
+ *
+ * So the identity travels beside the role. `author` is an opaque collaborator id
+ * — deliberately a string rather than a record, because the buffer layer has no
+ * business knowing a collaborator's name, colour or kind. Whoever draws presence
+ * keeps that, keyed by this.
+ *
+ * `contributionId` groups the changes that should be undone together. For an
+ * agent that is one turn; see `src/lib/collab/revert.ts`.
+ */
+export interface BufferOriginValue {
+  role: BufferOrigin
+  /** Opaque collaborator id. Absent means the local user. */
+  author?: string
+  /** What to undo this along with. Absent means "nothing in particular". */
+  contributionId?: string
+}
 
 export type BufferOrigin =
   /** Typed or edited in a mounted view. */
@@ -66,9 +92,25 @@ export const suppressExecution = Annotation.define<boolean>()
  */
 export const requestFocus = Annotation.define<boolean>()
 
-/** Read the origin off a transaction, defaulting to a user edit. */
-export function originOf(transaction: {
-  annotation: (annotation: typeof bufferOrigin) => BufferOrigin | undefined
-}): BufferOrigin {
-  return transaction.annotation(bufferOrigin) ?? 'user'
+/**
+ * Read the origin off a transaction, normalised.
+ *
+ * A caller may annotate with a bare role — most do, and none of them need to
+ * change — so this is the one place that turns either spelling into the same
+ * shape. `fallback` is the role to assume when a transaction says nothing.
+ */
+export function originOf(
+  transaction:
+    | {
+        annotation: (
+          annotation: typeof bufferOrigin
+        ) => BufferOrigin | BufferOriginValue | undefined
+      }
+    | undefined,
+  fallback: BufferOrigin = 'user'
+): BufferOriginValue {
+  const annotated = transaction?.annotation(bufferOrigin)
+  if (annotated === undefined) return { role: fallback }
+  if (typeof annotated === 'string') return { role: annotated }
+  return annotated
 }

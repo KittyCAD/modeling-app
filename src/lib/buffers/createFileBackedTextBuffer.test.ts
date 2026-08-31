@@ -112,6 +112,75 @@ describe('the dispatch boundary', () => {
     expect(seen).toEqual(['command', 'semantic'])
   })
 
+  /**
+   * The attributed edit stream, which is what makes a second writer in the
+   * document representable. It rides the annotation that already exists rather
+   * than a channel around the buffer, so every writer is attributable by
+   * construction — there is no path that could forget to say who it was.
+   */
+  it('publishes the collaborator and contribution behind a change', () => {
+    const buffer = createBuffer()
+    const seen: { origin: string; author?: string; contributionId?: string }[] =
+      []
+    buffer.onChange((change) =>
+      seen.push({
+        origin: change.origin,
+        author: change.author,
+        contributionId: change.contributionId,
+      })
+    )
+
+    buffer.dispatch({
+      changes: { from: 0, insert: 'depth = 2\n' },
+      annotations: bufferOrigin.of({
+        role: 'semantic',
+        author: 'zookeeper:conversation-1',
+        contributionId: 'turn-7',
+      }),
+    })
+
+    expect(seen).toEqual([
+      {
+        origin: 'semantic',
+        author: 'zookeeper:conversation-1',
+        contributionId: 'turn-7',
+      },
+    ])
+  })
+
+  /**
+   * Every existing caller annotates with a bare role, and none of them had to
+   * change — which is the point of leaving `origin` a string and adding identity
+   * beside it rather than widening the role union.
+   */
+  it('leaves a bare role unattributed', () => {
+    const buffer = createBuffer()
+    const seen: { author?: string; contributionId?: string }[] = []
+    buffer.onChange((change) =>
+      seen.push({
+        author: change.author,
+        contributionId: change.contributionId,
+      })
+    )
+
+    append(buffer, 'x', 'semantic')
+
+    expect(seen).toEqual([{ author: undefined, contributionId: undefined }])
+  })
+
+  it('still reports the role when a structured origin omits the identity', () => {
+    const buffer = createBuffer()
+    const seen: string[] = []
+    buffer.onChange((change) => seen.push(change.origin))
+
+    buffer.dispatch({
+      changes: { from: 0, insert: 'x' },
+      annotations: bufferOrigin.of({ role: 'reconcile' }),
+    })
+
+    expect(seen).toEqual(['reconcile'])
+  })
+
   it('keeps publishing after one listener throws', () => {
     const buffer = createBuffer()
     const good = vi.fn()

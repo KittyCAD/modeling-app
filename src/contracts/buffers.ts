@@ -105,8 +105,24 @@ export interface BufferChange {
   docChanged: boolean
   version: number
   pathRevision: number
-  /** Who caused it, from the transaction's origin annotation. */
+  /**
+   * What kind of change it was, from the transaction's origin annotation.
+   *
+   * Stays a plain string rather than becoming a structured value, because
+   * consumers compare it (`change.origin === 'capability'`) and widening the type
+   * would touch every one of them for no gain. Identity arrives beside it instead.
+   */
   origin: string
+  /**
+   * Opaque id of the collaborator who caused it, when it was not the local user.
+   *
+   * This is what makes an attributed edit stream possible without a second
+   * channel around the buffer: everybody already dispatches through here, so
+   * saying *who* is a field on a path that exists rather than a new path.
+   */
+  author?: string
+  /** What to undo this along with — one agent turn, one remote batch. */
+  contributionId?: string
   transactions: readonly Transaction[]
 }
 
