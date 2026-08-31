@@ -508,6 +508,72 @@ fillet001 = fillet(extrude001, tags = edge001, radius = 1)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a fillet to a primitive edge selected from a shelled body', async () => {
+      const shelledBlock = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -2.85mm, var 2.42mm], end = [var 2.85mm, var 2.42mm])
+  line2 = line(start = [var 2.85mm, var 2.42mm], end = [var 2.85mm, var -2.42mm])
+  line3 = line(start = [var 2.85mm, var -2.42mm], end = [var -2.85mm, var -2.42mm])
+  line4 = line(start = [var -2.85mm, var -2.42mm], end = [var -2.85mm, var 2.42mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 4mm, tagEnd = $capEnd001)
+shell001 = shell(extrude001, faces = capEnd001, thickness = 0.5mm)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        shelledBlock,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const consumedPath = [...artifactGraph.values()].find(
+        (artifact): artifact is Extract<Artifact, { type: 'path' }> =>
+          artifact.type === 'path' && Boolean(artifact.sweepId)
+      )
+      expect(consumedPath).toBeDefined()
+
+      const primitiveEdge: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: consumedPath?.id,
+        primitiveIndex: 11,
+        primitiveType: 'edge',
+        type: 'enginePrimitive',
+      }
+      const selection: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveEdge],
+      }
+
+      const radius = (await stringToKclExpression(
+        '0.2mm',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${shelledBlock}
+edge001 = edgeId(shell001, index = 11)
+fillet001 = fillet(shell001, tags = edge001, radius = 0.2mm)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a basic fillet call on a sweepEdge and a segment', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,

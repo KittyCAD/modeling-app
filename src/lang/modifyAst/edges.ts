@@ -397,6 +397,42 @@ type BodySelectionData = {
   pathIfPipe?: PathToNode
 }
 
+function getDirectName(expr: Expr | null): string | null {
+  if (expr?.type !== 'Name' || expr.path.length > 0) {
+    return null
+  }
+
+  return expr.name.name
+}
+
+function getLatestPrimitiveEdgeBodyExpr(
+  solidsExpr: Expr | null,
+  ast: Node<Program>
+): Expr | null {
+  let currentName = getDirectName(solidsExpr)
+  if (!currentName) {
+    return solidsExpr
+  }
+
+  for (const statement of ast.body) {
+    if (statement.type !== 'VariableDeclaration') {
+      continue
+    }
+
+    const declaration = statement.declaration
+    const init = declaration.init
+    if (
+      init.type === 'CallExpressionKw' &&
+      init.callee.name.name === 'shell' &&
+      getDirectName(init.unlabeled) === currentName
+    ) {
+      currentName = declaration.id.name
+    }
+  }
+
+  return createLocalName(currentName)
+}
+
 function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [...edges.graphSelections, ...getPrimitiveEdgeSelections(edges)]
 }
@@ -2685,6 +2721,7 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       )
       if (err(vars)) return vars
       solidsExpr = createVariableExpressionsArray(vars.exprs)
+      solidsExpr = getLatestPrimitiveEdgeBodyExpr(solidsExpr, modifiedAst)
       pathIfPipe = vars.pathIfPipe
     }
 
