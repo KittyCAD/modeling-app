@@ -14,6 +14,17 @@ import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
 export type ArtifactMap = ReadonlyMap<string, Artifact>
 
+/**
+ * Whether a source range points into the file on screen.
+ *
+ * The third element is the module id, and the top-level module is zero. Worth a
+ * named function because kcl-lib's own doc comment for the type calls it
+ * "whether the source range belongs to the 'main' file", which reads as a
+ * boolean and is the opposite of what the value means — the Rust builds it from
+ * `module_id.as_usize()`, and `ModuleId::is_top_level` is `== 0`.
+ */
+export const isTopLevel = (range: SourceRange): boolean => range[2] === 0
+
 /** What kcl-lib serialises the graph as. */
 interface RustArtifactGraph {
   map?: Record<string, Artifact | null>

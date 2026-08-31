@@ -4,6 +4,7 @@ import { effect } from '@preact/signals'
 import type { EditorCapability } from '@src/contracts/buffers'
 import type { SelectionService } from '@src/contracts/selection'
 import { bufferOrigin } from '@src/lib/buffers/annotations'
+import { isTopLevel } from '@src/lib/kcl/artifacts'
 
 /**
  * Show the code behind what was clicked.
@@ -39,8 +40,14 @@ export function createSelectionRevealCapability(dependencies: {
         const range = entities.at(-1)?.sourceRange
         if (!range) return
 
-        const [from, to, isMain] = range
-        if (!isMain) return
+        /*
+         * Only this file. The third element is the *module id*, and the
+         * top-level module is zero — kcl-lib's own doc comment calls it
+         * "whether the source range belongs to the 'main' file", which reads as
+         * a boolean and is exactly backwards from what the Rust puts there.
+         */
+        if (!isTopLevel(range)) return
+        const [from, to] = range
 
         const length = buffer.state.peek().doc.length
         if (from > length || to > length) return
