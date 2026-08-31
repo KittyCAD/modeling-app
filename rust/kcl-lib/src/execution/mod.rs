@@ -6349,7 +6349,7 @@ type Empty { | }
         // one file would collide. The parser and formatter accept this shape, so
         // execution is the only thing that can reject it.
         //
-        // The rule is about nesting, not about one kind of block, so both routes
+        // The rule is about nesting, not about one kind of block, so all routes
         // to `BodyType::Block` are covered here.
         let allow = "@settings(experimentalFeatures = allow)\n";
         for (case, code) in [
@@ -6362,6 +6362,10 @@ type Empty { | }
                 format!(
                     "{allow}sketch(on = XY) {{\n  type Color {{ | Red }}\n  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}}\n"
                 ),
+            ),
+            (
+                "if arm",
+                format!("{allow}x = if true {{\n  type Color {{ | Red }}\n  0\n}} else {{\n  0\n}}\n"),
             ),
         ] {
             assert_eq!(
