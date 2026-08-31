@@ -35,6 +35,9 @@ const MOVE_INTERVAL_MS = 1000 / 15
  */
 const DISTANCE = 1000
 
+/** Which way is up when nothing says otherwise. The existing app's default. */
+const WORLD_UP = { x: 0, y: 0, z: 1 }
+
 /** Space left around the model by a fit. The existing app's number. */
 const FIT_PADDING = 0.1
 
@@ -140,6 +143,55 @@ export function createEngineCameraDriver(
    * show of a third of a second, which is why the duration is short — a long
    * animation at this cadence reads as stuttering rather than as motion.
    */
+  /**
+   * Put the camera at a distance from a target, along a direction.
+   *
+   * The one place both `faceOn` and `lookFrom` end up, because they differ only
+   * in where the target and the direction come from.
+   *
+   * The distance is kept when we know it — and we do, because the camera reports
+   * itself, so a view change can alter the direction and the centre and leave
+   * the zoom alone. That is what somebody squaring up to a face wants, and it
+   * avoids a fit: on a file whose only content is an empty sketch there is
+   * nothing to fit to. A fit is the fallback for a camera we have never heard
+   * from, which is also the case with nothing to animate from.
+   */
+  const moveTo = (target: Point, direction: Point, up: Point) => {
+    cancelTween()
+    const from = dependencies.camera.frame.peek()
+
+    const distance = from
+      ? Math.hypot(
+          from.position.x - from.target.x,
+          from.position.y - from.target.y,
+          from.position.z - from.target.z
+        ) || DISTANCE
+      : DISTANCE
+
+    const to: Viewpoint = {
+      target,
+      position: {
+        x: target.x + direction.x * distance,
+        y: target.y + direction.y * distance,
+        z: target.z + direction.z * distance,
+      },
+      up,
+    }
+
+    if (!from) {
+      sendLookAt(to)
+      sendZoomToFit()
+      return
+    }
+
+    if (dependencies.reducedMotion()) {
+      sendLookAt(to)
+      return
+    }
+
+    tweenTo({ position: from.position, target: from.target, up: from.up }, to)
+  }
+
   const tweenTo = (from: Viewpoint, to: Viewpoint) => {
     cancelTween()
     const startedAt = performance.now()
@@ -328,55 +380,22 @@ export function createEngineCameraDriver(
 
     faceOn(plane) {
       if (!ready.peek()) return
-      cancelTween()
 
       const normal = unit(plane.zAxis)
-      const origin = plane.origin
+      // The plane's own up, so the sketch's Y is the screen's Y. Anything else
+      // would draw a horizontal constraint at an angle.
+      moveTo(plane.origin, normal, unit(plane.yAxis))
+    },
+
+    lookFrom(direction, up) {
+      if (!ready.peek()) return
+
       const from = dependencies.camera.frame.peek()
+      // What you are already looking at, which is the point: a corner of the
+      // gizmo means "from over there", not "somewhere else in the model".
+      const target = from?.target ?? { x: 0, y: 0, z: 0 }
 
-      /*
-       * The distance is kept when we know it.
-       *
-       * Because we do: the camera reports itself, so looking at a plane can
-       * change the direction and the centre and leave the zoom alone — which is
-       * what somebody squaring up to a face wants, and it avoids a fit. A fit is
-       * the fallback for a camera we have never heard from, and on a file whose
-       * only content is an empty sketch there is nothing to fit to.
-       */
-      const distance = from
-        ? Math.hypot(
-            from.position.x - from.target.x,
-            from.position.y - from.target.y,
-            from.position.z - from.target.z
-          ) || DISTANCE
-        : DISTANCE
-
-      const to: Viewpoint = {
-        target: origin,
-        position: {
-          x: origin.x + normal.x * distance,
-          y: origin.y + normal.y * distance,
-          z: origin.z + normal.z * distance,
-        },
-        // The plane's own up, so the sketch's Y is the screen's Y. Anything else
-        // would draw a horizontal constraint at an angle.
-        up: unit(plane.yAxis),
-      }
-
-      if (!from) {
-        // Nothing to move from, so there is nothing to animate: state the
-        // destination and frame it.
-        sendLookAt(to)
-        sendZoomToFit()
-        return
-      }
-
-      if (dependencies.reducedMotion()) {
-        sendLookAt(to)
-        return
-      }
-
-      tweenTo({ position: from.position, target: from.target, up: from.up }, to)
+      moveTo(target, unit(direction), up ? unit(up) : WORLD_UP)
     },
 
     zoomToFit() {

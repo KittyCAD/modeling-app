@@ -30,6 +30,7 @@ function createFakeDriver() {
       setProjection: vi.fn(),
       standardView: vi.fn(),
       faceOn: vi.fn(),
+      lookFrom: vi.fn(),
       zoomToFit: vi.fn(),
     } satisfies CameraDriver,
     gestures,

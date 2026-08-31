@@ -1,4 +1,8 @@
-import { booleanSetting, textSetting } from '@src/contracts/settings'
+import {
+  booleanSetting,
+  optionsSetting,
+  textSetting,
+} from '@src/contracts/settings'
 
 /**
  * How the engine draws the scene, owned by the feature that tells it to.
@@ -66,9 +70,40 @@ export const backfaceColorSetting = textSetting({
   validate: (value) => /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value.trim()),
 })
 
+/** Which orientation gizmo to draw in the corner of the scene. */
+export type GizmoType = 'cube' | 'axis'
+
+/**
+ * Which gizmo, ported from the existing app's `modeling.gizmoType`.
+ *
+ * Two, because they are genuinely different tools rather than two styles of one.
+ * The cube shows which *face* of the model you are looking at and offers
+ * twenty-six places to stand, including edges and corners; the axis version
+ * shows the frame and offers six. The cube is the default, as it is upstream.
+ *
+ * User level: which of the two somebody prefers is about them, not about the
+ * part, and the Rust project schema has no field for it.
+ */
+export const gizmoTypeSetting = optionsSetting<GizmoType>({
+  id: 'modeling.gizmoType',
+  section: 'modeling',
+  title: 'Orientation gizmo',
+  description:
+    'The cube shows which face of the model you are looking at, and can be turned to an edge or a corner. The axes show the frame.',
+  order: 5,
+  defaultValue: 'cube',
+  levels: ['user'],
+  toml: ['settings', 'modeling', 'gizmo_type'],
+  options: [
+    { value: 'cube', label: 'Cube' },
+    { value: 'axis', label: 'Axes' },
+  ],
+})
+
 export const sceneSettings = [
   highlightEdgesSetting,
   enableSsaoSetting,
   showScaleGridSetting,
   backfaceColorSetting,
+  gizmoTypeSetting,
 ]

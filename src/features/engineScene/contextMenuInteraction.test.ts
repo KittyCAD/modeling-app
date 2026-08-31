@@ -48,6 +48,7 @@ function setup() {
     setProjection: vi.fn(),
     standardView: vi.fn(),
     faceOn: vi.fn(),
+    lookFrom: vi.fn(),
     zoomToFit: vi.fn(),
   }
   const openMenu = vi.fn()

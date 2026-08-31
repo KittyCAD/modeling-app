@@ -7,7 +7,7 @@ import {
 import type { ReadonlySignal } from '@preact/signals'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { ContextMenuContribution } from '@src/contracts/contextMenu'
-import type { PlaneFrame } from '@src/lib/scene/projection'
+import type { PlaneFrame, Vector3 } from '@src/lib/scene/projection'
 import { byOrder, dedupeById } from '@src/lib/registryOrdering'
 import type { ComponentChildren } from 'preact'
 
@@ -135,6 +135,18 @@ export interface CameraDriver {
    * Millimetres, like everything else that meets the renderer.
    */
   faceOn(plane: PlaneFrame): void
+  /**
+   * Look at what you are already looking at, from a given direction.
+   *
+   * Keeps the target and the distance and changes only where the camera stands,
+   * which is what a view gizmo asks for: clicking a corner of the cube means
+   * "from over there", not "somewhere else in the model".
+   *
+   * `up` is which way is up when you get there. A caller that does not care can
+   * leave it out and get world Z, which is the existing app's default for
+   * everything except the top and bottom faces.
+   */
+  lookFrom(direction: Vector3, up?: Vector3): void
   /** Frame everything there is. */
   zoomToFit(): void
 }

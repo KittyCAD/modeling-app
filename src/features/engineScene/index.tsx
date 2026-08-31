@@ -181,7 +181,7 @@ export default defineRegistryItemFactory((ctx) => {
           id: 'scene.viewGizmo',
           zone: 'end',
           order: 0,
-          render: () => <ViewGizmo />,
+          render: () => <ViewGizmo camera={camera} />,
         }),
 
         provide(sceneItemsValueSpec, {

@@ -97,3 +97,27 @@
     transition: none;
   }
 }
+
+/*
+ * The cube version.
+ *
+ * No pad of its own: the model is drawn with its own rounded silhouette and
+ * transparent background, so a circle behind it would show as a ring around a
+ * cube. It keeps the round clip so a stray pixel at the corner cannot escape.
+ */
+.zds-gizmo--cube {
+  inline-size: 82px;
+  block-size: 82px;
+  border: none;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: hidden;
+  display: grid;
+  place-content: center;
+  cursor: grab;
+}
+
+.zds-gizmo--cube:active {
+  cursor: grabbing;
+}
