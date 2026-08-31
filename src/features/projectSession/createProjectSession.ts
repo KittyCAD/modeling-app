@@ -180,7 +180,22 @@ export function createProjectSession(
       activeBufferId.value = remaining.at(-1)?.id ?? null
     }
     if (executingBufferId.peek() === bufferId) {
-      executingBufferId.value = null
+      /*
+       * The role is handed on, not dropped.
+       *
+       * The same rule `openFile` uses when it picks the first KCL buffer: a
+       * project with geometry and nothing executing is a worse state than a
+       * guess. Closing one file of several should leave the model on screen —
+       * dropping the role instead cleared the scene and, worse, took the engine
+       * with it, which is a lot to happen because a tab was closed.
+       *
+       * Nothing to hand it to is a real state, and the one the user means when
+       * they close the last of them.
+       */
+      const heir = remaining.find(
+        (buffer) => buffer.languageId.peek() === 'kcl'
+      )
+      setExecutingBuffer(heir?.id ?? null)
     }
 
     // Disposing runs the capability bindings' teardown, which is where a pending

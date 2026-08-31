@@ -229,15 +229,31 @@ describe('project session', () => {
     expect(session.executingBuffer.value).toBeNull()
   })
 
-  it('clears the executing buffer when that buffer closes', async () => {
+  /*
+   * Closing one file of several should leave the model on screen. Dropping the
+   * role instead cleared the scene, and took the engine down with it — a lot to
+   * happen because a tab was closed.
+   */
+  it('hands the executing role to another KCL buffer when that buffer closes', async () => {
     const main = await session.openFile('main.kcl')
     const lid = await session.openFile('lid.kcl')
 
     session.setActiveBuffer(lid.id)
     session.closeBuffer(main.id)
 
-    expect(session.executingBuffer.value).toBeNull()
+    expect(session.executingBuffer.value?.id).toBe(lid.id)
     expect(session.activeBuffer.value?.id).toBe(lid.id)
+  })
+
+  it('has nothing to execute once the last KCL buffer closes', async () => {
+    const main = await session.openFile('main.kcl')
+    const notes = await session.openFile('README.md')
+
+    session.closeBuffer(main.id)
+
+    // A real state, and the one somebody means when they close the last of them.
+    expect(session.executingBuffer.value).toBeNull()
+    expect(session.buffers.value.map((buffer) => buffer.id)).toEqual([notes.id])
   })
 
   it('propagates a read failure to the caller', async () => {

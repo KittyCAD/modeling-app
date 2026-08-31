@@ -142,6 +142,8 @@ const setup = (
     addSegment?: (calls: string[]) => Promise<unknown>
     /** Makes a preview solve take long enough for moves to pile up behind it. */
     slowEdit?: boolean
+    /** Flips to true to stand in for the executing buffer being closed. */
+    bufferGone?: { value: boolean }
   } = {}
 ) => {
   const buffer = createFileBackedTextBuffer({
@@ -203,7 +205,7 @@ const setup = (
         ? { name: 's', from: 0, to: 23 }
         : options.sketch
     ),
-    buffer: () => buffer,
+    buffer: () => (options.bufferGone?.value ? null : buffer),
     path: () => 'main.kcl',
     program: () =>
       options.program === undefined ? { body: [] } : options.program,
@@ -701,5 +703,39 @@ describe('turning to face the plane', () => {
     // overlay — but there is no plane to point a camera at.
     expect(app.session.open.value).not.toBeNull()
     expect(app.camera.faceOn).not.toHaveBeenCalled()
+  })
+})
+
+describe('when the file goes away', () => {
+  /*
+   * The worst kind of stale state: without this the session stayed open over a
+   * closed file, the toolbar still offered tools, and a click still asked the
+   * solver to add a segment — into a copy of a file nobody had open.
+   */
+  it('forgets the sketch when its buffer closes', async () => {
+    const closed = signal(false)
+    const app = setup({ bufferGone: closed })
+    await app.session.enter()
+    app.session.equip('line')
+
+    closed.value = true
+    await vi.waitFor(() => expect(app.session.open.value).toBeNull())
+
+    expect(app.session.tool.value).toBeNull()
+    expect(app.session.draft.value).toEqual({ kind: 'idle' })
+  })
+
+  it('does not write anything back on the way out', async () => {
+    const closed = signal(false)
+    const app = setup({ bufferGone: closed })
+    await app.session.enter()
+
+    closed.value = true
+    await vi.waitFor(() => expect(app.session.open.value).toBeNull())
+
+    // `exit` would write and ask for a run, and there is neither to do it with:
+    // the file on disk is whatever the last write left, which is what closing a
+    // file means.
+    expect(app.frontend.exitSketch).not.toHaveBeenCalled()
   })
 })

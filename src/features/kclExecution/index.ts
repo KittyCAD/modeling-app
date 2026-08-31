@@ -133,6 +133,47 @@ export default defineRegistryItemFactory((ctx) => {
   })
 
   /**
+   * Nothing to execute means nothing to hold.
+   *
+   * Everything published here describes the *last* run — the program, the
+   * artifact graph, the operation list the outline is built from — and none of it
+   * was ever cleared. Closing the last KCL buffer therefore left a feature tree
+   * standing for a file that was no longer open, and a scene showing geometry
+   * with nothing behind it. Neither can be acted on: clicking a row addresses
+   * source ranges in text nobody has.
+   *
+   * The engine goes too. The app already connects when a project opens with
+   * something to run, so the symmetry is the point — a session held open for a
+   * scene nobody is looking at is a stream nobody is watching, and it costs real
+   * resources at the other end. Reconnecting is not free, which is exactly why
+   * closing one file of several now hands the executing role on rather than
+   * dropping it: this state is reached deliberately, by closing the last one.
+   */
+  let stopWatchingExecutable: (() => void) | null = null
+  queueMicrotask(() => {
+    if (disposed) return
+
+    let hadSomething = false
+    stopWatchingExecutable = effect(() => {
+      const buffer = sessions().current.value?.executingBuffer.value ?? null
+      const hasSomething = buffer !== null
+
+      // A transition, not a state: the gap between a project opening and its
+      // default file arriving is "nothing to execute" and must not tear down the
+      // connection that was just made for it.
+      const lost = hadSomething && !hasSomething
+      hadSomething = hasSomething
+      if (!lost) return
+
+      program.value = null
+      artifacts.value = new Map()
+      operations.value = { map: {} }
+
+      engine().disconnect()
+    })
+  })
+
+  /**
    * A different project is a different scene.
    *
    * The engine's scene is additive and kcl-lib caches what it has drawn, so
@@ -330,6 +371,7 @@ export default defineRegistryItemFactory((ctx) => {
         disposed = true
         stopWatching?.()
         stopWatchingProject?.()
+        stopWatchingExecutable?.()
         owner?.reset()
         contextReady.value = false
       },

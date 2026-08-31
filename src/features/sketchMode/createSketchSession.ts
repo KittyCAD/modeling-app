@@ -1,4 +1,4 @@
-import { type ReadonlySignal, computed, signal } from '@preact/signals'
+import { type ReadonlySignal, computed, effect, signal } from '@preact/signals'
 import type { FileBackedTextBuffer } from '@src/contracts/buffers'
 import type {
   KclFrontendService,
@@ -83,7 +83,7 @@ export interface SketchSessionDependencies {
  */
 export function createSketchSession(
   dependencies: SketchSessionDependencies
-): SketchSessionService {
+): SketchSessionService & { dispose: () => void } {
   const {
     frontend,
     sketch,
@@ -358,6 +358,37 @@ export function createSketchSession(
     run(step.actions)
   }
 
+  /**
+   * A sketch cannot outlive the file it is in.
+   *
+   * Closing the last KCL buffer leaves nothing to write to, and without this the
+   * session stayed open over it: the toolbar still offered tools, a click still
+   * asked the solver to add a segment, and the segment went into a copy of a file
+   * nobody had open. Which is the worst kind of stale state — it accepts work and
+   * then loses it.
+   *
+   * Forgotten rather than exited. `exit` writes the sketch back and asks for a
+   * run, and there is no buffer to do either with; the file on disk is whatever
+   * the last write left, which is the honest outcome of closing a file.
+   */
+  const forget = () => {
+    latestMove = null
+    draft.value = { kind: 'idle' }
+    tool.value = null
+    open.value = null
+    busy.value = false
+  }
+
+  let stopWatchingBuffer: (() => void) | null = null
+  queueMicrotask(() => {
+    stopWatchingBuffer = effect(() => {
+      // Reads the buffer through the same getter the rest of this uses, which
+      // reads signals — so the effect follows it.
+      const target = buffer()
+      if (open.value !== null && target === null) forget()
+    })
+  })
+
   return {
     open: computed(() => open.value),
     busy: computed(() => busy.value),
@@ -564,5 +595,7 @@ export function createSketchSession(
 
       run(step.actions)
     },
+
+    dispose: () => stopWatchingBuffer?.(),
   }
 }

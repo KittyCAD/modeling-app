@@ -144,6 +144,7 @@ export default defineRegistryItemFactory((ctx) => {
       dispose: () => {
         disposed = true
         stopBinding?.()
+        session.dispose()
       },
       provides: [
         ...sketchingSettings.map((setting) =>
