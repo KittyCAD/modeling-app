@@ -278,9 +278,9 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
               isCurrent: true,
             },
             {
-              name: 'B-rep',
+              name: 'B-rep (experimental)',
               description:
-                'Slower to import. Preserves editable faces and edges for modeling.',
+                'Under development and currently supports only simple shapes. Imported geometry is not editable; use Mesh for now.',
               value: 'brep',
             },
           ],

@@ -66,8 +66,11 @@ async function insertPartIntoAssembly(
       )
     ).toBeVisible()
     await expect(
+      page.getByText('B-rep (experimental)', { exact: true })
+    ).toBeVisible()
+    await expect(
       page.getByText(
-        'Slower to import. Preserves editable faces and edges for modeling.'
+        'Under development and currently supports only simple shapes. Imported geometry is not editable; use Mesh for now.'
       )
     ).toBeVisible()
     await cmdBar.progressCmdBar()
