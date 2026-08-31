@@ -376,7 +376,7 @@ describe('the three-point arc tool', () => {
 
   const shaping = {
     kind: 'shaping' as const,
-    segmentId: 4,
+    targets: [4],
     points: [start, end],
     segmentIds: [4],
   }

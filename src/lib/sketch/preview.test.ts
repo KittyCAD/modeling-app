@@ -67,6 +67,23 @@ describe('the shape being started', () => {
     ])
   })
 
+  /*
+   * Drawn only while the real one is being written, which takes a dozen round
+   * trips — long enough that without it the pointer would drag nothing at all
+   * for a moment after the first click.
+   */
+  it('draws a rectangle as four sides while the real one is written', () => {
+    const shapes = previewShapes(pending, 'cornerRectangle', { x: 4, y: 2 })
+
+    expect(shapes).toHaveLength(4)
+    expect(shapes.map((shape) => shape.kind)).toEqual([
+      'line',
+      'line',
+      'line',
+      'line',
+    ])
+  })
+
   it('draws nothing for a tool that collects no clicks', () => {
     expect(previewShapes(pending, 'line', { x: 1, y: 1 })).toEqual([])
     expect(previewShapes(pending, null, { x: 1, y: 1 })).toEqual([])

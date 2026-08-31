@@ -92,6 +92,13 @@ export interface KclWasmContext {
     settings: string,
     createCheckpoint: boolean
   ): Promise<unknown>
+  add_constraint(
+    versionJson: string,
+    sketchJson: string,
+    constraintJson: string,
+    settings: string,
+    createCheckpoint: boolean
+  ): Promise<unknown>
   delete_objects(
     versionJson: string,
     sketchJson: string,

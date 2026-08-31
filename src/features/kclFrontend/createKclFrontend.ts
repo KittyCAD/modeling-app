@@ -265,6 +265,23 @@ export function createKclFrontend(
       return outcomeOf(raw, '')
     },
 
+    async addConstraint(sketchId, constraint, options = {}) {
+      const available = await ready()
+      if (!available) throw new Error('KCL is not loaded yet.')
+
+      const raw = await available.wasm.add_constraint(
+        JSON.stringify(VERSION),
+        JSON.stringify(sketchId),
+        JSON.stringify(constraint),
+        available.settings,
+        // As with a segment: a checkpoint per finished action rather than per
+        // call, so a rectangle's eight constraints are one thing to undo.
+        options.checkpoint ?? false
+      )
+
+      return outcomeOf(raw, '')
+    },
+
     async deleteObjects(sketchId, objects) {
       const available = await ready()
       if (!available) throw new Error('KCL is not loaded yet.')

@@ -31,6 +31,7 @@ import type {
 import { objectAt, sketchIdAt, sketchRanges } from '@src/lib/sketch/sceneGraph'
 import { sketchIdIn, sketchPlaneSource } from '@src/lib/sketch/sketchPlane'
 import { planDrag } from '@src/lib/sketch/drag'
+import { buildRectangle } from '@src/lib/sketch/rectangle'
 import {
   type DraftAction,
   type DraftState,
@@ -187,7 +188,7 @@ export function createSketchSession(
    * deliberately does not rebuild the model. The rebuild happens once, on the
    * way out.
    */
-  const write = (outcome: SketchOutcome) => {
+  const write = (outcome: Pick<SketchOutcome, 'text'>) => {
     const target = buffer()
     if (!target || !outcome.text) return
 
@@ -354,6 +355,59 @@ export function createSketchSession(
         // Same as a point move: a preview is thrown away on the next one, so
         // writing its text would churn the document once per pointer event.
         if (action.commit) write(outcome)
+        return
+      }
+
+      case 'rectangle': {
+        /*
+         * A dozen calls, in order, and only then a state.
+         *
+         * The constraints name the points the lines ended up with, so they
+         * cannot be written until the lines have answered — which is why this is
+         * one action the session runs rather than a list the tool emits.
+         */
+        const built = await buildRectangle(
+          api,
+          session.sketchId,
+          action.origin,
+          action.mode,
+          units()
+        )
+        if (!built) {
+          error.value = 'That rectangle could not be drawn.'
+          return
+        }
+
+        // One edit for the whole rectangle: every call answered with the whole
+        // file, and the last one contains all twelve.
+        write(built.outcome)
+
+        /*
+         * Abandoned while it was being written.
+         *
+         * A dozen round trips is long enough for somebody to press Escape or put
+         * the tool down, and the discard that ran then had nothing to delete —
+         * the rectangle did not exist yet. So it is taken away here instead,
+         * rather than left in the sketch with a state pointing at it.
+         *
+         * The state is the test rather than a token captured before the build,
+         * because this runs on the action queue: by the time it starts, an
+         * abandon has already been and gone.
+         */
+        if (draft.peek().kind !== 'pending') {
+          await api.deleteObjects(session.sketchId, {
+            segmentIds: built.draft.segmentIds,
+            constraintIds: built.draft.constraintIds,
+          })
+          return
+        }
+
+        draft.value = {
+          kind: 'shaping',
+          targets: built.draft.lineIds,
+          points: [action.origin],
+          segmentIds: built.draft.segmentIds,
+        }
         return
       }
 

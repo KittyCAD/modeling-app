@@ -199,6 +199,10 @@ const setup = (
       return (await (options.addSegment?.(calls) ??
         Promise.resolve(drawnOutcome()))) as never
     }),
+    addConstraint: vi.fn(async () => {
+      calls.push('addConstraint')
+      return drawnOutcome() as never
+    }),
     editSegments: vi.fn(async () => {
       calls.push('editSegments')
       if (options.slowEdit) {
@@ -792,6 +796,72 @@ describe('the other tools', () => {
       }),
       { label: 'circle', checkpoint: true }
     )
+  })
+
+  it('builds a rectangle as four lines and eight constraints', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('cornerRectangle')
+
+    app.session.place({ x: 0, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addConstraint).toHaveBeenCalledTimes(8)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledTimes(4)
+    // A rectangle is four lines that are *described* as a rectangle; written
+    // any other way the first drag would prove it is not one.
+    expect(
+      vi
+        .mocked(app.frontend.addConstraint)
+        .mock.calls.map((call) => call[1].type)
+    ).toEqual([
+      'Coincident',
+      'Coincident',
+      'Coincident',
+      'Coincident',
+      'Parallel',
+      'Parallel',
+      'Perpendicular',
+      'Horizontal',
+    ])
+    expect(app.session.draft.value).toMatchObject({ kind: 'shaping' })
+  })
+
+  it('drags the rectangle out by respecifying all four sides', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('cornerRectangle')
+    app.session.place({ x: 0, y: 0 })
+    await vi.waitFor(() => expect(app.session.draft.value.kind).toBe('shaping'))
+
+    app.session.moveTo({ x: 10, y: 5 })
+    await vi.waitFor(() =>
+      expect(app.frontend.editSegments).toHaveBeenCalledTimes(1)
+    )
+
+    const [, edits] = vi.mocked(app.frontend.editSegments).mock.calls[0] ?? []
+    expect(edits).toHaveLength(4)
+  })
+
+  it('takes a rectangle away again when it was abandoned while being built', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('cornerRectangle')
+
+    app.session.place({ x: 0, y: 0 })
+    // Escape, before any of the twelve calls has come back.
+    app.session.cancelTool()
+    await vi.waitFor(() =>
+      expect(app.frontend.deleteObjects).toHaveBeenCalled()
+    )
+
+    /*
+     * The discard that ran on Escape had nothing to delete — the rectangle did
+     * not exist yet — so without this it would be left in the sketch with a
+     * state pointing at it.
+     */
+    expect(app.session.draft.value).toEqual({ kind: 'idle' })
   })
 
   it('forgets a half-started circle when the tool changes', async () => {

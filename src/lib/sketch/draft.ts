@@ -7,6 +7,11 @@ import type {
 import type { SceneGraph } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import {
+  type RectangleMode,
+  cornerEdits,
+  cornersFor,
+} from '@src/lib/sketch/rectangle'
+import {
   midpoint,
   threePointArcCenter,
   threePointArcDirection,
@@ -74,12 +79,13 @@ export type DraftState =
    * sweep direction are both derived from all three, so every move respecifies
    * the segment rather than moving part of it.
    *
-   * `points` is the clicks that are already fixed — the start and the end — and
-   * the pointer supplies the rest.
+   * `points` is the clicks that are already fixed and the pointer supplies the
+   * rest; `targets` is what gets respecified, in a tool-known order — one arc, or
+   * a rectangle's four sides.
    */
   | {
       kind: 'shaping'
-      segmentId: ApiObjectId
+      targets: readonly ApiObjectId[]
       points: readonly PlanePoint[]
       segmentIds: readonly ApiObjectId[]
     }
@@ -177,6 +183,16 @@ export type DraftAction =
       edits: readonly ExistingSegmentCtor[]
       commit: boolean
     }
+  /**
+   * Build a rectangle: four lines and the eight constraints that describe them
+   * as one.
+   *
+   * A whole sequence of frontend calls rather than one, and it cannot be
+   * expressed as a list of smaller actions because each constraint names points
+   * that only the *previous* call's answer contains. So the action says what is
+   * wanted and the caller runs the sequence — see `buildRectangle`.
+   */
+  | { kind: 'rectangle'; mode: RectangleMode; origin: PlanePoint }
   /** Throw a draft away. */
   | { kind: 'discard'; segmentIds: readonly ApiObjectId[] }
 
@@ -375,20 +391,32 @@ export function place(
         }
       }
 
+      /*
+       * A rectangle is still being written. The click is dropped rather than
+       * starting a second one — twelve round trips is long enough for somebody
+       * to click again, and nothing good comes of the second.
+       */
+      if (
+        context.tool === 'cornerRectangle' ||
+        context.tool === 'centerRectangle'
+      ) {
+        return { state, actions: [] }
+      }
+
       // A tool that collects clicks but has no second step is a gap in the
       // table above rather than something to guess about.
       return { state: { kind: 'idle' }, actions: [] }
     }
 
     case 'shaping': {
-      const reshaped = shapeOf(state, at, context)
-      // Nothing the three points determine — they are in a line. The click is
-      // ignored rather than committing an arc that is not one.
-      if (!reshaped) return { state, actions: [] }
+      const edits = shapeOf(state, at, context)
+      // Nothing the points determine — an arc's three are in a line. The click
+      // is ignored rather than committing a shape that is not one.
+      if (edits.length === 0) return { state, actions: [] }
 
       return {
         state: { kind: 'idle' },
-        actions: [{ kind: 'reshape', edits: [reshaped], commit: true }],
+        actions: [{ kind: 'reshape', edits, commit: true }],
       }
     }
 
@@ -422,12 +450,34 @@ function shapeOf(
   state: Extract<DraftState, { kind: 'shaping' }>,
   at: PlanePoint,
   context: DraftContext
-): ExistingSegmentCtor | null {
-  const [start, end] = state.points
-  if (!start || !end || context.tool !== 'threePointArc') return null
+): readonly ExistingSegmentCtor[] {
+  const [first, second] = state.points
+  if (!first) return []
 
-  const ctor = arcThrough(start, end, at, context.units)
-  return ctor ? { id: state.segmentId, ctor } : null
+  if (context.tool === 'threePointArc') {
+    const [arcId] = state.targets
+    if (arcId === undefined || !second) return []
+
+    const ctor = arcThrough(first, second, at, context.units)
+    return ctor ? [{ id: arcId, ctor }] : []
+  }
+
+  if (
+    context.tool === 'cornerRectangle' ||
+    context.tool === 'centerRectangle'
+  ) {
+    return cornerEdits(
+      {
+        lineIds: state.targets,
+        segmentIds: state.segmentIds,
+        constraintIds: [],
+      },
+      cornersFor(context.tool, first, at),
+      context.units
+    )
+  }
+
+  return []
 }
 
 /**
@@ -487,6 +537,29 @@ function first(at: PlanePoint, context: DraftContext): DraftStep {
        */
       return { state: { kind: 'pending', points: [at] }, actions: [] }
 
+    case 'cornerRectangle':
+    case 'centerRectangle':
+      /*
+       * Written whole, straight away.
+       *
+       * Unlike the circle, a rectangle *can* exist from one click: four tiny
+       * lines with their eight constraints already on them. Which is the point
+       * of doing it now rather than at the second click — the shape is under the
+       * solver from the first frame, so what is dragged out is a rectangle that
+       * has been solved rather than a preview that becomes one.
+       */
+      return {
+        /*
+         * Pending while it is built, which takes a dozen round trips.
+         *
+         * Not idle: a second click during that window would start a second
+         * rectangle. This also gives the preview something to draw from, so the
+         * shape follows the pointer before the real one arrives.
+         */
+        state: { kind: 'pending', points: [at] },
+        actions: [{ kind: 'rectangle', mode: context.tool, origin: at }],
+      }
+
     case null:
       return { state: { kind: 'idle' }, actions: [] }
   }
@@ -513,14 +586,11 @@ export function moveTo(
       return { state, actions: [] }
 
     case 'shaping': {
-      const reshaped = shapeOf(state, at, context)
+      const edits = shapeOf(state, at, context)
       // Collinear: keep the last arc that made sense rather than flattening it.
-      if (!reshaped) return { state, actions: [] }
+      if (edits.length === 0) return { state, actions: [] }
 
-      return {
-        state,
-        actions: [{ kind: 'reshape', edits: [reshaped], commit: false }],
-      }
+      return { state, actions: [{ kind: 'reshape', edits, commit: false }] }
     }
 
     case 'drawing':
@@ -691,7 +761,7 @@ export function held(
     if (segment.type !== 'Arc') continue
     return {
       kind: 'shaping',
-      segmentId: id,
+      targets: [id],
       points: hold.points,
       segmentIds,
     }

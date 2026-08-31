@@ -1,5 +1,6 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type {
+  ApiConstraint,
   ApiObjectId,
   ExistingSegmentCtor,
   SceneGraph,
@@ -166,6 +167,23 @@ export interface KclFrontendService {
     previousEndPointId: ApiObjectId,
     segment: SegmentCtor,
     options?: { label?: string; checkpoint?: boolean }
+  ): Promise<SketchOutcome>
+
+  /**
+   * Add a constraint, and re-solve with it.
+   *
+   * The other half of what a sketch is. A constraint is an object in the graph
+   * like a segment, written into the KCL like a segment, and it is what makes a
+   * drawn shape a *described* one: the rectangle four lines make is only a
+   * rectangle because of the parallels and the perpendicular.
+   *
+   * kcl-lib refuses one it cannot satisfy, reporting it the way every other
+   * mutation reports a failed solve — in the outcome rather than by rejecting.
+   */
+  addConstraint(
+    sketchId: ApiObjectId,
+    constraint: ApiConstraint,
+    options?: { checkpoint?: boolean }
   ): Promise<SketchOutcome>
 
   /** Remove geometry — an abandoned draft, most often. */

@@ -1,6 +1,7 @@
 import type { PlanePoint } from '@src/lib/scene/projection'
 import type { DraftState } from '@src/lib/sketch/draft'
 import type { SketchShape } from '@src/lib/sketch/drawing'
+import { cornersFor } from '@src/lib/sketch/rectangle'
 import type { SketchToolId } from '@src/lib/sketch/tools'
 
 /**
@@ -73,6 +74,25 @@ export function previewShapes(
        * actually known, and it is what the second click will span.
        */
       return [{ ...base, kind: 'line', from: start, to: pointer }]
+
+    case 'cornerRectangle':
+    case 'centerRectangle': {
+      /*
+       * Drawn only while the real one is being written, which takes a dozen
+       * round trips — long enough that without this the pointer would drag
+       * nothing at all for a moment after the first click.
+       */
+      const at = cornersFor(tool, start, pointer)
+      const corners = [at.start1, at.start2, at.start3, at.start4, at.start1]
+
+      return corners.slice(1).map((to, index) => ({
+        ...base,
+        // One id for all four, which is fine: nothing looks a preview up.
+        kind: 'line' as const,
+        from: corners[index] as PlanePoint,
+        to,
+      }))
+    }
 
     default:
       return []
