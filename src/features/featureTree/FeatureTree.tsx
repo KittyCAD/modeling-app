@@ -10,7 +10,6 @@ import type { OperationTreeNode } from '@src/features/featureTree/operationTree'
 import {
   buildOperationTree,
   operationIcon,
-  operationKind,
   operationLabel,
 } from '@src/features/featureTree/operationTree'
 import {
@@ -28,7 +27,50 @@ import { sourceRangeToUtf16 } from '@src/lib/kcl/sourceRange'
 import { Fragment, type JSX } from 'preact'
 import { useRef, useState } from 'preact/hooks'
 import { slotAtY } from '@src/features/featureTree/rollbackSlot'
+import { addHide, removeHide } from '@src/features/featureTree/hideEdit'
+import {
+  type VisibilityState,
+  resolveVisibility,
+} from '@src/features/featureTree/visibility'
+import { bindingContaining, sketchBlockAt } from '@src/lib/kclStdlib/program'
 import './featureTree.css'
+
+/**
+ * The eye on a row that can be hidden.
+ *
+ * Only shown when the pointer is on the row — *unless the thing is hidden*, and
+ * that asymmetry is the whole design. An eye on every row would be a column of
+ * eyes competing with the names; a hidden object with no visible mark would be
+ * something missing from the model with nothing on screen saying why.
+ *
+ * Ported from the existing app, including that rule.
+ */
+function VisibilityToggle({
+  hidden,
+  label,
+  onToggle,
+}: {
+  hidden: boolean
+  label: string
+  onToggle: () => void
+}) {
+  return (
+    <button
+      type="button"
+      class="zds-feature-tree__visibility"
+      data-hidden={hidden ? 'true' : undefined}
+      aria-pressed={hidden}
+      aria-label={hidden ? `Show ${label}` : `Hide ${label}`}
+      onClick={(event) => {
+        // The row selects on click, and toggling visibility is not selecting.
+        event.stopPropagation()
+        onToggle()
+      }}
+    >
+      <Icon name={hidden ? 'eyeCrossedOut' : 'eyeOpen'} size="small" />
+    </button>
+  )
+}
 
 function FeatureNode({
   node,
@@ -38,6 +80,8 @@ function FeatureNode({
   edit,
   inactive = false,
   slot,
+  visibility,
+  toggleVisibility,
 }: {
   node: OperationTreeNode
   source: string
@@ -45,6 +89,9 @@ function FeatureNode({
   reveal: (node: OperationTreeNode) => void
   edit: (node: OperationTreeNode) => void
   inactive?: boolean
+  /** Whether this row can be hidden, and whether it is. */
+  visibility?: VisibilityState
+  toggleVisibility?: (node: OperationTreeNode) => void
   /**
    * Which gap in the list sits above this row, for measuring a drag.
    *
@@ -78,11 +125,15 @@ function FeatureNode({
       >
         {operationLabel(node.operation)}
       </span>
-      <span class="zds-feature-tree__kind">
-        {operationKind(node.operation)}
-      </span>
       {node.operation.type === 'StdLibCall' && node.operation.isError ? (
         <Icon name="error" size="small" label="Execution error" />
+      ) : null}
+      {visibility?.canToggle && toggleVisibility ? (
+        <VisibilityToggle
+          hidden={visibility.hidden}
+          label={operationLabel(node.operation)}
+          onToggle={() => toggleVisibility(node)}
+        />
       ) : null}
     </>
   )
@@ -188,7 +239,6 @@ function SourceFeatureNode({
         <span class="zds-feature-tree__label" title={node.label}>
           {node.label}
         </span>
-        <span class="zds-feature-tree__kind">{node.kind}</span>
       </button>
     </li>
   )
@@ -279,6 +329,18 @@ export function FeatureTree() {
   const modeling = useService(modelingOperationsService)
   const sessions = useService(projectSessionService)
   const tree = useComputed(() => buildOperationTree(scene.operations.value))
+
+  /**
+   * Every operation in the run, flat, and the artifacts it produced.
+   *
+   * Flat because a `hide()` call is a top-level statement while the thing it
+   * hides may be nested in a module — so "is this hidden" has to be asked of the
+   * whole program rather than of a row's own subtree.
+   */
+  const allOperations = useComputed(() =>
+    Object.values(scene.operations.value.map ?? {}).flat()
+  )
+  const artifacts = useComputed(() => scene.artifacts.value)
   const selectedOffset = useComputed(
     () =>
       sessions.current.value?.executingBuffer.value?.state.value.selection.main
@@ -425,6 +487,51 @@ export function FeatureTree() {
     : actualSlot
 
   /**
+   * Hide or show a row, by editing the file.
+   *
+   * Visibility lives in the KCL: hiding writes `hide(sketch001)` and showing
+   * deletes that call. So this is an ordinary semantic edit — which is why it
+   * needs a *name* rather than an artifact id, and why a row whose object the
+   * program never bound cannot be toggled. `hide` takes a value, and an
+   * unnamed value cannot be written down.
+   *
+   * Refuses when the buffer has moved on from the program the tree was built
+   * from, for the same reason the rollback bar does: the ranges it would edit
+   * describe text that may no longer be there.
+   */
+  const toggleVisibility = (
+    node: OperationTreeNode,
+    visibility: VisibilityState
+  ) => {
+    const session = sessions.current.peek()
+    const buffer = session?.executingBuffer.peek()
+    if (!buffer || buffer.text.peek() !== program.source) return
+
+    const [from] = sourceRangeToUtf16(
+      program.source,
+      node.operation.sourceRange
+    )
+    const name =
+      sketchBlockAt(program.ast, from)?.name ??
+      bindingContaining(program.ast, from)?.name
+    if (!name) return
+
+    const changes = visibility.hideOperation
+      ? removeHide(program.source, visibility.hideOperation, name)
+      : addHide(program.source, name)
+    if (changes.length === 0) return
+
+    buffer.dispatch({
+      changes: changes.map((change) => ({
+        from: change.from,
+        to: change.to,
+        insert: change.insert,
+      })),
+      annotations: bufferOrigin.of('semantic'),
+    })
+  }
+
+  /**
    * Commit the bar to a slot, by rewriting the file.
    *
    * Refuses when the buffer has moved on from the program the tree was built
@@ -558,6 +665,21 @@ export function FeatureTree() {
                 edit={edit}
                 inactive={index >= displayedSlot}
                 slot={index}
+                visibility={resolveVisibility({
+                  operation: entry.node.operation,
+                  operations: allOperations.value,
+                  artifacts: artifacts.value,
+                })}
+                toggleVisibility={(node) =>
+                  toggleVisibility(
+                    node,
+                    resolveVisibility({
+                      operation: node.operation,
+                      operations: allOperations.value,
+                      artifacts: artifacts.value,
+                    })
+                  )
+                }
               />
             ) : (
               <SourceFeatureNode

@@ -167,21 +167,6 @@ export function operationLabel(operation: Operation): string {
   }
 }
 
-export function operationKind(operation: Operation): string {
-  switch (operation.type) {
-    case 'StdLibCall':
-      return 'Operation'
-    case 'VariableDeclaration':
-      return 'Parameter'
-    case 'GroupBegin':
-      return operation.group.type === 'SketchBlock' ? 'Sketch' : 'Function'
-    case 'ModuleInstance':
-      return 'Module'
-    case 'GroupEnd':
-      return 'Group'
-  }
-}
-
 export function operationIcon(operation: Operation): IconName {
   switch (operation.type) {
     case 'StdLibCall': {

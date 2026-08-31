@@ -111,11 +111,52 @@
   white-space: nowrap;
 }
 
-.zds-feature-tree__kind {
+/*
+ * The eye, shown on hover — except when the thing is hidden.
+ *
+ * That asymmetry is the design, and it is the existing app's: an eye on every row
+ * is a column of eyes competing with the names, and a hidden object with no
+ * visible mark is something missing from the model with nothing on screen saying
+ * why. So visible things offer the control only when you are there to use it, and
+ * hidden things always admit to it.
+ */
+.zds-feature-tree__visibility {
+  display: grid;
   flex: none;
+  place-items: center;
+  inline-size: var(--zds-size-icon-md);
+  block-size: var(--zds-size-icon-md);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--zds-radius-content);
+  background: transparent;
   color: var(--zds-text-tertiary);
-  font-family: var(--zds-font-mono);
-  font-size: var(--zds-font-size-mini);
+  cursor: default;
+  visibility: hidden;
+}
+
+.zds-feature-tree__row:hover .zds-feature-tree__visibility,
+.zds-feature-tree__row:focus-visible .zds-feature-tree__visibility,
+.zds-feature-tree__visibility:focus-visible,
+.zds-feature-tree__visibility[data-hidden="true"] {
+  visibility: visible;
+}
+
+.zds-feature-tree__visibility:hover {
+  background: var(--zds-surface-active);
+  color: var(--zds-text-primary);
+}
+
+/*
+ * A hidden row reads as absent, because it is: the geometry is not in the scene.
+ * Distinct from the rollback fade, which means "not executed yet" — these can be
+ * true at once and mean different things.
+ */
+.zds-feature-tree__row:has(.zds-feature-tree__visibility[data-hidden="true"])
+  .zds-feature-tree__label {
+  color: var(--zds-text-tertiary);
+  font-style: italic;
 }
 
 .zds-feature-tree__empty {
