@@ -15,6 +15,8 @@ import type {
   Turn,
 } from '@src/contracts/zookeeper'
 import { zookeeperService } from '@src/contracts/zookeeper'
+import type { KeybindingService } from '@src/contracts/keybindings'
+import { keybindingService } from '@src/contracts/keybindings'
 import {
   ZookeeperHeaderActions,
   ZookeeperPanel,
@@ -68,6 +70,15 @@ function mount(options: {
     defineRegistryItem({
       id: 'test.zookeeper',
       providesServices: [
+        /*
+         * Just the scope handling the panel reaches for. The bindings themselves
+         * are declared by the feature and tested there; what this has to satisfy
+         * is that the panel can hold a scope while it has focus.
+         */
+        provideService(keybindingService, {
+          focusScope: () => ({ onFocus: () => {}, onBlur: () => {} }),
+          removeScope: () => {},
+        } as unknown as KeybindingService),
         provideService(zookeeperService, {
           conversations: computed(() => conversations),
           active: computed(() => activeId.value),

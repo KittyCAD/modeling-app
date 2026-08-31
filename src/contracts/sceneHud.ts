@@ -1,4 +1,8 @@
-import { defineContract, defineValueSpec } from '@kittycad/registry'
+import {
+  defineContract,
+  defineService,
+  defineValueSpec,
+} from '@kittycad/registry'
 import type { IconName } from '@kittycad/ui-kit'
 import type { ReadonlySignal } from '@preact/signals'
 import { byOrder, dedupeById } from '@src/lib/registryOrdering'
@@ -28,7 +32,45 @@ export interface SceneHudSection {
   render: () => ComponentChildren
 }
 
+/**
+ * The outline's fold state, reachable from outside the component that draws it.
+ *
+ * A service rather than component state because a keybinding has to be able to
+ * fold a section, and a command cannot reach into a `useState`. The HUD reads
+ * the same signals it writes, so the key and the chevron are the one act.
+ *
+ * A feature contributing a section is expected to contribute its own toggle
+ * command and binding alongside it, the way `featureTree` does — the section is
+ * the unit of contribution, so its keyboard is too, and nothing here has to
+ * enumerate sections it does not know about.
+ */
+export interface SceneHudService {
+  /** Whether the outline is folded to its edge. */
+  readonly collapsed: ReadonlySignal<boolean>
+  toggleCollapsed(): void
+  setCollapsed(value: boolean): void
+  /**
+   * Whether one section is unfolded.
+   *
+   * `initiallyOpen` seeds the answer the first time a section is asked about,
+   * which is how `defaultCollapsed` reaches this without the service having to
+   * read the sections value spec.
+   */
+  sectionOpen(
+    sectionId: string,
+    initiallyOpen?: boolean
+  ): ReadonlySignal<boolean>
+  /**
+   * Fold or unfold a section, unfolding the whole outline if it was collapsed.
+   *
+   * The second part matters for a keybinding: toggling a section while the
+   * outline is folded to its edge would otherwise look like the key did nothing.
+   */
+  toggleSection(sectionId: string): void
+}
+
 export const sceneHudContract = defineContract({
+  sceneHudService: defineService<SceneHudService>('scene.hud.service'),
   sceneHudSectionsValueSpec: defineValueSpec<
     SceneHudSection,
     SceneHudSection[]
@@ -39,4 +81,4 @@ export const sceneHudContract = defineContract({
   }),
 })
 
-export const { sceneHudSectionsValueSpec } = sceneHudContract
+export const { sceneHudService, sceneHudSectionsValueSpec } = sceneHudContract

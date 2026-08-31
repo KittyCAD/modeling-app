@@ -8,7 +8,11 @@ import { computed, effect } from '@preact/signals'
 import { engineConnectionService } from '@src/contracts/engine'
 import { motionService } from '@src/contracts/motion'
 import { streamParamsValueSpec } from '@src/contracts/engineScene'
+import { commandsValueSpec } from '@src/contracts/commands'
+import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import { cameraDriverService, sceneItemsValueSpec } from '@src/contracts/scene'
+import { sceneHudService } from '@src/contracts/sceneHud'
+import { createSceneHudService } from '@src/features/engineScene/createSceneHudService'
 import { sceneProjectionService } from '@src/contracts/sceneProjection'
 import { scenePickerService } from '@src/contracts/selection'
 import { settingsService, settingsValueSpec } from '@src/contracts/settings'
@@ -96,6 +100,13 @@ export default defineRegistryItemFactory((ctx) => {
    */
   const picker = createEngineScenePicker(engine)
 
+  /*
+   * Pure signal state, so it can be built here: nothing about the outline's
+   * fold state needs another service, which is what keeps it out of the lazy
+   * dance the rest of this factory has to do.
+   */
+  const hud = createSceneHudService()
+
   /**
    * Where things are on screen, for whoever draws over the scene.
    *
@@ -159,6 +170,7 @@ export default defineRegistryItemFactory((ctx) => {
       },
       providesServices: [
         provideService(cameraDriverService, cameraDriver),
+        provideService(sceneHudService, hud),
         provideService(scenePickerService, picker),
         provideService(sceneProjectionService, projection),
       ],
@@ -189,6 +201,31 @@ export default defineRegistryItemFactory((ctx) => {
           zone: 'start',
           order: -100,
           render: () => <SceneHud />,
+        }),
+
+        /*
+         * Folding the outline away, from the keyboard.
+         *
+         * `Mod+5` continues the series the rails already use — 1 code, 2 info,
+         * 3 Zookeeper, 4 history — because from the keyboard's point of view
+         * this is the same act on the same kind of thing, whatever the outline's
+         * implementation happens to be.
+         *
+         * Sections get their own commands from whoever contributes them; see
+         * `SceneHudService`. Nothing here enumerates them.
+         */
+        provide(commandsValueSpec, {
+          id: 'scene.outline.toggle',
+          title: 'Toggle scene outline',
+          category: 'View',
+          icon: 'sidebarLeft',
+          shortcut: '⌘5',
+          active: computed(() => !hud.collapsed.value),
+          run: () => hud.toggleCollapsed(),
+        }),
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Mod+5'],
+          commandId: 'scene.outline.toggle',
         }),
 
         /**

@@ -8,8 +8,12 @@ import { signal } from '@preact/signals'
 import type { LayoutService } from '@src/contracts/layout'
 import { layoutService } from '@src/contracts/layout'
 import { AppProvider } from '@src/app/context'
-import { sceneHudSectionsValueSpec } from '@src/contracts/sceneHud'
+import {
+  sceneHudSectionsValueSpec,
+  sceneHudService,
+} from '@src/contracts/sceneHud'
 import { SceneHud } from '@src/features/engineScene/SceneHud'
+import { createSceneHudService } from '@src/features/engineScene/createSceneHudService'
 import { render } from 'preact'
 import { act } from 'preact/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -29,6 +33,10 @@ describe('scene outline HUD', () => {
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
+        // The outline's fold state lives in a service now.
+        providesServices: [
+          provideService(sceneHudService, createSceneHudService()),
+        ],
         provides: [
           provide(sceneHudSectionsValueSpec, {
             id: 'bodies',
@@ -85,6 +93,10 @@ describe('scene outline HUD', () => {
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
+        // The outline's fold state lives in a service now.
+        providesServices: [
+          provideService(sceneHudService, createSceneHudService()),
+        ],
         provides: [
           provide(sceneHudSectionsValueSpec, {
             id: 'features',
@@ -127,7 +139,9 @@ describe('resizing the outline', () => {
   /** A layout service with just the extent facility the HUD uses. */
   const withLayout = (extent = signal(208)) =>
     defineRegistryItem({
+      // The outline's fold state lives in a service now.
       providesServices: [
+        provideService(sceneHudService, createSceneHudService()),
         provideService(layoutService, {
           extentFor: () => extent,
         } as unknown as LayoutService),

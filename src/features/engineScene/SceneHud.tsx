@@ -1,11 +1,13 @@
 import { Button, Icon } from '@kittycad/ui-kit'
-import { useOptionalService, useValueSpec } from '@src/app/context'
+import { useOptionalService, useService, useValueSpec } from '@src/app/context'
 import { layoutService } from '@src/contracts/layout'
-import type { SceneHudSection } from '@src/contracts/sceneHud'
-import { sceneHudSectionsValueSpec } from '@src/contracts/sceneHud'
+import type { SceneHudSection, SceneHudService } from '@src/contracts/sceneHud'
+import {
+  sceneHudSectionsValueSpec,
+  sceneHudService,
+} from '@src/contracts/sceneHud'
 import { inlineResizeHandlers } from '@src/features/layout/inlineResize'
 import { signal } from '@preact/signals'
-import { useState } from 'preact/hooks'
 import './sceneHud.css'
 
 /**
@@ -43,8 +45,20 @@ const WIDTH_NODE = 'scene.outline'
  */
 const fallbackWidth = signal(DEFAULT_WIDTH)
 
-function HudSection({ section }: { section: SceneHudSection }) {
-  const [open, setOpen] = useState(!section.defaultCollapsed)
+function HudSection({
+  section,
+  hud,
+}: {
+  section: SceneHudSection
+  hud: SceneHudService
+}) {
+  /*
+   * Read from the service, not from local state, so the chevron and the
+   * section's keybinding move the same value. `defaultCollapsed` seeds it the
+   * first time this section is mentioned and is ignored afterwards, which is
+   * what makes the fold survive a remount.
+   */
+  const open = hud.sectionOpen(section.id, !section.defaultCollapsed).value
 
   return (
     <section
@@ -57,7 +71,7 @@ function HudSection({ section }: { section: SceneHudSection }) {
           type="button"
           class="zds-scene-hud__toggle"
           aria-expanded={open}
-          onClick={() => setOpen((current) => !current)}
+          onClick={() => hud.toggleSection(section.id)}
         >
           <Icon name="chevronRight" size="small" />
           {section.icon ? <Icon name={section.icon} size="small" /> : null}
@@ -85,8 +99,9 @@ function HudSection({ section }: { section: SceneHudSection }) {
 export function SceneHud() {
   const sections = useValueSpec(sceneHudSectionsValueSpec)
   const layout = useOptionalService(layoutService)
+  const hud = useService(sceneHudService)
   const width = layout?.extentFor(WIDTH_NODE, DEFAULT_WIDTH) ?? fallbackWidth
-  const [collapsed, setCollapsed] = useState(false)
+  const collapsed = hud.collapsed.value
 
   /**
    * Drag the edge, through the handlers the rails already use.
@@ -143,13 +158,13 @@ export function SceneHud() {
           icon={collapsed ? 'chevronRight' : 'chevronLeft'}
           iconOnly
           label={collapsed ? 'Expand scene outline' : 'Collapse scene outline'}
-          onClick={() => setCollapsed((current) => !current)}
+          onClick={() => hud.toggleCollapsed()}
           aria-expanded={!collapsed}
         />
         {!collapsed ? (
           <div class="zds-scene-hud__contents">
             {visible.map((section) => (
-              <HudSection key={section.id} section={section} />
+              <HudSection key={section.id} section={section} hud={hud} />
             ))}
           </div>
         ) : null}

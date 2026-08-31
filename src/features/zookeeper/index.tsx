@@ -15,7 +15,10 @@ import {
 } from '@src/contracts/credits'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
-import { keybindingsValueSpec } from '@src/contracts/keybindings'
+import {
+  keybindingScopesValueSpec,
+  keybindingsValueSpec,
+} from '@src/contracts/keybindings'
 import { layoutAreasValueSpec, layoutService } from '@src/contracts/layout'
 import { statusBarItemsValueSpec } from '@src/contracts/shell'
 import {
@@ -23,7 +26,11 @@ import {
   projectHistoryService,
 } from '@src/contracts/projectHistory'
 import { projectSessionService } from '@src/contracts/projectSession'
-import { ZOOKEEPER_AREA_ID, zookeeperService } from '@src/contracts/zookeeper'
+import {
+  ZOOKEEPER_AREA_ID,
+  ZOOKEEPER_SCOPE,
+  zookeeperService,
+} from '@src/contracts/zookeeper'
 import {
   ZookeeperHeaderActions,
   ZookeeperPanel,
@@ -33,6 +40,9 @@ import { createZookeeperService } from '@src/features/zookeeper/createZookeeperS
 import { zookeeperServiceUrl } from '@src/features/zookeeper/serviceUrl'
 
 export const ZOOKEEPER_PLUGIN_ID = 'zookeeper'
+
+/** Tab positions that get a digit chord. `Alt+0` is home, so these start at 1. */
+const TAB_POSITIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const
 
 /**
  * A project's name, from the path a conversation was stamped with.
@@ -131,6 +141,38 @@ const zookeeperFeature = defineRegistryItemFactory((ctx) => {
       .reverse()
       .find((each) => each.paths.length > 0)
     return turn === undefined ? null : { conversation, turnId: turn.id }
+  }
+
+  /**
+   * The conversations in tab order.
+   *
+   * Insertion order, which is what the tab strip numbers by, so "conversation 2"
+   * means the same thing to the keyboard as it does on screen.
+   */
+  const ordered = () => [...zookeeper().conversations.value.keys()]
+
+  /** Step through the tabs, treating home as the position before the first. */
+  const step = (delta: number) => {
+    const ids = ordered()
+    if (ids.length === 0) return
+
+    const current = zookeeper().active.value
+    // Home counts as -1, so `next` from home lands on the first conversation
+    // and `previous` from the first lands back on home.
+    const index = current === null ? -1 : ids.indexOf(current)
+    const target = index + delta
+
+    if (target < 0) {
+      zookeeper().activate(null)
+      return
+    }
+    if (target >= ids.length) {
+      // Wrap to home rather than sticking: a strip you cannot leave with the
+      // same key you entered it with is a strip with a dead end.
+      zookeeper().activate(null)
+      return
+    }
+    zookeeper().activate(ids[target] ?? null)
   }
 
   const openPanelAndConversation = () => {
@@ -269,6 +311,106 @@ const zookeeperFeature = defineRegistryItemFactory((ctx) => {
           keystrokes: ['Mod+3'],
           commandId: 'zookeeper.toggle',
         }),
+
+        /*
+         * Starting a conversation, from anywhere.
+         *
+         * `⇧⌘3` against the `⌘3` that shows the panel, the same pairing the code
+         * panel and its file tree use — shift means "the thing inside", and here
+         * the thing inside is a new collaborator.
+         */
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Mod+Shift+3'],
+          commandId: 'zookeeper.newConversation',
+        }),
+
+        /*
+         * The panel's own scope.
+         *
+         * Applied by the panel on focus. Everything below is scoped to it, so a
+         * digit chord means "this tab" only while the tabs are what you are
+         * looking at — and means nothing at all when they are not.
+         */
+        provide(keybindingScopesValueSpec, {
+          id: ZOOKEEPER_SCOPE,
+          displayName: 'Zookeeper focused',
+          priority: 500,
+        }),
+
+        provide(commandsValueSpec, {
+          id: 'zookeeper.nextConversation',
+          title: 'Next Zookeeper conversation',
+          category: 'Zookeeper',
+          icon: 'chevronRight',
+          enabled: computed(() => zookeeper().conversations.value.size > 0),
+          run: () => step(1),
+        }),
+        provide(commandsValueSpec, {
+          id: 'zookeeper.previousConversation',
+          title: 'Previous Zookeeper conversation',
+          category: 'Zookeeper',
+          icon: 'chevronLeft',
+          enabled: computed(() => zookeeper().conversations.value.size > 0),
+          run: () => step(-1),
+        }),
+        provide(commandsValueSpec, {
+          id: 'zookeeper.showHome',
+          title: 'Show Zookeeper home',
+          category: 'Zookeeper',
+          icon: 'home',
+          active: computed(() => zookeeper().active.value === null),
+          run: () => zookeeper().activate(null),
+        }),
+
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Alt+ArrowRight'],
+          commandId: 'zookeeper.nextConversation',
+          scopes: [ZOOKEEPER_SCOPE],
+        }),
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Alt+ArrowLeft'],
+          commandId: 'zookeeper.previousConversation',
+          scopes: [ZOOKEEPER_SCOPE],
+        }),
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Alt+0'],
+          commandId: 'zookeeper.showHome',
+          scopes: [ZOOKEEPER_SCOPE],
+        }),
+
+        /*
+         * One command per tab position, nine of them.
+         *
+         * Positions rather than conversation ids, because a binding is stored
+         * against a command id and a conversation's id does not outlive the
+         * session — a keymap full of uuids would rebind itself every reload.
+         * Nine because that is how many single digits there are, and a tenth tab
+         * is reachable with the arrows.
+         */
+        ...TAB_POSITIONS.flatMap((position) => [
+          provide(commandsValueSpec, {
+            id: `zookeeper.selectConversation.${position}`,
+            title: `Show Zookeeper conversation ${position}`,
+            category: 'Zookeeper',
+            icon: 'elephant' as const,
+            enabled: computed(
+              () => zookeeper().conversations.value.size >= position
+            ),
+            active: computed(() => {
+              const id = ordered()[position - 1]
+              return id !== undefined && zookeeper().active.value === id
+            }),
+            run: () => {
+              const id = ordered()[position - 1]
+              if (id !== undefined) zookeeper().activate(id)
+            },
+          }),
+          provide(keybindingsValueSpec, {
+            keystrokes: [`Alt+${position}`],
+            commandId: `zookeeper.selectConversation.${position}`,
+            scopes: [ZOOKEEPER_SCOPE],
+          }),
+        ]),
       ],
     }),
   }

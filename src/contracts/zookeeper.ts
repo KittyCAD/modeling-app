@@ -17,6 +17,21 @@ import type { ConflictReason } from '@src/lib/collab/rebase'
  */
 export const ZOOKEEPER_AREA_ID = 'project.zookeeper'
 
+/**
+ * Active while the panel has focus.
+ *
+ * Here beside the area id, and for the same reason: it is named in two places
+ * that must agree — the feature declares it and contributes bindings against it,
+ * the panel applies it on focus — and a constant shared between a feature and
+ * its own component still reads better from one place than from an import chain
+ * that runs through the feature's entry point.
+ *
+ * Tab keys are scoped rather than global because they are only meaningful with
+ * conversations on screen, and because unscoped digit chords would compete with
+ * the panel toggles the rails already own.
+ */
+export const ZOOKEEPER_SCOPE = 'zookeeper.focused'
+
 export type ConversationId = string
 
 /** A change that could not be applied, and what it was going to be. */

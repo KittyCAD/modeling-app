@@ -1,4 +1,6 @@
 import { useComputed, useSignal } from '@preact/signals'
+import type { ComponentChildren } from 'preact'
+import { useEffect } from 'preact/hooks'
 import { Button, EmptyState, Icon, Spinner } from '@kittycad/ui-kit'
 import { useService } from '@src/app/context'
 import type {
@@ -6,7 +8,8 @@ import type {
   ReasoningEntry,
   Turn,
 } from '@src/contracts/zookeeper'
-import { zookeeperService } from '@src/contracts/zookeeper'
+import { ZOOKEEPER_SCOPE, zookeeperService } from '@src/contracts/zookeeper'
+import { keybindingService } from '@src/contracts/keybindings'
 import {
   describeReasoning,
   reasoningHeadline,
@@ -99,7 +102,7 @@ export function ZookeeperPanel() {
   }
 
   return (
-    <div class="zds-zoo">
+    <PanelRoot>
       <ConversationTabs />
       {active.value === null ? (
         <HomeView />
@@ -112,6 +115,37 @@ export function ZookeeperPanel() {
         */
         <ConversationView key={active.value.id} conversation={active.value} />
       )}
+    </PanelRoot>
+  )
+}
+
+/**
+ * The panel, holding its keybinding scope for as long as it has focus.
+ *
+ * `focusin`/`focusout` rather than `focus`/`blur`, because only those bubble —
+ * focus lands on a tab button or the composer, never on this element. Moving
+ * between two of them fires both, which is harmless: the scope is a set, so
+ * removing and re-adding it in one tick is invisible to a keystroke.
+ *
+ * The composer is a textarea inside this scope, which is fine: the scope does
+ * not declare `textEntry`, but every binding it carries is a chord with Alt, and
+ * an unmodified key is never claimed here.
+ */
+function PanelRoot({ children }: { children: ComponentChildren }) {
+  const keys = useService(keybindingService)
+  const scope = keys.focusScope(ZOOKEEPER_SCOPE)
+
+  /*
+   * Drop the scope on the way out. Unmounting a focused element does not
+   * reliably fire `focusout`, and toggling the panel shut with the composer
+   * focused does exactly that — which would leave the tab chords live with no
+   * tabs on screen to explain them.
+   */
+  useEffect(() => () => keys.removeScope(ZOOKEEPER_SCOPE), [keys])
+
+  return (
+    <div class="zds-zoo" onFocusIn={scope.onFocus} onFocusOut={scope.onBlur}>
+      {children}
     </div>
   )
 }

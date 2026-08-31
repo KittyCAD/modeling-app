@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createApp } from '@src/app/createApp'
+import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import {
   statusBarItemsValueSpec,
   topBarItemsValueSpec,
@@ -56,6 +57,38 @@ describe('the application graph', () => {
       // A guard on the guard: if discovery silently found nothing, the assertion
       // above would pass against a graph with no features in it at all.
       expect(app.registry.get(topBarItemsValueSpec).length).toBeGreaterThan(0)
+    } finally {
+      await settle()
+      app.dispose()
+    }
+  })
+
+  /*
+   * Two bindings on the same keys in the same scope is a silent bug: one of them
+   * simply never fires, and which one depends on contribution order. Worth an
+   * app-wide assertion rather than care, because the set only grows.
+   */
+  it('binds no keystroke twice in the same scope', async () => {
+    const app = createApp()
+
+    try {
+      const seen = new Map<string, string>()
+      const clashes: string[] = []
+
+      for (const binding of app.registry.get(keybindingsValueSpec)) {
+        const chords = binding.keystrokes.join(' ')
+        for (const scope of binding.scopes ?? ['base']) {
+          const key = `${scope}::${chords}`
+          const owner = seen.get(key)
+          if (owner !== undefined && owner !== binding.commandId) {
+            clashes.push(`${key} → ${owner} and ${binding.commandId}`)
+            continue
+          }
+          seen.set(key, binding.commandId)
+        }
+      }
+
+      expect(clashes).toEqual([])
     } finally {
       await settle()
       app.dispose()
