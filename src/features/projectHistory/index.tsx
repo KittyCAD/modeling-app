@@ -6,12 +6,19 @@ import {
 } from '@kittycad/registry'
 import { computed, effect } from '@preact/signals'
 import { commandsValueSpec } from '@src/contracts/commands'
+import { keybindingsValueSpec } from '@src/contracts/keybindings'
+import { layoutAreasValueSpec, layoutService } from '@src/contracts/layout'
 import {
+  HISTORY_AREA_ID,
   changeHistoryService,
   projectHistoryService,
 } from '@src/contracts/projectHistory'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { createProjectActionHistory } from '@src/features/projectHistory/createProjectActionHistory'
+import {
+  HistoryPanel,
+  HistoryPanelActions,
+} from '@src/features/projectHistory/HistoryPanel'
 import { createChangeHistory } from '@src/lib/collab/changeHistory'
 
 /**
@@ -82,6 +89,37 @@ export default defineRegistryItemFactory((ctx) => {
         provideService(projectHistoryService, history),
       ],
       provides: [
+        /**
+         * The log, drawn.
+         *
+         * A panel rather than a dialog because it is a thing to *work beside*:
+         * the case it exists for is several writers changing one project at once,
+         * and checking what just happened should not mean covering the model.
+         */
+        provide(layoutAreasValueSpec, {
+          id: HISTORY_AREA_ID,
+          title: 'History',
+          icon: 'stopwatch',
+          shortcut: '⌘4',
+          render: () => <HistoryPanel />,
+          headerActions: () => <HistoryPanelActions />,
+        }),
+
+        provide(commandsValueSpec, {
+          id: 'projectHistory.toggle',
+          title: 'Toggle History',
+          category: 'View',
+          icon: 'stopwatch',
+          shortcut: '⌘4',
+          run: () =>
+            ctx.services.get(layoutService).toggleArea(HISTORY_AREA_ID),
+        }),
+
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Mod+4'],
+          commandId: 'projectHistory.toggle',
+        }),
+
         provide(commandsValueSpec, {
           id: 'project.undoAction',
           /*
