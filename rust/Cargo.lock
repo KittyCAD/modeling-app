@@ -2347,6 +2347,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-engine-codec"
+version = "0.2.181"
+dependencies = [
+ "kittycad-modeling-cmds",
+ "rmp-serde",
+ "serde_json",
+]
+
+[[package]]
 name = "kcl-error"
 version = "0.2.181"
 dependencies = [
@@ -2446,6 +2455,7 @@ dependencies = [
  "kcl-api",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
+ "kcl-engine-codec",
  "kcl-error",
  "kcl-syntax",
  "kittycad",
@@ -2465,7 +2475,6 @@ dependencies = [
  "regex",
  "reqwest",
  "rgba_simple",
- "rmp-serde",
  "schemars 0.8.22",
  "serde",
  "serde_json",
