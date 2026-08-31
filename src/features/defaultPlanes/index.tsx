@@ -1,13 +1,21 @@
 import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
+  provide,
   provideService,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
+import { commandsValueSpec } from '@src/contracts/commands'
 import { defaultPlanesService } from '@src/contracts/defaultPlanes'
 import { engineConnectionService } from '@src/contracts/engine'
+import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import { kclSceneService } from '@src/contracts/kclScene'
+import {
+  sceneHudSectionsValueSpec,
+  sceneHudService,
+} from '@src/contracts/sceneHud'
 import { createDefaultPlanes } from '@src/features/defaultPlanes/createDefaultPlanes'
+import { PlanesSection } from '@src/features/defaultPlanes/PlanesSection'
 import { hiddenArtifactIds } from '@src/features/featureTree/visibility'
 import { sceneIsEmpty } from '@src/lib/kcl/sceneContents'
 
@@ -25,7 +33,11 @@ import { sceneIsEmpty } from '@src/lib/kcl/sceneContents'
  * flag mirrored in machine context, mutated from five actions, and driven by
  * debounced events into a nested state machine.
  */
+/** Shared between the contribution and the command that folds it. */
+const SECTION_ID = 'scene.planes'
+
 export default defineRegistryItemFactory((ctx) => {
+  const hud = () => ctx.services.get(sceneHudService)
   // Lazy, never in the factory body: resolving a service while the graph is
   // being flattened is not allowed.
   const scene = () => ctx.services.optional(kclSceneService)
@@ -87,6 +99,36 @@ export default defineRegistryItemFactory((ctx) => {
         planes.dispose()
       },
       providesServices: [provideService(defaultPlanesService, planes)],
+      provides: [
+        /**
+         * Above the feature tree, at a negative order.
+         *
+         * Because the planes are what the scene is *before* it has features —
+         * and because on an empty project they are the only rows the outline
+         * has, which a section underneath an empty list could not be.
+         */
+        provide(sceneHudSectionsValueSpec, {
+          id: SECTION_ID,
+          title: 'Planes',
+          icon: 'plane',
+          order: -10,
+          render: () => <PlanesSection />,
+        }),
+
+        provide(commandsValueSpec, {
+          id: 'defaultPlanes.toggle',
+          title: 'Toggle planes outline',
+          category: 'View',
+          icon: 'plane',
+          shortcut: '⇧⌘4',
+          active: computed(() => hud().sectionOpen(SECTION_ID).value),
+          run: () => hud().toggleSection(SECTION_ID),
+        }),
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Mod+Shift+4'],
+          commandId: 'defaultPlanes.toggle',
+        }),
+      ],
     }),
   }
 }, 'defaultPlanes')

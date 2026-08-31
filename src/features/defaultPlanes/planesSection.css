@@ -1,0 +1,115 @@
+/*
+ * The default planes, as rows in the scene outline.
+ *
+ * Deliberately the same row shape as the feature tree below it — a name, an eye
+ * on the right — because they are the same kind of thing to a reader: something
+ * in the scene, and whether you can see it. What differs is only what they *are*
+ * made of, which is not a distinction the outline should draw.
+ */
+.zds-planes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+}
+
+.zds-planes__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zds-planes__row {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  padding-block: 1px;
+  padding-inline: var(--zds-space-2);
+}
+
+.zds-planes__row:hover {
+  background: var(--zds-surface-hover);
+}
+
+.zds-planes__name {
+  flex: 1;
+  min-inline-size: 0;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-primary);
+}
+
+/*
+ * A back face reads as secondary, because it is: nothing shows one without being
+ * asked, and a row you have to opt into should not compete with the three you
+ * did not.
+ */
+.zds-planes__row[data-back="true"] .zds-planes__name {
+  color: var(--zds-text-tertiary);
+}
+
+/* Says the row is not following the scene any more. */
+.zds-planes__badge {
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  letter-spacing: var(--zds-tracking-label);
+  text-transform: uppercase;
+  color: var(--zds-text-tertiary);
+}
+
+/*
+ * The eye appears on hover, exactly as the feature tree's does — except when the
+ * plane is hidden, where the crossed-out eye is the only thing saying so and has
+ * to stay put.
+ */
+.zds-planes__visibility {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: var(--zds-size-icon-md);
+  block-size: var(--zds-size-icon-md);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--zds-radius-content);
+  background: transparent;
+  color: var(--zds-text-tertiary);
+  cursor: default;
+  visibility: hidden;
+}
+
+.zds-planes__row:hover .zds-planes__visibility,
+.zds-planes__visibility:focus-visible,
+.zds-planes__visibility[data-hidden="true"] {
+  visibility: visible;
+}
+
+.zds-planes__visibility:hover {
+  background: var(--zds-surface-active);
+  color: var(--zds-text-primary);
+}
+
+.zds-planes__note {
+  display: flex;
+  gap: var(--zds-space-1);
+  align-items: baseline;
+  margin: 0;
+  padding-inline: var(--zds-space-2);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-tertiary);
+}
+
+.zds-planes__reset {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--zds-text-secondary);
+  text-decoration: underline;
+  cursor: default;
+}
+
+.zds-planes__reset:hover {
+  color: var(--zds-text-primary);
+}
