@@ -114,6 +114,8 @@ export function UnitsField() {
     <Menu
       label="Choose the default length unit for the executing file"
       align="end"
+      // The status bar is the bottom of the window; there is nothing below it.
+      side="above"
       sections={sections}
       trigger={({ open, toggle, ref }) => (
         <button

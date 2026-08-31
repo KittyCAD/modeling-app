@@ -38,6 +38,14 @@ export interface MenuProps extends BaseProps {
   sections: MenuSection[]
   /** Which edge the panel aligns to. Defaults to the trigger's inline end. */
   align?: 'start' | 'end'
+  /**
+   * Which way the panel opens. Defaults to below the trigger.
+   *
+   * `above` is for a trigger at the bottom of the window — a status bar field —
+   * where below is off screen. A prop rather than measured, because the caller
+   * knows where it put the control and a measurement would be a frame late.
+   */
+  side?: 'below' | 'above'
   label: string
 }
 
@@ -155,6 +163,7 @@ export function Menu({
   trigger,
   sections,
   align = 'end',
+  side = 'below',
   label,
   class: className,
   ...rest
@@ -233,6 +242,7 @@ export function Menu({
       ref={container}
       class={cx('zds-menu', className)}
       data-align={align}
+      data-side={side}
     >
       {trigger({
         open: open.value,

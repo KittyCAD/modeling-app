@@ -31,6 +31,17 @@
   inset-inline-start: 0;
 }
 
+/*
+ * Opening upwards, for a trigger at the bottom of the window.
+ *
+ * A status bar field has nowhere below it to open into, and a panel that opens
+ * off screen is a panel with no items.
+ */
+.zds-menu[data-side="above"] .zds-menu__panel {
+  inset-block-start: auto;
+  inset-block-end: calc(100% + var(--zds-space-1));
+}
+
 /* Groups are ruled off from each other, like status bar fields. */
 .zds-menu__section[data-first="false"] {
   margin-block-start: var(--zds-space-1);
