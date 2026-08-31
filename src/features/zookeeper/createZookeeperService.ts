@@ -61,9 +61,21 @@ export interface ZookeeperServiceDependencies {
  * the service last saw — is per conversation, because it is measured from that
  * conversation's document.
  */
+/**
+ * The service, plus the teardown the contract has no reason to carry.
+ *
+ * `dispose` is on the model rather than on `ZookeeperService` for the same
+ * reason it is elsewhere in this codebase: a consumer reading conversations has
+ * no business ending them, and the feature that built the service is the only
+ * caller that should.
+ */
+export interface ZookeeperServiceModel extends ZookeeperService {
+  dispose(): void
+}
+
 export function createZookeeperService(
   dependencies: ZookeeperServiceDependencies
-): ZookeeperService {
+): ZookeeperServiceModel {
   const {
     auth,
     sessions,
@@ -441,6 +453,35 @@ export function createZookeeperService(
    * below only handles *changes*, so `lastProject` starts at what this read used.
    */
   refreshStored()
+
+  /*
+   * A deleted project's conversations do not survive it.
+   *
+   * `removed` is not `closed`: closing is reopenable, so a conversation can wait
+   * — and per the collaborator design it should, holding its edits for the
+   * reopen. Removal has no reopen, so there is nothing to wait for, and a
+   * conversation left running against a project that no longer exists is what
+   * kept reporting itself as spending credits forever.
+   *
+   * Matched on the path each conversation was stamped with at open, which is why
+   * that stamp exists: `sessions.current` is null by the time a project is
+   * deleted from the home screen.
+   */
+  const stopWatchingProjects = sessions.onProjectGone(
+    ({ projectPath, reason }) => {
+      if (reason !== 'removed') return
+
+      for (const [id, conversation] of [...conversations.peek()]) {
+        if (conversation.projectPath !== projectPath) continue
+        // `close` persists the transcript before disposing; harmless here, since
+        // the directory it would write to has gone with the project.
+        close(id)
+      }
+
+      refreshStored()
+    }
+  )
+
   let lastProject = sessions.current.peek()?.project.peek().path ?? null
 
   /*
@@ -496,6 +537,11 @@ export function createZookeeperService(
     },
 
     close,
+
+    dispose() {
+      stopWatchingProjects()
+      for (const id of [...conversations.peek().keys()]) close(id)
+    },
 
     activate(id) {
       // Null is the home view, which is always reachable. An unknown id is not

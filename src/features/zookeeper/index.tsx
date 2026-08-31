@@ -192,6 +192,12 @@ const zookeeperFeature = defineRegistryItemFactory((ctx) => {
        * subtree, taking every service and contribution below it with it.
        */
       id: 'zookeeper.feature',
+      /*
+       * Everything is in the plugin slot, so this runs when Zookeeper is turned
+       * off — which has to close the sockets and release the subscription the
+       * service holds on project lifecycle, not just drop the reference.
+       */
+      dispose: () => built?.dispose(),
       providesServices: [
         provideService(zookeeperService, {
           conversations: computed(() => zookeeper().conversations.value),

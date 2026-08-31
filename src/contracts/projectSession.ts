@@ -232,6 +232,22 @@ export interface ProjectMutationResult {
   failed: readonly { path: string; reason: string }[]
 }
 
+/**
+ * Why a project stopped being available.
+ *
+ * `closed` is reopenable and `removed` is not, and the difference is the whole
+ * reason this is one event with a reason rather than two events: a listener that
+ * holds work for a project — an agent conversation with edits pending — has to
+ * hold it in one case and let it go in the other.
+ */
+export type ProjectGoneReason = 'closed' | 'removed'
+
+export interface ProjectGone {
+  /** The project's path, which is what listeners will have recorded. */
+  projectPath: string
+  reason: ProjectGoneReason
+}
+
 export interface ProjectSessionService {
   /** Null when no project is open — the home screen's condition. */
   readonly current: ReadonlySignal<ProjectSession | null>
@@ -240,6 +256,19 @@ export interface ProjectSessionService {
   /** `projectId` is a realization id, as minted by the libraries service. */
   open(projectId: string): Promise<ProjectSession | null>
   close(): void
+  /**
+   * Told when a project this app had open stops being available.
+   *
+   * Announced here rather than by the libraries service because this is what
+   * knows a project was ever *opened*, and only opened projects have anything to
+   * clean up. It covers both endings from one subscription: closing, and being
+   * deleted from the home screen while nothing has it open.
+   *
+   * A subscription rather than a signal, because it reports an *event*. A signal
+   * holding "the last project that went away" would still be holding it a
+   * minute later, and a listener that mounted late would act on stale news.
+   */
+  onProjectGone(listener: (event: ProjectGone) => void): () => void
 }
 
 export const projectSessionContract = defineContract({

@@ -135,6 +135,7 @@ function createFakeSessions(): {
       close: () => {
         current.value = null
       },
+      onProjectGone: () => () => {},
     },
     open: openProject,
     close: () => {

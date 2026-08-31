@@ -35,6 +35,9 @@ function setup(options: { active?: string | null; executing?: string | null }) {
       openFile: async () => buffers[0] as FileBackedTextBuffer,
       setExecutingBuffer: () => {},
     })),
+    // Never announced in these tests; present so the real consumers can
+    // subscribe without the stub throwing.
+    onProjectGone: () => () => {},
   } as unknown as ProjectSessionService
 
   const registry = new Registry()

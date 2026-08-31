@@ -16,6 +16,11 @@ import { fileWatcherService } from '@src/contracts/fileWatcher'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
 import { projectHistoryService } from '@src/contracts/projectHistory'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
+import type {
+  ProjectGone,
+  ProjectGoneReason,
+} from '@src/contracts/projectSession'
+import { watchRemovedProjects } from '@src/features/projectSession/watchRemovedProjects'
 import { unitsService } from '@src/contracts/units'
 import { openDefaultFile } from '@src/features/projectSession/openDefaultFile'
 import {
@@ -48,7 +53,26 @@ export default defineRegistryItemFactory((ctx) => {
   const capabilities = () => ctx.valueSpecs.get(editorCapabilitiesValueSpec)
   const themes = () => ctx.valueSpecs.get(editorThemesValueSpec)
 
+  /** Listeners for projects going away. See `onProjectGone`. */
+  const goneListeners = new Set<(event: ProjectGone) => void>()
+
+  /**
+   * Projects this app has actually had open, by path.
+   *
+   * Only these are worth announcing about: a project nobody opened has nothing
+   * holding work for it, and announcing every project ever scanned would make
+   * every listener filter the same noise.
+   */
+  const opened = new Set<string>()
+
+  const announceGone = (projectPath: string, reason: ProjectGoneReason) => {
+    opened.delete(projectPath)
+    for (const listener of [...goneListeners]) listener({ projectPath, reason })
+  }
+
   const close = () => {
+    const path = current.peek()?.project.peek().path ?? null
+
     // Disposing flushes pending autosaves and stops watching the folder. A
     // session dropped without it keeps a watch alive against a project nothing
     // is looking at.
@@ -56,6 +80,10 @@ export default defineRegistryItemFactory((ctx) => {
     current.value = null
     opening.value = null
     error.value = null
+
+    // After the session is gone, so a listener that asks what is open gets the
+    // answer the rest of the app already has.
+    if (path !== null) announceGone(path, 'closed')
   }
 
   const open = async (projectId: string) => {
@@ -117,8 +145,21 @@ export default defineRegistryItemFactory((ctx) => {
 
       // Disposed immediately before publishing, so `current` never points at a
       // session that has been torn down.
-      current.peek()?.dispose()
+      const previous = current.peek()
+      const previousPath = previous?.project.peek().path ?? null
+      previous?.dispose()
       current.value = session
+      opened.add(realization.path)
+
+      /*
+       * Switching straight from one project to another is the outgoing one
+       * closing, and has to be announced as such — otherwise the only ending
+       * that gets reported is the one that goes via home, and a listener holding
+       * work for the old project keeps holding it.
+       */
+      if (previousPath !== null && previousPath !== realization.path) {
+        announceGone(previousPath, 'closed')
+      }
 
       return session
     } catch (caught) {
@@ -135,9 +176,37 @@ export default defineRegistryItemFactory((ctx) => {
 
   const hasProject = computed(() => current.value !== null)
 
+  /*
+   * A project that has vanished from the libraries is gone for good.
+   *
+   * The conditions that decide *when* that is true live in
+   * `watchRemovedProjects`, where they can be tested: getting them wrong means
+   * announcing removal mid-rescan and telling every listener to throw away work.
+   */
+  let stopWatchingLibraries: (() => void) | undefined
+  let disposed = false
+  queueMicrotask(() => {
+    if (disposed) return
+    const service = libraries()
+
+    stopWatchingLibraries = watchRemovedProjects({
+      paths: computed(() =>
+        service.realizations.value.map((each) => each.path)
+      ),
+      state: computed(() => service.state.value),
+      opened: () => opened,
+      announce: (projectPath) => announceGone(projectPath, 'removed'),
+    })
+  })
+
   return {
     item: defineRuntimeRegistryItem({
       id: 'projectSession',
+      dispose: () => {
+        disposed = true
+        stopWatchingLibraries?.()
+        goneListeners.clear()
+      },
       providesServices: [
         provideService(projectSessionService, {
           current: computed(() => current.value),
@@ -145,6 +214,10 @@ export default defineRegistryItemFactory((ctx) => {
           error: computed(() => error.value),
           open,
           close,
+          onProjectGone: (listener) => {
+            goneListeners.add(listener)
+            return () => goneListeners.delete(listener)
+          },
         }),
       ],
       provides: [

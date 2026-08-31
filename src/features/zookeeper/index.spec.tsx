@@ -46,6 +46,9 @@ function harness(
 
   const sessions = {
     current: computed(() => current.value),
+    // Never announced in these tests; present so the real consumers can
+    // subscribe without the stub throwing.
+    onProjectGone: () => () => {},
   } as unknown as ProjectSessionService
 
   // Real ones: transcripts are written on turn boundaries, and a stub would make

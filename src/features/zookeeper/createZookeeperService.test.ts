@@ -2,6 +2,7 @@ import { computed, signal } from '@preact/signals'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AuthService } from '@src/contracts/auth'
 import type {
+  ProjectGone,
   ProjectSession,
   ProjectSessionService,
 } from '@src/contracts/projectSession'
@@ -61,8 +62,19 @@ function setup(
   )
 
   const auth = { token: computed(() => token.value) } as unknown as AuthService
+
+  /** Lets a test announce that a project closed or was deleted. */
+  const goneListeners = new Set<(event: ProjectGone) => void>()
+  const announceGone = (event: ProjectGone) => {
+    for (const listener of [...goneListeners]) listener(event)
+  }
+
   const sessions = {
     current: computed(() => current.value),
+    onProjectGone: (listener: (event: ProjectGone) => void) => {
+      goneListeners.add(listener)
+      return () => goneListeners.delete(listener)
+    },
   } as unknown as ProjectSessionService
   // A real fake filesystem, because transcripts are written on turn boundaries
   // and a stub would make those writes silently do nothing.
@@ -79,6 +91,7 @@ function setup(
   return {
     token,
     current,
+    announceGone,
     fileSystem,
     changeHistory,
     projectHistory,
@@ -535,5 +548,70 @@ describe('createZookeeperService', () => {
     const { service } = setup()
 
     expect(service.holderOf('main.kcl').value).toBeNull()
+  })
+})
+
+/*
+ * Deleting a project used to leave its conversations running: nothing told
+ * Zookeeper, so they stayed open, their turns stayed `streaming`, and they went
+ * on reporting themselves as spending credits for the rest of the session.
+ */
+describe('when a project goes away', () => {
+  it('closes the conversations belonging to a deleted project', () => {
+    const harness = setup()
+    const id = harness.service.open()
+
+    expect(id).not.toBeNull()
+    expect(harness.service.conversations.value.size).toBe(1)
+
+    harness.announceGone({
+      projectPath: '/projects/bracket',
+      reason: 'removed',
+    })
+
+    expect(harness.service.conversations.value.size).toBe(0)
+  })
+
+  /*
+   * Closing is reopenable, so a conversation waits for it. Disposing here would
+   * throw away work the collaborator design says to hold for the reopen.
+   */
+  it('leaves them alone when the project merely closed', () => {
+    const harness = setup()
+    harness.service.open()
+
+    harness.announceGone({
+      projectPath: '/projects/bracket',
+      reason: 'closed',
+    })
+
+    expect(harness.service.conversations.value.size).toBe(1)
+  })
+
+  it('leaves conversations belonging to a different project alone', () => {
+    const harness = setup()
+    harness.service.open()
+
+    harness.announceGone({
+      projectPath: '/projects/somewhere-else',
+      reason: 'removed',
+    })
+
+    expect(harness.service.conversations.value.size).toBe(1)
+  })
+
+  it('releases its subscription when disposed', () => {
+    const harness = setup()
+    harness.service.open()
+    harness.service.dispose()
+
+    // Nothing left to close, and announcing must not reach a torn-down service.
+    expect(() =>
+      harness.announceGone({
+        projectPath: '/projects/bracket',
+        reason: 'removed',
+      })
+    ).not.toThrow()
+    expect(harness.service.conversations.value.size).toBe(0)
   })
 })
