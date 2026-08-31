@@ -24,6 +24,7 @@ import {
 import { createSketchInteraction } from '@src/features/sketchOverlay/createSketchInteraction'
 import { SketchScene } from '@src/features/sketchOverlay/SketchScene'
 import { SketchProblem } from '@src/features/sketchOverlay/SketchProblem'
+import { CONSTRAINT_TOOLS, matchConstraint } from '@src/lib/sketch/constraints'
 import { SKETCH_TOOLS, type SketchToolId } from '@src/lib/sketch/tools'
 
 /**
@@ -100,6 +101,58 @@ export default defineRegistryItemFactory((ctx) => {
     ]
   })
 
+  /**
+   * One command and one key per constraint, plus a group to hold them.
+   *
+   * Each button knows whether it can be applied, because that is a pure question
+   * over the selection — which is the point of the declarative model: the answer
+   * is available before the click rather than discovered by it.
+   */
+  const constraintContributions = [
+    ...CONSTRAINT_TOOLS.flatMap((tool) => {
+      const commandId = `sketch.constrain.${tool.id}`
+
+      return [
+        provide(commandsValueSpec, {
+          id: commandId,
+          title: tool.title,
+          category: 'Sketch',
+          icon: tool.icon,
+          description: tool.description,
+          enabled: computed(() => {
+            const session = sessions()
+            const graph =
+              ctx.services.optional(kclFrontendService)?.sceneGraph.value
+            if (!session?.open.value || !graph) return false
+
+            return (
+              matchConstraint(tool.id, graph, session.selection.value)
+                .status === 'complete'
+            )
+          }),
+          run: () => sessions()?.applyConstraint(tool.id),
+        }),
+
+        provide(keybindingsValueSpec, {
+          keystrokes: [tool.key],
+          commandId,
+          scopes: [SKETCHING_SCOPE],
+        }),
+      ]
+    }),
+
+    provide(toolbarItemsValueSpec, {
+      kind: 'group' as const,
+      id: 'sketch.constraints',
+      mode: SKETCHING_MODE,
+      section: 'constrain',
+      order: 10,
+      title: 'Constraints',
+      icon: 'coincident',
+      commandIds: CONSTRAINT_TOOLS.map((tool) => `sketch.constrain.${tool.id}`),
+    }),
+  ]
+
   return {
     model: { pointer: interaction.pointer },
     item: defineRuntimeRegistryItem({
@@ -164,6 +217,7 @@ export default defineRegistryItemFactory((ctx) => {
         }),
 
         ...toolContributions,
+        ...constraintContributions,
 
         /**
          * Escape, one step at a time.

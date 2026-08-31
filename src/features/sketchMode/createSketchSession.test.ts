@@ -127,6 +127,55 @@ const drawnOutcome = () => ({
           },
         },
       },
+      // A second line, so a constraint tool can be given two of something.
+      {
+        id: 3,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Point',
+            position: {
+              x: { value: 5, units: 'Mm' },
+              y: { value: 5, units: 'Mm' },
+            },
+            freedom: 'Free',
+            constraints: [],
+            ctor: null,
+            owner: null,
+          },
+        },
+      },
+      {
+        id: 4,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Point',
+            position: {
+              x: { value: 9, units: 'Mm' },
+              y: { value: 5, units: 'Mm' },
+            },
+            freedom: 'Free',
+            constraints: [],
+            ctor: null,
+            owner: null,
+          },
+        },
+      },
+      {
+        id: 5,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Line',
+            start: 3,
+            end: 4,
+            ctor: { type: 'Line' },
+            ctor_applicable: true,
+            construction: false,
+          },
+        },
+      },
     ],
     sketch_mode: 0,
   },
@@ -150,6 +199,8 @@ const setup = (
     editProblem?: string
     /** Makes every mutation report that every id has become meaningless. */
     renumbers?: boolean
+    /** Makes every constraint report that it could not be satisfied. */
+    constraintProblem?: string
   } = {}
 ) => {
   const buffer = createFileBackedTextBuffer({
@@ -207,7 +258,10 @@ const setup = (
     }),
     addConstraint: vi.fn(async () => {
       calls.push('addConstraint')
-      return drawnOutcome() as never
+      return {
+        ...drawnOutcome(),
+        problem: options.constraintProblem ?? null,
+      } as never
     }),
     editSegments: vi.fn(async () => {
       calls.push('editSegments')
@@ -1132,6 +1186,65 @@ describe('selecting things in a sketch', () => {
     await app.session.exit()
 
     expect(app.session.selection.value).toEqual([])
+  })
+})
+
+describe('constraining a selection', () => {
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  it('writes the constraint the selection asked for', async () => {
+    const app = setup()
+    await app.session.enter()
+    // Two points, which is a coincidence.
+    app.session.select(0)
+    app.session.select(1, { add: true })
+
+    app.session.applyConstraint('coincident')
+    await vi.waitFor(() =>
+      expect(app.frontend.addConstraint).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addConstraint).toHaveBeenCalledWith(
+      0,
+      { type: 'Coincident', segments: [0, 1] },
+      { checkpoint: true }
+    )
+  })
+
+  /*
+   * Refused rather than attempted, and with the one message a user can act on:
+   * what is selected is not something this constraint applies to.
+   */
+  it('says so when the selection cannot take that constraint', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select(0)
+
+    app.session.applyConstraint('perpendicular')
+    await settled()
+
+    expect(app.frontend.addConstraint).not.toHaveBeenCalled()
+    expect(app.session.error.value).toMatch(/perpendicular/)
+  })
+
+  it('stops at the first constraint the solver refuses', async () => {
+    const app = setup({ constraintProblem: 'Those cannot both be true.' })
+    await app.session.enter()
+    // Two lines: one horizontal each, so two constraints from one press.
+    app.session.select(2)
+    app.session.select(5, { add: true })
+
+    app.session.applyConstraint('horizontal')
+    await vi.waitFor(() =>
+      expect(app.session.error.value).toBe('Those cannot both be true.')
+    )
+
+    /*
+     * kcl-lib reports a constraint it cannot satisfy in the outcome rather than
+     * by rejecting, so without stopping we would pile more onto a sketch that
+     * already cannot be solved.
+     */
+    expect(app.frontend.addConstraint).toHaveBeenCalledTimes(1)
   })
 })
 

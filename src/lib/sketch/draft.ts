@@ -1,4 +1,5 @@
 import type {
+  ApiConstraint,
   ApiObjectId,
   ExistingSegmentCtor,
   Expr,
@@ -193,6 +194,13 @@ export type DraftAction =
    * wanted and the caller runs the sequence — see `buildRectangle`.
    */
   | { kind: 'rectangle'; mode: RectangleMode; origin: PlanePoint }
+  /**
+   * Write constraints, which is what a constraint tool produces.
+   *
+   * Several, because one press can mean several: each of five lines is
+   * independently horizontal. They are still one action.
+   */
+  | { kind: 'constrain'; constraints: readonly ApiConstraint[] }
   /**
    * Take geometry out of the sketch.
    *

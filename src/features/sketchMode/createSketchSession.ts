@@ -31,6 +31,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { objectAt, sketchIdAt, sketchRanges } from '@src/lib/sketch/sceneGraph'
 import { sketchIdIn, sketchPlaneSource } from '@src/lib/sketch/sketchPlane'
+import { constraintToolInfo, constraintsFor } from '@src/lib/sketch/constraints'
 import { planDrag } from '@src/lib/sketch/drag'
 import { buildRectangle } from '@src/lib/sketch/rectangle'
 import {
@@ -437,6 +438,42 @@ export function createSketchSession(
         return
       }
 
+      case 'constrain': {
+        /*
+         * One at a time, checkpointing on the last.
+         *
+         * Several constraints can come from one press — five lines made
+         * horizontal is five constraints — and they are one thing the user did,
+         * so one thing to undo. Each is awaited because the frontend holds one
+         * copy of the file.
+         */
+        let last: SketchOutcome | null = null
+
+        for (const [index, constraint] of action.constraints.entries()) {
+          last = await api.addConstraint(session.sketchId, constraint, {
+            checkpoint: index === action.constraints.length - 1,
+          })
+
+          /*
+           * Stop at the first refusal.
+           *
+           * kcl-lib reports a constraint it cannot satisfy in the outcome rather
+           * than by rejecting, and carrying on would pile more constraints onto
+           * a sketch that already cannot be solved.
+           */
+          if (last.problem) {
+            error.value = last.problem
+            break
+          }
+        }
+
+        if (last) {
+          noteIds(last)
+          write(last)
+        }
+        return
+      }
+
       case 'discard': {
         const constraintIds = action.constraintIds ?? []
         if (action.segmentIds.length === 0 && constraintIds.length === 0) return
@@ -755,6 +792,26 @@ export function createSketchSession(
 
     clearSelection() {
       selection.value = []
+    },
+
+    applyConstraint(tool) {
+      const api = frontend()
+      const session = open.peek()
+      const graph = api?.sceneGraph.peek()
+      if (!api || !session || !graph) return
+
+      const constraints = constraintsFor(tool, graph, selection.peek())
+      if (constraints.length === 0) {
+        /*
+         * Refused rather than attempted. The tools accept several shapes of
+         * selection and this is the one message a user can act on: what is
+         * selected is not something this constraint can be applied to.
+         */
+        error.value = `That selection cannot be made ${constraintToolInfo(tool).title.toLowerCase()}.`
+        return
+      }
+
+      run([{ kind: 'constrain', constraints }])
     },
 
     deleteSelection() {

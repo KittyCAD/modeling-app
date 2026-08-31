@@ -2,6 +2,7 @@ import { defineContract, defineService } from '@kittycad/registry'
 import type { ApiObjectId } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { ReadonlySignal } from '@preact/signals'
 import type { PlaneFrame, PlanePoint } from '@src/lib/scene/projection'
+import type { ConstraintToolId } from '@src/lib/sketch/constraints'
 import type { DraftState } from '@src/lib/sketch/draft'
 import type { SketchToolId } from '@src/lib/sketch/tools'
 
@@ -156,6 +157,17 @@ export interface SketchSessionService {
   select(id: SketchSelectionId, options?: { add?: boolean }): void
   /** Select nothing. */
   clearSelection(): void
+  /**
+   * Apply a constraint to what is selected.
+   *
+   * The tool decides what the selection means — a point and a line make a
+   * different midpoint request in each order — and refuses rather than guesses
+   * when the selection does not make one. Whether it *can* be applied is a pure
+   * question anybody can ask, which is what lets the button be disabled instead
+   * of the click failing.
+   */
+  applyConstraint(tool: ConstraintToolId): void
+
   /**
    * Delete what is selected.
    *
