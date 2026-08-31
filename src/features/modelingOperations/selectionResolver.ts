@@ -5,6 +5,7 @@ import type {
 import type { KclSceneService } from '@src/contracts/kclScene'
 import type { SelectionService } from '@src/contracts/selection'
 import { faceReference } from '@src/lib/kcl/faceReferences'
+import { planeExpression } from '@src/lib/kcl/planeExpression'
 import { regionExpression } from '@src/lib/kcl/regionExpression'
 import { boundNames, referenceAt } from '@src/lib/kclStdlib/program'
 import { arityOf, namedTypesIn } from '@src/lib/kclStdlib/types'
@@ -139,12 +140,42 @@ export function createSelectionResolver(
       const asFace = namedTypesIn(input.type).some((name) =>
         FACES.includes(name)
       )
+      /*
+       * Whether a default plane would even be an answer.
+       *
+       * `sketch(on = …)` takes a plane; `shell(faces = …)` does not, and
+       * clicking XY for it should come to nothing rather than to KCL that fails
+       * on the next run.
+       */
+      const asPlane = namedTypesIn(input.type).includes('Plane')
 
       for (const entityId of wanted) {
         const entity = service?.entities.value.find(
           (candidate) => candidate.entityId === entityId
         )
         if (!entity) continue
+
+        /*
+         * A default plane is written, not referred to.
+         *
+         * It is the one selectable thing with no artifact and no need of one:
+         * `XY` is a value the language has, not a binding anybody declared, so
+         * there is nothing in the file to point at and nothing to write above.
+         * Checked before the face path because a plane would fail it — the
+         * artifact graph has no entry to derive a reference from, and the
+         * failure would read as "this face cannot be named" rather than as the
+         * plainest answer there is.
+         */
+        if (entity.defaultPlane) {
+          if (!asPlane) {
+            reason ??= 'A default plane cannot answer this argument.'
+            continue
+          }
+
+          const written = planeExpression(entity.defaultPlane)
+          if (!references.includes(written)) references.push(written)
+          continue
+        }
 
         /*
          * A face is not the segment that made it.

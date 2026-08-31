@@ -6,6 +6,9 @@ import type {
 } from '@src/contracts/defaultPlanes'
 import { createDefaultPlanes } from '@src/features/defaultPlanes/createDefaultPlanes'
 
+/** What the fake renderer says its one recognisable object is. */
+const XY_FRONT = { plane: 'xy', facing: 'front' } as const
+
 let dispose: (() => void) | null = null
 
 afterEach(() => {
@@ -28,19 +31,24 @@ const fakeDriver = (available: ReadonlySignal<boolean>) => {
     id: 'fake',
     available,
     setVisible,
+    planeAt: (entityId) => (entityId === 'the-xy-plane' ? XY_FRONT : null),
   }
 
   return { driver, setVisible }
 }
 
-const setup = (options: { empty?: boolean; available?: boolean } = {}) => {
+const setup = (
+  options: { empty?: boolean; available?: boolean; askedFor?: boolean } = {}
+) => {
   const empty = signal(options.empty ?? true)
+  const askedFor = signal(options.askedFor ?? false)
   const available = signal(options.available ?? true)
   const renderer = fakeDriver(computed(() => available.value))
 
   const planes = createDefaultPlanes({
     driver: () => renderer.driver,
     sceneIsEmpty: empty,
+    askedFor,
   })
   /*
    * Started here rather than on construction, which is the point of it being
@@ -51,7 +59,7 @@ const setup = (options: { empty?: boolean; available?: boolean } = {}) => {
   planes.start()
   dispose = planes.dispose
 
-  return { planes, empty, available, setVisible: renderer.setVisible }
+  return { planes, empty, askedFor, available, setVisible: renderer.setVisible }
 }
 
 /** What the renderer was asked for about one plane, last. */
@@ -81,6 +89,38 @@ describe('when the planes show themselves', () => {
     expect(lastFor(app.setVisible, 'xy')).toBe(false)
   })
 
+  /*
+   * The case the automatic rule alone gets wrong. A file with a solid in it hides
+   * the planes, so the second sketch has nothing to click and the prompt asks you
+   * to click a plane over a scene with none in it.
+   */
+  it('shows them over geometry while something is asking for one', () => {
+    const app = setup({ empty: false })
+
+    app.askedFor.value = true
+
+    expect(lastFor(app.setVisible, 'xy')).toBe(true)
+  })
+
+  it('puts them away again once nobody is asking', () => {
+    const app = setup({ empty: false, askedFor: true })
+
+    app.askedFor.value = false
+
+    expect(lastFor(app.setVisible, 'xy')).toBe(false)
+  })
+
+  /* The tri-state meaning what it says: a plane turned off stays off. */
+  it('leaves a plane somebody turned off alone', () => {
+    const app = setup({ empty: false })
+    app.planes.set('xy', 'hidden')
+
+    app.askedFor.value = true
+
+    expect(lastFor(app.setVisible, 'xy')).toBe(false)
+    expect(lastFor(app.setVisible, 'xz')).toBe(true)
+  })
+
   it('brings them back when the geometry goes away', () => {
     const app = setup({ empty: false })
     app.empty.value = true
@@ -100,6 +140,7 @@ describe('when the planes show themselves', () => {
     const planes = createDefaultPlanes({
       driver: () => null,
       sceneIsEmpty: signal(true),
+      askedFor: signal(false),
     })
     planes.start()
     dispose = planes.dispose
@@ -197,6 +238,34 @@ describe('talking to the renderer', () => {
     app.empty.value = false
 
     expect(app.setVisible).not.toHaveBeenCalled()
+  })
+})
+
+describe('naming what was clicked', () => {
+  /*
+   * A default plane is in nobody's file, so nothing else in the app can say what
+   * a click on one was. The policy does not know either — it asks whatever drew
+   * it, which is the only thing that could answer.
+   */
+  it('passes the question to the renderer', () => {
+    const app = setup()
+
+    expect(app.planes.planeAt('the-xy-plane')).toEqual({
+      plane: 'xy',
+      facing: 'front',
+    })
+    expect(app.planes.planeAt('some-face')).toBeNull()
+  })
+
+  it('answers nothing with no renderer', () => {
+    const planes = createDefaultPlanes({
+      driver: () => null,
+      sceneIsEmpty: signal(true),
+      askedFor: signal(false),
+    })
+    dispose = planes.dispose
+
+    expect(planes.planeAt('the-xy-plane')).toBeNull()
   })
 })
 

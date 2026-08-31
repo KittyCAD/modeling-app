@@ -32,6 +32,15 @@ export interface DefaultPlanesDependencies {
   driver: () => DefaultPlaneDriver | null
   /** Whether the last run put anything on screen. */
   sceneIsEmpty: ReadonlySignal<boolean>
+  /**
+   * Whether something is waiting to be told which plane.
+   *
+   * `sketch(on = …)` asking to be clicked is the case. Without this the planes
+   * are hidden the moment a project has geometry in it, so the second sketch in
+   * a file has nothing to point at — the prompt says "click a plane" over a
+   * scene with none in it.
+   */
+  askedFor: ReadonlySignal<boolean>
 }
 
 /**
@@ -39,8 +48,13 @@ export interface DefaultPlanesDependencies {
  *
  * Two rules, and they compose without a state machine:
  *
- * 1. A plane on `auto` is visible when the scene is empty.
+ * 1. A plane on `auto` is visible when the scene is empty, or when something is
+ *    asking to be told which plane.
  * 2. A plane the user has touched does what they said, until they put it back.
+ *
+ * The second still beats the first while a plane is being asked for, which is
+ * the tri-state meaning what it says. A plane somebody turned off stays off, and
+ * the panel says why rather than the app quietly overruling them.
  *
  * That is the whole of it, and it is deliberately all that is here. There are no
  * object ids, no commands, no idea of what a plane is made of and no memory of
@@ -68,7 +82,7 @@ export function createDefaultPlanes(
     const asked = visibilityOf(name)
     if (asked !== 'auto') return asked === 'shown'
 
-    return dependencies.sceneIsEmpty.value
+    return dependencies.sceneIsEmpty.value || dependencies.askedFor.value
   }
 
   const available = computed(
@@ -120,6 +134,7 @@ export function createDefaultPlanes(
   return {
     planes,
     sceneIsEmpty: computed(() => dependencies.sceneIsEmpty.value),
+    askedFor: computed(() => dependencies.askedFor.value),
     available,
     overridden: computed(() => overrides.value.size > 0),
 
@@ -138,6 +153,13 @@ export function createDefaultPlanes(
     resetOverrides() {
       overrides.value = new Map()
     },
+
+    /*
+     * Passed straight through, because the answer is entirely the renderer's.
+     * It is here so that selection has one service to ask rather than having to
+     * know a driver exists.
+     */
+    planeAt: (entityId) => dependencies.driver()?.planeAt(entityId) ?? null,
 
     /**
      * Begin talking to the renderer.

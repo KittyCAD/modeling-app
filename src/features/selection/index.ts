@@ -6,6 +6,7 @@ import {
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
 import { commandService, commandsValueSpec } from '@src/contracts/commands'
+import { defaultPlanesService } from '@src/contracts/defaultPlanes'
 import { kclSceneService } from '@src/contracts/kclScene'
 import { sceneInteractionsValueSpec } from '@src/contracts/scene'
 import { EXIT_MODE_COMMAND } from '@src/contracts/sceneModes'
@@ -33,6 +34,7 @@ export default defineRegistryItemFactory((ctx) => {
   const selection = createSelectionService({
     picker: () => ctx.services.optional(scenePickerService),
     scene: () => ctx.services.optional(kclSceneService),
+    planes: () => ctx.services.optional(defaultPlanesService),
   })
 
   const hasSelection = computed(() => selection.entities.value.length > 0)

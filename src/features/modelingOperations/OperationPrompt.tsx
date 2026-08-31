@@ -5,6 +5,7 @@ import { useService } from '@src/app/context'
 import { modelingOperationsService } from '@src/contracts/modelingOperationsService'
 import { selectionService } from '@src/contracts/selection'
 import { worthAsking } from '@src/features/modelingOperations/createOperationRunner'
+import { planeExpression } from '@src/lib/kcl/planeExpression'
 import './modelingOperations.css'
 
 /**
@@ -80,10 +81,17 @@ function SelectionField({
               ) : (
                 <Icon name="cube" size="small" />
               )}
-              <span class="zds-value">{entity.kind ?? 'geometry'}</span>
-              {/* Only what the graph could name; an entity with no code behind
-                  it is still shown, because it is still selected. */}
-              {entity.sourceRange ? (
+              {/* A default plane is not in the file and does not need to be —
+                  it has a name already, and showing the uuid's absence instead
+                  would read as a fault. */}
+              <span class="zds-value">
+                {entity.defaultPlane
+                  ? planeExpression(entity.defaultPlane)
+                  : (entity.kind ?? 'geometry')}
+              </span>
+              {entity.defaultPlane ? (
+                <span class="zds-label">default plane</span>
+              ) : entity.sourceRange ? (
                 <span class="zds-label">offset {entity.sourceRange[0]}</span>
               ) : (
                 <span class="zds-label">not in this file</span>

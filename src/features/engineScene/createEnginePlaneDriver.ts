@@ -3,6 +3,7 @@ import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type {
   DefaultPlaneDriver,
   DefaultPlaneName,
+  DefaultPlanePick,
 } from '@src/contracts/defaultPlanes'
 
 /**
@@ -18,11 +19,16 @@ import type {
  * object per plane, or none until asked, writes its own driver and nothing above
  * this file changes.
  */
-const FACES: Record<DefaultPlaneName, readonly (keyof DefaultPlanes)[]> = {
-  xy: ['xy', 'negXy'],
-  xz: ['xz', 'negXz'],
-  yz: ['yz', 'negYz'],
+const FACES: Record<
+  DefaultPlaneName,
+  Readonly<Record<'front' | 'back', keyof DefaultPlanes>>
+> = {
+  xy: { front: 'xy', back: 'negXy' },
+  xz: { front: 'xz', back: 'negXz' },
+  yz: { front: 'yz', back: 'negYz' },
 }
+
+const PLANES = Object.keys(FACES) as readonly DefaultPlaneName[]
 
 export interface EnginePlaneDriverDependencies {
   /** The ids the last run created, or null before anything has run. */
@@ -79,7 +85,7 @@ export function createEnginePlaneDriver(
     if (visible === undefined) return
 
     const hidden = !visible
-    for (const face of FACES[plane]) {
+    for (const face of Object.values(FACES[plane])) {
       const id = ids[face]
       if (!id) continue
       if (told.get(id) === hidden) continue
@@ -116,6 +122,28 @@ export function createEnginePlaneDriver(
     id: 'engine',
 
     available: computed(() => dependencies.ids.value !== null),
+
+    /**
+     * A uuid back to the plane it belongs to.
+     *
+     * Searched rather than kept in a reverse index, because there are six of
+     * them and the alternative is a second map to invalidate on every run. The
+     * facing is the part that matters to the caller: a click on the back of XY
+     * is a click on `-XY`, and losing that would silently sketch on the wrong
+     * side.
+     */
+    planeAt(entityId): DefaultPlanePick | null {
+      const ids = dependencies.ids.value
+      if (!ids) return null
+
+      for (const plane of PLANES) {
+        const faces = FACES[plane]
+        if (ids[faces.front] === entityId) return { plane, facing: 'front' }
+        if (ids[faces.back] === entityId) return { plane, facing: 'back' }
+      }
+
+      return null
+    },
 
     setVisible(plane, visible) {
       wanted.set(plane, visible)

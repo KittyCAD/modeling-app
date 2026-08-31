@@ -126,10 +126,23 @@ const artifacts = artifactsFrom({
   },
 })
 
+/**
+ * The two ids that are default planes rather than geometry.
+ *
+ * They are in no artifact and no file: nothing declares `XY`, so the graph has
+ * nothing to say about a click on one and the entity arrives named only by
+ * whatever drew it.
+ */
+const PLANES: Readonly<Record<string, SelectedEntity['defaultPlane']>> = {
+  'plane-xy': { plane: 'xy', facing: 'front' },
+  'plane-neg-yz': { plane: 'yz', facing: 'back' },
+}
+
 const entity = (entityId: string): SelectedEntity => ({
   entityId,
   kind: artifacts.get(entityId)?.type ?? null,
   sourceRange: sourceRangeFor(artifacts, entityId),
+  defaultPlane: PLANES[entityId] ?? null,
   region: null,
 })
 
@@ -167,6 +180,46 @@ const answer = (selected: readonly string[], type: string) =>
     program: { source: '', ast } as unknown as ParsedProgram,
     resolved: {},
   })
+
+/*
+ * A default plane is the one selectable thing that is already written down.
+ * Every other case here works by finding what the *file* calls something.
+ */
+describe('answering by clicking a default plane', () => {
+  it('writes the plane itself', () => {
+    expect(answer(['plane-xy'], 'Plane | Face | TaggedFace')?.source).toBe('XY')
+  })
+
+  /* Clicking the underside is how you sketch there, without a rotation. */
+  it('writes the negative when you clicked the back of one', () => {
+    expect(answer(['plane-neg-yz'], 'Plane | Face | TaggedFace')?.source).toBe(
+      '-YZ'
+    )
+  })
+
+  it('writes nothing above it, because there is nothing to declare', () => {
+    expect(
+      answer(['plane-xy'], 'Plane | Face | TaggedFace')?.prerequisites
+    ).toEqual([])
+  })
+
+  /*
+   * `shell(faces = …)` does not take a plane, and writing one would produce KCL
+   * that fails on the next run with nothing to connect it to the click.
+   */
+  it('refuses an argument a plane cannot answer', () => {
+    const written = answer(['plane-xy'], '[TaggedFace; 1+]')
+
+    expect(written?.source).toBe('')
+    expect(written?.unavailable).toBeTruthy()
+  })
+
+  it('takes its place in a list beside real geometry', () => {
+    expect(answer(['plane-xy', 'seg'], '[Plane; 1+]')?.source).toBe(
+      '[XY, triangle.line1]'
+    )
+  })
+})
 
 /*
  * The same click means different things to different arguments, which is the

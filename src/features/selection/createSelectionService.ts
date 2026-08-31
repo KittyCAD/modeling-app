@@ -1,4 +1,5 @@
 import { type ReadonlySignal, computed, signal } from '@preact/signals'
+import type { DefaultPlanesService } from '@src/contracts/defaultPlanes'
 import type { KclSceneService } from '@src/contracts/kclScene'
 import type { ScenePoint } from '@src/contracts/scene'
 import type {
@@ -16,6 +17,14 @@ export interface SelectionServiceDependencies {
   picker: () => ScenePicker | undefined
   /** Absent until KCL has run. Selection still works, just unnamed. */
   scene: () => KclSceneService | undefined
+  /**
+   * Absent when nothing is drawing planes.
+   *
+   * Asked because a default plane is real, clickable, and in nobody's file: the
+   * graph has no artifact for one that has not been sketched on, so without this
+   * a click on XY produces a selection nothing downstream can write.
+   */
+  planes: () => DefaultPlanesService | undefined
 }
 
 /**
@@ -34,7 +43,7 @@ export interface SelectionServiceDependencies {
 export function createSelectionService(
   dependencies: SelectionServiceDependencies
 ): SelectionService {
-  const { picker, scene } = dependencies
+  const { picker, planes, scene } = dependencies
 
   const entities = signal<readonly SelectedEntity[]>([])
   const picking = signal(false)
@@ -52,6 +61,12 @@ export function createSelectionService(
       entityId,
       kind: graph?.artifactFor(entityId)?.type ?? null,
       sourceRange: graph?.sourceRangeFor(entityId) ?? null,
+      /*
+       * Asked of every pick, because it is a lookup in a table of six rather
+       * than a round trip, and because the alternative is deciding in advance
+       * which clicks might be planes.
+       */
+      defaultPlane: planes()?.planeAt(entityId) ?? null,
       region,
       originCurve: engine.originCurve,
       faceIndex: engine.faceIndex,
@@ -215,9 +230,15 @@ export function createSelectionService(
          * answer.
          */
         const known = scene()?.artifactFor(entityId)
-        const region = known
-          ? null
-          : await available.describeRegion(entityId).catch(() => null)
+        /*
+         * A default plane is named already, so it is not a region and asking
+         * would spend a round trip to be told so.
+         */
+        const plane = planes()?.planeAt(entityId) ?? null
+        const region =
+          known || plane
+            ? null
+            : await available.describeRegion(entityId).catch(() => null)
 
         /*
          * A face the file cannot name is the one case worth a second question.

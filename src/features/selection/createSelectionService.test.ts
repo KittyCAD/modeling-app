@@ -1,6 +1,7 @@
 import type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 import { computed, signal } from '@preact/signals'
 import { describe, expect, it, vi } from 'vitest'
+import type { DefaultPlanesService } from '@src/contracts/defaultPlanes'
 import type { ExecutedProgram, KclSceneService } from '@src/contracts/kclScene'
 import type { ScenePoint } from '@src/contracts/scene'
 import type {
@@ -42,6 +43,7 @@ function setup(
     fail?: boolean
     region?: PickedRegion | null
     faces?: readonly SweptFace[]
+    planes?: boolean
   } = {}
 ) {
   const queue = [...(options.picks ?? ['wall'])]
@@ -78,9 +80,21 @@ function setup(
     defaultPlanes: computed(() => null),
   }
 
+  /*
+   * A renderer that knows one of its objects is the XY plane, which is the only
+   * way anything can know that: a default plane is in no file and no artifact.
+   */
+  const planes = {
+    planeAt: (entityId: string) =>
+      entityId === 'plane-xy'
+        ? ({ plane: 'xy', facing: 'front' } as const)
+        : null,
+  } as unknown as DefaultPlanesService
+
   const selection = createSelectionService({
     picker: () => picker,
     scene: () => (options.scene === false ? undefined : scene),
+    planes: () => (options.planes === false ? undefined : planes),
   })
 
   return { selection, asked, described, askedForFaces }
@@ -99,6 +113,7 @@ describe('selecting by clicking', () => {
         entityId: 'wall',
         kind: 'wall',
         sourceRange: [40, 70, 0],
+        defaultPlane: null,
         region: null,
         originCurve: null,
         faceIndex: null,
@@ -120,11 +135,39 @@ describe('selecting by clicking', () => {
         entityId: 'mystery',
         kind: null,
         sourceRange: null,
+        defaultPlane: null,
         region: null,
         originCurve: null,
         faceIndex: null,
       },
     ])
+  })
+
+  /*
+   * The case that used to dead-end. A default plane is real and clickable and in
+   * nobody's file, so without the renderer naming it the selection is a uuid
+   * nothing downstream can turn into KCL.
+   */
+  it('names a default plane, which no graph could', async () => {
+    const { selection } = setup({ picks: ['plane-xy'] })
+
+    await selection.selectAt(at)
+
+    expect(selection.entities.value[0]).toMatchObject({
+      entityId: 'plane-xy',
+      kind: null,
+      sourceRange: null,
+      defaultPlane: { plane: 'xy', facing: 'front' },
+    })
+  })
+
+  /* Named already, so there is nothing a round trip could add. */
+  it('does not ask whether a plane is a region', async () => {
+    const { selection, described } = setup({ picks: ['plane-xy'] })
+
+    await selection.selectAt(at)
+
+    expect(described).toEqual([])
   })
 
   it('works with no artifact graph at all', async () => {
@@ -137,6 +180,7 @@ describe('selecting by clicking', () => {
         entityId: 'wall',
         kind: null,
         sourceRange: null,
+        defaultPlane: null,
         region: null,
         originCurve: null,
         faceIndex: null,
@@ -241,6 +285,7 @@ describe('selecting by clicking', () => {
         entityId: 'seg',
         kind: 'segment',
         sourceRange: [40, 70, 0],
+        defaultPlane: null,
         region: null,
         originCurve: null,
         faceIndex: null,
@@ -461,6 +506,7 @@ describe('asking the engine which curve made a face', () => {
     const selection = createSelectionService({
       picker: () => picker,
       scene: () => scene,
+      planes: () => undefined,
     })
 
     return { selection, askedForFaces }
@@ -559,6 +605,7 @@ describe('asking the engine which curve made a face', () => {
 
     const selection = createSelectionService({
       picker: () => picker,
+      planes: () => undefined,
       scene: () => ({
         artifacts: computed(() => map),
         artifactFor: (id: string) => map.get(id),
@@ -667,6 +714,7 @@ describe('finding the engine face index', () => {
 
     const selection = createSelectionService({
       picker: () => picker,
+      planes: () => undefined,
       scene: () => ({
         artifacts: computed(() => map),
         artifactFor: (id: string) => map.get(id),

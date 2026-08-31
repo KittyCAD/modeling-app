@@ -2,6 +2,7 @@ import { defineContract, defineService } from '@kittycad/registry'
 import type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { ReadonlySignal } from '@preact/signals'
+import type { DefaultPlanePick } from '@src/contracts/defaultPlanes'
 import type { ScenePoint } from '@src/contracts/scene'
 
 /**
@@ -37,6 +38,19 @@ export interface SelectedEntity {
    * the engine is available and the waiting is already happening.
    */
   originCurve?: string | null
+  /**
+   * The default plane this is, when it is one.
+   *
+   * The third way a selection can be real and yet absent from the file, beside a
+   * region and an unnamed face — and the simplest, because a default plane has a
+   * name already. Nothing declares `XY`; it is a value the language just has, so
+   * no amount of reading the program finds it and the artifact graph has no
+   * entry for one nobody has sketched on.
+   *
+   * Resolved at click time from whatever drew it, and carried here so that
+   * turning a selection into KCL stays synchronous, exactly as `region` is.
+   */
+  defaultPlane?: DefaultPlanePick | null
   /**
    * The engine's index for this face, when nothing else could name it.
    *

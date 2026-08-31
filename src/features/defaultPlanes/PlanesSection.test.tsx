@@ -42,6 +42,7 @@ const setup = (
     planes?: readonly DefaultPlaneView[]
     available?: boolean
     empty?: boolean
+    askedFor?: boolean
     overridden?: boolean
   } = {}
 ) => {
@@ -57,10 +58,12 @@ const setup = (
         ]
     ),
     sceneIsEmpty: computed(() => options.empty ?? true),
+    askedFor: computed(() => options.askedFor ?? false),
     available: computed(() => options.available ?? true),
     overridden: computed(() => options.overridden ?? false),
     set,
     resetOverrides,
+    planeAt: () => null,
   } satisfies DefaultPlanesService
 
   const registry = new Registry()
@@ -143,6 +146,16 @@ describe('the planes section', () => {
     const app = setup({ empty: false })
 
     expect(app.element.textContent).toContain('while there is geometry')
+  })
+
+  /*
+   * The reason they appear over a scene that already has geometry in it, which
+   * would otherwise look like the rule breaking.
+   */
+  it('says something is waiting for a plane', () => {
+    const app = setup({ empty: false, askedFor: true })
+
+    expect(app.element.textContent).toContain('waiting for a plane')
   })
 
   /* The third state, which the existing app has no way to express. */

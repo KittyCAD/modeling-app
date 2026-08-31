@@ -33,6 +33,22 @@ export type DefaultPlaneName = 'xy' | 'xz' | 'yz'
  */
 export type PlaneVisibility = 'auto' | 'shown' | 'hidden'
 
+/**
+ * Which side of a plane you are looking at.
+ *
+ * A plane has two, and which one you clicked is the whole difference between
+ * `XY` and `-XY`: sketching on the underside of something is written as the
+ * negative rather than as a rotation. The renderer is the only thing that can
+ * tell you, because it is the only thing that knows a ray hit the back.
+ */
+export type PlaneFacing = 'front' | 'back'
+
+/** A pick that landed on a default plane. */
+export interface DefaultPlanePick {
+  plane: DefaultPlaneName
+  facing: PlaneFacing
+}
+
 /** One plane, as something to draw a row for. */
 export interface DefaultPlaneView {
   name: DefaultPlaneName
@@ -64,6 +80,14 @@ export interface DefaultPlanesService {
    * cannot say why is a panel people argue with.
    */
   readonly sceneIsEmpty: ReadonlySignal<boolean>
+  /**
+   * Whether something is waiting for a plane to be clicked.
+   *
+   * The other reason they show, and it has to be sayable for the same reason
+   * `sceneIsEmpty` does: a panel that cannot explain why a plane appeared is a
+   * panel people argue with.
+   */
+  readonly askedFor: ReadonlySignal<boolean>
   /** False before anything has run, when there are no planes to address. */
   readonly available: ReadonlySignal<boolean>
   /** Whether anything has been taken off the automatic rule. */
@@ -71,6 +95,18 @@ export interface DefaultPlanesService {
   set(name: DefaultPlaneName, visibility: PlaneVisibility): void
   /** Put every plane back on the automatic rule. */
   resetOverrides(): void
+  /**
+   * Which plane, if any, a clicked thing is.
+   *
+   * The question selection has to be able to ask. A default plane is not in the
+   * artifact graph — nothing declared it, because nothing has to — so a click on
+   * one produces an entity id that no amount of reading the file explains. This
+   * is what explains it, and it is here rather than in the graph because the
+   * answer belongs to whatever drew the plane.
+   *
+   * Null for everything else, which is almost everything.
+   */
+  planeAt(entityId: string): DefaultPlanePick | null
 }
 
 /**
@@ -112,6 +148,17 @@ export interface DefaultPlaneDriver {
    * plane implements the same call with half the work.
    */
   setVisible(plane: DefaultPlaneName, visible: boolean): void
+  /**
+   * Which plane, if any, this thing the user clicked is.
+   *
+   * The reverse of everything else here, and the reason the driver holds the
+   * mapping rather than merely using it. On the Zoo engine a click answers with
+   * a uuid, and only the thing that knows which uuids are planes — and which of
+   * them are back faces — can say that the user clicked the underside of XY.
+   *
+   * Null for anything that is not a default plane.
+   */
+  planeAt(entityId: string): DefaultPlanePick | null
 }
 
 export const defaultPlanesContract = defineContract({

@@ -152,3 +152,30 @@ describe('whether there is anything to address', () => {
     expect(app.setHidden).not.toHaveBeenCalled()
   })
 })
+
+describe('naming a clicked object', () => {
+  /*
+   * The engine answers a click with a uuid and nothing else, and a default plane
+   * is in no file, so this is the only thing in the app that can say what was
+   * clicked.
+   */
+  it('recognises a plane it made', () => {
+    expect(setup().driver.planeAt('id-xz')).toEqual({
+      plane: 'xz',
+      facing: 'front',
+    })
+  })
+
+  /* The sign in `-XY`, and the reason facing is carried rather than collapsed. */
+  it('says which side of it you clicked', () => {
+    expect(setup().driver.planeAt('id-neg-xy')).toEqual({
+      plane: 'xy',
+      facing: 'back',
+    })
+  })
+
+  it('knows nothing about anything else', () => {
+    expect(setup().driver.planeAt('some-face')).toBeNull()
+    expect(setup({ ids: null }).driver.planeAt('id-xy')).toBeNull()
+  })
+})
