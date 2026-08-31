@@ -28,6 +28,7 @@ import type { CameraDriver, ScenePoint } from '@src/contracts/scene'
 import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
 import { DprDetector } from '@src/lib/dprDetector'
 import { orientationForName } from '@src/lib/scene/gizmoOrientation'
+import { viewBasis } from '@src/lib/scene/projection'
 
 import gizmoModelUrl from '/clientSideSceneAssets/gizmo_cube/gizmo_cube.glb?url'
 import labelsDarkUrl from '/clientSideSceneAssets/gizmo_cube/labels_dark.png?url'
@@ -399,20 +400,27 @@ export class GizmoRenderer {
    * Turn the cube to match the scene camera.
    *
    * The original copies its client camera's quaternion. We have no client
-   * camera, so the same orientation is built from the vantage, the centre and
-   * the up that the engine reports — through `Matrix4.lookAt`, which is the
-   * function the original already uses to construct orientations, so the two
-   * agree by construction rather than by convention.
+   * camera, so the rotation is built from `viewBasis` — the same three
+   * directions the sketch overlay is drawn with, so the cube and the overlay
+   * cannot disagree about which way round the model is.
+   *
+   * It has to be the basis rather than a `lookAt` from the vantage, the centre
+   * and the up vector, and that is what was wrong before: `lookAt` reconstructs
+   * up from a *hint*, which discards roll. Under a trackball orbit roll is most
+   * of what the user just did, so the cube stayed obstinately upright while the
+   * model turned underneath it.
    */
   private onCameraChange = () => {
     const frame = this.dependencies.camera.frame.peek()
     if (!frame) return
 
+    const basis = viewBasis(frame)
     const orientation = new Quaternion().setFromRotationMatrix(
-      new Matrix4().lookAt(
-        new Vector3(frame.position.x, frame.position.y, frame.position.z),
-        new Vector3(frame.target.x, frame.target.y, frame.target.z),
-        new Vector3(frame.up.x, frame.up.y, frame.up.z)
+      // A camera's own Z points *backwards*, away from what it is looking at.
+      new Matrix4().makeBasis(
+        new Vector3(basis.right.x, basis.right.y, basis.right.z),
+        new Vector3(basis.up.x, basis.up.y, basis.up.z),
+        new Vector3(-basis.forward.x, -basis.forward.y, -basis.forward.z)
       )
     )
 

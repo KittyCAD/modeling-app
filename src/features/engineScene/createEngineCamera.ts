@@ -41,6 +41,14 @@ interface EngineCameraSettings {
   pos?: Vector3
   center?: Vector3
   up?: Vector3
+  /**
+   * The camera's rotation. The only reported value that carries roll.
+   *
+   * Without it a trackball orbit is invisible to everything drawn over the
+   * scene: an up *hint* is enough to rebuild an orientation only while the
+   * camera stays level.
+   */
+  orientation?: { x: number; y: number; z: number; w: number }
   fov_y?: number | null
   ortho?: boolean
 }
@@ -78,6 +86,7 @@ function cameraFrom(
     position: settings.pos,
     target: settings.center,
     up: settings.up,
+    ...(settings.orientation ? { orientation: settings.orientation } : {}),
     fovY: settings.fov_y ?? DEFAULT_FOV_Y,
     orthographic: settings.ortho ?? false,
   }

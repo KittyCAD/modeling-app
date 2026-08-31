@@ -17,6 +17,14 @@ export interface Vector3 {
   z: number
 }
 
+/** A rotation, as the engine reports one. */
+export interface Quaternion {
+  x: number
+  y: number
+  z: number
+  w: number
+}
+
 /**
  * The camera, as the engine describes it.
  *
@@ -31,6 +39,21 @@ export interface CameraFrame {
   up: Vector3
   /** Vertical field of view, in degrees. */
   fovY: number
+  /**
+   * The camera's rotation, when the renderer reports one.
+   *
+   * The only value that carries *roll*, and therefore the only one that can be
+   * trusted under a trackball orbit. `up` cannot: a hint about which way is up
+   * is enough to reconstruct an orientation only while the camera stays level,
+   * and a trackball camera does not — so a basis built from an up vector loses
+   * exactly the rotation the user just performed, and everything drawn from it
+   * stays upright while the model turns underneath.
+   *
+   * Optional, because a renderer that has no rotation to report is still usable:
+   * without it the basis is reconstructed from `up`, which is right whenever
+   * there is no roll to lose.
+   */
+  orientation?: Quaternion
   /**
    * True when the camera projects orthographically.
    *
@@ -101,6 +124,69 @@ export const normalize = (a: Vector3): Vector3 => {
   return length < EPSILON ? { x: 0, y: 0, z: 0 } : scale(a, 1 / length)
 }
 
+/** Rotate a vector by a quaternion. */
+function rotate(q: Quaternion, v: Vector3): Vector3 {
+  // The standard sandwich product, expanded: q * v * q⁻¹ for a unit q.
+  const tx = 2 * (q.y * v.z - q.z * v.y)
+  const ty = 2 * (q.z * v.x - q.x * v.z)
+  const tz = 2 * (q.x * v.y - q.y * v.x)
+
+  return {
+    x: v.x + q.w * tx + (q.y * tz - q.z * ty),
+    y: v.y + q.w * ty + (q.z * tx - q.x * tz),
+    z: v.z + q.w * tz + (q.x * ty - q.y * tx),
+  }
+}
+
+const conjugate = (q: Quaternion): Quaternion => ({
+  x: -q.x,
+  y: -q.y,
+  z: -q.z,
+  w: q.w,
+})
+
+/** A camera looks along its own -Z, and keeps its own +Y up. */
+const LOCAL_FORWARD: Vector3 = { x: 0, y: 0, z: -1 }
+const LOCAL_UP: Vector3 = { x: 0, y: 1, z: 0 }
+
+/** How closely a candidate has to agree with the known forward to be believed. */
+const AGREEMENT = 0.999
+
+/**
+ * The camera's three directions, from a reported rotation.
+ *
+ * Which way round the engine's quaternion goes is not documented on our side —
+ * the existing app inverts it before use, which is a fact about that code rather
+ * than a statement about the wire. So rather than assume, both are tried and the
+ * one whose forward agrees with the forward we *already know* (from the vantage
+ * and the centre, which are unambiguous) is the one used.
+ *
+ * That is not cleverness for its own sake: it means a convention change upstream
+ * shows up as the fallback being taken rather than as a sketch drawn upside down,
+ * and it costs one dot product per camera update.
+ *
+ * Null when neither candidate agrees, which is the honest answer for a rotation
+ * that does not describe the camera we were also told about.
+ */
+function basisFromOrientation(
+  orientation: Quaternion,
+  forward: Vector3
+): { right: Vector3; up: Vector3; forward: Vector3 } | null {
+  for (const candidate of [conjugate(orientation), orientation]) {
+    if (dot(rotate(candidate, LOCAL_FORWARD), forward) < AGREEMENT) continue
+
+    const up = normalize(rotate(candidate, LOCAL_UP))
+    const right = normalize(cross(forward, up))
+    if (magnitude(right) < EPSILON) continue
+
+    // Rebuilt from the cross products so the three are exactly orthogonal, in
+    // case the reported rotation has drifted.
+    return { right, up: cross(right, forward), forward }
+  }
+
+  return null
+}
+
 /**
  * The camera's own three directions.
  *
@@ -115,6 +201,12 @@ export function viewBasis(camera: CameraFrame): {
   forward: Vector3
 } {
   const forward = normalize(subtract(camera.target, camera.position))
+
+  const rolled = camera.orientation
+    ? basisFromOrientation(camera.orientation, forward)
+    : null
+  if (rolled) return rolled
+
   const right = normalize(cross(forward, camera.up))
 
   /*

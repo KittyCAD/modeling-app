@@ -204,3 +204,76 @@ describe('pixelsPerUnit', () => {
     expect(pixelsPerUnit(overhead, behind, { x: 0, y: 0 }, viewport)).toBe(0)
   })
 })
+
+describe('following a camera that has rolled', () => {
+  /**
+   * The engine's rotation for a camera looking down -Z with a given roll.
+   *
+   * Built the way the engine's is — the *inverse* of the camera's own rotation,
+   * which is the convention the existing app inverts back out on receipt.
+   */
+  const rolledOrientation = (radians: number) => {
+    // A rotation of `radians` about the view axis, then inverted.
+    const half = radians / 2
+    return {
+      x: 0,
+      y: 0,
+      z: -Math.sin(half),
+      w: Math.cos(half),
+    }
+  }
+
+  it('takes the roll from the reported rotation, not from the up hint', () => {
+    // A quarter turn about the view axis. The up *hint* still says +Y, which is
+    // the whole problem: under a trackball orbit it is stale.
+    const rolled: CameraFrame = {
+      ...overhead,
+      up: { x: 0, y: 1, z: 0 },
+      orientation: rolledOrientation(Math.PI / 2),
+    }
+
+    const basis = viewBasis(rolled)
+
+    // Rolled a quarter turn, so what was up is now to one side.
+    expect(Math.abs(basis.up.x)).toBeCloseTo(1)
+    expect(Math.abs(basis.up.y)).toBeCloseTo(0)
+    // And the camera is still looking the same way.
+    expect(basis.forward.z).toBeCloseTo(-1)
+  })
+
+  it('ignores a rotation that does not describe this camera', () => {
+    // Neither the quaternion nor its inverse agrees with the vantage and centre,
+    // so the up vector is used and the answer is the unrolled one.
+    const inconsistent: CameraFrame = {
+      ...overhead,
+      orientation: { x: 0.5, y: 0.5, z: 0.5, w: 0.5 },
+    }
+
+    expect(viewBasis(inconsistent).up.y).toBeCloseTo(1)
+  })
+
+  it('agrees with the up vector when there is no roll to lose', () => {
+    const level: CameraFrame = {
+      ...overhead,
+      orientation: rolledOrientation(0),
+    }
+
+    const withOrientation = viewBasis(level)
+    const withoutOrientation = viewBasis(overhead)
+
+    expect(withOrientation.up.y).toBeCloseTo(withoutOrientation.up.y)
+    expect(withOrientation.right.x).toBeCloseTo(withoutOrientation.right.x)
+  })
+
+  it('still projects a point correctly through a rolled basis', () => {
+    const rolled: CameraFrame = {
+      ...overhead,
+      orientation: rolledOrientation(Math.PI / 2),
+    }
+
+    // A point that was above the centre is now beside it.
+    const seen = projectPoint(rolled, { x: 0, y: 10, z: 0 }, viewport)
+    expect(seen?.y).toBeCloseTo(200)
+    expect(seen?.x).not.toBeCloseTo(400)
+  })
+})
