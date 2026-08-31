@@ -375,6 +375,32 @@ describe('KclManager diagnostics', () => {
     expect(writeToFileSpy).not.toHaveBeenCalled()
   })
 
+  it('flushes the current editor buffer to disk immediately', async () => {
+    const { kclManager } = createKclManagerTestHarness('disk version')
+    const testInternals = kclManager as unknown as {
+      markFileCodeAsSynced(code: string): void
+    }
+
+    kclManager.path = '/tmp/kcl-manager-flush-test.kcl'
+    testInternals.markFileCodeAsSynced('disk version')
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('disk version')
+    const writeSpy = vi
+      .spyOn(File.ioImplementations, 'write')
+      .mockResolvedValue(undefined)
+
+    kclManager.updateCodeEditor('current editor version', {
+      shouldWriteToDisk: false,
+      shouldExecute: false,
+      shouldResetCamera: false,
+    })
+    await kclManager.flushWriteToFile()
+
+    expect(writeSpy).toHaveBeenCalledWith(
+      '/tmp/kcl-manager-flush-test.kcl',
+      'current editor version'
+    )
+  })
+
   it('does not implicitly autosave programmatic editor updates when shouldWriteToDisk is false', () => {
     const { kclManager } = createKclManagerTestHarness('persist me')
     const writeToFileSpy = vi

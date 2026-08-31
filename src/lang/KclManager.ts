@@ -3776,6 +3776,19 @@ export class KclManager extends File {
     }
   }
 
+  async flushWriteToFile(options: { suppressConflictToast?: boolean } = {}) {
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
+    this.timeoutWriter = undefined
+    this.timeoutRewatch = undefined
+
+    return this.performDelayedWriteToFile({
+      newCode: this.code,
+      requestedDocumentVersion: this._documentVersion,
+      options,
+    })
+  }
+
   /**
    * Performs the debounced disk-sync work after `writeToFile()` schedules it.
    * This keeps the timeout callback synchronous while preserving the existing

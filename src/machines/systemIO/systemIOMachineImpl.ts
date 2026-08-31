@@ -1,4 +1,5 @@
 import { newKclFile } from '@src/lang/project'
+import type { App } from '@src/lib/app'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   FILE_EXT,
@@ -56,6 +57,89 @@ export {
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
 } from '@src/lib/projectLibraries/directoryScanner'
+
+type RenameFileForSystemIOInput = {
+  context: SystemIOContext
+  fileNameWithExtension: string
+  requestedFileNameWithExtension: string
+  absolutePathToParentDirectory: string
+  app: App
+}
+
+export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
+  const {
+    fileNameWithExtension,
+    requestedFileNameWithExtension,
+    absolutePathToParentDirectory,
+  } = input
+
+  const oldPath = fsZds.join(
+    absolutePathToParentDirectory,
+    fileNameWithExtension
+  )
+  const newPath = fsZds.join(
+    absolutePathToParentDirectory,
+    requestedFileNameWithExtension
+  )
+
+  const projectDirectoryPath = input.context.projectDirectoryPath
+  const projectName = getProjectDirectoryFromKCLFilePath(
+    newPath,
+    projectDirectoryPath
+  )
+  const filePathWithExtensionRelativeToProject = parentPathRelativeToProject(
+    newPath,
+    projectDirectoryPath
+  )
+
+  // no-op
+  if (oldPath === newPath) {
+    return {
+      message: `Old file is the same as new.`,
+      projectName: projectName,
+      filePathWithExtensionRelativeToProject,
+    }
+  }
+
+  // if there are any siblings with the same name, report error.
+  const entries = await fsZds.readdir(fsZds.dirname(newPath))
+
+  for (const entry of entries) {
+    if (entry === requestedFileNameWithExtension) {
+      return Promise.reject(
+        new ExpectedSystemIOError('Filename already exists.')
+      )
+    }
+  }
+
+  const project = input.app.project
+  const executingPathSignal = project?.executingPathSignal.value
+  const executingEditor =
+    executingPathSignal?.value === oldPath
+      ? project?.editors.get(executingPathSignal)
+      : undefined
+  await executingEditor?.flushWriteToFile({ suppressConflictToast: true })
+
+  await fsZds.rename(oldPath, newPath)
+
+  // TODO: remove duplicate state, make `app.project` the source of truth,
+  // migrate systemIOMachine into a system that operates on that.
+  //
+  // Replace the signal value for the currently-opened executing editor if
+  // it was renamed.
+  if (
+    input.app.project?.executingPathSignal.value &&
+    input.app.project.executingPathSignal.value.value === oldPath
+  ) {
+    input.app.project.executingPathSignal.value.value = newPath
+  }
+
+  return {
+    message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
+    projectName: projectName,
+    filePathWithExtensionRelativeToProject,
+  }
+}
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
@@ -954,70 +1038,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         requestedFileNameWithExtension,
       }
     }),
-    [SystemIOMachineActors.renameFile]: fromPromise(async ({ input }) => {
-      const {
-        fileNameWithExtension,
-        requestedFileNameWithExtension,
-        absolutePathToParentDirectory,
-      } = input
-
-      const oldPath = fsZds.join(
-        absolutePathToParentDirectory,
-        fileNameWithExtension
-      )
-      const newPath = fsZds.join(
-        absolutePathToParentDirectory,
-        requestedFileNameWithExtension
-      )
-
-      const projectDirectoryPath = input.context.projectDirectoryPath
-      const projectName = getProjectDirectoryFromKCLFilePath(
-        newPath,
-        projectDirectoryPath
-      )
-      const filePathWithExtensionRelativeToProject =
-        parentPathRelativeToProject(newPath, projectDirectoryPath)
-
-      // no-op
-      if (oldPath === newPath) {
-        return {
-          message: `Old file is the same as new.`,
-          projectName: projectName,
-          filePathWithExtensionRelativeToProject,
-        }
-      }
-
-      // if there are any siblings with the same name, report error.
-      const entries = await fsZds.readdir(fsZds.dirname(newPath))
-
-      for (const entry of entries) {
-        if (entry === requestedFileNameWithExtension) {
-          return Promise.reject(
-            new ExpectedSystemIOError('Filename already exists.')
-          )
-        }
-      }
-
-      await fsZds.rename(oldPath, newPath)
-
-      // TODO: remove duplicate state, make `app.project` the source of truth,
-      // migrate systemIOMachine into a system that operates on that.
-      //
-      // Replace the signal value for the currently-opened executing editor if
-      // it was renamed.
-      if (
-        input.app.project?.executingPathSignal.value &&
-        input.app.project.executingPathSignal.value.value === oldPath
-      ) {
-        input.app.project.executingPathSignal.value.value = newPath
-      }
-
-      return {
-        message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
-        projectName: projectName,
-        filePathWithExtensionRelativeToProject,
-      }
-    }),
+    [SystemIOMachineActors.renameFile]: fromPromise(async ({ input }) =>
+      renameFileForSystemIO(input)
+    ),
     [SystemIOMachineActors.deleteFileOrFolder]: fromPromise(
       async ({
         input,
