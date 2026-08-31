@@ -200,6 +200,13 @@ export default defineRegistryItemFactory((ctx) => {
               session?.equip(null)
               return
             }
+            if ((session?.selection.value.length ?? 0) > 0) {
+              // After the tool, because a tool is the more active thing to be
+              // holding — and before the mode, because leaving now writes the
+              // sketch back and runs the program.
+              session?.clearSelection()
+              return
+            }
 
             /*
              * Nothing sketch-specific left to stop, so this means what Escape
@@ -213,6 +220,36 @@ export default defineRegistryItemFactory((ctx) => {
         provide(keybindingsValueSpec, {
           keystrokes: ['Escape'],
           commandId: 'sketch.tool.cancel',
+          scopes: [SKETCHING_SCOPE],
+        }),
+
+        /**
+         * Delete what is selected.
+         *
+         * Two keys, because both are the delete key depending on the keyboard,
+         * and a Mac keyboard's Backspace is where a PC's Delete is.
+         */
+        provide(commandsValueSpec, {
+          id: 'sketch.delete',
+          title: 'Delete selected',
+          category: 'Sketch',
+          icon: 'close',
+          description: 'Remove the selected segments and constraints.',
+          enabled: computed(
+            () => (sessions()?.selection.value.length ?? 0) > 0
+          ),
+          run: () => sessions()?.deleteSelection(),
+        }),
+
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Delete'],
+          commandId: 'sketch.delete',
+          scopes: [SKETCHING_SCOPE],
+        }),
+
+        provide(keybindingsValueSpec, {
+          keystrokes: ['Backspace'],
+          commandId: 'sketch.delete',
           scopes: [SKETCHING_SCOPE],
         }),
       ],

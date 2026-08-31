@@ -28,6 +28,17 @@ export interface OpenSketch {
 }
 
 /**
+ * Something selected inside a sketch.
+ *
+ * Its own id space, and the reason is the origin: it is a real thing to select —
+ * constraints name it, `ConstraintSegment` has a literal for it — and it is the
+ * one such thing that is *not* an object in the graph. Modelling it as an object
+ * id would mean inventing an id for it, and then keeping the invention out of
+ * every lookup.
+ */
+export type SketchSelectionId = ApiObjectId | 'origin'
+
+/**
  * Editing one sketch, from opening it to writing it back.
  *
  * Deliberately not the same thing as the Sketch *toolbar mode*, and the
@@ -76,6 +87,18 @@ export interface SketchSessionService {
   readonly draft: ReadonlySignal<DraftState>
 
   /**
+   * What is selected, in the order it was picked.
+   *
+   * Order matters and is not decoration: a constraint's meaning depends on it —
+   * a midpoint takes a point *and* a line and would be a different request the
+   * other way round — so this is a list rather than a set.
+   *
+   * Dropped whenever a solve renumbers the graph, because an id that survives a
+   * renumbering names whatever now sits in that slot.
+   */
+  readonly selection: ReadonlySignal<readonly SketchSelectionId[]>
+
+  /**
    * Open the sketch the cursor or selection is in.
    *
    * No argument, because "which sketch" is already answered by where the user is
@@ -122,6 +145,25 @@ export interface SketchSessionService {
   endDrag(at: PlanePoint): void
   /** Abandon what the tool was part way through, keeping it equipped. */
   cancelTool(): void
+
+  /**
+   * Select something, or add it to what is selected.
+   *
+   * `add` is the shift-click reading: extend rather than replace, and toggle
+   * something already in the list, which is how a selection is corrected without
+   * starting again.
+   */
+  select(id: SketchSelectionId, options?: { add?: boolean }): void
+  /** Select nothing. */
+  clearSelection(): void
+  /**
+   * Delete what is selected.
+   *
+   * Segments and constraints both, because both are selectable and both are
+   * things a user means to remove — taking a constraint off is as ordinary an
+   * edit as taking a line out.
+   */
+  deleteSelection(): void
 }
 
 export const sketchSessionContract = defineContract({

@@ -148,6 +148,8 @@ const setup = (
     bufferGone?: { value: boolean }
     /** Makes every solve report that it could not satisfy the constraints. */
     editProblem?: string
+    /** Makes every mutation report that every id has become meaningless. */
+    renumbers?: boolean
   } = {}
 ) => {
   const buffer = createFileBackedTextBuffer({
@@ -196,8 +198,12 @@ const setup = (
     }),
     addSegment: vi.fn(async () => {
       calls.push('addSegment')
-      return (await (options.addSegment?.(calls) ??
-        Promise.resolve(drawnOutcome()))) as never
+      const outcome = await (options.addSegment?.(calls) ??
+        Promise.resolve(drawnOutcome()))
+      return {
+        ...(outcome as object),
+        ...(options.renumbers ? { invalidatesIds: true } : {}),
+      } as never
     }),
     addConstraint: vi.fn(async () => {
       calls.push('addConstraint')
@@ -666,6 +672,7 @@ describe('drawing in a sketch', () => {
 
     expect(app.frontend.deleteObjects).toHaveBeenCalledWith(0, {
       segmentIds: [0, 1, 2],
+      constraintIds: [],
     })
     expect(app.session.draft.value).toEqual({ kind: 'idle' })
   })
@@ -1018,6 +1025,113 @@ describe('dragging a point', () => {
 
     // The draft state is the gate, and idle means there is nothing to move.
     expect(app.frontend.editSegments).not.toHaveBeenCalled()
+  })
+})
+
+describe('selecting things in a sketch', () => {
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  it('replaces the selection by default and extends it on request', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.select(2)
+    expect(app.session.selection.value).toEqual([2])
+
+    app.session.select(5)
+    expect(app.session.selection.value).toEqual([5])
+
+    app.session.select(2, { add: true })
+    expect(app.session.selection.value).toEqual([5, 2])
+  })
+
+  /*
+   * Order is not decoration: a constraint's meaning depends on it — a midpoint
+   * takes a point *and* a line and would be a different request the other way
+   * round.
+   */
+  it('keeps what was picked in the order it was picked', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.select(9, { add: true })
+    app.session.select(3, { add: true })
+    app.session.select('origin', { add: true })
+
+    expect(app.session.selection.value).toEqual([9, 3, 'origin'])
+  })
+
+  it('takes something out when it is picked again', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select(2)
+    app.session.select(5, { add: true })
+
+    app.session.select(2, { add: true })
+
+    // Which is how a selection is corrected without starting again.
+    expect(app.session.selection.value).toEqual([5])
+  })
+
+  it('selects nothing with no sketch open', () => {
+    const app = setup()
+
+    app.session.select(2)
+
+    expect(app.session.selection.value).toEqual([])
+  })
+
+  it('deletes the segments and constraints it is holding', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select(2)
+
+    app.session.deleteSelection()
+    await vi.waitFor(() =>
+      expect(app.frontend.deleteObjects).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.deleteObjects).toHaveBeenCalledWith(0, {
+      segmentIds: [2],
+      constraintIds: [],
+    })
+    expect(app.session.selection.value).toEqual([])
+  })
+
+  it('will not delete the origin, which is not deletable', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select('origin')
+
+    app.session.deleteSelection()
+    await settled()
+
+    expect(app.frontend.deleteObjects).not.toHaveBeenCalled()
+  })
+
+  /*
+   * An id that survives a renumbering names whatever now sits in that slot, so a
+   * selection kept across one would silently point at the wrong geometry — and
+   * the next constraint would be applied to it.
+   */
+  it('drops the selection when a solve renumbers the graph', async () => {
+    const app = setup({ renumbers: true })
+    await app.session.enter()
+    app.session.select(2)
+    app.session.equip('point')
+
+    app.session.place({ x: 1, y: 1 })
+    await vi.waitFor(() => expect(app.session.selection.value).toEqual([]))
+  })
+
+  it('forgets the selection on the way out', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select(2)
+
+    await app.session.exit()
+
+    expect(app.session.selection.value).toEqual([])
   })
 })
 

@@ -55,6 +55,12 @@ function setup(
     from?: { x: number; y: number }
   }>({ kind: 'idle' })
 
+  const select = vi.fn()
+  const clearSelection = vi.fn()
+  const cancelTool = vi.fn(() => {
+    draft.value = { kind: 'idle' }
+  })
+
   const session = {
     open,
     tool,
@@ -64,6 +70,9 @@ function setup(
     finishChain,
     beginDrag,
     endDrag,
+    select,
+    clearSelection,
+    cancelTool,
   } as unknown as SketchSessionService
 
   // The identity projection: an element pixel is a plane millimetre, which
@@ -107,6 +116,9 @@ function setup(
     finishChain,
     beginDrag,
     endDrag,
+    select,
+    clearSelection,
+    cancelTool,
     draft,
     dispose: () => {
       dispose()
@@ -524,5 +536,110 @@ describe('dragging a point', () => {
     app.element.dispatchEvent(pointer('pointerdown', 20, 20))
 
     expect(app.beginDrag).not.toHaveBeenCalled()
+  })
+})
+
+describe('selecting by clicking', () => {
+  const clickable = () =>
+    setup({
+      graph: sketchGraph,
+      open: { sketchId: 3, name: 's', plane, planeProblem: null },
+    })
+
+  /*
+   * A press on a segment starts a drag, because it might become one — so what
+   * makes it a selection instead is the release without movement.
+   */
+  it('selects what was pressed when the pointer did not move', () => {
+    const app = clickable()
+
+    // Two millimetres off the middle of the line: near enough to the body, far
+    // enough from either end that a point does not win the pick.
+    app.element.dispatchEvent(pointer('pointerdown', 30, 22))
+    app.element.dispatchEvent(pointer('pointerup', 30, 22))
+
+    expect(app.select).toHaveBeenCalledWith(2, { add: false })
+    // Abandoned rather than committed, so a click costs no solve and cannot
+    // nudge geometry by a pixel.
+    expect(app.cancelTool).toHaveBeenCalled()
+    expect(app.endDrag).not.toHaveBeenCalled()
+  })
+
+  it('adds to the selection with shift held', () => {
+    const app = clickable()
+    const press = pointer('pointerdown', 20, 20)
+    const release = new MouseEvent('pointerup', {
+      bubbles: true,
+      clientX: 20,
+      clientY: 20,
+      button: 0,
+      shiftKey: true,
+    }) as unknown as PointerEvent
+
+    app.element.dispatchEvent(press)
+    app.element.dispatchEvent(release)
+
+    expect(app.select).toHaveBeenCalledWith(0, { add: true })
+  })
+
+  it('drags rather than selects once the pointer has moved', () => {
+    const app = clickable()
+
+    app.element.dispatchEvent(pointer('pointerdown', 30, 22))
+    app.element.dispatchEvent(pointer('pointermove', 60, 40))
+    app.element.dispatchEvent(pointer('pointerup', 60, 40))
+
+    expect(app.endDrag).toHaveBeenCalled()
+    expect(app.select).not.toHaveBeenCalled()
+  })
+
+  it('clears the selection when the click was on nothing', () => {
+    const app = clickable()
+
+    app.picked.dispatchEvent(pointer('pointerdown', 150, 90))
+    app.picked.dispatchEvent(pointer('pointerup', 150, 90))
+
+    expect(app.clearSelection).toHaveBeenCalled()
+  })
+
+  /*
+   * This handler runs *behind* the camera, so a press that turned into an orbit
+   * arrives here on release like any other. Clearing the selection because
+   * somebody looked at the model from another angle would be its own bug.
+   */
+  it('leaves the selection alone after an orbit', () => {
+    const app = clickable()
+
+    app.picked.dispatchEvent(pointer('pointerdown', 150, 90))
+    app.picked.dispatchEvent(pointer('pointerup', 60, 20))
+
+    expect(app.clearSelection).not.toHaveBeenCalled()
+  })
+
+  it('selects the origin, which is not in the graph at all', () => {
+    const app = clickable()
+
+    app.picked.dispatchEvent(pointer('pointerdown', 0, 0))
+    app.picked.dispatchEvent(pointer('pointerup', 0, 0))
+
+    expect(app.select).toHaveBeenCalledWith('origin', { add: false })
+    expect(app.clearSelection).not.toHaveBeenCalled()
+  })
+
+  it('keeps a shift-click on nothing from clearing what is selected', () => {
+    const app = clickable()
+    const press = pointer('pointerdown', 150, 90)
+    const release = new MouseEvent('pointerup', {
+      bubbles: true,
+      clientX: 150,
+      clientY: 90,
+      button: 0,
+      shiftKey: true,
+    }) as unknown as PointerEvent
+
+    app.picked.dispatchEvent(press)
+    app.picked.dispatchEvent(release)
+
+    expect(app.clearSelection).not.toHaveBeenCalled()
   })
 })

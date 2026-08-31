@@ -193,8 +193,17 @@ export type DraftAction =
    * wanted and the caller runs the sequence — see `buildRectangle`.
    */
   | { kind: 'rectangle'; mode: RectangleMode; origin: PlanePoint }
-  /** Throw a draft away. */
-  | { kind: 'discard'; segmentIds: readonly ApiObjectId[] }
+  /**
+   * Take geometry out of the sketch.
+   *
+   * A draft being abandoned, most often — but the same request deletes a
+   * selection, which is why constraints are here too.
+   */
+  | {
+      kind: 'discard'
+      segmentIds: readonly ApiObjectId[]
+      constraintIds?: readonly ApiObjectId[]
+    }
 
 export interface DraftStep {
   state: DraftState

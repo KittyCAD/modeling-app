@@ -249,6 +249,8 @@ export interface WrittenOutcome {
   text: string
   graph: SceneGraph
   newObjects: readonly ApiObjectId[]
+  /** Carried through so the caller can drop what it was holding. */
+  invalidatesIds: boolean
 }
 
 /** The label the existing app gives a rectangle's sides. */

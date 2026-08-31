@@ -182,6 +182,7 @@ describe('building one', () => {
             text: `after ${written} lines`,
             graph,
             newObjects: id === undefined ? [] : [id - 2, id - 1, id],
+            invalidatesIds: false,
           }
         }
       ),
@@ -208,6 +209,7 @@ describe('building one', () => {
               ),
             ]),
             newObjects: [id],
+            invalidatesIds: false,
           }
         }
       ),
@@ -270,11 +272,13 @@ describe('building one', () => {
         text: '',
         graph: graphOf([]),
         newObjects: [],
+        invalidatesIds: false,
       })),
       addConstraint: vi.fn(async () => ({
         text: '',
         graph: graphOf([]),
         newObjects: [],
+        invalidatesIds: false,
       })),
     }
 

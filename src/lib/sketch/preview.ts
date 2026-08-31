@@ -1,6 +1,6 @@
 import type { PlanePoint } from '@src/lib/scene/projection'
 import type { DraftState } from '@src/lib/sketch/draft'
-import type { SketchShape } from '@src/lib/sketch/drawing'
+import type { SketchShape, SketchVertex } from '@src/lib/sketch/drawing'
 import { cornersFor } from '@src/lib/sketch/rectangle'
 import type { SketchToolId } from '@src/lib/sketch/tools'
 
@@ -33,12 +33,33 @@ import type { SketchToolId } from '@src/lib/sketch/tools'
  */
 export const PREVIEW_ID = -1
 
+/**
+ * The id the origin marker is drawn under.
+ *
+ * The origin is snappable and selectable and is *not* in the graph, so drawing it
+ * needs an id of its own for the same reason a preview does. Negative, so it
+ * cannot collide with a real one.
+ */
+export const ORIGIN_ID = -2
+
 const base = {
   id: PREVIEW_ID,
   construction: false,
   /** Never constrained: it is not in the sketch, so it has no freedom to report. */
   freedom: null,
 } as const
+
+/**
+ * The sketch's origin, which is always there and is never in the graph.
+ *
+ * Drawn as a fixed point, because that is what it is: nothing can move it, and
+ * the constrained colour says so without inventing a marker of its own.
+ */
+export const originVertex = (): SketchVertex => ({
+  id: ORIGIN_ID,
+  at: { x: 0, y: 0 },
+  freedom: 'Fixed',
+})
 
 /**
  * What to draw for a shape that has been started but not written.

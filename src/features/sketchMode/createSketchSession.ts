@@ -8,6 +8,7 @@ import type { CameraDriver } from '@src/contracts/scene'
 import type { SceneProjection } from '@src/contracts/sceneProjection'
 import type {
   OpenSketch,
+  SketchSelectionId,
   SketchSessionService,
 } from '@src/contracts/sketchSession'
 import type { ArtifactMap } from '@src/lib/kcl/artifacts'
@@ -107,6 +108,7 @@ export function createSketchSession(
   const error = signal<string | null>(null)
   const tool = signal<SketchToolId | null>(null)
   const draft = signal<DraftState>({ kind: 'idle' })
+  const selection = signal<readonly SketchSelectionId[]>([])
 
   /**
    * Mutations run one at a time, in the order they were asked for.
@@ -177,6 +179,22 @@ export function createSketchSession(
           plane: null,
           problem: 'The scene could not say where that face is.',
         }
+  }
+
+  /**
+   * Notice that every id the app is holding has just become meaningless.
+   *
+   * kcl-lib sets this when a solve renumbers the graph, and an id that survives
+   * a renumbering names whatever now occupies that slot — so a selection kept
+   * across one would silently point at the wrong geometry, and the next
+   * constraint would be applied to it.
+   *
+   * The draft states are deliberately left alone: they are only ever alive for
+   * the duration of one tool action, and the mutations that renumber are not the
+   * ones a tool makes mid-draft.
+   */
+  const noteIds = (outcome: Pick<SketchOutcome, 'invalidatesIds'>) => {
+    if (outcome.invalidatesIds) selection.value = []
   }
 
   /**
@@ -261,6 +279,7 @@ export function createSketchSession(
           label: action.label,
           checkpoint: true,
         })
+        noteIds(outcome)
         write(outcome)
         // Only a shape that is dragged open has something to take hold of. A
         // point or a finished circle is done, and the tool stays equipped for
@@ -276,6 +295,7 @@ export function createSketchSession(
           action.segment,
           { label: action.label, checkpoint: true }
         )
+        noteIds(outcome)
         write(outcome)
         // A chain always takes hold of the new line's end: that is what makes
         // the next segment continue from it.
@@ -320,6 +340,8 @@ export function createSketchSession(
          * whole remaining distance rather than for one frame of it — otherwise
          * every refusal permanently offsets the pointer from the geometry.
          */
+        noteIds(outcome)
+
         if (outcome.problem) {
           error.value = outcome.problem
         } else {
@@ -336,6 +358,8 @@ export function createSketchSession(
           [{ id: action.pointId, ctor: pointAt(action.to, units()) }],
           { commit: action.commit, checkpoint: action.commit }
         )
+        noteIds(outcome)
+
         /*
          * Only a commit reaches the file.
          *
@@ -352,6 +376,7 @@ export function createSketchSession(
           commit: action.commit,
           checkpoint: action.commit,
         })
+        noteIds(outcome)
         // Same as a point move: a preview is thrown away on the next one, so
         // writing its text would churn the document once per pointer event.
         if (action.commit) write(outcome)
@@ -378,6 +403,7 @@ export function createSketchSession(
           return
         }
 
+        noteIds(built.outcome)
         // One edit for the whole rectangle: every call answered with the whole
         // file, and the last one contains all twelve.
         write(built.outcome)
@@ -412,10 +438,14 @@ export function createSketchSession(
       }
 
       case 'discard': {
-        if (action.segmentIds.length === 0) return
+        const constraintIds = action.constraintIds ?? []
+        if (action.segmentIds.length === 0 && constraintIds.length === 0) return
+
         const outcome = await api.deleteObjects(session.sketchId, {
           segmentIds: action.segmentIds,
+          constraintIds,
         })
+        noteIds(outcome)
         write(outcome)
         return
       }
@@ -496,6 +526,7 @@ export function createSketchSession(
     camera()?.releaseCamera()
     latestMove = null
     draft.value = { kind: 'idle' }
+    selection.value = []
     tool.value = null
     open.value = null
     busy.value = false
@@ -522,6 +553,7 @@ export function createSketchSession(
     canEnter,
     tool: computed(() => tool.value),
     draft: computed(() => draft.value),
+    selection: computed(() => selection.value),
 
     async enter() {
       if (open.peek() || busy.peek()) return
@@ -639,6 +671,7 @@ export function createSketchSession(
       // a way of finishing the line you were in the middle of.
       void discardDraft()
       tool.value = null
+      selection.value = []
       // Back to following the engine: outside a sketch there is nothing drawn
       // over the video that a round trip would hold up.
       camera()?.releaseCamera()
@@ -701,6 +734,54 @@ export function createSketchSession(
 
     cancelTool() {
       void discardDraft()
+    },
+
+    select(id, options = {}) {
+      if (!open.peek()) return
+
+      const current = selection.peek()
+
+      if (!options.add) {
+        selection.value = [id]
+        return
+      }
+
+      // Shift-clicking something already picked takes it out, which is how a
+      // selection is corrected without starting again.
+      selection.value = current.includes(id)
+        ? current.filter((each) => each !== id)
+        : [...current, id]
+    },
+
+    clearSelection() {
+      selection.value = []
+    },
+
+    deleteSelection() {
+      const api = frontend()
+      const session = open.peek()
+      const graph = api?.sceneGraph.peek()
+      if (!api || !session || !graph) return
+
+      /*
+       * Sorted by what each id actually is, because the frontend takes two
+       * lists. The origin is dropped: it is selectable and constrainable and is
+       * not something that can be deleted.
+       */
+      const segmentIds: ApiObjectId[] = []
+      const constraintIds: ApiObjectId[] = []
+
+      for (const id of selection.peek()) {
+        if (id === 'origin') continue
+        const kind = objectAt(graph, id)?.kind.type
+        if (kind === 'Segment') segmentIds.push(id)
+        if (kind === 'Constraint') constraintIds.push(id)
+      }
+
+      if (segmentIds.length === 0 && constraintIds.length === 0) return
+
+      selection.value = []
+      run([{ kind: 'discard', segmentIds, constraintIds }])
     },
 
     place(at: PlanePoint) {

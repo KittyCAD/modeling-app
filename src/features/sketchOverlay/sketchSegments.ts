@@ -58,6 +58,8 @@ export interface SegmentAppearance {
   /** Segment ids the tool has not committed yet. */
   drafts: ReadonlySet<ApiObjectId>
   hoveredId: ApiObjectId | null
+  /** What is selected. Coloured over the freedom colours, but under a hover. */
+  selected: ReadonlySet<ApiObjectId>
 }
 
 const materialFor = (
@@ -159,6 +161,7 @@ export function drawSketch(
 
     const isDraft = appearance.drafts.has(shape.id)
     const isHovered = appearance.hoveredId === shape.id
+    const isSelected = appearance.selected.has(shape.id)
     const owned = shape.kind === 'polyline'
 
     const geometry = new LineGeometry()
@@ -172,6 +175,7 @@ export function drawSketch(
         : getSegmentColor({
             isDraft,
             isHovered,
+            isSelected,
             freedom: shape.freedom,
             theme: appearance.theme,
           }),
@@ -198,6 +202,7 @@ export function drawSketch(
 
   for (const vertex of drawing.vertices) {
     const isHovered = appearance.hoveredId === vertex.id
+    const isSelected = appearance.selected.has(vertex.id)
 
     /*
      * A unit circle, scaled per frame rather than built at a size.
@@ -216,6 +221,7 @@ export function drawSketch(
       new MeshBasicMaterial({
         color: getSegmentColor({
           isHovered,
+          isSelected,
           freedom: vertex.freedom,
           theme: appearance.theme,
         }),

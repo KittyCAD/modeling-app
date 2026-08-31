@@ -10,7 +10,7 @@ import type { SketchScene as Scene } from '@src/features/sketchOverlay/createSke
 import type { drawSketch } from '@src/features/sketchOverlay/sketchSegments'
 import { draftSegmentIds } from '@src/lib/sketch/draft'
 import { drawingOf } from '@src/lib/sketch/drawing'
-import { previewShapes } from '@src/lib/sketch/preview'
+import { ORIGIN_ID, originVertex, previewShapes } from '@src/lib/sketch/preview'
 import { SKETCH_HOVER_DISTANCE_PX, pickInSketch } from '@src/lib/sketch/hitTest'
 import './sketchOverlay.css'
 
@@ -170,9 +170,14 @@ export function SketchScene({ pointer }: { pointer: SketchPointer }) {
 
     paint(
       built.group,
-      preview.length > 0
-        ? { ...drawing, shapes: [...drawing.shapes, ...preview] }
-        : drawing,
+      {
+        ...drawing,
+        shapes: [...drawing.shapes, ...preview],
+        // The origin is drawn here rather than in `drawingOf`, because it is not
+        // in the graph and the hit test reads the graph's drawing: adding it
+        // there would make it pickable as a segment it is not.
+        vertices: [...drawing.vertices, originVertex()],
+      },
       {
         theme,
         drafts: new Set([
@@ -181,6 +186,16 @@ export function SketchScene({ pointer }: { pointer: SketchPointer }) {
           ...preview.map((shape) => shape.id),
         ]),
         hoveredId: hovered?.id ?? null,
+        /*
+         * The origin is dropped here rather than filtered upstream: it is a real
+         * selection and the session is right to hold it, but it is not in the
+         * drawing, so nothing here could colour it.
+         */
+        selected: new Set(
+          sessions.selection.value.map((id) =>
+            id === 'origin' ? ORIGIN_ID : id
+          )
+        ),
       },
       built.viewport()
     )
