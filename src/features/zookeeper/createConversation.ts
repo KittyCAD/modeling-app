@@ -1,4 +1,4 @@
-import { type ReadonlySignal, computed, signal } from '@preact/signals'
+import { type ReadonlySignal, computed, effect, signal } from '@preact/signals'
 import type {
   Conversation,
   ConversationConnection,
@@ -490,6 +490,34 @@ export function createConversation(
     void applying.then(() => onTurnSettled?.())
   }
 
+  /*
+   * A turn does not survive its socket.
+   *
+   * Nothing else settles it: `finish` is reached from the service's own
+   * messages, and a socket that drops sends none. So a turn that was streaming
+   * when the connection went stayed `streaming` for the rest of the session —
+   * which made `status` a claim about the past rather than the present, and put
+   * a conversation from a closed project permanently on the credits spending
+   * list.
+   *
+   * Watched rather than pushed in by the connection, because a conversation is
+   * given its connection as a signal and this is the only place that knows
+   * whether a turn is in flight.
+   */
+  let wasConnected = connection?.peek().status === 'connected'
+  const stopWatchingConnection = connection
+    ? effect(() => {
+        const status = connection.value.status
+        const connected = status === 'connected'
+        const dropped = wasConnected && !connected
+        wasConnected = connected
+
+        // Only a turn actually in flight. A conversation sitting idle when its
+        // socket goes has nothing to mark.
+        if (dropped && turn !== null) finish(turn.id, 'failed')
+      })
+    : () => {}
+
   const stopListening = transport.onMessage((message) => {
     const current = turn
     /*
@@ -675,6 +703,7 @@ export function createConversation(
 
     dispose() {
       stopListening()
+      stopWatchingConnection()
       for (const stop of following.values()) stop()
       following.clear()
       ledger.clear()

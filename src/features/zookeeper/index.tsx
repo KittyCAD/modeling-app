@@ -289,6 +289,18 @@ const zookeeperFeature = defineRegistryItemFactory((ctx) => {
             const open = [...zookeeper().conversations.value.values()]
             return open.flatMap((conversation, index) => {
               if (conversation.status.value !== 'streaming') return []
+              /*
+               * A live socket, not just a turn that never finished.
+               *
+               * Spending requires something at the other end to spend against.
+               * A conversation whose connection has dropped is costing nothing,
+               * however its last turn is recorded — and a turn *can* stay
+               * `streaming` after the socket dies, which is exactly how a
+               * conversation from a deleted project stayed on this list for
+               * good.
+               */
+              if (conversation.connection.value.status !== 'connected')
+                return []
               const turn = conversation.transcript.value.at(-1)
               if (turn === undefined) return []
               return [

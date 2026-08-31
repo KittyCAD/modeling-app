@@ -3,7 +3,9 @@ import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
 } from '@kittycad/lib'
+import { computed, signal } from '@preact/signals'
 import { describe, expect, it } from 'vitest'
+import type { ConversationConnection } from '@src/contracts/zookeeper'
 import {
   type EditorCapability,
   type FileBackedTextBuffer,
@@ -140,12 +142,21 @@ function setup(
   const changeHistory = createChangeHistory()
   const claims = options.withClaims ? createWriteClaims() : undefined
 
+  /** The socket's state, so a test can drop it. */
+  const link = signal<ConversationConnection>({
+    status: 'connected',
+    error: null,
+    superseded: false,
+    deniedCode: null,
+  })
+
   const conversation = createConversation({
     id: 'c1',
     author: AUTHOR,
     transport: wire.transport,
     target,
     changeHistory,
+    connection: computed(() => link.value),
     ...(claims === undefined ? {} : { claims }),
     ...(options.withoutProject === true ? {} : { project }),
     captureProject: async () => new Map([[PATH, textOf(buffer)], ...onDisk]),
@@ -160,6 +171,7 @@ function setup(
     changeHistory,
     claims,
     conversation,
+    link,
   }
 }
 
@@ -635,5 +647,85 @@ describe('createConversation', () => {
 
     expect(textOf(buffer)).toBe('width = 24\n')
     expect(claims.holder(PATH)).toBeNull()
+  })
+})
+
+/*
+ * A turn that was streaming when its socket went used to stay `streaming` for
+ * the rest of the session, because `finish` is only ever reached from the
+ * service's own messages and a dropped socket sends none. That made `status` a
+ * claim about the past, and it is what kept a conversation belonging to a closed
+ * and deleted project permanently on the credits "spending" list.
+ */
+describe('a conversation whose socket drops', () => {
+  it('fails the turn that was in flight', async () => {
+    const harness = setup()
+    const sending = harness.conversation.send('make it thicker')
+    await Promise.resolve()
+
+    expect(harness.conversation.status.value).toBe('streaming')
+
+    harness.link.value = {
+      status: 'failed',
+      error: 'The connection closed.',
+      superseded: false,
+      deniedCode: null,
+    }
+
+    expect(harness.conversation.status.value).toBe('failed')
+    expect(harness.conversation.transcript.value.at(-1)?.status).toBe('failed')
+    harness.conversation.dispose()
+    await sending.catch(() => {})
+  })
+
+  it('leaves an idle conversation alone', () => {
+    const harness = setup()
+
+    expect(harness.conversation.status.value).toBe('idle')
+
+    harness.link.value = {
+      status: 'failed',
+      error: 'The connection closed.',
+      superseded: false,
+      deniedCode: null,
+    }
+
+    // Nothing was in flight, so there is no turn to mark and none is invented.
+    expect(harness.conversation.status.value).toBe('idle')
+    expect(harness.conversation.transcript.value).toEqual([])
+    harness.conversation.dispose()
+  })
+
+  it('does not re-fail a turn each time the socket flaps', async () => {
+    const harness = setup()
+    const sending = harness.conversation.send('make it thicker')
+    await Promise.resolve()
+
+    const drop = () => {
+      harness.link.value = {
+        status: 'offline',
+        error: null,
+        superseded: false,
+        deniedCode: null,
+      }
+    }
+    const raise = () => {
+      harness.link.value = {
+        status: 'connected',
+        error: null,
+        superseded: false,
+        deniedCode: null,
+      }
+    }
+
+    drop()
+    raise()
+    drop()
+
+    // One turn, still failed, not a transcript full of them.
+    expect(harness.conversation.transcript.value).toHaveLength(1)
+    expect(harness.conversation.status.value).toBe('failed')
+    harness.conversation.dispose()
+    await sending.catch(() => {})
   })
 })
