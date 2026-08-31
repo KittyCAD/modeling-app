@@ -5,10 +5,10 @@ import type { TextEdit } from '@src/contracts/modelingOperations'
  * Whether any of `changes` modifies text strictly inside `[from, to)`.
  *
  * The predicate `classify` uses for a replacement, exposed because reverting a
- * turn asks the same question of a different range: "has anyone edited inside the
- * text the agent inserted?" Touching an endpoint does not count, for the reason
+ * contribution asks the same question of a different range: "has anyone edited inside the
+ * text this writer inserted?" Touching an endpoint does not count, for the reason
  * spelled out in `detectConflict` — `ChangeDesc.touchesRange` counts it, and that
- * makes the most common agent edit look like a conflict.
+ * makes the most common remote edit look like a conflict.
  */
 export function changesTouchInterior(
   changes: ChangeDesc,
@@ -32,22 +32,22 @@ export function changesTouchInterior(
 }
 
 /**
- * Why an agent's edit could not be applied to the document as it now stands.
+ * Why a remote edit could not be applied to the document as it now stands.
  *
  * Both are situations where no automated answer exists, rather than places the
- * algorithm gave up: the agent expressed an intent against text the user has
+ * algorithm gave up: the writer expressed an intent against text the user has
  * since made a different decision about.
  */
 export type ConflictReason =
-  /** The user edited text inside the span the agent meant to replace. */
+  /** The user edited text inside the span the writer meant to replace. */
   | 'overlapping'
-  /** The text the agent meant to change is no longer there at all. */
+  /** The text the writer meant to change is no longer there at all. */
   | 'erased'
   /**
    * The edit and the history it was rebased against describe different files.
    *
    * A caller error rather than anything the user did, but it arrives as a
-   * conflict for a practical reason: this runs mid-stream while a turn applies,
+   * conflict for a practical reason: this runs mid-stream while edits are landing,
    * so throwing would surface as an unhandled rejection somewhere up the socket
    * handler, while a conflict is a state the UI already knows how to show. It
    * also fails closed — nothing is written.
@@ -62,38 +62,46 @@ export type RebaseOutcome =
   /**
    * Ask the user. `edits` stay in *baseline* coordinates, because that is the
    * only document they are meaningful against — a conflict UI offering "use
-   * Zookeeper's version" needs the edit as the agent meant it, not a mapped
+   * their version" needs the edit as its author meant it, not a mapped
    * approximation.
    */
   | { kind: 'conflict'; reason: ConflictReason; edits: readonly TextEdit[] }
 
 /**
- * Move an agent's edit onto the document the user actually has now.
+ * Move a remote writer's edit onto the document we actually have now.
  *
- * The agent computes against a baseline captured when the turn was sent. Under
- * live-apply the user keeps typing while it thinks, so by the time an edit
- * arrives the document has usually moved. Rebasing is therefore not a fallback
- * for an unlucky case; it is the normal path, and it is the whole reason the edit
- * is recovered as positions rather than applied as a whole file. A whole-file
- * write has no positions, so there is nothing to map and "rebase" is not merely
- * harder but undefined.
+ * A remote writer computes against some earlier state of the file. By the time
+ * its edit arrives the local document has usually moved, because the user has
+ * kept typing. Rebasing is therefore not a fallback for an unlucky case; it is
+ * the normal path, and it is the whole reason an edit should be carried as
+ * positions rather than as a replacement document. A whole-file write has no
+ * positions, so there is nothing to map and "rebase" is not merely harder but
+ * undefined.
  *
- * `local` is what happened to this file since the baseline, composed — and it
- * must exclude the agent's *own* earlier applications in the same turn, or the
- * second edit of a turn is rebased over the first and lands twice. The ledger
- * that produces it does that filtering; this function trusts it.
+ * `local` is the **divergence**: a `ChangeSet` from the writer's document to
+ * ours. `createDivergenceLedger` maintains it, and its `length` is the writer's
+ * document length, which is what `baselineLength` must agree with. Crucially the
+ * divergence starts at the writer's *current* view rather than at some original
+ * baseline, so a writer that sends several edits in a row does not have its own
+ * earlier work folded in and applied twice.
  *
  * The mechanism is CodeMirror's, not ours. `ChangeSet.map` is documented as "a
  * basic form of operational transformation … can be used for collaborative
- * editing", which is precisely the problem: two writers, one document, edits
- * computed against a shared ancestor. Treating the agent as a collaborator means
- * the primitive already shipped.
+ * editing", which is exactly this problem: two writers, one document, edits
+ * computed against a shared ancestor.
+ *
+ * The first caller is the Zookeeper agent, which is why this exists now — but
+ * nothing here knows what an agent is, and a remote human editor needs the same
+ * three functions.
  */
 export function rebaseEdits(input: {
   edits: readonly TextEdit[]
-  /** Length of the file as the agent saw it. */
+  /** Length of the file as the remote writer last saw it. */
   baselineLength: number
-  /** Composed local changes since the baseline. Null when the file is untouched. */
+  /**
+   * Divergence from the writer's document to ours, from
+   * `createDivergenceLedger`. Null when the two agree.
+   */
   local: ChangeSet | null
 }): RebaseOutcome {
   const { edits, baselineLength, local } = input
@@ -124,25 +132,25 @@ export function rebaseEdits(input: {
 }
 
 /**
- * Decide whether the user's changes and the agent's can coexist.
+ * Decide whether the local changes and the remote ones can coexist.
  *
- * Detection runs in **baseline coordinates**, against the edit as the agent
+ * Detection runs in **baseline coordinates**, against the edit as the writer
  * wrote it. Mapping happens afterwards, only for survivors — inverting that
  * order destroys the evidence, because a mapped range no longer records what the
- * agent was talking about.
+ * writer was talking about.
  *
  * `ChangeDesc.touchesRange` looks like the tool for this and is not. Its test is
- * `pos <= to && end >= from`, so a local change that merely *abuts* the agent's
+ * `pos <= to && end >= from`, so a local change that merely *abuts* the remote
  * range counts as touching it, and two insertions at one point count as
  * touching. Appending at the end of a file while the user's caret is also at the
- * end is the single most common agent edit there is; reporting that as a conflict
+ * end is the single most common remote edit there is; reporting that as a conflict
  * would make the feature unusable. `"cover"` is likewise incomplete — it is only
  * returned on strict containment (`pos < from && end > to`), so a local change
- * deleting *exactly* the agent's range reports `true` rather than `"cover"`.
+ * deleting *exactly* the remote range reports `true` rather than `"cover"`.
  *
  * So the ranges are examined directly. `iterChangedRanges` reports `fromA`/`toA`
  * in the starting document, which is the baseline — the same coordinates the
- * agent's edits are in, with no conversion.
+ * remote edits are in, with no conversion.
  */
 function detectConflict(
   edits: readonly TextEdit[],
@@ -169,16 +177,16 @@ function detectConflict(
 }
 
 /**
- * How one local changed range bears on one of the agent's edits.
+ * How one local changed range bears on one of the remote edits.
  *
  * The two cases are genuinely different and collapsing them is what produces
  * false conflicts:
  *
- * - The agent **inserting** at a point only cares whether the point still
+ * - A writer **inserting** at a point only cares whether the point still
  *   exists. Text arriving beside it, on either side, is not a disagreement —
  *   `mergeTextEdits` says the same thing about the modelling path: "two inserts
  *   at the same offset are ordered, not conflicting".
- * - The agent **replacing** a span cares about that span's interior. A local
+ * - A writer **replacing** a span cares about that span's interior. A local
  *   change at either boundary maps cleanly, because the replacement's `from` is
  *   mapped forward and its `to` backward, so the range shrinks away from text the
  *   user typed at its edges rather than swallowing it.
@@ -188,10 +196,10 @@ function classify(
   fromA: number,
   toA: number
 ): ConflictReason | null {
-  const agentInserts = edit.from === edit.to
+  const remoteInserts = edit.from === edit.to
   const localDeletes = fromA < toA
 
-  if (agentInserts) {
+  if (remoteInserts) {
     // Only a deletion strictly spanning the insertion point removes it. A
     // deletion ending exactly at the point, or starting there, leaves an
     // unambiguous place for the text to go.
@@ -202,7 +210,7 @@ function classify(
 
   if (!localDeletes) {
     // A local insertion, which deletes nothing. It only matters if it landed
-    // strictly inside the span being replaced, where the agent's replacement
+    // strictly inside the span being replaced, where the writer's replacement
     // would swallow text the user just typed.
     return fromA > edit.from && fromA < edit.to ? 'overlapping' : null
   }

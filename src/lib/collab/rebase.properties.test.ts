@@ -2,7 +2,7 @@ import { ChangeSet, Text } from '@codemirror/state'
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import type { TextEdit } from '@src/contracts/modelingOperations'
-import { rebaseEdits } from '@src/features/zookeeper/rebase'
+import { rebaseEdits } from '@src/lib/collab/rebase'
 import { documentText } from '@src/test/properties'
 
 /**

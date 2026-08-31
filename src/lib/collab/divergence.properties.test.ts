@@ -1,8 +1,8 @@
 import { ChangeSet, Text } from '@codemirror/state'
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
-import { createDivergenceLedger } from '@src/features/zookeeper/divergence'
-import { rebaseEdits } from '@src/features/zookeeper/rebase'
+import { createDivergenceLedger } from '@src/lib/collab/divergence'
+import { rebaseEdits } from '@src/lib/collab/rebase'
 import { documentText } from '@src/test/properties'
 
 /**
@@ -105,7 +105,7 @@ describe('divergence ledger properties', () => {
               ChangeSet.of([...outcome.edits], ourDoc.length)
             )
             agentDoc = applyChanges(agentDoc, agentChanges)
-            ledger.recordAgent(PATH, agentChanges)
+            ledger.recordRemote(PATH, agentChanges)
             holds()
           }
         }
@@ -145,7 +145,7 @@ describe('divergence ledger properties', () => {
         // Move the agent's document without applying anything to ours.
         const agentChanges = changesFor(baseline.length, spec)
         if (agentChanges.empty) return
-        expect(ledger.recordAgent(PATH, agentChanges)).toBe(true)
+        expect(ledger.recordRemote(PATH, agentChanges)).toBe(true)
 
         /*
          * Our document is still the baseline, but the divergence now says it

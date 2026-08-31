@@ -3,11 +3,11 @@ import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import {
   type AppliedChange,
-  inverseForTurn,
-} from '@src/features/zookeeper/revertTurn'
+  inverseForContribution,
+} from '@src/lib/collab/revert'
 
 /**
- * Reverting a turn, as laws.
+ * Reverting a contribution, as laws.
  *
  * Under live-apply this is the only recourse after a bad edit lands, so the
  * guarantee people need is not "it undoes the agent" but "it does not take my
@@ -23,7 +23,7 @@ import {
  * than about the code.
  */
 
-const TURN = 'turn-1'
+const CONTRIBUTION = 'contribution-1'
 
 const baselineText = fc.string({
   unit: fc.constantFrom('b', '\n'),
@@ -39,7 +39,7 @@ const insertion = fc.record({
 const countOf = (text: string, character: string) =>
   [...text].filter((each) => each === character).length
 
-describe('inverseForTurn properties', () => {
+describe('inverseForContribution properties', () => {
   const build = (
     baseline: string,
     insertions: readonly { mine: boolean; at: number; length: number }[]
@@ -54,7 +54,11 @@ describe('inverseForTurn properties', () => {
       const insert = (spec.mine ? 'A' : 'U').repeat(spec.length)
       const changes = ChangeSet.of([{ from, to: from, insert }], doc.length)
 
-      applied.push({ changes, docBefore: doc, turnId: spec.mine ? TURN : null })
+      applied.push({
+        changes,
+        docBefore: doc,
+        contributionId: spec.mine ? CONTRIBUTION : null,
+      })
       doc = changes.apply(doc)
 
       if (spec.mine) agentInserted += spec.length
@@ -64,14 +68,17 @@ describe('inverseForTurn properties', () => {
     return { applied, doc, agentInserted, userInserted }
   }
 
-  it('removes everything the turn inserted', () => {
+  it('removes everything the contribution inserted', () => {
     fc.assert(
       fc.property(
         baselineText,
         fc.array(insertion, { maxLength: 10 }),
         (baseline, insertions) => {
           const { applied, doc } = build(baseline, insertions)
-          const inverse = inverseForTurn({ applied, turnId: TURN })
+          const inverse = inverseForContribution({
+            applied,
+            contributionId: CONTRIBUTION,
+          })
 
           const reverted =
             inverse.changes === null
@@ -95,7 +102,10 @@ describe('inverseForTurn properties', () => {
         fc.array(insertion, { maxLength: 10 }),
         (baseline, insertions) => {
           const { applied, doc, userInserted } = build(baseline, insertions)
-          const inverse = inverseForTurn({ applied, turnId: TURN })
+          const inverse = inverseForContribution({
+            applied,
+            contributionId: CONTRIBUTION,
+          })
 
           const reverted =
             inverse.changes === null
@@ -115,7 +125,10 @@ describe('inverseForTurn properties', () => {
         fc.array(insertion, { maxLength: 10 }),
         (baseline, insertions) => {
           const { applied, doc } = build(baseline, insertions)
-          const inverse = inverseForTurn({ applied, turnId: TURN })
+          const inverse = inverseForContribution({
+            applied,
+            contributionId: CONTRIBUTION,
+          })
 
           const reverted =
             inverse.changes === null
@@ -137,7 +150,10 @@ describe('inverseForTurn properties', () => {
         fc.array(insertion, { maxLength: 10 }),
         (baseline, insertions) => {
           const { applied, doc } = build(baseline, insertions)
-          const inverse = inverseForTurn({ applied, turnId: TURN })
+          const inverse = inverseForContribution({
+            applied,
+            contributionId: CONTRIBUTION,
+          })
 
           if (inverse.changes === null) return
           expect(inverse.changes.length).toBe(doc.length)
@@ -147,7 +163,7 @@ describe('inverseForTurn properties', () => {
     )
   })
 
-  it('has nothing to undo when the turn did nothing', () => {
+  it('has nothing to undo when the contribution did nothing', () => {
     fc.assert(
       fc.property(
         baselineText,
@@ -159,7 +175,9 @@ describe('inverseForTurn properties', () => {
           }))
           const { applied } = build(baseline, onlyTheirs)
 
-          expect(inverseForTurn({ applied, turnId: TURN })).toEqual({
+          expect(
+            inverseForContribution({ applied, contributionId: CONTRIBUTION })
+          ).toEqual({
             changes: null,
             stranded: [],
           })

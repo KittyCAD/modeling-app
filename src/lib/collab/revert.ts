@@ -1,10 +1,10 @@
 import type { ChangeSet, Text } from '@codemirror/state'
-import { changesTouchInterior } from '@src/features/zookeeper/rebase'
+import { changesTouchInterior } from '@src/lib/collab/rebase'
 
 /**
  * One change that has been applied to our document.
  *
- * Recorded for every writer, not just the agent, because undoing the agent's
+ * Recorded for every writer, not just the one being undone, because removing a
  * contribution means projecting its inverse *through* everything that happened
  * afterwards — so the entries in between are as necessary as the ones being
  * reverted.
@@ -16,56 +16,58 @@ export interface AppliedChange {
   changes: ChangeSet
   /** Our document immediately before `changes` applied. */
   docBefore: Text
-  /** The turn that caused it, or null for the user and everyone else. */
-  turnId: string | null
+  /**
+   * What this change belongs to, or null for the local user.
+   *
+   * A *contribution* is any set of changes worth undoing together. For an agent
+   * that is one turn; for a remote human it might be one batch, or everything
+   * they did while connected. This layer does not care which — it only needs the
+   * tag to be stable.
+   */
+  contributionId: string | null
 }
 
 /**
- * A range of agent text that the user has since edited inside.
+ * A range of a contribution's text that somebody else has since edited inside.
  *
- * Offsets are in the document as it stood when that agent change landed, which is
- * where the range is meaningful — it describes a block the agent wrote.
+ * Offsets are in the document as it stood when that change landed, which is where
+ * the range is meaningful — it describes a block the contributor wrote.
  */
 export interface StrandedRange {
   from: number
   to: number
 }
 
-export interface TurnInverse {
+export interface ContributionInverse {
   /**
-   * Applicable to the document as it now stands, or null when the turn changed
-   * nothing here.
+   * Applicable to the document as it now stands, or null when the contribution
+   * changed nothing here.
    */
   changes: ChangeSet | null
   /**
-   * Places where the user typed *inside* a block the agent wrote.
+   * Places where somebody else typed *inside* a block this contribution wrote.
    *
-   * **Reverting does not delete this text.** Mapping a deletion over an insertion
+   * **Reverting does not delete that text.** Mapping a deletion over an insertion
    * that sits inside it preserves the insertion — standard operational-transform
-   * behaviour, and the right behaviour: an undo of somebody else's work has no
-   * business destroying yours. What it does instead is leave the text stranded,
-   * without the surrounding lines that gave it meaning.
+   * behaviour, and the right behaviour: undoing one collaborator's work has no
+   * business destroying another's. What it does instead is leave the text
+   * stranded, without the surrounding lines that gave it meaning.
    *
    * So this is a warning about a mess, not about data loss: "reverting will leave
    * 2 fragments you typed behind". That is a materially different sentence from
-   * the one this design originally assumed it would have to show, and the
-   * difference was only visible once the revert was actually run — see
-   * `revertTurn.test.ts`.
+   * the one this was first designed to show, and the difference was only visible
+   * once the revert was actually run — see `revert.test.ts`.
    */
   stranded: readonly StrandedRange[]
 }
 
 /**
- * Undo one turn's contribution, keeping everything that happened since.
+ * Undo one contributor's work, keeping everything that happened since.
  *
- * Under live-apply this is the only recourse after a bad edit lands, so it is a
- * first-class operation rather than a convenience — which is also why it must not
- * be "restore the file to the snapshot": that would throw away the user's
- * concurrent work.
- *
- * The mechanism is the same pair of functions as the rebase, used the other way
- * round, which is the strongest evidence available that the model is the right
- * one. For a change `A` that took `D0` to `D1`, followed by later changes `L`:
+ * The counterpart to `rebaseEdits`, and deliberately the same two functions used
+ * the other way round — which is the strongest evidence available that the model
+ * is the right one. For a change `A` that took `D0` to `D1`, followed by later
+ * changes `L`:
  *
  * - `A.invert(D0)` is a change from `D1` back to `D0`.
  * - It and `L` therefore **both start at `D1`**, which is exactly `map`'s stated
@@ -73,22 +75,29 @@ export interface TurnInverse {
  * - So `A.invert(D0).map(L)` applies to the current document and removes `A`'s
  *   contribution while leaving `L`'s intact.
  *
- * A turn usually lands as several changes, because each streamed output is
- * applied as it arrives. They are undone newest-first, each projected forward
- * through everything that followed it and then composed onto the accumulating
- * revert — the composition CodeMirror documents as
- * `A.compose(B.map(A)) == B.compose(A.map(B, true))`.
+ * This is why "restore the file to a snapshot" is the wrong primitive for a
+ * shared document: it cannot distinguish whose work it is discarding.
+ *
+ * A contribution usually lands as several changes — an agent applies each streamed
+ * output as it arrives, and a remote editor sends batches — so they are undone
+ * newest-first, each projected forward through everything that followed it and
+ * then composed onto the accumulating revert, using the composition CodeMirror
+ * documents as `A.compose(B.map(A)) == B.compose(A.map(B, true))`.
  */
-export function inverseForTurn(input: {
+export function inverseForContribution(input: {
   applied: readonly AppliedChange[]
-  turnId: string
-}): TurnInverse {
-  const { applied, turnId } = input
+  contributionId: string
+}): ContributionInverse {
+  const { applied, contributionId } = input
 
   const mine: number[] = []
   for (let at = 0; at < applied.length; at += 1) {
-    if (applied[at].turnId === turnId && !applied[at].changes.empty)
+    if (
+      applied[at].contributionId === contributionId &&
+      !applied[at].changes.empty
+    ) {
       mine.push(at)
+    }
   }
 
   if (mine.length === 0) return { changes: null, stranded: [] }
@@ -111,7 +120,10 @@ export function inverseForTurn(input: {
     revert = revert === null ? toNow : revert.compose(toNow.map(revert))
   }
 
-  return { changes: revert, stranded: strandedFor(applied, mine, turnId) }
+  return {
+    changes: revert,
+    stranded: strandedFor(applied, mine, contributionId),
+  }
 }
 
 /**
@@ -138,17 +150,17 @@ function composeRange(
 }
 
 /**
- * Find where somebody else has edited inside text this turn inserted.
+ * Find where somebody else has edited inside text this contribution inserted.
  *
- * Walks each of the turn's insertions forward one entry at a time rather than
- * composing everything first, because the question is asked *per entry*: a later
- * change by this same turn does not strand anything, so the entries have to be
+ * Walks each insertion forward one entry at a time rather than composing
+ * everything first, because the question is asked *per entry*: a later change by
+ * the same contribution strands nothing, so the entries have to stay
  * distinguishable, and they stop being so once composed together.
  */
 function strandedFor(
   applied: readonly AppliedChange[],
   mine: readonly number[],
-  turnId: string
+  contributionId: string
 ): readonly StrandedRange[] {
   const found: StrandedRange[] = []
 
@@ -168,7 +180,7 @@ function strandedFor(
       const entry = applied[next]
       if (entry.changes.empty) continue
 
-      if (entry.turnId !== turnId) {
+      if (entry.contributionId !== contributionId) {
         for (const range of ranges) {
           if (changesTouchInterior(entry.changes, range.from, range.to)) {
             found.push(range)
@@ -190,8 +202,8 @@ function strandedFor(
 }
 
 /**
- * The same range can be reported once per intervening edit, and a user being told
- * "this leaves 3 fragments behind" does not want it counted twice.
+ * The same range can be reported once per intervening edit, and somebody told
+ * "this leaves 3 fragments behind" does not want them counted twice.
  */
 function dedupe(ranges: readonly StrandedRange[]): readonly StrandedRange[] {
   const seen = new Set<string>()

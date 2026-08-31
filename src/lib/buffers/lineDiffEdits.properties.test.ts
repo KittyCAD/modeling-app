@@ -2,7 +2,7 @@ import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import type { TextEdit } from '@src/contracts/modelingOperations'
 import { mergeTextEdits } from '@src/features/modelingOperations/mergeEdits'
-import { lineDiffEdits } from '@src/features/zookeeper/lineDiffEdits'
+import { lineDiffEdits } from '@src/lib/buffers/lineDiffEdits'
 import { documentText } from '@src/test/properties'
 
 /**

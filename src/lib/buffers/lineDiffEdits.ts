@@ -3,22 +3,22 @@ import type { TextEdit } from '@src/contracts/modelingOperations'
 import { textDiff } from '@src/lib/buffers/textDiff'
 
 /**
- * The edit that turns one version of a file into another, for an agent.
+ * The edit that turns one whole version of a file into another.
  *
- * Zookeeper answers with whole files, exactly as KCL's sketch frontend does, so
- * the same rule applies: recover a buffer edit rather than replacing the
- * document. `textDiff` explains why in four ways — the cursor jumps to the top,
- * every change becomes one undo entry covering everything, the language server
- * re-analyses a file it was told changed entirely, and anything watching for
- * *what* changed learns nothing.
+ * A source that answers with whole files — KCL's sketch frontend, and Zookeeper
+ * after it — needs the same rule applied: recover a buffer edit rather than
+ * replacing the document. `textDiff` explains why in four ways — the cursor jumps
+ * to the top, every change becomes one undo entry covering everything, the
+ * language server re-analyses a file it was told changed entirely, and anything
+ * watching for *what* changed learns nothing.
  *
- * What is different here is the shape of the change. A sketch mutation rewrites
- * one region, so `textDiff`'s single replacement from the first difference to
- * the last is not just adequate but optimal. An agent edits *prose-shaped* code:
- * it will happily adjust `@settings` on line 1 and append a function at line 90
- * in the same turn, and the smallest span covering both is the whole file. That
- * is a full replacement wearing a diff's clothes, and it brings back all four
- * problems.
+ * What differs is the shape of the change. A sketch mutation rewrites one region,
+ * so `textDiff`'s single replacement from the first difference to the last is not
+ * just adequate but optimal. A writer working over prose-shaped code behaves
+ * differently: it will happily adjust `@settings` on line 1 and append a function
+ * at line 90 in one go, and the smallest span covering both is the whole file.
+ * That is a full replacement wearing a diff's clothes, and it brings back all
+ * four problems.
  *
  * So this escalates. `textDiff` first, because it is exact, allocation-free and
  * right most of the time; a real line diff only when the cheap answer has become
@@ -83,7 +83,7 @@ function worthEscalating(coarse: TextEdit, beforeLength: number): boolean {
  * separately, so a changed line arrives as one replacement instead of a delete
  * touching a range and an insert at its edge. That matters beyond tidiness: two
  * edits abutting at a point are legal but describe the change less honestly, and
- * the attribution gutter would draw two marks where the agent made one change.
+ * an attribution gutter would draw two marks where one change was made.
  */
 function lineEdits(before: string, after: string): readonly TextEdit[] {
   const parts = diffLines(before, after)

@@ -2,8 +2,8 @@ import { ChangeSet, Text } from '@codemirror/state'
 import { describe, expect, it } from 'vitest'
 import type { TextEdit } from '@src/contracts/modelingOperations'
 import { deriveChanges } from '@src/features/zookeeper/deriveEdit'
-import { createDivergenceLedger } from '@src/features/zookeeper/divergence'
-import { rebaseEdits } from '@src/features/zookeeper/rebase'
+import { createDivergenceLedger } from '@src/lib/collab/divergence'
+import { rebaseEdits } from '@src/lib/collab/rebase'
 
 const PATH = 'main.kcl'
 
@@ -115,7 +115,7 @@ describe('createDivergenceLedger', () => {
 
     ours = applyChanges(ours, setOf(firstRebase.edits, ours.length))
     expect(
-      ledger.recordAgent(PATH, setOf(firstChange.edits, agentView.length))
+      ledger.recordRemote(PATH, setOf(firstChange.edits, agentView.length))
     ).toBe(true)
     agentView = firstOutput
 
@@ -160,7 +160,7 @@ describe('createDivergenceLedger', () => {
 
     ours = applyChanges(ours, setOf(secondRebase.edits, ours.length))
     expect(
-      ledger.recordAgent(PATH, setOf(secondChange.edits, agentView.length))
+      ledger.recordRemote(PATH, setOf(secondChange.edits, agentView.length))
     ).toBe(true)
     agentView = secondOutput
 

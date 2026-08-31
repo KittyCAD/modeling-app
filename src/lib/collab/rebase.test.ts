@@ -1,7 +1,7 @@
 import { ChangeSet, Text } from '@codemirror/state'
 import { describe, expect, it } from 'vitest'
 import type { TextEdit } from '@src/contracts/modelingOperations'
-import { rebaseEdits } from '@src/features/zookeeper/rebase'
+import { rebaseEdits } from '@src/lib/collab/rebase'
 
 const docOf = (text: string) => Text.of(text.split('\n'))
 

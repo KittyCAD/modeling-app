@@ -1,6 +1,6 @@
 import type { MlToolResult, ZookeeperEditPatch } from '@kittycad/lib'
 import type { TextEdit } from '@src/contracts/modelingOperations'
-import { lineDiffEdits } from '@src/features/zookeeper/lineDiffEdits'
+import { lineDiffEdits } from '@src/lib/buffers/lineDiffEdits'
 
 /** One file's worth of what the agent wants to change. */
 export type ProposedFileChange =

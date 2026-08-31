@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { TextEdit } from '@src/contracts/modelingOperations'
-import { lineDiffEdits } from '@src/features/zookeeper/lineDiffEdits'
+import { lineDiffEdits } from '@src/lib/buffers/lineDiffEdits'
 
 const applyEdits = (before: string, edits: readonly TextEdit[]) =>
   [...edits]
