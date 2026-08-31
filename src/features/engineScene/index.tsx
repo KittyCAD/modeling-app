@@ -1,4 +1,5 @@
 import {
+  createPlugin,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
@@ -191,6 +192,32 @@ export default defineRegistryItemFactory((ctx) => {
     })
   })
 
+  /**
+   * The camera driver, in a slot so another renderer can take it over.
+   *
+   * `cameraDriverService` is a singleton, and two items providing it makes
+   * `services.get` throw for every consumer — through `optional()` too. So
+   * exactly one renderer may hold it, and an arbiter decides which; see
+   * `features/bevyScene`.
+   *
+   * Only the camera moves. The rest below stay contributed whichever renderer is
+   * drawing: the engine still executes KCL, so the scene it holds is still real.
+   * Picking and projection do assume the engine is what you are looking at, which
+   * is why selection and sketching are unavailable under a local renderer.
+   */
+  const cameraPlugin = createPlugin({
+    id: 'engineScene.camera',
+    title: 'Zoo engine camera',
+    description: 'Moves the streamed engine camera.',
+    enabledByDefault: true,
+    items: [
+      defineRuntimeRegistryItem({
+        id: 'engineScene.camera.driver',
+        providesServices: [provideService(cameraDriverService, cameraDriver)],
+      }),
+    ],
+  })
+
   return {
     item: defineRuntimeRegistryItem({
       id: 'engineScene',
@@ -200,8 +227,8 @@ export default defineRegistryItemFactory((ctx) => {
         cameraDriver.dispose()
         camera.dispose()
       },
+      uses: [cameraPlugin],
       providesServices: [
-        provideService(cameraDriverService, cameraDriver),
         provideService(defaultPlaneDriverService, planeDriver),
         provideService(sceneHudService, hud),
         provideService(scenePickerService, picker),

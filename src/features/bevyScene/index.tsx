@@ -1,41 +1,119 @@
 import {
+  createPlugin,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
+  pluginsValueSpec,
   provide,
+  provideService,
 } from '@kittycad/registry'
-import { computed } from '@preact/signals'
-import { sceneItemsValueSpec } from '@src/contracts/scene'
+import { computed, effect } from '@preact/signals'
+import { cameraDriverService, sceneItemsValueSpec } from '@src/contracts/scene'
 import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { BevySurface } from '@src/features/bevyScene/BevySurface'
+import { createBevyCameraDriver } from '@src/features/bevyScene/createBevyCameraDriver'
+import { whenBevyStarted } from '@src/features/bevyScene/loadBevy'
 import {
   bevySceneSettings,
   rendererSetting,
 } from '@src/features/bevyScene/settings'
 
+/** The engine's camera plugin, declared in `features/engineScene`. */
+const ENGINE_CAMERA = 'engineScene.camera'
+const BEVY_CAMERA = 'bevyScene.camera'
+
 /**
  * A second renderer: bevy-zoo, drawing in this process.
  *
- * `ARCHITECTURE.md` names this as the case the renderer seams were designed for,
- * and this is the first thing to actually sit in one. It is deliberately the
- * smallest such thing: a setting and a surface.
+ * `ARCHITECTURE.md` names this as the case the renderer seams were designed for.
+ * The camera is the seam that carries the most: which button and modifier mean
+ * orbit, how a drag captures the pointer, the three preferences and the seven
+ * guard tables are all upstream in `features/camera`, and all this contributes is
+ * a driver — the part that is genuinely peculiar to a renderer in this process.
  *
- * It provides **no services**. That is the whole reason this can coexist with
- * `engineScene` without any arbitration: two items providing one singleton
- * service make `ctx.services.get` throw for every consumer, including through
- * `optional()`. So the camera driver, the picker and the projection stay the
- * engine's, and under this renderer the view gizmo and the `v 1`…`v 6` commands
- * are inert — bevy-zoo's own orbit camera has the mouse instead.
- *
- * Wiring a real `CameraDriver` is the next increment, and it is the one that
- * forces a slot arbiter: at that point the two renderers genuinely cannot both be
- * registered.
+ * Picking and projection are still the engine's, so selection and sketching are
+ * unavailable while this renderer is drawing rather than wrong.
  */
 export default defineRegistryItemFactory((ctx) => {
   const settings = () => ctx.services.get(settingsService)
 
+  /**
+   * Built now, connected later.
+   *
+   * The module cannot start until a canvas exists, which is when the surface
+   * mounts, but the driver has to be providable from the moment the feature is
+   * registered. It holds a promise and drops camera movements until it resolves.
+   */
+  const driver = createBevyCameraDriver({ module: whenBevyStarted() })
+
+  const cameraPlugin = createPlugin({
+    id: BEVY_CAMERA,
+    title: 'bevy-zoo camera',
+    description: 'Moves the local Bevy camera.',
+    // The engine's camera is the one installed at startup, and the default
+    // renderer is the engine. Enabling both would make every consumer of
+    // `cameraDriverService` throw.
+    enabledByDefault: false,
+    items: [
+      defineRuntimeRegistryItem({
+        id: 'bevyScene.camera.driver',
+        providesServices: [provideService(cameraDriverService, driver)],
+      }),
+    ],
+  })
+
+  /**
+   * Hand the camera to exactly one renderer.
+   *
+   * Deferred out of the flatten with `queueMicrotask`, because services cannot be
+   * read while the graph is being flattened. Modelled on
+   * `features/pluginManagement`, which does the same job for the boolean plugin
+   * settings; this cannot reuse it because that keys off a
+   * `SettingDefinition<boolean>` and the renderer is a choice of several.
+   */
+  let stopArbitrating = () => {}
+  queueMicrotask(() => {
+    const plugins = computed(() => ctx.valueSpecs.get(pluginsValueSpec))
+
+    stopArbitrating = effect(() => {
+      const store = settings()
+      // Until the file has been read, the default is the engine's, and acting on
+      // it would hand the camera over and immediately take it back.
+      if (!store.hydrated.value) return
+
+      const wanted =
+        store.value(rendererSetting).value === 'bevy'
+          ? BEVY_CAMERA
+          : ENGINE_CAMERA
+      const controllerFor = (id: string) => {
+        const plugin = plugins.value.find((candidate) => candidate.id === id)
+        return plugin ? ctx.services.optional(plugin.service) : undefined
+      }
+
+      const winner = controllerFor(wanted)
+      const loser = controllerFor(
+        wanted === BEVY_CAMERA ? ENGINE_CAMERA : BEVY_CAMERA
+      )
+      if (!winner) return
+
+      // Disable first, always. Any moment with both slots populated is a moment
+      // where `cameraDriverService` resolves to two implementations and every
+      // consumer — the gesture recogniser, the view commands, the gizmo — throws
+      // `ServiceConflictError`.
+      if (loser?.active.value) loser.disable()
+      if (!winner.active.value) winner.enable()
+    })
+  })
+
   return {
     item: defineRuntimeRegistryItem({
       id: 'bevyScene',
+      dispose: () => {
+        stopArbitrating()
+        driver.dispose()
+      },
+      // The arbiter lives here, outside both slots it mutates, so it survives
+      // whichever one it just turned off.
+      uses: [cameraPlugin],
       provides: [
         ...bevySceneSettings.map((setting) =>
           provide(settingsValueSpec, setting)
@@ -46,8 +124,8 @@ export default defineRegistryItemFactory((ctx) => {
          *
          * Presence is constant and `visible` does the switching, because a
          * registry item's `provides` is fixed when it is defined — only a
-         * contribution's *value* may be a signal. `visible` omits the item from
-         * the DOM entirely while false, so nothing is loaded and no canvas exists
+         * contribution's value may be a signal. `visible` omits the item from the
+         * DOM entirely while false, so no canvas exists and no wasm is fetched
          * until somebody chooses this renderer.
          */
         provide(sceneItemsValueSpec, {

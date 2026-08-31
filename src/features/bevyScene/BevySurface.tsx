@@ -1,11 +1,12 @@
 import { effect, useSignal } from '@preact/signals'
-import { useService } from '@src/app/context'
+import { useService, useValueSpec } from '@src/app/context'
 import { authService } from '@src/contracts/auth'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { projectSessionService } from '@src/contracts/projectSession'
+import { sceneInteractionsValueSpec } from '@src/contracts/scene'
 import { collectProject } from '@src/features/bevyScene/collectProject'
 import { type BevyJobState, startBevy } from '@src/features/bevyScene/loadBevy'
-import { useEffect } from 'preact/hooks'
+import { useEffect, useRef } from 'preact/hooks'
 import '@src/features/bevyScene/bevyScene.css'
 
 /** The canvas bevy-zoo is told to take over. */
@@ -33,6 +34,36 @@ export function BevySurface() {
 
   const state = useSignal<BevyJobState | null>(null)
   const error = useSignal<string | null>(null)
+  const canvas = useRef<HTMLCanvasElement>(null)
+  const interactions = useValueSpec(sceneInteractionsValueSpec)
+
+  /**
+   * Bind the contributed interactions to the canvas.
+   *
+   * `EngineStream` does this for the streamed renderer and does not render here,
+   * so without it the camera recogniser, the click recogniser and the sketch
+   * pointer handling are all attached to nothing — which is exactly what "the
+   * camera does not respond" looks like.
+   *
+   * Keyed on the contribution list rather than the signal, so an interaction
+   * installed later still reaches an element that is already mounted.
+   */
+  const installed = interactions.value
+
+  useEffect(() => {
+    const element = canvas.current
+    if (!element) return
+
+    const disposers = [...installed]
+      .sort(
+        (a, b) => (a.order ?? 0) - (b.order ?? 0) || a.id.localeCompare(b.id)
+      )
+      .map((interaction) => interaction.attach(element))
+
+    return () => {
+      for (const dispose of disposers) dispose?.()
+    }
+  }, [installed])
 
   useEffect(() => {
     let cancelled = false
@@ -99,7 +130,7 @@ export function BevySurface() {
 
   return (
     <div class="zds-bevy">
-      <canvas id={CANVAS_ID} class="zds-bevy__canvas" />
+      <canvas ref={canvas} id={CANVAS_ID} class="zds-bevy__canvas" />
       <BevyNotice state={state.value} error={error.value} />
     </div>
   )

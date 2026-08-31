@@ -135,6 +135,64 @@
   block-size: 16px;
 }
 
+.zds-settings__search {
+  padding-block-end: var(--zds-space-2);
+}
+
+/* Dimmed, not hidden: a group that vanishes as you type takes the map of what
+   there is to configure with it, which is most of what the sidebar is for. */
+.zds-settings__nav-item[data-quiet="true"] {
+  opacity: 0.4;
+}
+
+.zds-settings__nav-count {
+  margin-inline-start: auto;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  color: var(--zds-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.zds-settings__results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-4);
+}
+
+/* The group heading, which is also the way into the group. A found setting is
+   often the start of the question rather than the end of it. */
+.zds-settings__result-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  inline-size: 100%;
+  margin-block-end: var(--zds-space-2);
+  padding-block-end: var(--zds-space-1);
+  font-family: var(--zds-font-sans);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-tertiary);
+  text-align: start;
+  background: transparent;
+  border-block-end: var(--zds-size-hairline) solid var(--zds-border-subtle);
+  cursor: pointer;
+}
+
+.zds-settings__result-heading:hover {
+  color: var(--zds-text-primary);
+}
+
+/* The chevron sits at the end and only says "there is more this way" on the
+   way in, so it stays quiet until the heading is asked about. */
+.zds-settings__result-heading svg:last-child {
+  margin-inline-start: auto;
+  opacity: 0;
+}
+
+.zds-settings__result-heading:hover svg:last-child,
+.zds-settings__result-heading:focus-visible svg:last-child {
+  opacity: 1;
+}
+
 .zds-settings__content {
   padding: var(--zds-space-4) var(--zds-space-5);
   min-block-size: 0;

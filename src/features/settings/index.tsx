@@ -4,13 +4,17 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { computed, signal } from '@preact/signals'
+import { computed, effect, signal } from '@preact/signals'
 import { appMenuSectionsValueSpec } from '@src/contracts/appMenu'
 import { commandsValueSpec } from '@src/contracts/commands'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { fileWatcherService } from '@src/contracts/fileWatcher'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
-import { keybindingsValueSpec } from '@src/contracts/keybindings'
+import {
+  keybindingScopesValueSpec,
+  keybindingService,
+  keybindingsValueSpec,
+} from '@src/contracts/keybindings'
 import type { AppLocation } from '@src/contracts/navigation'
 import {
   locationSourcesValueSpec,
@@ -46,6 +50,9 @@ import {
  * what "dialog-type route" means here — the location source sits at the front of
  * the queue while it is open, and steps out of the way when it closes.
  */
+/** Applied while the dialog is up, so its keys are only its own. */
+const SETTINGS_SCOPE = 'settings.open'
+
 export default defineRegistryItemFactory((ctx) => {
   // Chosen from the bridge rather than the runtime service: this runs during
   // graph construction, where resolving a service is not allowed.
@@ -68,6 +75,41 @@ export default defineRegistryItemFactory((ctx) => {
   /** Which level the dialog is editing. UI state, so it stays out of the URL. */
   const level = signal<SettingsLevel>('user')
 
+  /**
+   * Asking for the caret, as a count rather than a flag.
+   *
+   * The request is an event: pressing the shortcut twice has to focus twice, and
+   * a boolean that is already true says nothing the second time.
+   */
+  const focusSearch = signal(0)
+
+  /**
+   * The dialog's keys, live only while it is up.
+   *
+   * A scope rather than an `enabled` command, because the dispatcher claims a
+   * keystroke it has a binding for before anybody asks whether the command can
+   * run — so a global `Ctrl+.` would be swallowed everywhere in the app and
+   * quietly do nothing. Scoped, the keystroke is simply not ours when the dialog
+   * is closed.
+   *
+   * Deferred by a microtask, as every effect that reads a service here is: the
+   * container refuses a service read while the registry graph is being flattened.
+   */
+  let releaseScope = () => {}
+  queueMicrotask(() => {
+    const keys = ctx.services.get(keybindingService)
+    let held = false
+
+    releaseScope = effect(() => {
+      const open = settings.openSection.value !== null
+      if (open === held) return
+
+      held = open
+      if (open) keys.applyScope(SETTINGS_SCOPE)
+      else keys.removeScope(SETTINGS_SCOPE)
+    })
+  })
+
   const location = computed<AppLocation | null>(() => {
     const section = settings.openSection.value
     return section === null ? null : { kind: 'settings', section }
@@ -77,7 +119,10 @@ export default defineRegistryItemFactory((ctx) => {
     model: settings,
     item: defineRuntimeRegistryItem({
       id: 'settings',
-      dispose: () => settings.dispose(),
+      dispose: () => {
+        releaseScope()
+        settings.dispose()
+      },
       providesServices: [
         provideService(settingsService, settings),
         provideService(userSettingsStoreService, store),
@@ -86,7 +131,9 @@ export default defineRegistryItemFactory((ctx) => {
         provide(overlaysValueSpec, {
           id: 'settings',
           order: 10,
-          render: () => <SettingsDialog level={level} />,
+          render: () => (
+            <SettingsDialog level={level} focusSearch={focusSearch} />
+          ),
         }),
 
         /**
@@ -144,6 +191,36 @@ export default defineRegistryItemFactory((ctx) => {
         provide(keybindingsValueSpec, {
           keystrokes: ['Mod+,'],
           commandId: 'settings.open',
+        }),
+
+        /**
+         * Search from the keyboard.
+         *
+         * `/`, the convention everywhere a list can be filtered. It is safe as a
+         * bare key because the dispatcher yields an unmodified keystroke to any
+         * focused input before it looks for a binding — so typing a slash *into*
+         * the search field types a slash, and only a slash pressed with the
+         * dialog itself focused takes the caret.
+         */
+        provide(keybindingScopesValueSpec, {
+          id: SETTINGS_SCOPE,
+          displayName: 'Settings open',
+          priority: 500,
+        }),
+        provide(commandsValueSpec, {
+          id: 'settings.searchFocus',
+          title: 'Search settings',
+          category: 'General',
+          icon: 'search',
+          enabled: computed(() => settings.openSection.value !== null),
+          run: () => {
+            focusSearch.value += 1
+          },
+        }),
+        provide(keybindingsValueSpec, {
+          keystrokes: ['/'],
+          scopes: [SETTINGS_SCOPE],
+          commandId: 'settings.searchFocus',
         }),
 
         provide(appMenuSectionsValueSpec, {

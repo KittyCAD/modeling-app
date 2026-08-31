@@ -19,6 +19,45 @@ export interface BevyModule {
   /** `files` is a JSON object of name to contents; `entrypoint` names one of them. */
   push_project: (entrypoint: string, files: string) => void
   set_state_callback: (callback: (payload: string) => void) => void
+
+  /*
+   * The camera.
+   *
+   * Deltas are surface pixels with the surface size alongside; directions and
+   * points are in Zoo's frame — Z-up, millimetres — so nothing here has to know
+   * that glTF turned the model Y-up on the way in.
+   */
+  camera_orbit: (
+    dx: number,
+    dy: number,
+    width: number,
+    height: number,
+    trackball: boolean
+  ) => void
+  camera_pan: (dx: number, dy: number, width: number, height: number) => void
+  camera_zoom: (magnitude: number) => void
+  camera_look_from: (
+    x: number,
+    y: number,
+    z: number,
+    upX: number,
+    upY: number,
+    upZ: number,
+    upSet: boolean
+  ) => void
+  camera_face_on: (
+    originX: number,
+    originY: number,
+    originZ: number,
+    normalX: number,
+    normalY: number,
+    normalZ: number,
+    yAxisX: number,
+    yAxisY: number,
+    yAxisZ: number
+  ) => void
+  camera_zoom_to_fit: () => void
+  camera_set_projection: (projection: string) => void
 }
 
 /** What bevy-zoo reports about the solve it is running. */
@@ -66,6 +105,23 @@ const WASM_URL = '/bevy/bevy_zoo_bg.wasm'
  */
 let starting: Promise<BevyModule> | null = null
 
+/**
+ * Resolves when the module is running, whenever that turns out to be.
+ *
+ * The camera driver is built when the feature is registered, but the module
+ * cannot start until a canvas exists and the surface has mounted. This lets the
+ * driver hold a promise from the beginning instead of the surface having to reach
+ * back into the feature.
+ */
+let announceStarted: (module: BevyModule) => void = () => {}
+const started = new Promise<BevyModule>((resolve) => {
+  announceStarted = resolve
+})
+
+export function whenBevyStarted(): Promise<BevyModule> {
+  return started
+}
+
 export interface StartOptions {
   /** CSS selector for a canvas already in the document. */
   canvas: string
@@ -112,6 +168,7 @@ async function start(options: StartOptions): Promise<BevyModule> {
   }
 
   module.start(options.canvas, options.token, options.host)
+  announceStarted(module)
   return module
 }
 
