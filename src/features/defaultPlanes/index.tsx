@@ -12,6 +12,7 @@ import {
 } from '@src/contracts/defaultPlanes'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import { kclSceneService } from '@src/contracts/kclScene'
+import { modelingOperationsService } from '@src/contracts/modelingOperationsService'
 import {
   sceneHudSectionsValueSpec,
   sceneHudService,
@@ -59,6 +60,28 @@ export default defineRegistryItemFactory((ctx) => {
      * says what was built, and the `hide()` calls in the operation timeline say
      * which of it was taken away again.
      */
+    /**
+     * Whether an operation is waiting to be told which plane.
+     *
+     * Read from the argument's *declared type* rather than from a flag anybody
+     * sets: an argument that accepts a `Plane` and is answered by clicking is,
+     * by definition, an argument that wants the planes on screen. So Start
+     * sketch shows them, and so does the next operation that takes a plane
+     * without anybody remembering to say so.
+     */
+    askedFor: computed(() => {
+      const pending = ctx.services.optional(modelingOperationsService)?.pending
+        .value
+      if (!pending) return false
+
+      return pending.fields.some(
+        (field) =>
+          field.answer === null &&
+          field.prompt.kind === 'selection' &&
+          field.prompt.accepts.includes('Plane')
+      )
+    }),
+
     sceneIsEmpty: computed(() => {
       const current = scene()
       if (!current) return true

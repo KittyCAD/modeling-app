@@ -31,6 +31,7 @@ export function PlanesSection() {
   const rows = useComputed(() => planes.planes.value)
   const available = useComputed(() => planes.available.value)
   const empty = useComputed(() => planes.sceneIsEmpty.value)
+  const askedFor = useComputed(() => planes.askedFor.value)
   const overridden = useComputed(() => planes.overridden.value)
 
   if (!available.value) {
@@ -54,11 +55,18 @@ export function PlanesSection() {
           Says *why*, because a plane that appears and disappears on its own is
           otherwise something to be argued with rather than understood.
         */}
-        {overridden.value
-          ? 'Some planes are set by hand.'
-          : empty.value
-            ? 'Shown while the scene is empty.'
-            : 'Hidden while there is geometry.'}
+        {/*
+          The most immediate reason first. Being asked for a plane is temporary
+          and is why they just appeared, which is the thing somebody looking at
+          this panel right now wants explained.
+        */}
+        {askedFor.value
+          ? 'Shown while something is waiting for a plane.'
+          : overridden.value
+            ? 'Some planes are set by hand.'
+            : empty.value
+              ? 'Shown while the scene is empty.'
+              : 'Hidden while there is geometry.'}
         {overridden.value ? (
           <button
             type="button"

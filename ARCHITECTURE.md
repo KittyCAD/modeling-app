@@ -1293,6 +1293,14 @@ until it is put back. So turning XY on before an extrude does not have it vanish
 when the extrude lands. Overrides belong to the scene they were made in and are
 forgotten when the project closes.
 
+A plane also shows while **something is asking for one**, which is read from the
+pending operation's argument types rather than from a flag: an argument that
+accepts a `Plane` and is answered by clicking is by definition one that wants the
+planes on screen. Without it the second sketch in a file has nothing to point at,
+because the first sketch's geometry hid them. An explicit override still wins —
+a plane somebody turned off stays off, and the panel says which of the three
+reasons is in force.
+
 That is the whole policy, and it is deliberately all `features/defaultPlanes`
 holds. Everything about how a plane is *arranged* sits behind
 `defaultPlaneDriverService`, the fourth seam beside the camera driver, the picker
@@ -1312,6 +1320,17 @@ rather than about planes. What it was told is tracked by object *id*, because a
 new run mints new ids and a name-keyed record would make the next scene's planes
 look already-correct. And a `sceneEpoch` bump clears that record so every plane
 is restated.
+
+**Selecting a plane goes back through the same seam.** A default plane is the
+one clickable thing with no artifact and no need of one: nothing declares `XY`,
+so no amount of reading the file explains a click on it, and before this a
+selection on a plane was a bare uuid that the operation prompt reported as "not
+in this file". The driver answers `planeAt(entityId)` — which plane, and which
+*side*, because the back of XY is `-XY` and losing that sketches on the wrong
+face. Selection carries it beside `region` as a third way of being real and
+unwritten, and the resolver writes the literal instead of hunting for a binding.
+Which side you clicked is a renderer's fact; that it is spelled `-XY` is KCL's,
+and `planeExpression` is the one line between them.
 
 **The policy restates; the driver deduplicates.** Every change sends all three
 planes' intent down the seam, and working out that there is nothing to send is
