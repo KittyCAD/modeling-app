@@ -58,14 +58,22 @@ export type DraftState =
    */
   | { kind: 'chaining'; fromPointId: ApiObjectId }
   /**
-   * A committed point being dragged.
+   * Something already in the sketch being moved.
    *
    * In the same union as the draft states rather than beside them, because they
-   * are the same machinery pointed at a different point — a preview solve per
+   * are the same machinery pointed at different geometry — a preview solve per
    * move, a commit on release — and because they are mutually exclusive: you
    * cannot be rubber-banding a new line and dragging an old corner at once.
+   *
+   * `objectId` may be a point *or* a whole segment, which is the difference
+   * between moving a corner and moving an edge.
+   *
+   * `from` is where the pointer was when the last solve was accepted, not where
+   * the drag began. Translating a body needs a vector, and measuring it from the
+   * last *good* position is what stops a refused solve from leaving the pointer
+   * and the geometry offset for the rest of the drag.
    */
-  | { kind: 'dragging'; pointId: ApiObjectId }
+  | { kind: 'dragging'; objectId: ApiObjectId; from: PlanePoint }
 
 /** What the tool wants the frontend to do. */
 export type DraftAction =
@@ -73,6 +81,22 @@ export type DraftAction =
   | { kind: 'begin'; segment: SegmentCtor; label: string }
   /** Move the draft's end point. `commit` false is a preview solve. */
   | { kind: 'move'; pointId: ApiObjectId; to: PlanePoint; commit: boolean }
+  /**
+   * Move existing geometry, which takes a plan rather than a position.
+   *
+   * Kept apart from `move` because the two are different requests: a draft's end
+   * point is *put* somewhere, while a drag may translate a body, carry a cluster
+   * of coincident points with it, and anchor a segment against the cursor. What
+   * exactly it asks for depends on the graph, so it is worked out where the graph
+   * is — see `planDrag`.
+   */
+  | {
+      kind: 'drag'
+      objectId: ApiObjectId
+      from: PlanePoint
+      to: PlanePoint
+      commit: boolean
+    }
   /** Start the next segment from a committed point. */
   | {
       kind: 'chain'
@@ -245,17 +269,42 @@ export function moveTo(
       return {
         state,
         actions: [
-          { kind: 'move', pointId: state.pointId, to: at, commit: false },
+          {
+            kind: 'drag',
+            objectId: state.objectId,
+            from: state.from,
+            to: at,
+            commit: false,
+          },
         ],
       }
   }
 }
 
-/** Take hold of a point that is already in the sketch. */
-export const beginDrag = (pointId: ApiObjectId): DraftState => ({
+/**
+ * Take hold of something that is already in the sketch.
+ *
+ * The position matters: a body is moved by a vector, so where the grab happened
+ * is what the first move is measured from.
+ */
+export const beginDrag = (
+  objectId: ApiObjectId,
+  at: PlanePoint
+): DraftState => ({
   kind: 'dragging',
-  pointId,
+  objectId,
+  from: at,
 })
+
+/**
+ * Where the drag is measured from, once a solve has been accepted.
+ *
+ * Only called for a solve that worked. A refused one deliberately leaves this
+ * behind, so the next move asks for the whole remaining distance rather than for
+ * one frame of it.
+ */
+export const advanceDrag = (state: DraftState, to: PlanePoint): DraftState =>
+  state.kind === 'dragging' ? { ...state, from: to } : state
 
 /**
  * Let go, committing where it ended up.
@@ -270,7 +319,15 @@ export function endDrag(state: DraftState, at: PlanePoint): DraftStep {
 
   return {
     state: { kind: 'idle' },
-    actions: [{ kind: 'move', pointId: state.pointId, to: at, commit: true }],
+    actions: [
+      {
+        kind: 'drag',
+        objectId: state.objectId,
+        from: state.from,
+        to: at,
+        commit: true,
+      },
+    ],
   }
 }
 

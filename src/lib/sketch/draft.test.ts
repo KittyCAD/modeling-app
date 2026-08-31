@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   LINE_SEGMENT_LABEL,
   abandon,
+  advanceDrag,
   beginDrag,
-  endDrag,
   draftSegmentIds,
+  endDrag,
   expr,
   isMidDraft,
   moveTo,
@@ -161,12 +162,22 @@ describe('how numbers are written', () => {
   })
 })
 
-describe('dragging a committed point', () => {
-  const dragging = { kind: 'dragging' as const, pointId: 4 }
+describe('dragging something already in the sketch', () => {
+  const dragging = {
+    kind: 'dragging' as const,
+    objectId: 4,
+    from: { x: 5, y: 5 },
+  }
 
   it('previews the move as the pointer goes, like a rubber band', () => {
     expect(moveTo(dragging, { x: 7, y: 8 }, context).actions).toEqual([
-      { kind: 'move', pointId: 4, to: { x: 7, y: 8 }, commit: false },
+      {
+        kind: 'drag',
+        objectId: 4,
+        from: { x: 5, y: 5 },
+        to: { x: 7, y: 8 },
+        commit: false,
+      },
     ])
   })
 
@@ -174,9 +185,32 @@ describe('dragging a committed point', () => {
     const step = endDrag(dragging, { x: 9, y: 9 })
 
     expect(step.actions).toEqual([
-      { kind: 'move', pointId: 4, to: { x: 9, y: 9 }, commit: true },
+      {
+        kind: 'drag',
+        objectId: 4,
+        from: { x: 5, y: 5 },
+        to: { x: 9, y: 9 },
+        commit: true,
+      },
     ])
     expect(step.state).toEqual({ kind: 'idle' })
+  })
+
+  /*
+   * The measuring point moves only when a solve was accepted, which is what
+   * stops a refused constraint from offsetting the pointer from the geometry for
+   * the rest of the drag.
+   */
+  it('re-measures from where the last accepted solve left the pointer', () => {
+    expect(advanceDrag(dragging, { x: 7, y: 8 })).toEqual({
+      kind: 'dragging',
+      objectId: 4,
+      from: { x: 7, y: 8 },
+    })
+  })
+
+  it('has nothing to advance when nothing is being dragged', () => {
+    expect(advanceDrag(idle, { x: 7, y: 8 })).toEqual(idle)
   })
 
   it('ignores a click, because a drag ends on release', () => {

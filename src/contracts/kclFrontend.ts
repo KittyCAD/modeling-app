@@ -4,6 +4,7 @@ import type {
   ExistingSegmentCtor,
   SceneGraph,
   SegmentCtor,
+  SegmentDragAnchor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { ReadonlySignal } from '@preact/signals'
 
@@ -29,6 +30,16 @@ export interface SketchOutcome {
   invalidatesIds: boolean
   /** For sketch-local undo, which is a checkpoint restore rather than a text undo. */
   checkpointId: number | null
+  /**
+   * Why the solve did not work, or null when it did.
+   *
+   * A mutation that could not satisfy the constraints *resolves* — it reports
+   * the failure in its execution outcome rather than rejecting — so a caller
+   * that only catches rejections believes a refused edit succeeded. Reading it
+   * here means every caller gets the verdict without having to know where in the
+   * outcome it is written.
+   */
+  problem: string | null
 }
 
 /**
@@ -119,7 +130,28 @@ export interface KclFrontendService {
   editSegments(
     sketchId: ApiObjectId,
     segments: readonly ExistingSegmentCtor[],
-    options?: { checkpoint?: boolean; commit?: boolean }
+    options?: {
+      checkpoint?: boolean
+      commit?: boolean
+      /**
+       * Cursor points a segment body must pass through while solving.
+       *
+       * kcl-lib's own mechanism, and the thing that makes dragging an *edge*
+       * work: translating a constrained segment's points is a request the
+       * constraints may refuse outright, while an anchor asks the solver to slide
+       * the segment along whatever freedom it has left so that it still passes
+       * through the cursor.
+       */
+      anchors?: readonly SegmentDragAnchor[]
+      /**
+       * Segments to hold rigid for the duration of the solve.
+       *
+       * Temporary fixed constraints on everything else being edited, so pulling
+       * one part of a selection does not reshape the rest. Absent means kcl-lib's
+       * default, which is to anchor every edited segment.
+       */
+      anchorSegmentIds?: readonly ApiObjectId[]
+    }
   ): Promise<SketchOutcome>
 
   /**

@@ -30,10 +30,12 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { objectAt, sketchIdAt, sketchRanges } from '@src/lib/sketch/sceneGraph'
 import { sketchIdIn, sketchPlaneSource } from '@src/lib/sketch/sketchPlane'
+import { planDrag } from '@src/lib/sketch/drag'
 import {
   type DraftAction,
   type DraftState,
   abandon,
+  advanceDrag,
   beginDrag as beginDragState,
   begun,
   endDrag as endDragState,
@@ -271,6 +273,53 @@ export function createSketchSession(
         )
         write(outcome)
         settleDraft(outcome)
+        return
+      }
+
+      case 'drag': {
+        /*
+         * Planned here, against the graph the last solve produced.
+         *
+         * Not against the graph the drag started from: previews are solved and
+         * drawn without being committed, so the positions to translate are
+         * wherever the last preview left them. Planning from a stale graph would
+         * re-apply the whole drag from the beginning on every pointer move.
+         */
+        const graph = api.sceneGraph.peek()
+        if (!graph) return
+
+        const plan = planDrag(graph, {
+          id: action.objectId,
+          from: action.from,
+          to: action.to,
+          units: units(),
+        })
+        // Nothing this object can be asked for — an owned line, or an id that no
+        // longer names a segment. Silent because it is a normal outcome of
+        // grabbing something that turns out not to be movable.
+        if (plan.edits.length === 0) return
+
+        const outcome = await api.editSegments(session.sketchId, plan.edits, {
+          commit: action.commit,
+          checkpoint: action.commit,
+          anchors: plan.anchors,
+          anchorSegmentIds: plan.anchorSegmentIds,
+        })
+
+        /*
+         * Only an accepted solve advances the measuring point.
+         *
+         * A refused one leaves it where it was, so the next move asks for the
+         * whole remaining distance rather than for one frame of it — otherwise
+         * every refusal permanently offsets the pointer from the geometry.
+         */
+        if (outcome.problem) {
+          error.value = outcome.problem
+        } else {
+          draft.value = advanceDrag(draft.peek(), action.to)
+        }
+
+        if (action.commit) write(outcome)
         return
       }
 
@@ -569,12 +618,12 @@ export function createSketchSession(
       void discardDraft()
     },
 
-    beginDrag(pointId) {
+    beginDrag(objectId, at) {
       if (!open.peek()) return
       // A drag takes precedence over whatever a tool was part way through: you
       // cannot be rubber-banding a new line and moving an old corner at once.
       void discardDraft()
-      draft.value = beginDragState(pointId)
+      draft.value = beginDragState(objectId, at)
     },
 
     endDrag(at: PlanePoint) {
@@ -631,7 +680,8 @@ export function createSketchSession(
        * waits.
        */
       const preview = step.actions.find(
-        (action) => action.kind === 'move' && !action.commit
+        (action) =>
+          (action.kind === 'move' || action.kind === 'drag') && !action.commit
       )
       if (preview) {
         latestMove = preview

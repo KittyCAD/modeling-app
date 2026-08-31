@@ -106,13 +106,18 @@ export interface SketchSessionService {
   /** Stop a chain of segments without leaving the tool. */
   finishChain(): void
   /**
-   * Take hold of a point that is already in the sketch.
+   * Take hold of something that is already in the sketch.
    *
    * The same machinery the rubber band uses, pointed at existing geometry: a
-   * preview solve per move, and a commit on release. So dragging a corner is
-   * constrained as it moves rather than snapping into place when let go.
+   * preview solve per move, and a commit on release. So dragging is constrained
+   * as it moves rather than snapping into place when let go.
+   *
+   * A point *or* a whole segment, which are two different requests: a point is
+   * put where the pointer is, while a segment is translated and held against the
+   * cursor by the solver. `at` is where the grab happened, which is what the
+   * translation is measured from.
    */
-  beginDrag(pointId: ApiObjectId): void
+  beginDrag(objectId: ApiObjectId, at: PlanePoint): void
   /** Let go, committing where it ended up. */
   endDrag(at: PlanePoint): void
   /** Abandon what the tool was part way through, keeping it equipped. */

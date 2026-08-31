@@ -42,13 +42,18 @@ function setup(
   const place = vi.fn()
   const moveTo = vi.fn()
   const finishChain = vi.fn()
-  const beginDrag = vi.fn((id: number) => {
-    draft.value = { kind: 'dragging', pointId: id }
+  const beginDrag = vi.fn((id: number, at: { x: number; y: number }) => {
+    draft.value = { kind: 'dragging', objectId: id, from: at }
   })
   const endDrag = vi.fn(() => {
     draft.value = { kind: 'idle' }
   })
-  const draft = signal<{ kind: string; pointId?: number }>({ kind: 'idle' })
+  const draft = signal<{
+    kind: string
+    pointId?: number
+    objectId?: number
+    from?: { x: number; y: number }
+  }>({ kind: 'idle' })
 
   const session = {
     open,
@@ -445,7 +450,9 @@ describe('dragging a point', () => {
 
     app.element.dispatchEvent(press)
 
-    expect(app.beginDrag).toHaveBeenCalledWith(0)
+    // The grab position travels with it: translating a body is measured from
+    // where it was taken hold of.
+    expect(app.beginDrag).toHaveBeenCalledWith(0, { x: 20, y: 20 })
     expect(claimed).toHaveBeenCalled()
     expect(press.defaultPrevented).toBe(true)
   })

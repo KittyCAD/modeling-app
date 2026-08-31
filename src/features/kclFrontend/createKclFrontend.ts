@@ -13,7 +13,9 @@ import type {
   SetProgramResult,
   SketchOutcome,
 } from '@src/contracts/kclFrontend'
+import type { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 import { kclErrorMessage } from '@src/lib/kcl/errors'
+import { blockingIssues, issueMessage } from '@src/lib/sketch/solveIssues'
 
 /**
  * The version every call is stamped with.
@@ -43,6 +45,7 @@ interface RawOutcome {
     new_graph?: SceneGraph
     new_objects?: ApiObjectId[]
     invalidates_ids?: boolean
+    exec_outcome?: ExecOutcome
   }
   checkpointId?: number | null
 }
@@ -99,6 +102,9 @@ export function createKclFrontend(
       newObjects: answer.sceneGraphDelta?.new_objects ?? [],
       invalidatesIds: answer.sceneGraphDelta?.invalidates_ids ?? false,
       checkpointId: answer.checkpointId ?? null,
+      problem: issueMessage(
+        blockingIssues(answer.sceneGraphDelta?.exec_outcome)
+      ),
     }
   }
 
@@ -229,13 +235,13 @@ export function createKclFrontend(
         // kcl-lib refuses a checkpoint on a preview, so a caller that asks for
         // both is asking for an error rather than for something subtle.
         commit ? (options.checkpoint ?? false) : false,
-        // No anchors, no drag anchors, no label edits: those belong to dragging
-        // existing geometry and to moving dimension labels, neither of which is
-        // wired yet. `null` is "anchor every edited segment", which is the
-        // default the existing app relies on.
-        JSON.stringify(null),
-        JSON.stringify([]),
+        // `null` is "anchor every edited segment", which is kcl-lib's default
+        // and what a plain edit wants. A drag says which ones instead.
+        JSON.stringify(options.anchorSegmentIds ?? null),
+        JSON.stringify(options.anchors ?? []),
         commit,
+        // No label edits yet: dimension labels are not drawn, so nothing can
+        // move one.
         JSON.stringify([])
       )
 

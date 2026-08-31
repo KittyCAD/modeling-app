@@ -3,6 +3,8 @@ import type { SceneProjection } from '@src/contracts/sceneProjection'
 import type { SketchSessionService } from '@src/contracts/sketchSession'
 import type { SceneGraph } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { PlanePoint } from '@src/lib/scene/projection'
+import type { ApiObjectId } from '@rust/kcl-lib/bindings/FrontendApi'
+import { coincidentCluster, isDraggable, isPoint } from '@src/lib/sketch/drag'
 import { drawingOf } from '@src/lib/sketch/drawing'
 import { SKETCH_HOVER_DISTANCE_PX, pickInSketch } from '@src/lib/sketch/hitTest'
 import {
@@ -98,13 +100,22 @@ export function createSketchInteraction(
      * app excludes the draft point for exactly this reason. The same is true of a
      * draft's own end while it is being rubber-banded.
      */
+    /*
+     * A drag excludes the whole *coincident cluster*, not just the point being
+     * held: a profile's corner is several points at one place, and the twin one
+     * pixel away would capture every snap the moment the corner was picked up.
+     */
     const moving = session?.draft.value
-    const exclude =
-      moving?.kind === 'dragging'
-        ? new Set([moving.pointId])
-        : moving?.kind === 'drawing'
-          ? new Set([moving.pointId])
-          : undefined
+    let exclude: Set<ApiObjectId> | undefined
+
+    if (moving?.kind === 'drawing') {
+      exclude = new Set([moving.pointId])
+    } else if (moving?.kind === 'dragging') {
+      // Snapping is for points. A segment body being dragged has no single
+      // position to snap, which is how the existing app has it too.
+      if (!isPoint(graph, moving.objectId)) return null
+      exclude = new Set(coincidentCluster(graph, moving.objectId))
+    }
 
     return bestSnappingCandidate(
       drawingOf(graph, open.sketchId),
@@ -148,13 +159,18 @@ export function createSketchInteraction(
   const inSketch = () => dependencies.session()?.open.value != null
 
   /**
-   * The point under the pointer, if the pointer is on one.
+   * What the pointer could take hold of, if anything.
    *
    * The same ten pixels of reach the snapping uses, because it is the same
    * question asked for a different purpose — and two different reaches would mean
    * a point you could snap to but not grab.
+   *
+   * A segment *body* counts, not just its ends. Grabbing an edge and moving the
+   * whole thing is how the existing app works and is most of what dragging is
+   * for; the hit test already prefers points where both are in reach, so an end
+   * is still an end.
    */
-  const vertexAt = (
+  const grabbableAt = (
     where: PlanePoint | null,
     viewport: { width: number; height: number }
   ) => {
@@ -174,7 +190,16 @@ export function createSketchInteraction(
       where,
       SKETCH_HOVER_DISTANCE_PX / scale
     )
-    return hit?.kind === 'vertex' ? hit.id : null
+    if (!hit) return null
+
+    /*
+     * Refused rather than grabbed and then ignored.
+     *
+     * A line that belongs to something else cannot be moved directly, and
+     * claiming the press for a drag that will do nothing would swallow an orbit
+     * with it.
+     */
+    return isDraggable(graph, hit.id) ? hit.id : null
   }
 
   /** True while a point is being moved. */
@@ -234,7 +259,7 @@ export function createSketchInteraction(
          * moving geometry cannot live with the *other* pointer handler, the one
          * that sits behind the camera and swallows clicks.
          */
-        const grabbed = drawing() ? null : vertexAt(where, viewport)
+        const grabbed = drawing() ? null : grabbableAt(where, viewport)
         if (!drawing() && grabbed === null) return
 
         event.stopImmediatePropagation()
@@ -243,7 +268,9 @@ export function createSketchInteraction(
         at.value = where
         snap.value = snapFor(where, event, viewport)
 
-        if (grabbed !== null) dependencies.session()?.beginDrag(grabbed)
+        if (grabbed !== null && where) {
+          dependencies.session()?.beginDrag(grabbed, where)
+        }
       }
 
       const onPointerUp = (event: PointerEvent) => {

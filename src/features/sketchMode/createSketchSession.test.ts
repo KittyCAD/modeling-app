@@ -75,6 +75,8 @@ const drawnOutcome = () => ({
   newObjects: [0, 1, 2],
   invalidatesIds: false,
   checkpointId: null,
+  // A solve that worked. Mutations report a refusal here rather than rejecting.
+  problem: null,
   graph: {
     objects: [
       {
@@ -144,6 +146,8 @@ const setup = (
     slowEdit?: boolean
     /** Flips to true to stand in for the executing buffer being closed. */
     bufferGone?: { value: boolean }
+    /** Makes every solve report that it could not satisfy the constraints. */
+    editProblem?: string
   } = {}
 ) => {
   const buffer = createFileBackedTextBuffer({
@@ -159,7 +163,17 @@ const setup = (
     claimCamera: vi.fn(),
     releaseCamera: vi.fn(),
   } as unknown as CameraDriver
+  /*
+   * The graph a drag is planned against.
+   *
+   * Real drags translate whatever the *last solve* produced, so the session
+   * reads this rather than remembering positions of its own — which means a
+   * frontend double without it cannot drag at all.
+   */
+  const sceneGraph = signal(drawnOutcome().graph as unknown as SceneGraph)
+
   const frontend = {
+    sceneGraph,
     sync: vi.fn(async () => {
       calls.push('sync')
     }),
@@ -190,7 +204,10 @@ const setup = (
       if (options.slowEdit) {
         await new Promise((resolve) => setTimeout(resolve, 5))
       }
-      return drawnOutcome() as never
+      return {
+        ...drawnOutcome(),
+        problem: options.editProblem ?? null,
+      } as never
     }),
     chainSegment: vi.fn(async () => {
       calls.push('chainSegment')
@@ -720,7 +737,7 @@ describe('dragging a point', () => {
     const app = setup()
     await app.session.enter()
 
-    app.session.beginDrag(1)
+    app.session.beginDrag(1, { x: 0, y: 0 })
     app.session.moveTo({ x: 3, y: 0 })
     await vi.waitFor(() =>
       expect(app.frontend.editSegments).toHaveBeenCalledTimes(1)
@@ -732,7 +749,7 @@ describe('dragging a point', () => {
       [{ id: 1, ctor: expect.objectContaining({ type: 'Point' }) }],
       // A preview: solved and drawn, but not settled and not written to the
       // file, because the next move throws it away.
-      { commit: false, checkpoint: false }
+      expect.objectContaining({ commit: false, checkpoint: false })
     )
   })
 
@@ -740,7 +757,7 @@ describe('dragging a point', () => {
     const app = setup()
     await app.session.enter()
 
-    app.session.beginDrag(1)
+    app.session.beginDrag(1, { x: 0, y: 0 })
     app.session.moveTo({ x: 3, y: 0 })
     app.session.endDrag({ x: 4, y: 0 })
     await vi.waitFor(() =>
@@ -758,11 +775,85 @@ describe('dragging a point', () => {
             },
           },
         ],
-        { commit: true, checkpoint: true }
+        expect.objectContaining({ commit: true, checkpoint: true })
       )
     )
 
     expect(app.session.draft.value).toEqual({ kind: 'idle' })
+  })
+
+  /*
+   * The measuring point is where the last *accepted* solve left the pointer.
+   * Advancing it on a refusal would leave the pointer and the geometry offset by
+   * however far the refused move was, for the rest of the drag.
+   */
+  it('keeps measuring from the last accepted solve when one is refused', async () => {
+    const app = setup({
+      editProblem: 'The constraints cannot be satisfied.',
+    })
+    await app.session.enter()
+
+    app.session.beginDrag(2, { x: 0, y: 0 })
+    app.session.moveTo({ x: 3, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.editSegments).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.session.draft.value).toEqual({
+      kind: 'dragging',
+      objectId: 2,
+      from: { x: 0, y: 0 },
+    })
+    expect(app.session.error.value).toBe('The constraints cannot be satisfied.')
+  })
+
+  it('advances the measuring point when the solve is accepted', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.beginDrag(2, { x: 0, y: 0 })
+    app.session.moveTo({ x: 3, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.editSegments).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.session.draft.value).toEqual({
+      kind: 'dragging',
+      objectId: 2,
+      from: { x: 3, y: 0 },
+    })
+  })
+
+  /*
+   * Grabbing an edge means "move this line", so every point of it moves by the
+   * same vector — and the anchor is what lets a *constrained* edge follow the
+   * cursor at all instead of being refused outright.
+   */
+  it('translates a whole segment when its body is grabbed', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.beginDrag(2, { x: 0, y: 0 })
+    app.session.moveTo({ x: 5, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.editSegments).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.editSegments).toHaveBeenCalledWith(
+      0,
+      [{ id: 2, ctor: expect.objectContaining({ type: 'Line' }) }],
+      expect.objectContaining({
+        anchors: [
+          {
+            segmentId: 2,
+            target: {
+              x: { value: 5, units: 'Mm' },
+              y: { value: 0, units: 'Mm' },
+            },
+          },
+        ],
+      })
+    )
   })
 
   it('still ignores a move when nothing is being moved', async () => {
