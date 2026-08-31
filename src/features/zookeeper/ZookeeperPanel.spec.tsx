@@ -43,6 +43,8 @@ function mount(options: {
   header?: boolean
   /** Conversations on disk, for the resume list. */
   stored?: StoredConversation[]
+  /** Whether a turn's edits can still be undone exactly. */
+  canRevert?: boolean
 }) {
   const reason = signal<string | null>(options.reason ?? null)
   const conversations = new Map<string, Conversation>()
@@ -74,6 +76,7 @@ function mount(options: {
           conversation: (id) => conversations.get(id),
           holderOf: () => computed(() => null),
           presence: computed(() => new Map()),
+          canRevert: () => computed(() => options.canRevert ?? true),
           stored: computed(() => options.stored ?? []),
           resume: () => null,
           forget: () => {},
@@ -452,17 +455,51 @@ describe('ZookeeperPanel', () => {
   })
 
   /**
-   * Said plainly rather than offered as a button that would do something weaker
-   * than it claims: the change history those edits were applied against died
-   * with the session.
+   * The claim the change log strengthened. It used to say these edits could never
+   * be reverted; now they can, and the one case that still cannot is named.
    */
-  it('says an earlier session’s edits can no longer be reverted', () => {
+  it('says an earlier session’s edits are revertible unless the file moved', () => {
     const view = mount({
       conversation: null,
       stored: [{ id: 'old', remoteId: null, createdAt: 1, turns: [turn()] }],
     })
 
-    expect(view.textContent).toContain('can no longer be reverted')
+    expect(view.textContent).toContain('can still be reverted')
+    expect(view.textContent).toContain('outside the app')
+  })
+
+  it('offers to revert a turn whose history it still holds', () => {
+    const view = mount({
+      conversation: fakeConversation({
+        turns: [turn({ paths: ['main.kcl'] })],
+      }),
+      canRevert: true,
+    })
+
+    const revert = [...view.querySelectorAll('button')].find((button) =>
+      button.textContent?.includes('Revert')
+    )
+    expect(revert).toBeDefined()
+  })
+
+  /**
+   * Absent rather than disabled: a greyed-out button invites a hover to explain
+   * itself, and there is nothing useful to say beyond "not any more".
+   */
+  it('offers nothing when the history for a turn is gone', () => {
+    const view = mount({
+      conversation: fakeConversation({
+        turns: [turn({ paths: ['main.kcl'] })],
+      }),
+      canRevert: false,
+    })
+
+    const revert = [...view.querySelectorAll('button')].find((button) =>
+      button.textContent?.includes('Revert')
+    )
+    expect(revert).toBeUndefined()
+    // The turn is still shown, with what it changed.
+    expect(view.textContent).toContain('main.kcl')
   })
 
   it('marks a failed turn', () => {

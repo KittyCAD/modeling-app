@@ -131,6 +131,16 @@ export interface ZookeeperService {
    * to touch, so presence before the first edit of a turn would be a guess.
    */
   readonly presence: ReadonlySignal<ReadonlyMap<string, PresenceEntry>>
+  /**
+   * Whether a turn's edits can still be undone exactly.
+   *
+   * True while the change history holds that turn's rows — which now survives a
+   * reload, as long as the files were not edited outside the app. A turn from
+   * beyond the log's horizon, or whose file changed in another editor, answers
+   * false, and the panel offers nothing rather than something weaker than it
+   * claims.
+   */
+  canRevert(turnId: string): ReadonlySignal<boolean>
 
   /**
    * Conversations stored for this project, newest first.

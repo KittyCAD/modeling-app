@@ -13,6 +13,7 @@ import type {
 import { captureProjectBaseline } from '@src/features/zookeeper/baseline'
 import { createConversation } from '@src/features/zookeeper/createConversation'
 import { createZookeeperConnection } from '@src/features/zookeeper/createZookeeperConnection'
+import { createChangeLogStore } from '@src/features/zookeeper/changeLogStore'
 import { createTranscriptStore } from '@src/features/zookeeper/transcriptStore'
 import { createChangeHistory } from '@src/lib/collab/changeHistory'
 import { createWriteClaims } from '@src/lib/collab/claims'
@@ -67,6 +68,8 @@ export function createZookeeperService(
   /** The service's own id per conversation, so a resume can ask for a replay. */
   const remoteIds = new Map<ConversationId, string | null>()
   const openedAt = new Map<ConversationId, number>()
+  /** Paths whose change history is live, so it can be written back. */
+  const tracked = new Set<string>()
 
   const unavailableReason = computed(() => {
     if (url === undefined || url === '') {
@@ -93,6 +96,63 @@ export function createZookeeperService(
       fileSystem,
       queue,
     })
+  }
+
+  const historyFor = () => {
+    const session = sessions.current.peek()
+    if (session === null || session === undefined) return null
+    return createChangeLogStore({
+      projectPath: session.project.peek().path,
+      fileSystem,
+      queue,
+    })
+  }
+
+  /** The file as it now stands, for the change log's staleness check. */
+  const headOf = (path: string) =>
+    sessions.current.peek()?.bufferForPath(path)?.text.peek() ?? null
+
+  /**
+   * Adopt any history a previous session left for these paths.
+   *
+   * Done here rather than when a path is followed, because seeding only works
+   * before anything live has been recorded for it — and this runs immediately
+   * before the conversation starts tracking, for exactly the same paths.
+   */
+  const seedHistory = async (paths: Iterable<string>) => {
+    const store = historyFor()
+    if (store === null) return
+
+    await Promise.all(
+      [...paths].map(async (path) => {
+        tracked.add(path)
+        if (changeHistory.entries(path).length > 0) return
+
+        const head = headOf(path)
+        // Nothing open for the path means nothing to reconcile a log against.
+        if (head === null) return
+
+        const restored = await store.load(path, head)
+        if (restored !== null) changeHistory.seed(path, restored)
+      })
+    )
+  }
+
+  /** Write back the history for every path a conversation has touched. */
+  const persistHistory = () => {
+    const store = historyFor()
+    if (store === null) return
+
+    for (const path of tracked) {
+      const head = headOf(path)
+      const entries = changeHistory.entries(path)
+      if (head === null || entries.length === 0) continue
+
+      store.save(path, entries, head).catch(() => {
+        // A history that could not be written costs the *next* session an exact
+        // revert. It must not cost this one the turn that just succeeded.
+      })
+    }
   }
 
   const refreshStored = () => {
@@ -130,6 +190,8 @@ export function createZookeeperService(
         // Losing a transcript write must not take the conversation with it: the
         // in-memory transcript is still what the panel reads.
       })
+
+    persistHistory()
   }
 
   const close = (id: ConversationId) => {
@@ -195,7 +257,11 @@ export function createZookeeperService(
       captureProject: async () => {
         const session = sessions.current.peek()
         if (session === undefined || session === null) return new Map()
-        return captureProjectBaseline({ session, fileSystem })
+        const captured = await captureProjectBaseline({ session, fileSystem })
+        // Before the conversation tracks these paths, so a restored log is not
+        // seeded over live entries.
+        await seedHistory(captured.keys())
+        return captured
       },
       connection: computed(() => ({
         status: connection.state.value.status,
@@ -325,5 +391,17 @@ export function createZookeeperService(
     },
 
     presence: presence.here,
+
+    canRevert(turnId) {
+      return computed(() => {
+        for (const path of tracked) {
+          const held = changeHistory
+            .entries(path)
+            .some((entry) => entry.contributionId === turnId)
+          if (held) return true
+        }
+        return false
+      })
+    },
   }
 }

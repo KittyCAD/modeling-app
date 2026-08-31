@@ -13,6 +13,14 @@ export interface ChangeHistory {
   follow(path: string, buffer: FileBackedTextBuffer): () => void
   /** In application order, ready for `inverseForContribution`. */
   entries(path: string): readonly AppliedChange[]
+  /**
+   * Adopt history from a previous session.
+   *
+   * Only when nothing has been recorded for the path yet: seeding over live
+   * entries would put restored rows after ones that already followed them, and
+   * every coordinate below the join would be wrong. Returns whether it was taken.
+   */
+  seed(path: string, entries: readonly AppliedChange[]): boolean
   forget(path: string): void
   dispose(): void
 }
@@ -33,10 +41,11 @@ export interface ChangeHistory {
  * sources appending to one log double every remote entry, and a doubled entry
  * makes a revert remove text twice over. There is one recorder now.
  *
- * **Session-lifetime only.** It holds CodeMirror `Text` values, which are cheap
- * to keep but do not survive a reload, so exact revert is a session-lifetime
- * capability. Durable revert is a different, weaker mechanism — see the design
- * note in `revert.ts`.
+ * In memory it holds CodeMirror `Text` values, which are cheap to keep but do not
+ * themselves survive a reload. `seed` is how a persisted log comes back: see
+ * `changeLog.ts`, which stores one base document plus every `ChangeSet` and
+ * reconstructs the rest by replay, so a restored revert is exact rather than
+ * best-effort — as long as the file was not edited outside the app.
  */
 export function createChangeHistory(): ChangeHistory {
   const logs = new Map<string, AppliedChange[]>()
@@ -76,6 +85,13 @@ export function createChangeHistory(): ChangeHistory {
 
     entries(path) {
       return logs.get(path) ?? []
+    },
+
+    seed(path, restored) {
+      const existing = logs.get(path)
+      if (existing !== undefined && existing.length > 0) return false
+      logs.set(path, [...restored])
+      return true
     },
 
     forget(path) {

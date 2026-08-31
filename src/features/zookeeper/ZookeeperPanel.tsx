@@ -169,8 +169,8 @@ function StoredConversations() {
         ))}
       </ul>
       <p class="zds-zoo__storedNote">
-        Reopening shows what was said. Edits from an earlier session can no
-        longer be reverted turn by turn.
+        Reopening shows what was said, and its edits can still be reverted turn
+        by turn — unless the file has changed outside the app since.
       </p>
     </section>
   )
@@ -331,6 +331,11 @@ function ConversationView({ conversation }: { conversation: Conversation }) {
 }
 
 function TurnView({ turn, onRevert }: { turn: Turn; onRevert: () => void }) {
+  const zookeeper = useService(zookeeperService)
+  // Exact revert survives a reload now, but not a file edited outside the app or
+  // a turn older than the log's horizon — so this is asked rather than assumed.
+  const revertible = useComputed(() => zookeeper.canRevert(turn.id).value)
+
   return (
     <article class="zds-zoo__turn" data-status={turn.status}>
       <p class="zds-zoo__prompt">{turn.prompt}</p>
@@ -372,13 +377,19 @@ function TurnView({ turn, onRevert }: { turn: Turn; onRevert: () => void }) {
             Revert is a button rather than a keystroke on purpose: Cmd+Z is
             per-buffer, and a turn can span files. This undoes the whole turn
             without touching what the user did afterwards.
+
+            Absent rather than disabled when the history for it is gone: a
+            greyed-out button invites a hover to explain itself, and there is
+            nothing useful to say beyond "not any more".
           */}
-          <Button
-            label="Revert this turn"
-            size="small"
-            variant="ghost"
-            onClick={onRevert}
-          />
+          {revertible.value ? (
+            <Button
+              label="Revert this turn"
+              size="small"
+              variant="ghost"
+              onClick={onRevert}
+            />
+          ) : null}
         </footer>
       ) : null}
     </article>

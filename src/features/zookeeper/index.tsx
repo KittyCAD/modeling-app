@@ -114,6 +114,7 @@ export default defineRegistryItemFactory((ctx) => {
           conversation: (id) => zookeeper().conversation(id),
           holderOf: (path) => zookeeper().holderOf(path),
           presence: computed(() => zookeeper().presence.value),
+          canRevert: (turnId) => zookeeper().canRevert(turnId),
           stored: computed(() => zookeeper().stored.value),
           resume: (id) => zookeeper().resume(id),
           forget: (id) => zookeeper().forget(id),
