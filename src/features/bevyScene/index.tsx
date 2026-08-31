@@ -74,21 +74,12 @@ export default defineRegistryItemFactory((ctx) => {
   queueMicrotask(() => {
     const plugins = computed(() => ctx.valueSpecs.get(pluginsValueSpec))
 
-    stopArbitrating = effect(() => {
-      const store = settings()
-      // Until the file has been read, the default is the engine's, and acting on
-      // it would hand the camera over and immediately take it back.
-      if (!store.hydrated.value) return
+    const controllerFor = (id: string) => {
+      const plugin = plugins.value.find((candidate) => candidate.id === id)
+      return plugin ? ctx.services.optional(plugin.service) : undefined
+    }
 
-      const wanted =
-        store.value(rendererSetting).value === 'bevy'
-          ? BEVY_CAMERA
-          : ENGINE_CAMERA
-      const controllerFor = (id: string) => {
-        const plugin = plugins.value.find((candidate) => candidate.id === id)
-        return plugin ? ctx.services.optional(plugin.service) : undefined
-      }
-
+    const hand = (wanted: string) => {
       const winner = controllerFor(wanted)
       const loser = controllerFor(
         wanted === BEVY_CAMERA ? ENGINE_CAMERA : BEVY_CAMERA
@@ -101,6 +92,23 @@ export default defineRegistryItemFactory((ctx) => {
       // `ServiceConflictError`.
       if (loser?.active.value) loser.disable()
       if (!winner.active.value) winner.enable()
+    }
+
+    stopArbitrating = effect(() => {
+      const store = settings()
+      // Until the file has been read, the default is the engine's, and acting on
+      // it would hand the camera over and immediately take it back.
+      if (!store.hydrated.value) return
+
+      const wanted =
+        store.value(rendererSetting).value === 'bevy'
+          ? BEVY_CAMERA
+          : ENGINE_CAMERA
+
+      // Swapped outside this effect deliberately. Reconfiguring a slot is
+      // forbidden while the graph is being flattened, and reading the plugin list
+      // in here is what starts a flatten.
+      queueMicrotask(() => hand(wanted))
     })
   })
 

@@ -1,4 +1,4 @@
-import { type ReadonlySignal, computed, signal } from '@preact/signals'
+import { computed, signal } from '@preact/signals'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type {
   CameraDriver,
@@ -7,8 +7,8 @@ import type {
   ScenePoint,
   StandardView,
 } from '@src/contracts/scene'
-import type { PlaneFrame, Vector3 } from '@src/lib/scene/projection'
 import type { BevyModule } from '@src/features/bevyScene/loadBevy'
+import type { PlaneFrame, Vector3 } from '@src/lib/scene/projection'
 
 /**
  * Where each named view stands, and which way is up when it gets there.
@@ -88,7 +88,7 @@ export function createBevyCameraDriver(options: {
 
   return {
     id: 'bevy',
-    ready: computed(() => attached.value) as ReadonlySignal<boolean>,
+    ready: computed(() => attached.value),
 
     gesture(gesture) {
       if (gesture.phase === 'start') {

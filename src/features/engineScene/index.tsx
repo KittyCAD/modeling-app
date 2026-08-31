@@ -6,26 +6,25 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed, effect } from '@preact/signals'
-import { engineConnectionService } from '@src/contracts/engine'
-import { motionService } from '@src/contracts/motion'
-import { streamParamsValueSpec } from '@src/contracts/engineScene'
 import { commandsValueSpec } from '@src/contracts/commands'
 import { defaultPlaneDriverService } from '@src/contracts/defaultPlanes'
+import { engineConnectionService } from '@src/contracts/engine'
+import { streamParamsValueSpec } from '@src/contracts/engineScene'
 import { kclSceneService } from '@src/contracts/kclScene'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
+import { motionService } from '@src/contracts/motion'
 import { cameraDriverService, sceneItemsValueSpec } from '@src/contracts/scene'
 import { sceneHudService } from '@src/contracts/sceneHud'
-import { createSceneHudService } from '@src/features/engineScene/createSceneHudService'
 import { sceneProjectionService } from '@src/contracts/sceneProjection'
 import { scenePickerService } from '@src/contracts/selection'
 import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { themeService } from '@src/contracts/theme'
-import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
 import { createEngineCamera } from '@src/features/engineScene/createEngineCamera'
+import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
 import { createEnginePlaneDriver } from '@src/features/engineScene/createEnginePlaneDriver'
 import { createEngineProjection } from '@src/features/engineScene/createEngineProjection'
-import { ViewGizmo } from '@src/features/engineScene/ViewGizmo'
 import { createEngineScenePicker } from '@src/features/engineScene/createEngineScenePicker'
+import { createSceneHudService } from '@src/features/engineScene/createSceneHudService'
 import {
   backgroundColorFor,
   HIGHLIGHT_COLOR,
@@ -41,6 +40,7 @@ import {
   sceneSettings,
   showScaleGridSetting,
 } from '@src/features/engineScene/settings'
+import { ViewGizmo } from '@src/features/engineScene/ViewGizmo'
 
 /**
  * What the engine is showing, as opposed to how it is reached.
