@@ -196,24 +196,19 @@
   transition: opacity var(--zds-motion-fast) var(--zds-motion-ease-out);
 }
 
+/*
+ * `:active` rather than a state flag: the handle stays active for the length of
+ * a drag because it holds pointer capture, so the line stays lit without the
+ * component having to know a drag is happening.
+ */
 .zds-scene-hud__resize:hover::after,
 .zds-scene-hud__resize:focus-visible::after,
-.zds-scene-hud-frame[data-resizing="true"] .zds-scene-hud__resize::after {
+.zds-scene-hud__resize:active::after {
   opacity: 1;
 }
 
 .zds-scene-hud__resize:focus-visible {
   outline: none;
-}
-
-/*
- * No transition while dragging, and no text selection.
- *
- * A width that eases toward the pointer feels like lag rather than like
- * smoothness, and a drag that selects the list it passes over looks broken.
- */
-.zds-scene-hud-frame[data-resizing="true"] {
-  user-select: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

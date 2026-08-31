@@ -250,6 +250,19 @@ describe('resizing the outline', () => {
     expect(extent.value).toBe(208)
   })
 
+  it('nudges with the arrow keys, like every other resize handle', () => {
+    const extent = signal(208)
+    const element = mount(withLayout(extent))
+
+    act(() => {
+      handleOf(element).dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })
+      )
+    })
+
+    expect(extent.value).toBe(220)
+  })
+
   it('has no handle while it is collapsed', () => {
     const element = mount(withLayout())
     const collapse = element.querySelector('.zds-scene-hud__collapse')

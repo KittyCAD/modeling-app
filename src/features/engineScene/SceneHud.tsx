@@ -3,8 +3,9 @@ import { useOptionalService, useValueSpec } from '@src/app/context'
 import { layoutService } from '@src/contracts/layout'
 import type { SceneHudSection } from '@src/contracts/sceneHud'
 import { sceneHudSectionsValueSpec } from '@src/contracts/sceneHud'
+import { inlineResizeHandlers } from '@src/features/layout/inlineResize'
 import { signal } from '@preact/signals'
-import { useCallback, useState } from 'preact/hooks'
+import { useState } from 'preact/hooks'
 import './sceneHud.css'
 
 /**
@@ -86,47 +87,21 @@ export function SceneHud() {
   const layout = useOptionalService(layoutService)
   const width = layout?.extentFor(WIDTH_NODE, DEFAULT_WIDTH) ?? fallbackWidth
   const [collapsed, setCollapsed] = useState(false)
-  const [resizing, setResizing] = useState(false)
 
   /**
-   * Drag the edge.
+   * Drag the edge, through the handlers the rails already use.
    *
-   * Pointer capture rather than window listeners: the pointer leaves the handle
-   * on the first millimetre of any drag, and capture is what keeps the events
-   * coming to the element that started it. It also ends the drag correctly when
-   * the pointer is released outside the window, which a `mouseup` listener does
-   * not.
+   * Shared rather than written again: pointer capture, the clamp and the fact
+   * that a handle is a `separator` a keyboard can nudge are all easy to get
+   * subtly different, and I had already got them subtly different here before
+   * noticing this existed. Arrow keys come with it.
    */
-  const startResize = useCallback(
-    (event: PointerEvent) => {
-      if (event.button !== 0) return
-      const handle = event.currentTarget as HTMLElement
-      const startX = event.clientX
-      const startWidth = width.peek()
-
-      handle.setPointerCapture(event.pointerId)
-      setResizing(true)
-
-      const onMove = (move: PointerEvent) => {
-        width.value = Math.min(
-          MAX_WIDTH,
-          Math.max(MIN_WIDTH, startWidth + (move.clientX - startX))
-        )
-      }
-
-      const onEnd = () => {
-        setResizing(false)
-        handle.removeEventListener('pointermove', onMove)
-        handle.removeEventListener('pointerup', onEnd)
-        handle.removeEventListener('pointercancel', onEnd)
-      }
-
-      handle.addEventListener('pointermove', onMove)
-      handle.addEventListener('pointerup', onEnd)
-      handle.addEventListener('pointercancel', onEnd)
-    },
-    [width]
-  )
+  const resize = inlineResizeHandlers(width, {
+    // The panel is to the left of its handle, so rightward widens.
+    direction: 1,
+    min: MIN_WIDTH,
+    max: MAX_WIDTH,
+  })
 
   const visible = sections.value.filter(
     (section) => section.visible?.value ?? true
@@ -146,10 +121,7 @@ export function SceneHud() {
      * partner is not, which would have given the panel a horizontal scrollbar
      * whose only content was the handle. So the handle is a sibling.
      */
-    <div
-      class="zds-scene-hud-frame"
-      data-resizing={resizing ? 'true' : undefined}
-    >
+    <div class="zds-scene-hud-frame">
       <aside
         class="zds-scene-hud"
         aria-label="Scene outline"
@@ -204,7 +176,9 @@ export function SceneHud() {
           aria-valuenow={width.value}
           aria-valuemin={MIN_WIDTH}
           aria-valuemax={MAX_WIDTH}
-          onPointerDown={startResize}
+          tabIndex={0}
+          onPointerDown={resize.onPointerDown}
+          onKeyDown={resize.onKeyDown}
           onDblClick={() => {
             width.value = DEFAULT_WIDTH
           }}
