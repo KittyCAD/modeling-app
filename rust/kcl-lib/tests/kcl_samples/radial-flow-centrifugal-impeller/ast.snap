@@ -6927,7 +6927,7 @@ description: Result of parsing radial-flow-centrifugal-impeller.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Automotive, Aerospace",
+            "value": "Categories: Industrial & Manufacturing; Mechanical Components; Parametric",
             "style": "line"
           }
         },

@@ -379,8 +379,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     .flatten(),
             );
 
-            // Filter out Z0005 (old sketch syntax) from test snapshots
-            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            // Filter out Z0005 (old sketch syntax) from test snapshots.
             lint_findings.retain(|finding| finding.finding.code != "Z0005");
 
             let (outcome, module_state, responses) =
@@ -7548,6 +7547,27 @@ mod use_point_from_other_sketch {
 }
 mod import_nested_foreign_error {
     const TEST_NAME: &str = "import_nested_foreign_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod import_error_in_other_module_with_overflow {
+    const TEST_NAME: &str = "import_error_in_other_module_with_overflow";
 
     /// Test parsing KCL.
     #[test]

@@ -403,8 +403,8 @@ async def test_kcl_execute_and_measure():
         com = response.get_center_of_mass()
         print(com.x, com.y, com.z)
         assert com.x == pytest.approx(0.01788371801376342, rel=0, abs=1e-5)
-        assert com.y == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
-        assert com.z == pytest.approx(-0.0216667298227548, rel=0, abs=1e-5)
+        assert com.y == pytest.approx(0.02166672982275486, rel=0, abs=1e-5)
+        assert com.z == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
         assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
 
 

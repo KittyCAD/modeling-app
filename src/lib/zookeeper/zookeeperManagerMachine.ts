@@ -12,7 +12,7 @@ import {
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket, SocketConnectionError } from '@src/lib/socket'
-import { isErr } from '@src/lib/trap'
+import { cleanErrs, isErr } from '@src/lib/trap'
 import { isArray, isRecord, uuidv4 } from '@src/lib/utils'
 import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
@@ -611,11 +611,35 @@ function isAttachmentsLoadedMessage(
   )
 }
 
-async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
+const ZOOKEEPER_ATTACHMENT_READ_ERROR_MESSAGE =
+  "We couldn't read the attachment. It may have been moved, deleted, or become unavailable. Reattach it and try again."
+
+class ZookeeperAttachmentReadError extends Error {
+  constructor(cause: unknown) {
+    super(ZOOKEEPER_ATTACHMENT_READ_ERROR_MESSAGE, { cause })
+    this.name = 'ZookeeperAttachmentReadError'
+  }
+}
+
+export async function toMlCopilotFile(
+  file: File
+): Promise<MlCopilotFile | Error> {
+  let data: ArrayBuffer
+  try {
+    data = await file.arrayBuffer()
+  } catch (error) {
+    if (isErr(error) && error.name === 'NotFoundError') {
+      return new ZookeeperAttachmentReadError(error)
+    }
+    return isErr(error)
+      ? error
+      : new Error('Unknown attachment read error', { cause: error })
+  }
+
   return {
     name: file.name,
     mimetype: file.type || 'application/octet-stream',
-    data: Array.from(new Uint8Array(await file.arrayBuffer())),
+    data: Array.from(new Uint8Array(data)),
   }
 }
 
@@ -1453,10 +1477,15 @@ export const zookeeperManagerMachine = setup({
         )
       }
 
-      const additionalFiles =
-        event.additionalFiles && event.additionalFiles.length > 0
-          ? await Promise.all(event.additionalFiles.map(toMlCopilotFile))
-          : undefined
+      let additionalFiles: MlCopilotFile[] | undefined
+      if (event.additionalFiles && event.additionalFiles.length > 0) {
+        const [, convertedFiles, conversionErrors] = cleanErrs(
+          await Promise.all(event.additionalFiles.map(toMlCopilotFile))
+        )
+        const conversionError = conversionErrors[0]
+        if (conversionError) return Promise.reject(conversionError)
+        additionalFiles = convertedFiles
+      }
 
       const request: MlCopilotUserRequest = {
         type: 'user',

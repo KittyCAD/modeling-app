@@ -1,6 +1,6 @@
 // Hub
 // A wheel hub is the part that connects the wheel to the suspension
-// Categories: Automotive
+// Categories: Automotive & Transportation; Mechanical Components
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 2.0)

@@ -933,7 +933,7 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let from = parse_distance_entity_arg("from", exec_state, &args).await?;
     let to = parse_distance_entity_arg("to", exec_state, &args).await?;
     let edges = parse_gdt_edges_arg(exec_state, &args).await?;
-    let tolerance = args.get_kw_arg("tolerance", &RuntimeType::length(), exec_state)?;
+    let tolerance = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let frame_position: Option<[TyF64; 2]> =
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
@@ -963,7 +963,7 @@ async fn inner_distance(
     from: Option<DistanceEntity>,
     to: Option<DistanceEntity>,
     edges: Vec<GdtEdgeReference>,
-    tolerance: TyF64,
+    tolerance: Option<TyF64>,
     precision: Option<TyF64>,
     frame_position: Option<[TyF64; 2]>,
     frame_plane: Option<Plane>,
@@ -1065,7 +1065,7 @@ async fn inner_distance(
 async fn create_basic_distance_annotation(
     from: DistanceEndpoint,
     to: DistanceEndpoint,
-    tolerance: &TyF64,
+    tolerance: &Option<TyF64>,
     precision: u32,
     frame_position: Option<&[TyF64; 2]>,
     frame_plane_id: uuid::Uuid,
@@ -1087,7 +1087,12 @@ async fn create_basic_distance_annotation(
         .to_entity_pos(to.entity_pos)
         .dimension(
             AnnotationMbdBasicDimension::builder()
-                .tolerance(tolerance.to_length_units(display_units))
+                .tolerance(
+                    tolerance
+                        .as_ref()
+                        .map(|tol| tol.to_length_units(display_units))
+                        .unwrap_or_default(),
+                )
                 .build(),
         )
         .plane_id(frame_plane_id)

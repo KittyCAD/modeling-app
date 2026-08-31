@@ -1,4 +1,5 @@
 import {
+  createPlugin,
   defineRegistryItem,
   provide,
   provideService,
@@ -6,6 +7,7 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type * as ClientErrors from '@src/lib/clientErrors'
+import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Project } from '@src/lib/project'
@@ -908,9 +910,24 @@ describe('home project actions', () => {
     expect(systemIO.send).not.toHaveBeenCalled()
   })
 
-  it('deletes only local state for a cloud-backed project outside a cloud-type library', async () => {
+  it.each([
+    {
+      name: 'uses cloudSync cleanup for a linked directory project when the plugin is active',
+      pluginActive: true,
+    },
+    {
+      name: 'deletes a linked directory project normally when the plugin is inactive',
+      pluginActive: false,
+    },
+  ])('$name', async ({ pluginActive }) => {
     const systemIO = createSystemIOService()
-    const cloudSync = createCloudSyncService()
+    const cloudSync = createCloudSyncService({
+      status: signal(
+        pluginActive
+          ? { enabled: true, state: 'idle', pendingCount: 0 }
+          : { enabled: false, state: 'disabled', pendingCount: 0 }
+      ),
+    })
     const removeProjectDirectory = vi
       .spyOn(fsZds, 'rm')
       .mockResolvedValue(undefined)
@@ -941,6 +958,13 @@ describe('home project actions', () => {
       defineRegistryItem({
         id: 'test.cloud-sync',
         providesServices: [provideService(cloudSyncService, cloudSync)],
+      }),
+      createPlugin({
+        id: CLOUD_SYNC_PLUGIN_ID,
+        title: 'Cloud sync',
+        description: 'Test cloud sync plugin.',
+        items: [],
+        enabledByDefault: pluginActive,
       }),
       projectLibrariesExtension,
       homeProjectsExtension,
@@ -976,11 +1000,18 @@ describe('home project actions', () => {
       },
     })
 
-    expect(cloudSync.deleteLocalProjectRealizations).toHaveBeenCalledWith(
-      'remote-123',
-      '/projects/bracket'
-    )
+    if (pluginActive) {
+      expect(cloudSync.deleteLocalProjectRealizations).toHaveBeenCalledWith(
+        'remote-123',
+        '/projects/bracket'
+      )
+      expect(removeProjectDirectory).not.toHaveBeenCalled()
+    } else {
+      expect(cloudSync.deleteLocalProjectRealizations).not.toHaveBeenCalled()
+      expect(removeProjectDirectory).toHaveBeenCalledWith('/projects/bracket', {
+        recursive: true,
+      })
+    }
     expect(cloudSync.deleteRemoteProject).not.toHaveBeenCalled()
-    expect(removeProjectDirectory).not.toHaveBeenCalled()
   })
 })

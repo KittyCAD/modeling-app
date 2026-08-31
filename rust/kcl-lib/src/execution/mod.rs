@@ -50,11 +50,6 @@ use serde::Deserialize;
 use serde::Serialize;
 pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
 pub(crate) use sketch_solve::solver_numeric_type;
-pub use sketch_transpiler::pre_execute_transpile;
-pub use sketch_transpiler::transpile_all_old_sketches_to_new;
-pub use sketch_transpiler::transpile_old_sketch_to_new;
-pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
-pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
 pub(crate) use solver_arc::SolverArc;
 pub(crate) use state::ConstraintKey;
 pub(crate) use state::ConstraintState;
@@ -103,6 +98,7 @@ use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
+use crate::modules::ModuleSource;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::NodeRef;
@@ -171,7 +167,6 @@ mod memory;
 mod modeling;
 mod named_views;
 mod sketch_solve;
-mod sketch_transpiler;
 mod solver_arc;
 mod state;
 pub mod typed_path;
@@ -342,6 +337,12 @@ pub struct ExecOutcome {
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
+    /// Source code of each module, for rendering issues against the module
+    /// their source range points into. Not serialized to keep the WASM
+    /// payload small; native callers (e.g. the Python bindings) read it
+    /// directly.
+    #[serde(skip)]
+    pub source_files: IndexMap<ModuleId, ModuleSource>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
 }
@@ -1331,6 +1332,46 @@ impl ExecutorContext {
         program: &crate::Program,
         mock_config: &MockConfig,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let (exec_state, main_ref) = self.run_mock_returning_state(program, mock_config).await?;
+
+        // Restore any temporary variables, then save any newly created variables back to
+        // memory in case another run wants to use them. Note this is just saved to the preserved
+        // memory, not to the exec_state which is not cached for mock execution.
+
+        let mut stack = exec_state.stack().clone();
+        let module_infos = exec_state.global.module_infos.clone();
+        let path_to_source_id = exec_state.global.path_to_source_id.clone();
+        let id_to_source = exec_state.global.id_to_source.clone();
+        let constraint_state = exec_state.mod_local.constraint_state.clone();
+        let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
+        let outcome = exec_state
+            .into_exec_outcome(main_ref, self)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        stack.squash_env(main_ref).map_err(KclErrorWithOutputs::no_outputs)?;
+        let state = cache::SketchModeState {
+            stack,
+            module_infos,
+            path_to_source_id,
+            id_to_source,
+            constraint_state,
+            scene_objects,
+        };
+        cache::write_old_memory(state).await;
+
+        Ok(outcome)
+    }
+
+    /// The mock-execution pipeline through interpretation: set up mock state,
+    /// restore or prepare memory, and execute. Split from [`Self::run_mock`],
+    /// which converts the state to an [`ExecOutcome`], so that tests can
+    /// inspect the [`ExecState`] after a mock run.
+    async fn run_mock_returning_state(
+        &self,
+        program: &crate::Program,
+        mock_config: &MockConfig,
+    ) -> Result<(ExecState, EnvironmentRef), KclErrorWithOutputs> {
         assert!(
             self.is_mock(),
             "To use mock execution, instantiate via ExecutorContext::new_mock, not ::new"
@@ -1354,35 +1395,9 @@ impl ExecutorContext {
             .push_new_env_for_scope()
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        let result = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
+        let (main_ref, _) = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
 
-        // Restore any temporary variables, then save any newly created variables back to
-        // memory in case another run wants to use them. Note this is just saved to the preserved
-        // memory, not to the exec_state which is not cached for mock execution.
-
-        let mut stack = exec_state.stack().clone();
-        let module_infos = exec_state.global.module_infos.clone();
-        let path_to_source_id = exec_state.global.path_to_source_id.clone();
-        let id_to_source = exec_state.global.id_to_source.clone();
-        let constraint_state = exec_state.mod_local.constraint_state.clone();
-        let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
-        let outcome = exec_state
-            .into_exec_outcome(result.0, self)
-            .await
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        stack.squash_env(result.0).map_err(KclErrorWithOutputs::no_outputs)?;
-        let state = cache::SketchModeState {
-            stack,
-            module_infos,
-            path_to_source_id,
-            id_to_source,
-            constraint_state,
-            scene_objects,
-        };
-        cache::write_old_memory(state).await;
-
-        Ok(outcome)
+        Ok((exec_state, main_ref))
     }
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
@@ -1668,6 +1683,11 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        // Record the entry point's kclVersion before anything executes;
+        // imported modules pre-execute on clones of this state below and must
+        // inherit it.
+        exec_state.set_entry_point_kcl_version(program);
+
         // Reuse our cached universe if we have one.
 
         let (universe, universe_map) = if let Some((universe, universe_map)) = universe_info {
@@ -1941,6 +1961,11 @@ impl ExecutorContext {
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
+
+        // Record the entry point's kclVersion. Mock execution reaches here
+        // without going through run_concurrent; on the engine path this
+        // re-assigns the same value, which is harmless.
+        exec_state.set_entry_point_kcl_version(program);
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
@@ -2902,25 +2927,6 @@ segLength = segLen(seg01)
         let (_, first_variables) = results.first().expect("expected at least one memory backend");
         assert_number_variable(first_variables, "segLength", 10.0);
         assert_backend_results_match(&results);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn sketch_transpiler_exec_outcome_variables_match_between_memory_backends() {
-        let code = r#"
-sketch001 = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [1, 0])
-"#;
-        let program = crate::Program::parse_no_errs(code).unwrap();
-
-        let outcomes = collect_backend_results(|kind| execute_outcome_with_backend(code, kind)).await;
-        let mut transpiled = Vec::with_capacity(outcomes.len());
-        for (kind, outcome) in &outcomes {
-            let sketch = transpile_old_sketch_to_new(outcome, &program, "sketch001").unwrap();
-            transpiled.push((*kind, sketch));
-        }
-
-        assert_backend_results_match(&transpiled);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4890,6 +4896,199 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         parse_execute(code).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn entry_point_kcl_version_recorded_only_for_v3() {
+        let result = parse_execute("@settings(kclVersion = \"3.0-preview\")\nx = 1\n")
+            .await
+            .unwrap();
+        assert_eq!(
+            result.exec_state.global.entry_point_kcl_version,
+            Some(KclVersion::V3Preview)
+        );
+        assert!(result.exec_state.entry_point_is_v3());
+
+        for code in [
+            "x = 1\n",
+            "@settings(kclVersion = 1.0)\nx = 1\n",
+            "@settings(kclVersion = 2.0)\nx = 1\n",
+        ] {
+            let result = parse_execute(code).await.unwrap();
+            assert_eq!(result.exec_state.global.entry_point_kcl_version, None, "code={code}");
+            assert!(!result.exec_state.entry_point_is_v3(), "code={code}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_version_lookup_prefers_entry_point_over_module_local() {
+        let mut exec_state = parse_execute("x = 1\n").await.unwrap().exec_state;
+
+        // Legacy fallback: the module-local settings.
+        exec_state.global.entry_point_kcl_version = None;
+        exec_state.mod_local.settings.kcl_version = KclVersion::V2;
+        assert_eq!(exec_state.kcl_version(), KclVersion::V2);
+        assert_eq!(exec_state.legacy_caller_kcl_version(), KclVersion::V2);
+
+        // An entry-point 3.0-preview declaration overrides the module-local
+        // settings for the unified lookup, but not for the legacy one.
+        exec_state.global.entry_point_kcl_version = Some(KclVersion::V3Preview);
+        assert_eq!(exec_state.kcl_version(), KclVersion::V3Preview);
+        assert_eq!(exec_state.legacy_caller_kcl_version(), KclVersion::V2);
+    }
+
+    /// Mock execution skips `run_concurrent`, so it relies on `inner_run` to
+    /// record the entry point's kclVersion -- including re-recording it on
+    /// every run when restoring memory preserved from a previous mock run,
+    /// since the preserved memory must not pin the previous program's version.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_records_entry_point_kcl_version() {
+        use futures::FutureExt;
+
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let fresh_memory = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        let prev_memory = MockConfig::default();
+
+        let v3_program = crate::Program::parse_no_errs("@settings(kclVersion = \"3.0-preview\")\nx = 1\n").unwrap();
+        let v2_program = crate::Program::parse_no_errs("@settings(kclVersion = 2.0)\nx = 1\n").unwrap();
+
+        // Close the context and clear the cache even if an assertion panics,
+        // then let the panic continue.
+        let test_result = std::panic::AssertUnwindSafe(async {
+            let (exec_state, _) = ctx.run_mock_returning_state(&v3_program, &fresh_memory).await.unwrap();
+            assert_eq!(
+                exec_state.global.entry_point_kcl_version,
+                Some(KclVersion::V3Preview),
+                "mock execution should record a 3.0-preview entry point"
+            );
+            assert!(exec_state.entry_point_is_v3());
+
+            // Populate the preserved mock memory with a 3.0-preview run, then
+            // check that a 2.0 run restoring that memory isn't pinned to
+            // 3.0-preview...
+            ctx.run_mock(&v3_program, &fresh_memory).await.unwrap();
+            let (exec_state, _) = ctx.run_mock_returning_state(&v2_program, &prev_memory).await.unwrap();
+            assert_eq!(exec_state.global.entry_point_kcl_version, None);
+            assert!(!exec_state.entry_point_is_v3());
+
+            // ...and that a 3.0-preview run restoring a 2.0 run's memory
+            // records 3.0-preview.
+            ctx.run_mock(&v2_program, &fresh_memory).await.unwrap();
+            let (exec_state, _) = ctx.run_mock_returning_state(&v3_program, &prev_memory).await.unwrap();
+            assert_eq!(exec_state.global.entry_point_kcl_version, Some(KclVersion::V3Preview));
+        })
+        .catch_unwind()
+        .await;
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        if let Err(panic) = test_result {
+            std::panic::resume_unwind(panic);
+        }
+    }
+
+    /// All fillet algorithm versions sent to the engine during the run,
+    /// across the root module and every imported module. The version emitted
+    /// is the observable for which kclVersion governed the filleting code;
+    /// see `default_edge_cut_version`.
+    fn emitted_fillet_versions_everywhere(
+        result: &ExecTestResults,
+    ) -> Vec<kittycad_modeling_cmds::shared::EdgeCutVersion> {
+        let module_commands = result
+            .exec_state
+            .global
+            .module_infos
+            .values()
+            .filter_map(|info| match &info.repr {
+                ModuleRepr::Kcl(_, Some(outcome)) => Some(outcome.artifacts.commands.iter()),
+                _ => None,
+            })
+            .flatten();
+        result
+            .root_module_artifact_commands()
+            .iter()
+            .chain(module_commands)
+            .filter_map(|artifact_command| match &artifact_command.command {
+                kittycad_modeling_cmds::ModelingCmd::Solid3dCutEdges(command) => Some(command.version),
+                _ => None,
+            })
+            .collect()
+    }
+
+    const FILLET_AT_MODULE_TOP_LEVEL: &str = r#"
+profile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $edge)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+solid = extrude(profile, length = 10)
+fillet(solid, tags = [edge], radius = 1)
+"#;
+
+    const FILLET_IN_EXPORTED_FN: &str = r#"
+export fn filletedBox() {
+  profile = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 0], tag = $edge)
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+  solid = extrude(profile, length = 10)
+  return fillet(solid, tags = [edge], radius = 1)
+}
+"#;
+
+    /// A 3.0-preview entry point pins the kclVersion for the whole execution:
+    /// an imported 2.0 module observes 3.0-preview both in its module-level
+    /// code and in its functions, wherever they are called from.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn entry_point_v3_pins_kcl_version_for_imported_modules() {
+        use kittycad_modeling_cmds::shared::EdgeCutVersion;
+
+        let dep = format!("@settings(kclVersion = 2.0)\n{FILLET_AT_MODULE_TOP_LEVEL}");
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import "dep.kcl" as dep
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
+        assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
+
+        let dep = format!("@settings(kclVersion = 2.0)\n{FILLET_IN_EXPORTED_FN}");
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import filletedBox from "dep.kcl"
+box = filletedBox()
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
+        assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
+    }
+
+    /// Without a 3.0-preview entry point, the legacy lookup applies
+    /// unchanged, including its quirk: an imported module's module-level code
+    /// observes the module's own declared version, but its functions observe
+    /// the CALLING module's version.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_kcl_version_quirk_applies_without_v3_entry_point() {
+        use kittycad_modeling_cmds::shared::EdgeCutVersion;
+
+        let dep = format!("@settings(kclVersion = \"3.0-preview\")\n{FILLET_AT_MODULE_TOP_LEVEL}");
+        let main = r#"@settings(kclVersion = 2.0)
+import "dep.kcl" as dep
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
+        assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V2]);
+
+        let dep = format!("@settings(kclVersion = \"3.0-preview\")\n{FILLET_IN_EXPORTED_FN}");
+        let main = r#"@settings(kclVersion = 2.0)
+import filletedBox from "dep.kcl"
+box = filletedBox()
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", &dep)]).await.unwrap();
+        assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V1]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
