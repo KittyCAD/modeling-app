@@ -5,7 +5,9 @@ import type {
   BufferSnapshot,
   FileBackedTextBuffer,
 } from '@src/contracts/buffers'
+import type { TextEdit } from '@src/contracts/modelingOperations'
 import type { ProjectFile } from '@src/contracts/projects'
+import type { BufferOriginValue } from '@src/lib/buffers/annotations'
 import type {
   ProjectLibrary,
   ProjectLibraryRealization,
@@ -111,6 +113,23 @@ export interface ProjectSession {
   captureSnapshot(): ProjectSnapshot
 
   /**
+   * Apply a change that spans files, or touches the filesystem, as one step.
+   *
+   * The apply half of a prepared project mutation (#13354) — `captureSnapshot`
+   * was the capture half. It belongs here for the session's own stated reason:
+   * single-file edits belong to the buffer, anything spanning files belongs to
+   * the session.
+   *
+   * The ordering is load-bearing and none of it is obvious, which is the main
+   * argument for having one implementation rather than each caller assembling
+   * the steps: the snapshot is taken first so a revert has something to read,
+   * creates happen before the edits that might target them, and deletes happen
+   * last through `deleteEntry` so they inherit its buffers-close-before-removal
+   * ordering and its trip to the OS trash.
+   */
+  applyMutation(mutation: ProjectMutation): Promise<ProjectMutationResult>
+
+  /**
    * Fold an external version of a file into whatever buffer holds it.
    *
    * Returns null when no buffer has that path, meaning the caller can treat it
@@ -150,6 +169,53 @@ export interface ProjectSnapshot {
   capturedAt: number
   projectPath: string
   buffers: readonly BufferSnapshot[]
+}
+
+/**
+ * A change to the project, described rather than performed.
+ *
+ * Plain data, for the same reason `ProjectEdit` is: a mutation that has not been
+ * applied can be shown, refused, or recorded as one history entry, while one that
+ * applies itself can only be undone.
+ */
+export interface ProjectMutation {
+  /** Past tense and specific: "Extruded profile001 by 10". For history. */
+  label: string
+  /**
+   * Edits per project-relative path, with offsets against the buffer **as it now
+   * stands**.
+   *
+   * This does not rebase. A caller whose edits were computed against an older
+   * document rebases first — see `src/lib/collab/rebase.ts` — because only the
+   * caller knows what the edits were measured against.
+   */
+  edits?: Readonly<Record<string, readonly TextEdit[]>>
+  creates?: readonly { path: string; contents: string }[]
+  deletes?: readonly string[]
+  /** Recorded on every transaction this dispatches, so the work is attributable. */
+  origin?: BufferOriginValue
+}
+
+/** What a mutation actually managed to do. */
+export interface ProjectMutationResult {
+  /**
+   * The project before anything was applied.
+   *
+   * Taken first, and the reason the ordering is fixed: it is what a revert reads
+   * when there is no restore-from-snapshot API.
+   */
+  before: ProjectSnapshot
+  touched: readonly { bufferId: BufferId; path: string; version: number }[]
+  created: readonly string[]
+  deleted: readonly string[]
+  /**
+   * Steps that did not land, with a reason.
+   *
+   * **Partial success is a normal outcome, not an error.** There is deliberately
+   * no rollback: a file that was created plus an edit that failed is a state
+   * somebody can look at and understand, whereas a half-undone filesystem is not.
+   */
+  failed: readonly { path: string; reason: string }[]
 }
 
 export interface ProjectSessionService {

@@ -1,3 +1,4 @@
+import { isolateHistory } from '@codemirror/commands'
 import type { Extension } from '@codemirror/state'
 import { type ReadonlySignal, computed, signal } from '@preact/signals'
 import type {
@@ -14,6 +15,7 @@ import type {
   ProjectSession,
   ProjectSnapshot,
 } from '@src/contracts/projectSession'
+import { bufferOrigin } from '@src/lib/buffers/annotations'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
 import { readExternalChange } from '@src/lib/fs/externalChange'
 import { dirname, joinPath, normalizePath, relativePath } from '@src/lib/paths'
@@ -340,6 +342,109 @@ export function createProjectSession(
     }
   }
 
+  const applyMutation: ProjectSession['applyMutation'] = async (mutation) => {
+    /*
+     * First, and not for tidiness. With no restore-from-snapshot API, this
+     * capture is the only record of what the project looked like before — so
+     * taking it after any step has run would mean a revert reads a document that
+     * already includes part of what it is trying to undo.
+     */
+    const before = captureSnapshot()
+
+    const touched: { bufferId: BufferId; path: string; version: number }[] = []
+    const created: string[] = []
+    const deleted: string[] = []
+    const failed: { path: string; reason: string }[] = []
+
+    const describe = (error: unknown) =>
+      error instanceof Error ? error.message : String(error)
+
+    /*
+     * Creates before edits, so an edit may target a file this mutation is also
+     * introducing. `createFile` refuses a path that is already taken rather than
+     * making the name unique, so a collision surfaces here instead of quietly
+     * writing somewhere the caller did not name.
+     */
+    for (const entry of mutation.creates ?? []) {
+      try {
+        await createFile(entry.path, entry.contents)
+        await openFile(entry.path)
+        created.push(entry.path)
+      } catch (error) {
+        failed.push({ path: entry.path, reason: describe(error) })
+      }
+    }
+
+    const edits = Object.entries(mutation.edits ?? {})
+    if (edits.length > 0) {
+      /*
+       * The executing buffer last. The execution adapter schedules a run off its
+       * change, so if that lands before its imports do, the run reads a project
+       * that is halfway through being edited.
+       */
+      const executing = executingBufferId.peek()
+      const ordered = [
+        ...edits.filter(([path]) => bufferForPath(path)?.id !== executing),
+        ...edits.filter(([path]) => bufferForPath(path)?.id === executing),
+      ]
+
+      for (const [path, pathEdits] of ordered) {
+        const buffer = bufferForPath(path)
+        /*
+         * Never written behind the session's back. A path with no open buffer is
+         * refused rather than saved directly to disk, because a buffer opened
+         * later would then hold content that disagrees with the file and nobody
+         * would know which was meant.
+         */
+        if (buffer === undefined) {
+          failed.push({ path, reason: 'No buffer is open for this path.' })
+          continue
+        }
+        if (pathEdits.length === 0) continue
+
+        try {
+          buffer.dispatch({
+            changes: pathEdits.map(({ from, to, insert }) => ({
+              from,
+              to,
+              insert,
+            })),
+            annotations: [
+              bufferOrigin.of(mutation.origin ?? { role: 'project' }),
+              // One mutation is one undo step per buffer, not merged with
+              // whatever was typed moments before it.
+              isolateHistory.of('full'),
+            ],
+          })
+          touched.push({
+            bufferId: buffer.id,
+            path,
+            version: buffer.version.peek(),
+          })
+        } catch (error) {
+          failed.push({ path, reason: describe(error) })
+        }
+      }
+    }
+
+    /*
+     * Deletes last, and through `deleteEntry` rather than the filesystem, so they
+     * inherit its two orderings: buffers close before the removal so a flushed
+     * autosave cannot resurrect the file, and the write queue is settled first so
+     * a pending save cannot land after it.
+     */
+    for (const path of mutation.deletes ?? []) {
+      try {
+        await deleteEntry(path)
+        deleted.push(path)
+      } catch (error) {
+        failed.push({ path, reason: describe(error) })
+      }
+    }
+
+    return { before, touched, created, deleted, failed }
+  }
+
   const reconcileExternalChange = ({
     path,
     contents,
@@ -434,6 +539,7 @@ export function createProjectSession(
     renameEntry,
     deleteEntry,
     captureSnapshot,
+    applyMutation,
     reconcileExternalChange,
 
     dispose() {
