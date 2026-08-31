@@ -571,6 +571,7 @@ whose program produced the graph — moves the cursor to the code behind whateve
 was clicked. One direction only: cursor-to-selection is the other half and it
 closes a loop, since revealing sets the cursor which would select which would
 reveal. Breaking that needs an origin annotation and is worth doing deliberately.
+Hovering does *not* have this problem, and the section below says why.
 
 **An operation can take its argument from it.** The chain is the point, and every
 link already existed: the engine says which *entity*, the artifact graph says
@@ -583,6 +584,49 @@ It is a method offered *alongside* picking by name, ordered first, because if
 something is already selected that is almost certainly what the operation is
 about. And it is why the prompt is docked rather than modal: the answer arrives by
 clicking the model.
+
+### Highlighting is a provenance query
+
+Pointing is not selecting. It is free, reversible, gone when the mouse moves, and
+the interesting thing about it is not what it *is* but what it is **connected
+to** — which makes it a question about the program rather than about an entity.
+
+The trick this app is known for showed a 1:1 correspondence between scene and
+code. There is no such correspondence, and the existing app gets away with
+assuming one only because it never asks in the hard direction: every caller of
+its `setHighlightRange` is scene-side, and there is no editor mousemove handler
+anywhere in it. Even so its own code hedges — `getCodeRefsByArtifactId` returns an
+array, and its highlight extension carries two decorations so index 0 draws
+brighter. The fan-out was already there and was never named.
+
+So the question is not "which code is this entity". It is **what part of the
+program is responsible for this, and how**, and `lib/kcl/provenance.ts` answers it
+in four roles: `primary` (the call that made it, or the expression that is it),
+`origin` (where its shape came from, which is a different question), `effect`
+(what it produced) and `consumed` (what it used up). A wall answers with two
+ranges, the extrude as primary and the line as origin. An offset inside an extrude
+answers with fourteen faces — which is not noise, it is the app saying what the
+line does. **The fan-out is the feature**, and the roles are what keep it legible.
+
+Three absences, because an empty answer is the valuable one and the existing app
+can only render it as "nothing happened": `unknownToTheGraph` (a region, a default
+plane, a pick from a run since replaced — and the caller can go on to say how it
+*would* be named, since `regionExpression` and `planeExpression` already answer
+that), `noCodeInAncestry`, and `drewNothing`.
+
+**One signal, and every surface derives.** `pointingService` holds what is pointed
+at and publishes the provenance; the editor decorates ranges, the renderer lights
+entities, and nothing writes in response to another's read. That is why this is
+safe to make bidirectional when selection's reveal is not — there is no loop to
+break. The origin (`scene`, `code`, `outline`) travels with it because it says
+which side already knows, and because a surface may only clear its own hover:
+otherwise the mouse leaving the editor wipes a highlight the scene is showing.
+
+Two commands join the picker seam for it. `hover` both highlights and answers in
+one round trip, single-flight with the latest point winning — the pointer moves
+faster than a round trip, and the alternatives are stale answers landing after it
+has gone or a socket full of unread questions. `highlight` takes ids, and is the
+direction the existing app has no path for at all.
 
 ### A region has no artifact
 
