@@ -5,7 +5,10 @@ import {
 } from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
-import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
+import {
+  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+} from '@src/lib/constants'
 import { selectSketchPlane } from '@src/lib/selections'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {
@@ -165,6 +168,12 @@ function hasSketchExperimentalFeatures(input: unknown): boolean {
   )
 }
 
+function hasLegacySketchMode(input: unknown): boolean {
+  return (
+    getUserFeatures(input)?.has(LEGACY_SKETCH_MODE_FEATURE_FLAG, false) ?? false
+  )
+}
+
 function getModelingState(input: unknown): ModelingState | undefined {
   return getKclManager(input)?.modelingState ?? undefined
 }
@@ -304,6 +313,14 @@ async function enterSketch(input: unknown) {
   )
 
   if ((kclManager.editorView.hasFocus && sketchPathId) || isSketchBlock) {
+    if (
+      kclManager.editorView.hasFocus &&
+      sketchPathId &&
+      !isSketchBlock &&
+      !hasLegacySketchMode(input)
+    ) {
+      return
+    }
     return sendModelingEvent(input, { type: 'Enter sketch' })
   }
 
