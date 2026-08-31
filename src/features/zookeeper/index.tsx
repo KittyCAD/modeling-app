@@ -187,6 +187,9 @@ export default defineRegistryItemFactory((ctx) => {
           id: 'zookeeper.presence',
           zone: 'end',
           order: -20,
+          // Presence is per-file, so it can only mean something with a project
+          // open. Home is a place in Zookeeper, but not a file it can edit.
+          visible: computed(() => sessions().current.value !== null),
           render: () => <ZookeeperPresenceField />,
         }),
 

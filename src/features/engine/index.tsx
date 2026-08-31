@@ -234,6 +234,16 @@ export default defineRegistryItemFactory((ctx) => {
           id: 'engine.status',
           zone: 'end',
           order: -10,
+          // Only where geometry is. The connection is opened by opening a
+          // project, so on the home screen this field could only ever read
+          // "offline" — a fault indicator for a thing nobody asked for yet.
+          // Optional, and visible when absent, because a build with no session
+          // feature has no home screen to hide from either.
+          visible: computed(
+            () =>
+              ctx.services.optional(projectSessionService)?.current.value !==
+              null
+          ),
           render: () => <EngineField />,
         }),
         provide(commandsValueSpec, {

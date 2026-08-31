@@ -114,6 +114,11 @@ export default defineRegistryItemFactory((ctx) => {
           id: 'execution.status',
           zone: 'start',
           order: 5,
+          // Nothing executes outside a project, so on the home screen this is
+          // an empty slot in the readout rather than a status.
+          visible: computed(
+            () => ctx.services.get(projectSessionService).current.value !== null
+          ),
           render: () => <ExecutionField />,
         }),
         provide(commandsValueSpec, {
