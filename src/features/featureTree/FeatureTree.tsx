@@ -61,7 +61,15 @@ function FeatureNode({
   const row = (
     <>
       <Icon name={operationIcon(node.operation)} size="small" />
-      <span class="zds-feature-tree__label">
+      {/*
+        The name truncates, so the full one has to be reachable. A `title` rather
+        than a tooltip component: it is the same text, it costs nothing, and a
+        panel of thirty rows should not carry thirty tooltip listeners.
+      */}
+      <span
+        class="zds-feature-tree__label"
+        title={operationLabel(node.operation)}
+      >
         {operationLabel(node.operation)}
       </span>
       <span class="zds-feature-tree__kind">
@@ -176,7 +184,9 @@ function SourceFeatureNode({
       >
         <span class="zds-feature-tree__disclosure-spacer" />
         <Icon name={node.icon} size="small" />
-        <span class="zds-feature-tree__label">{node.label}</span>
+        <span class="zds-feature-tree__label" title={node.label}>
+          {node.label}
+        </span>
         <span class="zds-feature-tree__kind">{node.kind}</span>
       </button>
     </li>

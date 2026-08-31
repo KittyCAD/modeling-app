@@ -1,4 +1,18 @@
 /*
+ * A frame around the panel, so the handle can sit beside it.
+ *
+ * The panel has to clip its own contents, and `overflow` cannot be `hidden` in
+ * one axis and `visible` in the other — CSS computes `visible` to `auto` the
+ * moment its partner is not, which would give the panel a horizontal scrollbar
+ * whose only content was the handle.
+ */
+.zds-scene-hud-frame {
+  position: relative;
+  display: flex;
+  min-inline-size: 0;
+}
+
+/*
  * Attached to the start edge, the way the toolbar hangs from the top.
  *
  * Square corners on the edge it meets and no border along it, so it reads as
@@ -9,8 +23,13 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  inline-size: clamp(15rem, 22vw, 21rem);
+  /*
+   * Width comes from the component, which reads it from the persisted layout
+   * extent. No clamp here: the drag already has its own bounds, and a second set
+   * in CSS would silently disagree with the number the handle reports.
+   */
   max-block-size: min(68vh, 40rem);
+  /* Keeps a long list inside the rounded corners. */
   overflow: hidden;
   border: var(--zds-size-hairline) solid var(--zds-border-subtle);
   border-inline-start: none;
@@ -129,8 +148,76 @@
   padding-inline-end: var(--zds-space-1);
 }
 
+/*
+ * Scrolls down, never sideways.
+ *
+ * `overflow: auto` in both directions was why an operation name never truncated:
+ * a scroll container takes its content's width as its own, so a row wide enough
+ * to hold every part of itself simply made the panel scroll — and the label,
+ * which is the one part willing to shrink, was never asked to. Forbidding
+ * horizontal scroll makes the row exactly as wide as the panel, and then the
+ * ellipsis does its job.
+ */
 .zds-scene-hud__section-body {
   min-block-size: 0;
-  overflow: auto;
+  overflow: hidden auto;
   overscroll-behavior: contain;
+}
+
+/*
+ * The resize handle: a strip just outside the panel's inline-end edge.
+ *
+ * Invisible until the pointer is near it, which is what "near" has to mean — the
+ * strip is wider than the line it draws, so the target is generous while the
+ * decoration is not. It sits beyond the panel rather than on its border because a
+ * hairline is not something anybody can hit, and inside would put it over the
+ * list where it would compete for the same clicks.
+ */
+.zds-scene-hud__resize {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 100%;
+  inline-size: var(--zds-space-3);
+  cursor: col-resize;
+  /* The zone takes pointer events; the line it draws is a pseudo-element. */
+  pointer-events: auto;
+}
+
+.zds-scene-hud__resize::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  /* Centred in the strip, so the line is where the cursor says it is. */
+  inset-inline-start: 50%;
+  inline-size: var(--zds-size-hairline);
+  translate: -50%;
+  background: var(--zds-accent);
+  opacity: 0;
+  transition: opacity var(--zds-motion-fast) var(--zds-motion-ease-out);
+}
+
+.zds-scene-hud__resize:hover::after,
+.zds-scene-hud__resize:focus-visible::after,
+.zds-scene-hud-frame[data-resizing="true"] .zds-scene-hud__resize::after {
+  opacity: 1;
+}
+
+.zds-scene-hud__resize:focus-visible {
+  outline: none;
+}
+
+/*
+ * No transition while dragging, and no text selection.
+ *
+ * A width that eases toward the pointer feels like lag rather than like
+ * smoothness, and a drag that selects the list it passes over looks broken.
+ */
+.zds-scene-hud-frame[data-resizing="true"] {
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zds-scene-hud__resize::after {
+    transition: none;
+  }
 }
