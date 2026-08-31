@@ -164,8 +164,10 @@ import {
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
+import { toProjectRelativePath, webSafePathSplit } from '@src/lib/paths'
 import { toPlaneName } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
+import { sanitizeProjectName } from '@src/lib/projectName'
 import type RustContext from '@src/lib/rustContext'
 import {
   getDefaultSketchPlaneData,
@@ -4505,14 +4507,14 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
-              fileName?: string
+              fileName: string
             }
           | undefined
       }) => {
         if (!input || !input.data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
-        const { data, kclManager, rustContext, defaultUnit } = input
+        const { data, kclManager, rustContext, defaultUnit, fileName } = input
 
         if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
           let errorMessage = 'Unable to Export '
@@ -4525,10 +4527,6 @@ export const modelingMachine = setup({
           toast.error(errorMessage)
           return new Error(errorMessage)
         }
-
-        let fileName = input.fileName ?? kclManager.currentFileName ?? 'output'
-        fileName = fileName.replace(/\.kcl$/i, '') // remove trailing .kcl
-        fileName += `.${data.type}` // add file extension
 
         const { up, scale, ...formatData } = data
         const format = {
@@ -7443,16 +7441,35 @@ export const modelingMachine = setup({
         input: ({ event, context }) => {
           if (event.type !== 'Export') return undefined
           const project = context.projectRef?.current
+          const currentFileName = context.kclManager.currentFileName ?? ''
+          // start with the file name by default, eg. "other.kcl"
+          let fileName = currentFileName
+          if (currentFileName === PROJECT_ENTRYPOINT && project) {
+            // currentFileName is "main.kcl"
+            
+            const projectRelativePath = toProjectRelativePath(
+              project.path,
+              context.kclManager.path
+            )
+            if (projectRelativePath === PROJECT_ENTRYPOINT) {
+              // root "main.kcl" -> use project title or directory name
+              fileName = project.title?.trim() || project.name
+            } else if (!projectRelativePath.startsWith('../')) {
+              // "subfolder/main.kcl" -> export as "subfolder.gltf" (in case gltf format)
+              fileName =
+                webSafePathSplit(projectRelativePath).at(-2) || currentFileName
+            }
+          }
+          fileName = fileName.replace(/\.kcl$/i, '') // remove trailing .kcl
+          fileName = sanitizeProjectName(fileName, 'output') // remove slash, backslash
+          fileName += `.${event.data.type}` // add file extension
+
           return {
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
             defaultUnit: context.store.defaultUnit,
-            fileName:
-              context.kclManager.currentFileName === PROJECT_ENTRYPOINT &&
-              project
-                ? `${project.title?.trim() || project.name}.kcl`
-                : undefined,
+            fileName,
           }
         },
         onDone: ['idle'],
