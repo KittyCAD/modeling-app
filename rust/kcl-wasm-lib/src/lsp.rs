@@ -63,10 +63,14 @@ pub async fn lsp_run_kcl(config: LspServerConfig, token: String, baseurl: String
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());
 
-    let (service, socket) =
-        LspService::build(|client| kcl_lib::KclLspBackend::new_wasm(client, executor_ctx, fs, zoo_client).unwrap())
-            .custom_method("kcl/updateCanExecute", kcl_lib::KclLspBackend::update_can_execute)
-            .finish();
+    let (service, socket) = LspService::build(|client| {
+        kcl_language_server::KclLspBackend::new_wasm(client, executor_ctx, fs, zoo_client).unwrap()
+    })
+    .custom_method(
+        "kcl/updateCanExecute",
+        kcl_language_server::KclLspBackend::update_can_execute,
+    )
+    .finish();
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);
     let input = input
@@ -111,14 +115,23 @@ pub async fn lsp_run_copilot(config: LspServerConfig, token: String, baseurl: St
     let dev_mode = baseurl == "https://api.dev.zoo.dev";
 
     let (service, socket) =
-        LspService::build(|client| kcl_lib::CopilotLspBackend::new_wasm(client, fs, zoo_client, dev_mode))
-            .custom_method("copilot/setEditorInfo", kcl_lib::CopilotLspBackend::set_editor_info)
+        LspService::build(|client| kcl_language_server::CopilotLspBackend::new_wasm(client, fs, zoo_client, dev_mode))
+            .custom_method(
+                "copilot/setEditorInfo",
+                kcl_language_server::CopilotLspBackend::set_editor_info,
+            )
             .custom_method(
                 "copilot/getCompletions",
-                kcl_lib::CopilotLspBackend::get_completions_cycling,
+                kcl_language_server::CopilotLspBackend::get_completions_cycling,
             )
-            .custom_method("copilot/notifyAccepted", kcl_lib::CopilotLspBackend::accept_completion)
-            .custom_method("copilot/notifyRejected", kcl_lib::CopilotLspBackend::reject_completions)
+            .custom_method(
+                "copilot/notifyAccepted",
+                kcl_language_server::CopilotLspBackend::accept_completion,
+            )
+            .custom_method(
+                "copilot/notifyRejected",
+                kcl_language_server::CopilotLspBackend::reject_completions,
+            )
             .finish();
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);

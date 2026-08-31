@@ -15,7 +15,8 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let sketch_block_stdlib_args = crate::lsp::kcl::get_arg_maps_from_stdlib_for_sketch_block(&kcl_std);
     let kcl_keywords = crate::lsp::kcl::get_keywords();
 
-    let zoo_client = crate::engine::new_zoo_client(if execute { None } else { Some("bad_token".to_string()) }, None)?;
+    let zoo_client =
+        kcl_lib::lsp_support::engine::new_zoo_client(if execute { None } else { Some("bad_token".to_string()) }, None)?;
 
     let executor_ctx = if execute {
         Some(crate::execution::ExecutorContext::new(&zoo_client, Default::default()).await?)

@@ -42,7 +42,7 @@ use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::WarningLevel;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
-use crate::lsp::ToLspRange;
+use crate::lsp_types::ToLspRange;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::ast::digest::Digest;
 pub use crate::parsing::ast::types::condition::ElseIf;
@@ -1941,7 +1941,8 @@ pub struct SketchBlock {
 }
 
 impl SketchBlock {
-    pub(crate) const CALLEE_NAME: &str = "sketch";
+    #[doc(hidden)]
+    pub const CALLEE_NAME: &str = "sketch";
 
     /// Iterate over all arguments.
     pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
