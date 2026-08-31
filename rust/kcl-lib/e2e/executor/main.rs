@@ -1431,18 +1431,27 @@ sketch001 = startSketchOn(XZ)
   |> line(end = [0, -height], tag = $chamfer2)
   |> close()
 
-baseExtrusion = extrude(sketch001, length = width)
+unchamferedExtrusion = extrude(sketch001, length = width)
+
+cornerChamfer1OppositeEdge = getOppositeEdge(cornerChamfer1)
+cornerChamfer2OppositeEdge = getOppositeEdge(cornerChamfer2)
+chamfer1PreviousAdjacentEdge = getPreviousAdjacentEdge(chamfer1)
+chamfer2PreviousAdjacentEdge = getPreviousAdjacentEdge(chamfer2)
+chamfer1NextAdjacentEdge = getNextAdjacentEdge(chamfer1)
+chamfer2NextAdjacentEdge = getNextAdjacentEdge(chamfer2)
+
+baseExtrusion = unchamferedExtrusion
   |> chamfer(
     length = cornerChamferRad,
-    tags = [cornerChamfer1, cornerChamfer2, getOppositeEdge(cornerChamfer1), getOppositeEdge(cornerChamfer2)],
+    tags = [cornerChamfer1, cornerChamfer2, cornerChamfer1OppositeEdge, cornerChamfer2OppositeEdge],
     )
   |> chamfer(
     length = chamferRad,
-    tags = [getPreviousAdjacentEdge(chamfer1), getPreviousAdjacentEdge(chamfer2)],
+    tags = [chamfer1PreviousAdjacentEdge, chamfer2PreviousAdjacentEdge],
   )
   |> chamfer(
    length = chamferRad + thickness,
-   tags = [getNextAdjacentEdge(chamfer1), getNextAdjacentEdge(chamfer2)],
+   tags = [chamfer1NextAdjacentEdge, chamfer2NextAdjacentEdge],
    )
 "#;
 
