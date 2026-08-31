@@ -114,14 +114,27 @@ export default defineRegistryItemFactory((ctx) => {
       if (wasConnected && !connected) owner?.reset()
 
       /**
-       * Connecting makes geometry possible, so ask for a run.
+       * A new connection is a new scene, so bust the cache and then run.
        *
-       * Requested through the buffer as an annotated transaction — the same path
-       * the re-run command takes — rather than by calling the coordinator here.
-       * The adapter is what knows how to build a request, and going around it
-       * would mean two places constructing one.
+       * kcl-lib caches the program it last drew in a *global* — a `lazy_static`,
+       * not something the context owns — so building a fresh context does not
+       * clear it. Reconnecting therefore left the Rust side certain that the
+       * geometry was already on an engine that had never seen it, `run_with_caching`
+       * found the program unchanged, sent nothing, and the scene stayed empty.
+       *
+       * The existing app's comment on the same call says it plainly: "Bust the
+       * cache always! A new connection has been made. The engine has no previous
+       * state." It is the one use that library documents as legitimate.
+       *
+       * Then ask for the run, through the buffer as an annotated transaction —
+       * the same path the re-run command takes — because the adapter is what
+       * knows how to build a request and two places building one would drift.
+       * Ordering is the reset promise's job: the executor waits behind it, so the
+       * empty program cannot land on top of the real one.
        */
       if (!wasConnected && connected) {
+        void resetScene()
+
         const buffer = sessions().current.peek()?.executingBuffer.peek()
         buffer?.dispatch({
           annotations: [bufferOrigin.of('command'), requestExecution.of(true)],
@@ -174,46 +187,6 @@ export default defineRegistryItemFactory((ctx) => {
   })
 
   /**
-   * A different project is a different scene.
-   *
-   * The engine's scene is additive and kcl-lib caches what it has drawn, so
-   * neither notices a project switch by itself: opening a second project
-   * executes its file into a scene that still holds the first one's geometry,
-   * and kcl-lib's cache still believes what it put there. What you see is two
-   * models at once, and the older one cannot be got rid of by editing the newer.
-   *
-   * `bustCacheAndResetScene` is the pair of those two, and it has to be the pair
-   * — clearing the engine alone would leave the cache confident about objects
-   * that no longer exist, which surfaces later as commands failing for no
-   * visible reason. It clears, invalidates, and runs an empty program so the
-   * default planes come back.
-   *
-   * Deliberately *not* a disconnect. Reconnecting costs a WebRTC negotiation and
-   * several seconds, and somebody who went home is quite likely on their way
-   * into another project; throwing the session away to achieve what one command
-   * achieves would be paying for the same scene twice.
-   */
-  let stopWatchingProject: (() => void) | null = null
-  queueMicrotask(() => {
-    if (disposed) return
-
-    let previousPath: string | null = null
-    stopWatchingProject = effect(() => {
-      const path = sessions().current.value?.project.value.path ?? null
-      const changed = previousPath !== null && previousPath !== path
-      previousPath = path
-
-      // Only a *change* between two projects. The first project to open has
-      // nothing behind it, and closing one is followed by opening another often
-      // enough that resetting on the way out would do the work twice.
-      if (!changed || path === null) return
-      if (engine().state.peek().status !== 'connected') return
-
-      void resetScene()
-    })
-  })
-
-  /**
    * The scene preferences the executor is given.
    *
    * Read at the moment of the call rather than captured, so a preference changed
@@ -233,12 +206,22 @@ export default defineRegistryItemFactory((ctx) => {
    *
    * The reset runs an empty program to clear the scene, and it goes straight to
    * the context rather than through the coordinator — so without this it could
-   * land *after* the new project's file had drawn, and wipe it. One promise the
-   * executor awaits is enough to order them, and it needs no queue of its own.
+   * land *after* the file it was making room for had drawn, and wipe it. One
+   * promise the executor awaits is enough to order them, and it needs no queue of
+   * its own.
    */
   let resetting: Promise<void> = Promise.resolve()
 
-  /** Clear the engine's scene and kcl-lib's idea of it, if there is one. */
+  /**
+   * Clear the engine's scene and kcl-lib's idea of it.
+   *
+   * Reads `owner` rather than `contextOwner()`, and the difference is the whole
+   * condition: there is stale cache state to bust only if a context existed
+   * before. On the first connection of a session there is none — the global cache
+   * is empty, nothing has been drawn — so this is a no-op rather than a round
+   * trip nobody needs. On a *re*connection the owner is still there, holding a
+   * cache that describes a scene the new engine has never seen.
+   */
   const resetScene = () => {
     const current = owner
     if (!current) return resetting
@@ -268,8 +251,8 @@ export default defineRegistryItemFactory((ctx) => {
       engine().state.peek().status === 'connected',
 
     async run(request) {
-      // Behind any scene reset, so a project switch cannot clear the file it
-      // just opened.
+      // Behind any scene reset, so the empty program it runs cannot land on top
+      // of this one.
       await resetting
       const { context, wasm, defaultSettings } = await contextOwner().get()
       if (request.signal.aborted) {
@@ -370,7 +353,6 @@ export default defineRegistryItemFactory((ctx) => {
       dispose: () => {
         disposed = true
         stopWatching?.()
-        stopWatchingProject?.()
         stopWatchingExecutable?.()
         owner?.reset()
         contextReady.value = false
