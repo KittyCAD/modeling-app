@@ -993,6 +993,40 @@ stays live for the session either way.
 so writing the title merges rather than replaces. Before, a rename would have
 silently reset the project's preferences.
 
+### Units are the one setting that changes the geometry
+
+Every other preference in the cascade changes how something is drawn. The default
+length unit changes what the file *means*: an unsuffixed `10` is ten of whatever
+the app says, so a wrong answer here makes every dimension wrong by a constant
+factor with nothing on screen to explain it.
+
+Which is why it appears in four places and why they must agree:
+
+| Where | What it does |
+| --- | --- |
+| `base_unit` in the executor's settings | what an unsuffixed number means to kcl-lib |
+| the same, in the sketch frontend | so a solve agrees with the execution |
+| the unit sketch tools write | `10in` in an inch file, not `10mm` |
+| `@settings(defaultLengthUnit)` in a new file | so the file keeps its meaning elsewhere |
+
+The fourth is the one worth dwelling on. A file that declares no unit means
+whatever the app is configured for, so a part drawn in inches stays inches only
+for as long as nobody opens it with different preferences. So a new file in a
+project whose unit is not millimetres gets the unit *written into it*, and a file
+in a millimetre project gets nothing — an annotation that repeats kcl-lib's own
+default is noise in every file, and it cannot disagree with the default.
+
+Both levels are real and the ordering matters: the user's setting is "what I work
+in", the project's is "what this part is drawn in", and the project's winning is
+what keeps a part in the unit it was drawn in.
+
+The annotation is written by kcl-lib — `change_default_units`, `change_kcl_version`
+— rather than by string surgery here. Both parse, edit the attribute and recast,
+so a file with a comment above its annotation keeps the comment. The KCL *version*
+is app-controlled and always written: a project-level "which language version" is
+a reasonable thing to want, but a project written against a version the app cannot
+execute is worse than no setting at all.
+
 ### The dialog is a route, not a screen
 
 `/settings/:section` is addressable, and the location source sits at the front of
