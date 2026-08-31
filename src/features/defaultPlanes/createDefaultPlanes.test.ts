@@ -64,12 +64,16 @@ describe('when the planes show themselves', () => {
     expect(lastFor(app.setHidden, 'id-yz')).toBe(false)
   })
 
-  /* Three squares orient you; six are a box you are looking at from inside. */
-  it('leaves the back faces hidden', () => {
+  /*
+   * A plane is two engine objects — the square and its back face, coincident with
+   * opposite normals — and they move together. Showing only the front means the
+   * plane disappears the moment you orbit past it.
+   */
+  it('shows both faces of a plane, because they are one plane', () => {
     const app = setup({ empty: true })
 
-    expect(lastFor(app.setHidden, 'id-neg-xy')).toBe(true)
-    expect(lastFor(app.setHidden, 'id-neg-xz')).toBe(true)
+    expect(lastFor(app.setHidden, 'id-xy')).toBe(false)
+    expect(lastFor(app.setHidden, 'id-neg-xy')).toBe(false)
   })
 
   it('hides them the moment there is geometry', () => {
@@ -115,12 +119,13 @@ describe('when somebody asks for a plane', () => {
     expect(lastFor(app.setHidden, 'id-xy')).toBe(true)
   })
 
-  it('shows a back face that was asked for', () => {
+  it('hides both faces when a plane is turned off', () => {
     const app = setup({ empty: true })
 
-    app.planes.set('negXy', 'shown')
+    app.planes.set('xy', 'hidden')
 
-    expect(lastFor(app.setHidden, 'id-neg-xy')).toBe(false)
+    expect(lastFor(app.setHidden, 'id-xy')).toBe(true)
+    expect(lastFor(app.setHidden, 'id-neg-xy')).toBe(true)
   })
 
   it('follows the scene again once it is put back on automatic', () => {
@@ -207,16 +212,14 @@ describe('talking to the engine', () => {
 })
 
 describe('what a list would draw', () => {
-  it('offers every plane, backs last', () => {
+  /* Three rows for six objects: a back face is not a plane of its own. */
+  it('offers one row per plane', () => {
     const app = setup()
 
     expect(app.planes.planes.value.map((plane) => plane.title)).toEqual([
       'XY',
       'XZ',
       'YZ',
-      '-XY',
-      '-XZ',
-      '-YZ',
     ])
   })
 
@@ -232,7 +235,7 @@ describe('what a list would draw', () => {
       visible: false,
       visibility: 'hidden',
     })
-    expect(rows.get('negXy')).toMatchObject({ visible: false, back: true })
+    expect(rows.get('yz')).toMatchObject({ visible: true, visibility: 'auto' })
   })
 
   it('shows nothing as visible before anything has run', () => {

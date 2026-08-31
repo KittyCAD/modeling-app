@@ -20,6 +20,10 @@ import './planesSection.css'
  * makes the panel explicable rather than mysterious, and it is the thing the
  * existing app cannot say at all, because there visibility is a flag with no
  * record of who set it.
+ *
+ * Three rows for six engine objects. A plane's back face is the same square with
+ * its normal flipped, so it is not a row: toggling it alone would change nothing
+ * anybody could see, and it goes wherever its front goes.
  */
 export function PlanesSection() {
   const planes = useService(defaultPlanesService)
@@ -82,7 +86,7 @@ function PlaneRow({ plane }: { plane: DefaultPlaneView }) {
   const next: PlaneVisibility = plane.visible ? 'hidden' : 'shown'
 
   return (
-    <li class="zds-planes__row" data-back={plane.back ? 'true' : undefined}>
+    <li class="zds-planes__row">
       <span class="zds-planes__name">{plane.title}</span>
 
       {plane.visibility === 'auto' ? null : (

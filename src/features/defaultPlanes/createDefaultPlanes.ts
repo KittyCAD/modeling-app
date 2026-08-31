@@ -7,17 +7,29 @@ import type {
   PlaneVisibility,
 } from '@src/contracts/defaultPlanes'
 
-/** In the order a list should show them: the three principals, then the backs. */
-const PLANES: readonly { name: DefaultPlaneName; title: string }[] = [
-  { name: 'xy', title: 'XY' },
-  { name: 'xz', title: 'XZ' },
-  { name: 'yz', title: 'YZ' },
-  { name: 'negXy', title: '-XY' },
-  { name: 'negXz', title: '-XZ' },
-  { name: 'negYz', title: '-YZ' },
+/**
+ * The three planes, and the two engine objects each one is made of.
+ *
+ * `front` and `back` are the same square with opposite normals — same origin,
+ * negated axes — so they are one plane to a user and two ids to the engine. They
+ * are shown and hidden together, because a plane visible only from the front
+ * disappears when you orbit behind it, and hiding one alone does nothing anybody
+ * can see.
+ *
+ * The back id keeps its own identity for one reason: a pick on that face is a
+ * pick on `-XY`, which is what should be written when somebody sketches on a
+ * plane they were looking at from behind.
+ */
+const PLANES: readonly {
+  name: DefaultPlaneName
+  title: string
+  front: keyof DefaultPlanes
+  back: keyof DefaultPlanes
+}[] = [
+  { name: 'xy', title: 'XY', front: 'xy', back: 'negXy' },
+  { name: 'xz', title: 'XZ', front: 'xz', back: 'negXz' },
+  { name: 'yz', title: 'YZ', front: 'yz', back: 'negYz' },
 ]
-
-const isBack = (name: DefaultPlaneName) => name.startsWith('neg')
 
 export interface DefaultPlanesDependencies {
   /** The ids the last run created, or null before anything has run. */
@@ -40,9 +52,13 @@ export interface DefaultPlanesDependencies {
  *
  * Two rules, and they compose without a state machine:
  *
- * 1. A plane on `auto` is visible when the scene is empty — and only the three
- *    principals, because three translucent squares orient you and six are a box.
+ * 1. A plane on `auto` is visible when the scene is empty.
  * 2. A plane the user has touched does what they said, until they put it back.
+ *
+ * A plane is *two* engine objects — the square and its back face — and they move
+ * together. Six objects, three rows: the back face is the same square seen from
+ * behind, so toggling it alone changes nothing anybody can see, and leaving it
+ * hidden makes the plane vanish when you orbit past it.
  *
  * Everything else here is reconciliation: work out what each plane *should* be,
  * compare it to what the engine was last told, and send the difference. Nothing
@@ -63,7 +79,7 @@ export function createDefaultPlanes(
     const asked = visibilityOf(name)
     if (asked !== 'auto') return asked === 'shown'
 
-    return dependencies.sceneIsEmpty.value && !isBack(name)
+    return dependencies.sceneIsEmpty.value
   }
 
   const planes = computed<readonly DefaultPlaneView[]>(() =>
@@ -72,7 +88,6 @@ export function createDefaultPlanes(
       title,
       visible: dependencies.ids.value !== null && wanted(name),
       visibility: visibilityOf(name),
-      back: isBack(name),
     }))
   )
 
@@ -104,15 +119,17 @@ export function createDefaultPlanes(
 
       if (!ids) return
 
-      for (const { name } of PLANES) {
-        const id = ids[name]
-        if (!id) continue
-
+      for (const { name, front, back } of PLANES) {
         const hidden = !wanted(name)
-        if (told.get(id) === hidden) continue
 
-        told.set(id, hidden)
-        dependencies.setHidden(id, hidden)
+        // Both faces, always together: they are one plane.
+        for (const id of [ids[front], ids[back]]) {
+          if (!id) continue
+          if (told.get(id) === hidden) continue
+
+          told.set(id, hidden)
+          dependencies.setHidden(id, hidden)
+        }
       }
     })
 

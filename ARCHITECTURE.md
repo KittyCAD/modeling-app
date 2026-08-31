@@ -1287,13 +1287,19 @@ actions, driven by a pair of debounced events into a nested `hidePlanes`/
 `showPlanes` state machine, with `// This defer is bullshit but playwright wants
 it` in the source. Two records of one truth, kept in step by remembering to.
 
+**A plane is one thing made of two objects.** kcl-lib creates `Xy` and `NegXy`
+with the same origin and negated axes — the same square, normal flipped — so the
+back face is not another plane. It is what you see and click when you orbit
+behind, and `startSketchOn(-XY)` is what a pick from that side should write. They
+are shown and hidden together: three rows, six objects. Toggling a back face on
+its own changes nothing anybody can see, and leaving it hidden makes the plane
+vanish as you orbit past it.
+
 **Visibility is a tri-state**, and the third state is what makes it work.
 `auto` follows the scene; touching a plane takes it off `auto` and it stays put
 until it is put back. So turning XY on before an extrude does not have it vanish
-when the extrude lands. Only the three principals appear automatically — three
-translucent squares orient you and six are a box seen from inside — and the back
-faces are there to be asked for. Overrides belong to the scene they were made in
-and are forgotten when the project closes.
+when the extrude lands. Overrides belong to the scene they were made in and are
+forgotten when the project closes.
 
 Two details are about the engine forgetting rather than about planes. What the
 engine was told is tracked by plane *id*, because a new run mints new ids and a

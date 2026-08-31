@@ -34,7 +34,6 @@ const plane = (
   title,
   visible: true,
   visibility: 'auto',
-  back: name.startsWith('neg'),
   ...overrides,
 })
 
@@ -54,7 +53,7 @@ const setup = (
       () =>
         options.planes ?? [
           plane('xy', 'XY'),
-          plane('negXy', '-XY', { visible: false }),
+          plane('xz', 'XZ', { visible: false }),
         ]
     ),
     sceneIsEmpty: computed(() => options.empty ?? true),
@@ -121,13 +120,13 @@ describe('the planes section', () => {
   })
 
   it('turns a hidden plane on', () => {
-    const app = setup({ planes: [plane('negXy', '-XY', { visible: false })] })
+    const app = setup({ planes: [plane('yz', 'YZ', { visible: false })] })
 
     act(() => {
       app.element.querySelector<HTMLElement>('.zds-planes__visibility')?.click()
     })
 
-    expect(app.set).toHaveBeenCalledWith('negXy', 'shown')
+    expect(app.set).toHaveBeenCalledWith('yz', 'shown')
   })
 
   /*
@@ -171,12 +170,16 @@ describe('the planes section', () => {
     expect(app.resetOverrides).toHaveBeenCalled()
   })
 
-  it('marks the back faces, which nothing shows unasked', () => {
-    const app = setup()
+  /*
+   * Three rows for six engine objects: a back face is the same square with its
+   * normal flipped, so it is not a thing to toggle on its own.
+   */
+  it('draws one row per plane, not one per engine object', () => {
+    const app = setup({
+      planes: [plane('xy', 'XY'), plane('xz', 'XZ'), plane('yz', 'YZ')],
+    })
 
-    const back = rows(app.element).filter(
-      (row) => row.getAttribute('data-back') === 'true'
-    )
-    expect(back).toHaveLength(1)
+    expect(rows(app.element)).toHaveLength(3)
+    expect(app.element.textContent).not.toContain('-XY')
   })
 })

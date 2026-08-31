@@ -2,12 +2,21 @@ import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals'
 
 /**
- * The six planes kcl-lib puts on the engine at the start of every run.
+ * The three planes there are.
+ *
+ * kcl-lib puts *six* objects on the engine, and the other three are not other
+ * planes: `NegXy` has the same origin as `Xy` with its x and z axes negated — the
+ * same square, normal flipped. It is the face you see and click when you orbit
+ * behind, and `startSketchOn(-XY)` is what a pick from that side should write.
+ *
+ * So the back faces are not rows and never were. Showing or hiding one on its own
+ * does nothing anybody can see, because it is coincident with the front: the pair
+ * is one plane, and the app treats it as one.
  *
  * Named the way the KCL names them, because that is what a user has to type to
  * sketch on one.
  */
-export type DefaultPlaneName = 'xy' | 'xz' | 'yz' | 'negXy' | 'negXz' | 'negYz'
+export type DefaultPlaneName = 'xy' | 'xz' | 'yz'
 
 /**
  * What somebody has asked of a plane.
@@ -27,20 +36,12 @@ export type PlaneVisibility = 'auto' | 'shown' | 'hidden'
 /** One plane, as something to draw a row for. */
 export interface DefaultPlaneView {
   name: DefaultPlaneName
-  /** `XY`, `-XZ`. */
+  /** `XY`, `XZ`, `YZ`. */
   title: string
   /** What the automatic rule and any override work out to, right now. */
   visible: boolean
   /** What the user asked for. */
   visibility: PlaneVisibility
-  /**
-   * A back face — the same plane seen from behind.
-   *
-   * Never shown by the automatic rule: three translucent squares orient you and
-   * six are a box. They are here to be asked for, which is what the existing app
-   * means by `showPlanes(all)`.
-   */
-  back: boolean
 }
 
 /**
