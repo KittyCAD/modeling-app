@@ -1449,6 +1449,33 @@ solids or sketches, and the argument layer holds one answer per argument, so
 their buttons would reliably write code that does not run. They arrive with
 multi-selection.
 
+### The sketch catalogue is the same idea, and only the same idea
+
+Sketching has its own list — `features/sketchOverlay/catalog.ts` — holding every
+button a sketch has: the drawing tools, the ten constraints, and the dimension.
+One row gives the command, the button, the group it shares and the letter that
+presses it, and the *same* derivation builds the buttons for both toolbars. The
+invariants are checked the same way too: duplicate keys, a group nobody declared,
+group members disagreeing about which toolbar they are in.
+
+Where they stop being alike is behaviour, and that difference is real. A modelling
+tool is derived from a **stdlib signature** — its arguments become its prompts and
+the result is one appended line of KCL — so one row genuinely describes the whole
+tool. A sketch action cannot be: equipping a tool starts a pointer state machine,
+a constraint is a matcher over the selection, and a dimension measures geometry.
+So a sketch row carries a `kind` — tool, constraint, dimension — and the feature
+wires each kind to the thing that implements it. Three behaviours, one
+presentation.
+
+Two consequences worth stating, because they were both wrong before this:
+
+- **Placement lives in the row, not at the `provide` call.** The mode, the
+  section and the group were named at each contribution, which is a second place
+  for the same numbers to live.
+- **Everything with a button is in the list.** The dimension used to be written
+  out longhand, which made it the one tool nothing could enumerate — and the one
+  whose key nothing compared against the others.
+
 ## Keybindings
 
 A binding resolves to a command id and nothing else. It carries no behaviour of

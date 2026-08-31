@@ -254,11 +254,11 @@ describe('what gets written', () => {
 })
 
 describe('the tool table', () => {
-  it('gives every tool a key and no two the same', () => {
-    const keys = CONSTRAINT_TOOLS.map((tool) => tool.key)
-
-    expect(keys.every((key) => key.length > 0)).toBe(true)
-    expect(new Set(keys).size).toBe(keys.length)
+  it('gives every tool a name and at least one mode', () => {
+    for (const tool of CONSTRAINT_TOOLS) {
+      expect(tool.title).toBeTruthy()
+      expect(tool.modes.length).toBeGreaterThan(0)
+    }
   })
 
   it('gives every mode at least one slot', () => {

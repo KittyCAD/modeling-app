@@ -26,8 +26,12 @@ import { createSketchInteraction } from '@src/features/sketchOverlay/createSketc
 import { SketchScene } from '@src/features/sketchOverlay/SketchScene'
 import { SketchAnnotations } from '@src/features/sketchOverlay/SketchAnnotations'
 import { SketchProblem } from '@src/features/sketchOverlay/SketchProblem'
-import { CONSTRAINT_TOOLS, matchConstraint } from '@src/lib/sketch/constraints'
-import { SKETCH_TOOLS, type SketchToolId } from '@src/lib/sketch/tools'
+import { matchConstraint } from '@src/lib/sketch/constraints'
+import {
+  SKETCH_ACTIONS,
+  type SketchActionKind,
+  sketchToolbarItems,
+} from '@src/features/sketchOverlay/catalog'
 
 /**
  * Drawing in a sketch: what it looks like, and what the pointer does.
@@ -65,104 +69,105 @@ export default defineRegistryItemFactory((ctx) => {
   /** True once there is a sketch open with a plane to draw on. */
   const drawable = computed(() => sessions()?.open.value?.plane != null)
 
-  const equip = (tool: SketchToolId) => () => {
+  /**
+   * What each kind of action does when it is pressed.
+   *
+   * The catalogue says what the buttons *are*; these three say what they do. Kept
+   * apart because that is the honest shape of it — a modelling tool can be
+   * derived whole from its stdlib signature, and a sketch action cannot: equipping
+   * a tool starts a pointer state machine, a constraint is a matcher over the
+   * selection, and a dimension measures geometry.
+   */
+  const runAction = (what: SketchActionKind) => {
     const session = sessions()
-    // A second press of the same tool puts it down, which is how somebody stops
-    // drawing without reaching for anything.
-    session?.equip(session.tool.value === tool ? null : tool)
+    if (!session) return
+
+    switch (what.kind) {
+      case 'tool':
+        // A second press of the same tool puts it down, which is how somebody
+        // stops drawing without reaching for anything.
+        session.equip(session.tool.value === what.tool ? null : what.tool)
+        return
+      case 'constraint':
+        session.applyConstraint(what.constraint)
+        return
+      case 'dimension':
+        session.applyDimension()
+        return
+    }
   }
 
   /**
-   * One command, one toolbar slot and one key per tool.
+   * Whether it can be pressed, per kind.
    *
-   * Generated from the table rather than written out, because every tool wants
-   * exactly the same three things and the only differences — the name, the icon,
-   * the letter — are what the table holds. Adding a tool is then a row plus its
-   * behaviour in `draft.ts`, with nothing to keep in step by hand.
+   * A constraint answers from the declarative model — "can this be applied to
+   * what is selected" is a pure function — which is the point of that model: the
+   * answer is available *before* the click rather than discovered by it.
    */
-  const toolContributions = SKETCH_TOOLS.flatMap((tool) => {
-    const commandId = `sketch.tool.${tool.id}`
+  const enabledFor = (what: SketchActionKind) =>
+    computed(() => {
+      const session = sessions()
+      if (!session?.open.value) return false
+
+      switch (what.kind) {
+        case 'tool':
+          return drawable.value
+        case 'dimension':
+          return session.selection.value.length === 2
+        case 'constraint': {
+          const graph =
+            ctx.services.optional(kclFrontendService)?.sceneGraph.value
+          if (!graph) return false
+
+          return (
+            matchConstraint(what.constraint, graph, session.selection.value)
+              .status === 'complete'
+          )
+        }
+      }
+    })
+
+  /** Only a tool can be *held*, so only a tool can look held. */
+  const activeFor = (what: SketchActionKind) =>
+    what.kind === 'tool'
+      ? computed(() => sessions()?.tool.value === what.tool)
+      : undefined
+
+  /**
+   * One command and one key per action, and the buttons derived from the list.
+   *
+   * Adding an action is a row in the catalogue plus its behaviour — the three
+   * contributions it needs come from the row, and the toolbar is derived by the
+   * same function the modelling toolbar uses.
+   */
+  const actionContributions = SKETCH_ACTIONS.flatMap((action) => {
+    // Built once and reused: two computeds over the same question would be two
+    // subscriptions and two answers.
+    const active = activeFor(action.what)
 
     return [
       provide(commandsValueSpec, {
-        id: commandId,
-        title: tool.title,
+        id: action.commandId,
+        title: action.title,
         category: 'Sketch',
-        icon: tool.icon,
-        description: tool.description,
-        enabled: drawable,
-        active: computed(() => sessions()?.tool.value === tool.id),
-        run: equip(tool.id),
+        icon: action.icon,
+        description: action.description,
+        enabled: enabledFor(action.what),
+        ...(active ? { active } : {}),
+        run: () => runAction(action.what),
       }),
 
-      provide(toolbarItemsValueSpec, {
-        kind: 'command' as const,
-        id: commandId,
-        mode: SKETCHING_MODE,
-        section: 'draw',
-        order: tool.order,
-        commandId,
-      }),
-
-      provide(keybindingsValueSpec, {
-        keystrokes: [tool.key],
-        commandId,
-        scopes: [SKETCHING_SCOPE],
-      }),
+      ...(action.key
+        ? [
+            provide(keybindingsValueSpec, {
+              keystrokes: [action.key],
+              commandId: action.commandId,
+              scopes: [SKETCHING_SCOPE],
+            }),
+          ]
+        : []),
     ]
   })
-
-  /**
-   * One command and one key per constraint, plus a group to hold them.
-   *
-   * Each button knows whether it can be applied, because that is a pure question
-   * over the selection — which is the point of the declarative model: the answer
-   * is available before the click rather than discovered by it.
-   */
-  const constraintContributions = [
-    ...CONSTRAINT_TOOLS.flatMap((tool) => {
-      const commandId = `sketch.constrain.${tool.id}`
-
-      return [
-        provide(commandsValueSpec, {
-          id: commandId,
-          title: tool.title,
-          category: 'Sketch',
-          icon: tool.icon,
-          description: tool.description,
-          enabled: computed(() => {
-            const session = sessions()
-            const graph =
-              ctx.services.optional(kclFrontendService)?.sceneGraph.value
-            if (!session?.open.value || !graph) return false
-
-            return (
-              matchConstraint(tool.id, graph, session.selection.value)
-                .status === 'complete'
-            )
-          }),
-          run: () => sessions()?.applyConstraint(tool.id),
-        }),
-
-        provide(keybindingsValueSpec, {
-          keystrokes: [tool.key],
-          commandId,
-          scopes: [SKETCHING_SCOPE],
-        }),
-      ]
-    }),
-
-    provide(toolbarItemsValueSpec, {
-      kind: 'group' as const,
-      id: 'sketch.constraints',
-      mode: SKETCHING_MODE,
-      section: 'constrain',
-      order: 10,
-      title: 'Constraints',
-      icon: 'coincident',
-      commandIds: CONSTRAINT_TOOLS.map((tool) => `sketch.constrain.${tool.id}`),
-    }),
-  ]
 
   return {
     model: { pointer: interaction.pointer },
@@ -246,43 +251,10 @@ export default defineRegistryItemFactory((ctx) => {
           attach: interaction.attachPick,
         }),
 
-        ...toolContributions,
-        ...constraintContributions,
-
-        /**
-         * Dimension what is selected.
-         *
-         * Beside the constraints rather than in the group, because it is the one
-         * everybody reaches for and because what it produces is different in
-         * kind: a value that can be typed over afterwards.
-         */
-        provide(commandsValueSpec, {
-          id: 'sketch.dimension',
-          title: 'Dimension',
-          category: 'Sketch',
-          icon: 'dimension',
-          description:
-            'Constrain a distance or an angle between two selected things.',
-          enabled: computed(
-            () => (sessions()?.selection.value.length ?? 0) === 2
-          ),
-          run: () => sessions()?.applyDimension(),
-        }),
-
-        provide(toolbarItemsValueSpec, {
-          kind: 'command',
-          id: 'sketch.dimension',
-          mode: SKETCHING_MODE,
-          section: 'constrain',
-          order: 20,
-          commandId: 'sketch.dimension',
-        }),
-
-        provide(keybindingsValueSpec, {
-          keystrokes: ['d'],
-          commandId: 'sketch.dimension',
-          scopes: [SKETCHING_SCOPE],
-        }),
+        ...actionContributions,
+        ...sketchToolbarItems().map((item) =>
+          provide(toolbarItemsValueSpec, item)
+        ),
 
         /**
          * Escape, one step at a time.
