@@ -47,6 +47,10 @@ pub(super) struct HoverOpts {
     prefer_sig: bool,
 }
 
+pub(super) trait HoverProvider {
+    fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover>;
+}
+
 impl HoverOpts {
     pub fn default_for_signature_help() -> Self {
         HoverOpts {
@@ -63,10 +67,10 @@ impl HoverOpts {
     }
 }
 
-impl Program {
+impl HoverProvider for Program {
     /// Returns a hover value that includes the given character position.
     /// This is really recursive so keep that in mind.
-    pub(super) fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
+    fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         // Check if we are in shebang.
         if let Some(node) = &self.shebang
             && node.contains(pos)
@@ -83,8 +87,8 @@ impl Program {
     }
 }
 
-impl Expr {
-    pub(super) fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
+impl HoverProvider for Expr {
+    fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         match self {
             Expr::BinaryExpression(binary_expression) => {
                 binary_expression.get_hover_value_for_position(pos, code, opts)
@@ -140,7 +144,7 @@ impl Expr {
     }
 }
 
-impl BinaryPart {
+impl HoverProvider for BinaryPart {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         match self {
             BinaryPart::Literal(_literal) => None,
@@ -167,7 +171,7 @@ impl BinaryPart {
     }
 }
 
-impl CallExpressionKw {
+impl HoverProvider for CallExpressionKw {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         let callee_source_range: SourceRange = self.callee.clone().into();
         if callee_source_range.contains(pos) {
@@ -206,7 +210,7 @@ impl CallExpressionKw {
     }
 }
 
-impl ArrayExpression {
+impl HoverProvider for ArrayExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         for element in &self.elements {
             let element_source_range: SourceRange = element.into();
@@ -219,7 +223,7 @@ impl ArrayExpression {
     }
 }
 
-impl ArrayRangeExpression {
+impl HoverProvider for ArrayRangeExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         for element in [&self.start_element, &self.end_element] {
             let element_source_range: SourceRange = element.into();
@@ -232,7 +236,7 @@ impl ArrayRangeExpression {
     }
 }
 
-impl ObjectExpression {
+impl HoverProvider for ObjectExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         for property in &self.properties {
             let property_source_range: SourceRange = property.into();
@@ -245,7 +249,7 @@ impl ObjectExpression {
     }
 }
 
-impl ObjectProperty {
+impl HoverProvider for ObjectProperty {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         let value_source_range: SourceRange = self.value.clone().into();
         if value_source_range.contains(pos) {
@@ -256,7 +260,7 @@ impl ObjectProperty {
     }
 }
 
-impl MemberExpression {
+impl HoverProvider for MemberExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         let object_source_range: SourceRange = self.object.clone().into();
         if object_source_range.contains(pos) {
@@ -267,7 +271,7 @@ impl MemberExpression {
     }
 }
 
-impl BinaryExpression {
+impl HoverProvider for BinaryExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         let left_source_range: SourceRange = self.left.clone().into();
         let right_source_range: SourceRange = self.right.clone().into();
@@ -284,7 +288,7 @@ impl BinaryExpression {
     }
 }
 
-impl UnaryExpression {
+impl HoverProvider for UnaryExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         let argument_source_range: SourceRange = self.argument.clone().into();
         if argument_source_range.contains(pos) {
@@ -295,7 +299,7 @@ impl UnaryExpression {
     }
 }
 
-impl PipeExpression {
+impl HoverProvider for PipeExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         for b in &self.body {
             let b_source_range: SourceRange = b.into();
@@ -308,7 +312,7 @@ impl PipeExpression {
     }
 }
 
-impl Node<Type> {
+impl HoverProvider for Node<Type> {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, _opts: &HoverOpts) -> Option<Hover> {
         let range = self.as_source_range();
         if range.contains(pos) {
@@ -331,7 +335,7 @@ impl Node<Type> {
     }
 }
 
-impl FunctionExpression {
+impl HoverProvider for FunctionExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         if let Some(ty) = &self.return_type
             && let Some(h) = ty.get_hover_value_for_position(pos, code, opts)
@@ -365,7 +369,7 @@ impl FunctionExpression {
     }
 }
 
-impl IfExpression {
+impl HoverProvider for IfExpression {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         self.cond
             .get_hover_value_for_position(pos, code, opts)
@@ -379,7 +383,7 @@ impl IfExpression {
     }
 }
 
-impl ElseIf {
+impl HoverProvider for ElseIf {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         self.cond
             .get_hover_value_for_position(pos, code, opts)
@@ -387,7 +391,7 @@ impl ElseIf {
     }
 }
 
-impl SketchBlock {
+impl HoverProvider for SketchBlock {
     fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
         for (index, (label, arg)) in self.iter_arguments().enumerate() {
             let source_range: SourceRange = arg.into();

@@ -328,7 +328,8 @@ impl FunctionSource {
         (input_arg, named_args)
     }
 
-    pub(crate) fn is_std(&self) -> bool {
+    #[doc(hidden)]
+    pub fn is_std(&self) -> bool {
         self.std_props.is_some()
     }
 
