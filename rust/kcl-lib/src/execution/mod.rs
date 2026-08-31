@@ -5433,6 +5433,32 @@ x = f()
         assert_eq!(variable_f64(&result, "x"), 1.0);
     }
 
+    /// Early return inside a callback driven by a builtin terminates only
+    /// that callback invocation; the builtin keeps iterating. On the machine
+    /// executor, map/reduce callbacks run behind a Callback-completion call
+    /// boundary, so this exercises unwind_return's resume-the-builtin path,
+    /// unlike a directly called function.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_map_and_reduce_callbacks_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+doubled = map([1, 2, 3], f = fn(@i) {
+  return i * 2
+  assert(1, isEqualTo = 2, error = "code after return ran in the map callback")
+})
+assert(doubled[0], isEqualTo = 2, error = "map result 0")
+assert(doubled[1], isEqualTo = 4, error = "map result 1")
+assert(doubled[2], isEqualTo = 6, error = "map result 2")
+
+total = reduce([1, 2, 3], initial = 0, f = fn(@i, accum) {
+  return accum + i
+  assert(1, isEqualTo = 2, error = "code after return ran in the reduce callback")
+})
+assert(total, isEqualTo = 6, error = "reduce total")
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "total"), 6.0);
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn experimental_parameter() {
         let code = r#"
