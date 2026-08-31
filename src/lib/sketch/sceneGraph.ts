@@ -36,6 +36,14 @@ export interface SketchPoint {
    */
   units: NumericSuffix
   freedom: Freedom
+  /**
+   * The segment this point belongs to, when it belongs to one.
+   *
+   * A spline's control point and a rectangle's corner are owned; a line's ends
+   * are not. It matters wherever a point and its owner are alternatives rather
+   * than both — an area select picks the owner, not its parts.
+   */
+  owner: ApiObjectId | null
 }
 
 /** A segment with its points already resolved. */
@@ -115,6 +123,7 @@ export function pointAt(
     // and the solver has no way to produce that.
     units: segment.position.x.units,
     freedom: segment.freedom,
+    owner: segment.owner ?? null,
   }
 }
 

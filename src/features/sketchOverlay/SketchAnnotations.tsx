@@ -138,7 +138,7 @@ export function SketchAnnotations({
     void projection.epoch.value
 
     if (!open || !graph || !plane || size.width === 0) {
-      return { badges: [], dimensions: [] }
+      return { box: null, badges: [], dimensions: [] }
     }
 
     const place = (at: PlanePoint) =>
@@ -205,7 +205,32 @@ export function SketchAnnotations({
           })
         })
 
+    /*
+     * The area-select box, as a screen rectangle between its two corners.
+     *
+     * Its *maths* is in the plane — that is where the geometry is, and where the
+     * existing app does it too — while the rectangle drawn is the screen box
+     * between the two projected corners. The two agree exactly when the plane is
+     * square to the camera, which is where sketching happens; seen at an angle
+     * the drawn box is a rectangle over a parallelogram, which is the existing
+     * app's compromise as well.
+     */
+    const dragged = pointer.box.value
+    const corners = dragged
+      ? { from: place(dragged.from), to: place(dragged.to) }
+      : null
+
     return {
+      box:
+        corners?.from && corners.to
+          ? {
+              left: Math.min(corners.from.x, corners.to.x),
+              top: Math.min(corners.from.y, corners.to.y),
+              width: Math.abs(corners.to.x - corners.from.x),
+              height: Math.abs(corners.to.y - corners.from.y),
+              crossing: dragged?.mode === 'crossing',
+            }
+          : null,
       badges: [...anchored, ...revealed],
       dimensions: dimensionsOf(graph, open.sketchId).flatMap((dimension) => {
         // A dimension with no label position has nowhere to be drawn. It still
@@ -230,6 +255,18 @@ export function SketchAnnotations({
       // `appearance.ts`, so the stylesheet is told rather than told twice.
       style={{ '--zds-sketch-selection': SKETCH_SELECTION_COLOR }}
     >
+      {annotations.value.box ? (
+        <div
+          class="zds-sketch-area-select"
+          data-crossing={annotations.value.box.crossing ? 'true' : undefined}
+          style={{
+            transform: `translate(${annotations.value.box.left}px, ${annotations.value.box.top}px)`,
+            inlineSize: `${annotations.value.box.width}px`,
+            blockSize: `${annotations.value.box.height}px`,
+          }}
+        />
+      ) : null}
+
       {annotations.value.badges.map((badge, index) => (
         <button
           type="button"

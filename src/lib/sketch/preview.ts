@@ -59,6 +59,7 @@ export const originVertex = (): SketchVertex => ({
   id: ORIGIN_ID,
   at: { x: 0, y: 0 },
   freedom: 'Fixed',
+  owner: null,
 })
 
 /**

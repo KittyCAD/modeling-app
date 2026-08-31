@@ -128,3 +128,25 @@
 .zds-sketch-dimension__field {
   inline-size: 5rem;
 }
+
+/*
+ * The area-select box.
+ *
+ * Dashed when it is the crossing reading — dragged right to left, taking
+ * everything it touches — and solid when it takes only what is wholly inside.
+ * That pairing is the existing app's, and every other CAD package's: the border
+ * is how you tell which of the two you are doing without looking away from what
+ * you are selecting.
+ */
+.zds-sketch-area-select {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  border: 1px solid var(--zds-sketch-selection);
+  background: color-mix(in oklch, var(--zds-sketch-selection) 12%, transparent);
+  pointer-events: none;
+}
+
+.zds-sketch-area-select[data-crossing="true"] {
+  border-style: dashed;
+}

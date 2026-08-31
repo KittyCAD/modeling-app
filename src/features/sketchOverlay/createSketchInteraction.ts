@@ -5,6 +5,12 @@ import type { SceneGraph } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { PlanePoint } from '@src/lib/scene/projection'
 import type { ApiObjectId } from '@rust/kcl-lib/bindings/FrontendApi'
 import { coincidentCluster, isDraggable, isPoint } from '@src/lib/sketch/drag'
+import {
+  type AreaSelectMode,
+  type SelectionBox,
+  modeFor,
+  segmentsInBox,
+} from '@src/lib/sketch/areaSelect'
 import { drawingOf } from '@src/lib/sketch/drawing'
 import { SKETCH_HOVER_DISTANCE_PX, pickInSketch } from '@src/lib/sketch/hitTest'
 import {
@@ -35,6 +41,19 @@ export interface SketchPointer {
    * answers whenever the graph changed between reads.
    */
   readonly hovered: ReadonlySignal<ApiObjectId | null>
+  /**
+   * The area-select box being dragged, in the plane, or null.
+   *
+   * Exposed for drawing. Held here rather than in the drawing because the
+   * pointer is what defines it, and because the release has to select from the
+   * same box that was on screen.
+   */
+  readonly box: ReadonlySignal<AreaSelectBox | null>
+}
+
+/** A box being dragged out, with which of the two readings it is. */
+export interface AreaSelectBox extends SelectionBox {
+  mode: AreaSelectMode
 }
 
 /** How far the pointer may travel between press and release and still be a click. */
@@ -74,6 +93,7 @@ export function createSketchInteraction(
   const at = signal<PlanePoint | null>(null)
   const snap = signal<SnappingCandidate | null>(null)
   const hovered = signal<ApiObjectId | null>(null)
+  const box = signal<AreaSelectBox | null>(null)
 
   /**
    * What the pointer would snap to, in the plane's own units.
@@ -245,6 +265,36 @@ export function createSketchInteraction(
     return Math.hypot(where.x, where.y) <= SKETCH_HOVER_DISTANCE_PX / scale
   }
 
+  /**
+   * Select everything the box covers.
+   *
+   * Replacing what was selected, unless shift is held — the same reading a click
+   * has, so the two agree.
+   */
+  const applyBox = (dragged: AreaSelectBox, add: boolean) => {
+    const session = dependencies.session()
+    const graph = dependencies.graph()
+    const open = session?.open.value
+    if (!session || !graph || !open) return
+
+    const found = segmentsInBox(
+      drawingOf(graph, open.sketchId),
+      dragged,
+      dragged.mode
+    )
+
+    if (found.length === 0) {
+      // An empty box means nothing was wanted, which is the same as a click on
+      // nothing — unless the box was adding to a selection.
+      if (!add) session.clearSelection()
+      return
+    }
+
+    for (const [index, id] of found.entries()) {
+      session.select(id, { add: add || index > 0 })
+    }
+  }
+
   /** True while a point is being moved. */
   const dragging = () => dependencies.session()?.draft.value.kind === 'dragging'
 
@@ -253,12 +303,19 @@ export function createSketchInteraction(
       at: computed(() => at.value),
       snap: computed(() => snap.value),
       hovered: computed(() => hovered.value),
+      box: computed(() => box.value),
     },
 
     attachTool(element: HTMLElement) {
       let pressedAt: { x: number; y: number } | null = null
       /** What the press took hold of, so a release can tell a click from a drag. */
       let grabbedId: ApiObjectId | null = null
+      /** Where an area select would start from, once the pointer has moved. */
+      let boxFrom: {
+        at: PlanePoint
+        screenX: number
+        screenY: number
+      } | null = null
 
       const onPointerMove = (event: PointerEvent) => {
         // Tracked whenever a sketch is open, tool or not: hovering is how you
@@ -271,6 +328,35 @@ export function createSketchInteraction(
         const where = planePointFor(element, event)
         const viewport = viewportOf(element)
         at.value = where
+
+        /*
+         * A box in progress answers nothing else.
+         *
+         * No hover, so a row of constraint badges does not flash up for every
+         * segment the box is dragged across, and no snap, because a box does not
+         * snap to anything. The existing app returns early here for the same
+         * reason.
+         */
+        if (boxFrom && where) {
+          const far =
+            Math.abs(event.clientX - boxFrom.screenX) > CLICK_SLOP ||
+            Math.abs(event.clientY - boxFrom.screenY) > CLICK_SLOP
+
+          if (far || box.peek()) {
+            event.stopImmediatePropagation()
+            snap.value = null
+            hovered.value = null
+            box.value = {
+              from: boxFrom.at,
+              to: where,
+              // From screen x, because which of the two readings was meant is a
+              // fact about the direction the hand went.
+              mode: modeFor(boxFrom.screenX, event.clientX),
+            }
+            return
+          }
+        }
+
         const candidate = snapFor(where, event, viewport)
         snap.value = candidate
         hovered.value = pickIn(where, viewport)
@@ -291,6 +377,15 @@ export function createSketchInteraction(
         at.value = null
         snap.value = null
         hovered.value = null
+        /*
+         * A box abandoned rather than applied.
+         *
+         * Leaving the surface mid-drag means the release will happen somewhere
+         * this cannot see, and a box applied from the last position it *did* see
+         * would select from a rectangle nobody saw finish.
+         */
+        boxFrom = null
+        box.value = null
       }
 
       const onPointerDown = (event: PointerEvent) => {
@@ -309,7 +404,26 @@ export function createSketchInteraction(
          * that sits behind the camera and swallows clicks.
          */
         const grabbed = drawing() ? null : grabbableAt(where, viewport)
-        if (!drawing() && grabbed === null) return
+
+        if (!drawing() && grabbed === null) {
+          /*
+           * Nothing under the pointer, no tool: this may be an area select.
+           *
+           * Recorded but *not claimed*. A press that never moves is a click on
+           * nothing, which belongs to the handler behind the camera — and a press
+           * with a modifier held is a camera gesture in several of the control
+           * schemes. Claiming here would take both away for a drag that may never
+           * happen.
+           */
+          if (where && !event.altKey && !event.ctrlKey && !event.metaKey) {
+            boxFrom = {
+              at: where,
+              screenX: event.clientX,
+              screenY: event.clientY,
+            }
+          }
+          return
+        }
 
         event.stopImmediatePropagation()
         event.preventDefault()
@@ -326,9 +440,24 @@ export function createSketchInteraction(
       const onPointerUp = (event: PointerEvent) => {
         const pressed = pressedAt
         const grabbed = grabbedId
+        const dragged = box.peek()
         pressedAt = null
         grabbedId = null
+        boxFrom = null
+        box.value = null
         if (event.button !== 0) return
+
+        /*
+         * A box that was dragged selects what it covers.
+         *
+         * Claimed, so the handler behind the camera does not read the release as
+         * a click on nothing and clear what was just selected.
+         */
+        if (dragged) {
+          event.stopImmediatePropagation()
+          applyBox(dragged, event.shiftKey)
+          return
+        }
 
         const moved =
           !pressed ||

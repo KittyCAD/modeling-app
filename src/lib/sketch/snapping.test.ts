@@ -24,8 +24,8 @@ const drawing: SketchDrawing = {
     },
   ],
   vertices: [
-    { id: 2, at: { x: 20, y: 20 }, freedom: 'Free' },
-    { id: 3, at: { x: 40, y: 20 }, freedom: 'Free' },
+    { id: 2, at: { x: 20, y: 20 }, freedom: 'Free', owner: null },
+    { id: 3, at: { x: 40, y: 20 }, freedom: 'Free', owner: null },
   ],
 }
 
@@ -77,7 +77,7 @@ describe('snappingCandidates', () => {
           freedom: 'Free',
         },
       ],
-      vertices: [{ id: 2, at: { x: 1, y: 1 }, freedom: 'Free' }],
+      vertices: [{ id: 2, at: { x: 1, y: 1 }, freedom: 'Free', owner: null }],
     }
 
     // Everything within reach at once: the order is the whole point.
