@@ -1,5 +1,35 @@
-import { ChangeSet } from '@codemirror/state'
+import { type ChangeDesc, ChangeSet } from '@codemirror/state'
 import type { TextEdit } from '@src/contracts/modelingOperations'
+
+/**
+ * Whether any of `changes` modifies text strictly inside `[from, to)`.
+ *
+ * The predicate `classify` uses for a replacement, exposed because reverting a
+ * turn asks the same question of a different range: "has anyone edited inside the
+ * text the agent inserted?" Touching an endpoint does not count, for the reason
+ * spelled out in `detectConflict` — `ChangeDesc.touchesRange` counts it, and that
+ * makes the most common agent edit look like a conflict.
+ */
+export function changesTouchInterior(
+  changes: ChangeDesc,
+  from: number,
+  to: number
+): boolean {
+  let found = false
+
+  changes.iterChangedRanges((fromA, toA) => {
+    if (found) return
+    if (fromA < toA) {
+      // A replacement or deletion: genuine overlap of half-open intervals.
+      if (toA > from && fromA < to) found = true
+      return
+    }
+    // A pure insertion: only strictly inside counts.
+    if (fromA > from && fromA < to) found = true
+  })
+
+  return found
+}
 
 /**
  * Why an agent's edit could not be applied to the document as it now stands.
