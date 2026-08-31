@@ -1,4 +1,3 @@
-import type { IconName } from '@kittycad/ui-kit'
 import type {
   ApiConstraint,
   ApiObject,
@@ -70,12 +69,15 @@ export interface ConstraintMode {
 
 export interface ConstraintToolInfo {
   id: ConstraintToolId
+  /**
+   * What it is called.
+   *
+   * Here rather than with the button, because two features need it and neither
+   * should import the other's catalogue: the toolbar labels a button with it and
+   * the session puts it in the message when a selection cannot take it.
+   */
   title: string
-  icon: IconName
-  description: string
-  /** The existing app's key, in the sketching scope. */
-  key: string
-  order: number
+  /** Which selections it accepts, in the order they were picked. */
   modes: readonly ConstraintMode[]
 }
 
@@ -107,10 +109,6 @@ export const CONSTRAINT_TOOLS: readonly ConstraintToolInfo[] = [
   {
     id: 'coincident',
     title: 'Coincident',
-    icon: 'coincident',
-    description: 'Put points, or a point and a curve, in the same place.',
-    key: 'x',
-    order: 10,
     modes: [
       {
         id: 'point-point',
@@ -135,10 +133,6 @@ export const CONSTRAINT_TOOLS: readonly ConstraintToolInfo[] = [
   {
     id: 'midpoint',
     title: 'Midpoint',
-    icon: 'midpoint',
-    description: 'Hold a point at the middle of a line or an arc.',
-    key: 'Shift+X',
-    order: 20,
     modes: [
       { id: 'point-line', slots: [['point'], ['line']] },
       { id: 'line-point', slots: [['line'], ['point']] },
@@ -153,10 +147,6 @@ export const CONSTRAINT_TOOLS: readonly ConstraintToolInfo[] = [
   {
     id: 'tangent',
     title: 'Tangent',
-    icon: 'tangent',
-    description: 'Meet a curve without crossing it.',
-    key: 't',
-    order: 30,
     modes: [
       { id: 'line-arcLike', slots: [['line'], ['arcLike']] },
       { id: 'arcLike-line', slots: [['arcLike'], ['line']] },
@@ -166,10 +156,6 @@ export const CONSTRAINT_TOOLS: readonly ConstraintToolInfo[] = [
   {
     id: 'parallel',
     title: 'Parallel',
-    icon: 'parallel',
-    description: 'Keep lines pointing the same way.',
-    key: 'b',
-    order: 40,
     modes: [
       {
         id: 'line-set',
@@ -181,19 +167,11 @@ export const CONSTRAINT_TOOLS: readonly ConstraintToolInfo[] = [
   {
     id: 'perpendicular',
     title: 'Perpendicular',
-    icon: 'perpendicular',
-    description: 'Hold two lines at a right angle.',
-    key: 'Shift+B',
-    order: 50,
     modes: [{ id: 'line-line', slots: [['line'], ['line']] }],
   },
   {
     id: 'equalLength',
     title: 'Equal',
-    icon: 'equal',
-    description: 'Make lines the same length, or arcs the same radius.',
-    key: 'e',
-    order: 60,
     modes: [
       {
         id: 'line-set',
@@ -210,10 +188,6 @@ export const CONSTRAINT_TOOLS: readonly ConstraintToolInfo[] = [
   {
     id: 'symmetric',
     title: 'Symmetric',
-    icon: 'symmetric',
-    description: 'Mirror two things about a line.',
-    key: 'Shift+E',
-    order: 70,
     modes: [
       { id: 'point-point-line', slots: [['point'], ['point'], ['line']] },
       { id: 'point-line-point', slots: [['point'], ['line'], ['point']] },
@@ -244,10 +218,6 @@ export const CONSTRAINT_TOOLS: readonly ConstraintToolInfo[] = [
   {
     id: 'vertical',
     title: 'Vertical',
-    icon: 'vertical',
-    description: 'Hold a line, or two points, on a vertical.',
-    key: 'v',
-    order: 80,
     modes: [
       { id: 'single-line', slots: [['line']], repeatableLastSlot: true },
       { id: 'point-pair', slots: [['pointLike'], ['pointLike']] },
@@ -256,10 +226,6 @@ export const CONSTRAINT_TOOLS: readonly ConstraintToolInfo[] = [
   {
     id: 'horizontal',
     title: 'Horizontal',
-    icon: 'horizontal',
-    description: 'Hold a line, or two points, on a horizontal.',
-    key: 'h',
-    order: 90,
     modes: [
       { id: 'single-line', slots: [['line']], repeatableLastSlot: true },
       { id: 'point-pair', slots: [['pointLike'], ['pointLike']] },
@@ -268,10 +234,6 @@ export const CONSTRAINT_TOOLS: readonly ConstraintToolInfo[] = [
   {
     id: 'fixed',
     title: 'Fixed',
-    icon: 'fix',
-    description: 'Pin a point where it is.',
-    key: 'f',
-    order: 100,
     modes: [{ id: 'single-point', slots: [['point']] }],
   },
 ]

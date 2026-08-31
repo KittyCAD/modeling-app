@@ -1,6 +1,10 @@
 import type { IconName } from '@kittycad/ui-kit'
 import type { ModelingOperation } from '@src/contracts/modelingOperations'
 import type { ToolbarItem } from '@src/contracts/sceneModes'
+import {
+  type ToolbarGroup as SharedToolbarGroup,
+  toolbarItemsFrom,
+} from '@src/lib/toolbarItems'
 import type { OperationSpec } from '@src/features/modelingOperations/operations/derive'
 import {
   derivedOperation,
@@ -40,13 +44,13 @@ export interface ModelingTool extends OperationSpec {
   key?: string
 }
 
-/** A button shared by several tools. Everything else is read from its members. */
-export interface ToolGroup {
-  id: string
-  /** Names the group in its menu: "Pattern". */
-  title: string
-  icon?: IconName
-}
+/**
+ * A button shared by several tools. Everything else is read from its members.
+ *
+ * The item id is not part of it: this file owns the naming rule, and applies it
+ * where the buttons are derived.
+ */
+export type ToolGroup = Omit<SharedToolbarGroup, 'itemId'>
 
 export const TOOL_GROUPS: readonly ToolGroup[] = [
   { id: 'hollow', title: 'Shell', icon: 'shell' },
@@ -431,43 +435,20 @@ export function toolbarItemsFor(
   tools: readonly ModelingTool[],
   groups: readonly ToolGroup[]
 ): readonly ToolbarItem[] {
-  const items: ToolbarItem[] = []
-
-  for (const tool of tools) {
-    if (tool.group) continue
-    items.push({
-      kind: 'command',
-      id: `modeling.tool.${tool.stdlib.replace(/::/g, '.')}`,
+  return toolbarItemsFrom(
+    tools.map((tool) => ({
+      commandId: operationIdFor(tool.stdlib),
+      itemId: `modeling.tool.${tool.stdlib.replace(/::/g, '.')}`,
       mode: tool.mode,
       section: tool.section,
+      group: tool.group,
       order: tool.order,
-      commandId: operationIdFor(tool.stdlib),
-    })
-  }
-
-  for (const group of groups) {
-    const members = [...tools]
-      .filter((tool) => tool.group === group.id)
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-
-    // A group nobody joined is not a button. This is what makes a group survive
-    // its members being removed, rather than drawing an empty caret.
-    const first = members[0]
-    if (!first) continue
-
-    items.push({
-      kind: 'group',
-      id: `modeling.group.${group.id}`,
-      mode: first.mode,
-      section: first.section,
-      order: first.order,
-      title: group.title,
-      icon: group.icon,
-      commandIds: members.map((member) => operationIdFor(member.stdlib)),
-    })
-  }
-
-  return items
+    })),
+    groups.map((group) => ({
+      ...group,
+      itemId: `modeling.group.${group.id}`,
+    }))
+  )
 }
 
 /** Every shipped tool as an operation, derived from its stdlib shape. */
