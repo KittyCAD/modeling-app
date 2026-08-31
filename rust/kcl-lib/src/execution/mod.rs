@@ -5903,6 +5903,45 @@ y = g()
         assert_eq!(variable_f64(&result, "y"), 42.0);
     }
 
+    /// A tag declared inside an if-arm is bound like any arm-local: usable
+    /// within its arm, and under KCL 3.0 not visible after the if. Without
+    /// KCL 3.0 it leaks like other arm bindings.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tag_declared_inside_if_arm_is_arm_local_in_v3() {
+        let arm_body = r#"p = if true {
+  profile = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 0], tag = $edge)
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+  inArmLen = segLen(edge)
+  assert(inArmLen, isEqualTo = 10, error = "tag is usable within its arm")
+  profile
+} else {
+  startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 0])
+    |> line(end = [0, 5])
+    |> line(end = [-5, 0])
+    |> close()
+}
+len = segLen(edge)
+"#;
+
+        let code = format!("@settings(kclVersion = \"3.0-preview\")\n{arm_body}");
+        let err = parse_execute(&code).await.unwrap_err();
+        assert!(
+            err.message().contains("`edge` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // Pins the pre-KCL-3.0 behavior: the tag leaks out of the arm.
+        let result = parse_execute(arm_body).await.unwrap();
+        assert_eq!(variable_f64(&result, "len"), 10.0);
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn experimental_parameter() {
         let code = r#"
