@@ -2520,8 +2520,8 @@ export default {
       {
         "name": "tolerance",
         "ty": "number(Length)",
-        "docs": "The acceptable distance tolerance.",
-        "required": true,
+        "docs": "The acceptable distance tolerance. If not given, or 0, tolerance will not be shown.",
+        "required": false,
         "special": false,
         "experimental": false,
         "deprecated": false,
