@@ -50,8 +50,11 @@ export interface SketchSegment {
    *
    * `Conflict` beats `Free` beats `Fixed`: a segment is only finished when all of
    * it is, and one point in conflict makes the segment the thing to look at.
+   *
+   * Null when there are no points to ask, which is drawn differently from Fixed
+   * — see `freedomOf`.
    */
-  freedom: Freedom
+  freedom: Freedom | null
 }
 
 /**
@@ -115,7 +118,21 @@ export function pointAt(
   }
 }
 
-const freedomOf = (points: readonly SketchPoint[]): Freedom => {
+/**
+ * How constrained a segment is, from its points.
+ *
+ * `deriveSegmentFreedom` in the existing app: Conflict beats Free beats Fixed,
+ * so a segment is finished only when all of it is and one point in conflict
+ * makes the whole segment the thing to look at.
+ *
+ * Null for a segment with no points to ask, which is *not* the same as Fixed and
+ * matters because of how it is drawn: unknown freedom shows as unconstrained
+ * blue, while Fixed shows as the theme's constrained colour. Collapsing the two
+ * would draw a segment the solver has said nothing about as though it were
+ * pinned down.
+ */
+const freedomOf = (points: readonly SketchPoint[]): Freedom | null => {
+  if (points.length === 0) return null
   if (points.some((point) => point.freedom === 'Conflict')) return 'Conflict'
   if (points.some((point) => point.freedom === 'Free')) return 'Free'
   return 'Fixed'

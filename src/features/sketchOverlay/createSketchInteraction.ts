@@ -1,11 +1,28 @@
 import { type ReadonlySignal, computed, signal } from '@preact/signals'
 import type { SceneProjection } from '@src/contracts/sceneProjection'
 import type { SketchSessionService } from '@src/contracts/sketchSession'
+import type { SceneGraph } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { PlanePoint } from '@src/lib/scene/projection'
+import { drawingOf } from '@src/lib/sketch/drawing'
+import { SKETCH_HOVER_DISTANCE_PX } from '@src/lib/sketch/hitTest'
+import {
+  type SnappingCandidate,
+  allowSnapping,
+  bestSnappingCandidate,
+  snappedPosition,
+} from '@src/lib/sketch/snapping'
 
 /** Where the pointer is on the sketch plane, shared with whatever draws it. */
 export interface SketchPointer {
   readonly at: ReadonlySignal<PlanePoint | null>
+  /**
+   * What the pointer would snap to, if anything.
+   *
+   * Held here rather than recomputed by the drawing, because the click and the
+   * indicator have to agree: an overlay that worked out its own candidate could
+   * mark one place and place the point in another.
+   */
+  readonly snap: ReadonlySignal<SnappingCandidate | null>
 }
 
 /** How far the pointer may travel between press and release and still be a click. */
@@ -14,6 +31,8 @@ const CLICK_SLOP = 4
 export interface SketchInteractionDependencies {
   session: () => SketchSessionService | undefined
   projection: () => SceneProjection | undefined
+  /** The scene the sketch is drawn from, for working out what to snap to. */
+  graph: () => SceneGraph | null
 }
 
 /**
@@ -41,6 +60,48 @@ export function createSketchInteraction(
   attachPick: (element: HTMLElement) => () => void
 } {
   const at = signal<PlanePoint | null>(null)
+  const snap = signal<SnappingCandidate | null>(null)
+
+  /**
+   * What the pointer would snap to, in the plane's own units.
+   *
+   * Ten pixels of reach, as the existing app has it, converted through the
+   * projection so the reach is the same number of pixels at any zoom. Shift
+   * suppresses it, which is how somebody says "near that, not on it".
+   */
+  const snapFor = (
+    where: PlanePoint | null,
+    event: { shiftKey: boolean },
+    viewport: { width: number; height: number }
+  ): SnappingCandidate | null => {
+    const session = dependencies.session()
+    const projection = dependencies.projection()
+    const graph = dependencies.graph()
+    const open = session?.open.value
+    const plane = open?.plane
+
+    if (!where || !plane || !graph || !projection) return null
+    if (!allowSnapping(event)) return null
+
+    // The real viewport: how big a pixel is on the plane depends on it, and a
+    // made-up one would make the reach wrong by whatever factor it was out by.
+    const scale = projection.scaleOn(plane, where, viewport)
+    // A scale of zero says the plane is edge-on or off screen, and then there is
+    // nothing to snap within.
+    if (scale <= 0) return null
+
+    return bestSnappingCandidate(
+      drawingOf(graph, open.sketchId),
+      where,
+      SKETCH_HOVER_DISTANCE_PX / scale
+    )
+  }
+
+  /** The element's size, which the projection needs to place anything. */
+  const viewportOf = (element: HTMLElement) => {
+    const rect = element.getBoundingClientRect()
+    return { width: rect.width, height: rect.height }
+  }
 
   /** Where a plane point is, for a pointer event over an element. */
   const planePointFor = (
@@ -70,7 +131,10 @@ export function createSketchInteraction(
   const inSketch = () => dependencies.session()?.open.value != null
 
   return {
-    pointer: { at: computed(() => at.value) },
+    pointer: {
+      at: computed(() => at.value),
+      snap: computed(() => snap.value),
+    },
 
     attachTool(element: HTMLElement) {
       let pressedAt: { x: number; y: number } | null = null
@@ -80,13 +144,17 @@ export function createSketchInteraction(
         // see what you would pick, and that is true before you pick up a tool.
         if (!dependencies.session()?.open.value) {
           at.value = null
+          snap.value = null
           return
         }
-        at.value = planePointFor(element, event)
+        const where = planePointFor(element, event)
+        at.value = where
+        snap.value = snapFor(where, event, viewportOf(element))
       }
 
       const onPointerLeave = () => {
         at.value = null
+        snap.value = null
       }
 
       const onPointerDown = (event: PointerEvent) => {
@@ -100,7 +168,9 @@ export function createSketchInteraction(
         event.stopImmediatePropagation()
         event.preventDefault()
         pressedAt = { x: event.clientX, y: event.clientY }
-        at.value = planePointFor(element, event)
+        const where = planePointFor(element, event)
+        at.value = where
+        snap.value = snapFor(where, event, viewportOf(element))
       }
 
       const onPointerUp = (event: PointerEvent) => {
@@ -123,7 +193,20 @@ export function createSketchInteraction(
         const point = planePointFor(element, event)
         // Off the plane: edge-on, or behind the camera. There is nowhere to put
         // a point, and inventing one would put it somewhere surprising.
-        if (point) dependencies.session()?.place(point)
+        if (!point) return
+
+        /*
+         * The snap wins over the pointer.
+         *
+         * Worked out again here rather than read from the signal, because the
+         * release is what commits and the pointer may have moved since the last
+         * move event — and shift may have been let go or taken up in between.
+         */
+        dependencies
+          .session()
+          ?.place(
+            snappedPosition(snapFor(point, event, viewportOf(element)), point)
+          )
       }
 
       element.addEventListener('pointermove', onPointerMove)
@@ -137,6 +220,7 @@ export function createSketchInteraction(
         element.removeEventListener('pointerdown', onPointerDown)
         element.removeEventListener('pointerup', onPointerUp)
         at.value = null
+        snap.value = null
       }
     },
 

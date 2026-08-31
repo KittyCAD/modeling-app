@@ -12,8 +12,19 @@ import {
   drawingOf,
   flatten,
 } from '@src/lib/sketch/drawing'
-import { pickInSketch } from '@src/lib/sketch/hitTest'
+import {
+  CONSTRUCTION_DASH_PX,
+  CONSTRUCTION_GAP_PX,
+  POINT_SEGMENT_RADIUS,
+  SKETCH_SELECTION_COLOR,
+  getPointSegmentScale,
+  getSegmentColor,
+  getSegmentLineWidth,
+} from '@src/lib/sketch/appearance'
+import { SKETCH_HOVER_DISTANCE_PX, pickInSketch } from '@src/lib/sketch/hitTest'
+import { isAxisSnapTarget } from '@src/lib/sketch/snapping'
 import { previewOf } from '@src/lib/sketch/tools'
+import { themeService } from '@src/contracts/theme'
 import type { SketchPointer } from '@src/features/sketchOverlay/createSketchInteraction'
 import './sketchOverlay.css'
 
@@ -76,6 +87,8 @@ export function SketchOverlay({ pointer }: { pointer: SketchPointer }) {
   const sessions = useService(sketchSessionService)
   const frontend = useService(kclFrontendService)
   const projection = useService(sceneProjectionService)
+  // Constrained geometry is drawn against the theme, so the drawing follows it.
+  const themes = useService(themeService)
 
   const svg = useRef<SVGSVGElement>(null)
   const viewport = useViewport(svg)
@@ -137,31 +150,101 @@ export function SketchOverlay({ pointer }: { pointer: SketchPointer }) {
     if (!drawable || !on || !where) return null
 
     const scale = projection.scaleOn(on, where, viewportSize)
-    return scale > 0 ? pickInSketch(shapes, where, 8 / scale) : null
+    // Ten pixels, as the existing app has it, converted to the plane's units so
+    // the reach is the same at any zoom.
+    return scale > 0
+      ? pickInSketch(shapes, where, SKETCH_HOVER_DISTANCE_PX / scale)
+      : null
   }
 
   const hovered = hoverIn(drawing, plane, size)
 
   const tool = sessions.tool.value
-  const preview = drawable && tool ? previewOf(tool, pointer.at.value) : null
+  const snap = pointer.snap.value
+  const preview =
+    drawable && tool
+      ? previewOf(tool, snap?.position ?? pointer.at.value)
+      : null
 
-  const shape = (item: SketchShape, key: string, kind: string) => {
+  /**
+   * Where the point would land, marked.
+   *
+   * A ring in the selection colour on the snapped position rather than under the
+   * pointer, which is the whole message: the click will not go where you are
+   * pointing, it will go *there*.
+   */
+  const snapAt = snap ? project(snap.position) : null
+  const snapMarker = snapAt ? (
+    <circle
+      class="zds-sketch__snap"
+      cx={snapAt.x}
+      cy={snapAt.y}
+      r={POINT_SEGMENT_RADIUS * 2}
+      stroke={SKETCH_SELECTION_COLOR}
+    />
+  ) : null
+
+  /**
+   * The axis a snap is following, drawn as a guide.
+   *
+   * An axis snap is the one target with nothing on screen to point at — the
+   * others are geometry the user can already see — so without a line it looks
+   * like the point simply refused to go where it was put.
+   */
+  const origin =
+    snap && isAxisSnapTarget(snap.target) ? project({ x: 0, y: 0 }) : null
+  const snapGuide =
+    snapAt && origin ? (
+      <line
+        class="zds-sketch__guide"
+        // From the origin to the snapped point, which by construction lies on
+        // the axis — so the line *is* the axis, as far as it is being used.
+        x1={origin.x}
+        y1={origin.y}
+        x2={snapAt.x}
+        y2={snapAt.y}
+        stroke={SKETCH_SELECTION_COLOR}
+      />
+    ) : null
+
+  const theme = themes.resolved.value === 'light' ? 'light' : 'dark'
+
+  /*
+   * Colour and width come from the ported precedence ladder rather than from
+   * CSS.
+   *
+   * They have to: which of draft, hover, selection, conflict and freedom wins is
+   * an ordered decision with five inputs, and expressing that in selectors would
+   * be re-deriving it in a language that cannot say "in this order". The
+   * stylesheet keeps what is genuinely presentational — line joins, the dash
+   * pattern, transitions — and the decisions stay in code where they were tuned.
+   */
+  const shape = (item: SketchShape, key: string, isDraft: boolean) => {
     const points = projectAll(flatten(item))
     if (!points) return null
+
+    const isHovered = hovered?.kind === 'segment' && hovered.id === item.id
 
     return (
       <path
         key={key}
         class="zds-sketch__segment"
-        data-kind={kind}
-        data-freedom={item.freedom}
-        data-construction={item.construction ? 'true' : undefined}
-        data-hovered={
-          hovered?.kind === 'segment' && hovered.id === item.id
-            ? 'true'
+        d={pathFor(points)}
+        stroke={getSegmentColor({
+          isDraft,
+          isHovered,
+          freedom: item.freedom,
+          theme,
+        })}
+        stroke-width={getSegmentLineWidth({ isHovered })}
+        // Screen-space dashes, which is what the existing app goes to the
+        // trouble of a custom shader for: a dash that scales with zoom stops
+        // reading as construction geometry.
+        stroke-dasharray={
+          item.construction
+            ? `${CONSTRUCTION_DASH_PX} ${CONSTRUCTION_GAP_PX}`
             : undefined
         }
-        d={pathFor(points)}
       />
     )
   }
@@ -170,18 +253,16 @@ export function SketchOverlay({ pointer }: { pointer: SketchPointer }) {
     const at = project(item.at)
     if (!at) return null
 
+    const isHovered = hovered?.kind === 'vertex' && hovered.id === item.id
+
     return (
       <circle
         key={`vertex-${item.id}`}
         class="zds-sketch__vertex"
-        data-freedom={item.freedom}
-        data-hovered={
-          hovered?.kind === 'vertex' && hovered.id === item.id
-            ? 'true'
-            : undefined
-        }
         cx={at.x}
         cy={at.y}
+        r={POINT_SEGMENT_RADIUS * getPointSegmentScale({ isHovered })}
+        fill={getSegmentColor({ isHovered, freedom: item.freedom, theme })}
       />
     )
   }
@@ -194,9 +275,12 @@ export function SketchOverlay({ pointer }: { pointer: SketchPointer }) {
       // KCL, which is text and is where a screen reader should be.
       aria-hidden="true"
     >
-      {drawing.shapes.map((item) => shape(item, `segment-${item.id}`, 'real'))}
-      {preview ? shape(preview, 'preview', 'preview') : null}
+      {drawing.shapes.map((item) => shape(item, `segment-${item.id}`, false))}
+      {/* The rubber band, drawn as a draft: grey, because it is not committed. */}
+      {preview ? shape(preview, 'preview', true) : null}
+      {snapGuide}
       {drawing.vertices.map(vertex)}
+      {snapMarker}
     </svg>
   )
 }

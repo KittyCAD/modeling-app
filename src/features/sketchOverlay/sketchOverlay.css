@@ -1,10 +1,11 @@
 /*
  * The sketch drawn over the scene.
  *
- * Colour says how constrained something is, which is the one thing a sketch
- * cannot show by its shape: free geometry is the ordinary state, fixed geometry
- * is finished, and a conflict is the thing to look at. Everything is a token, so
- * a theme that changes the accent changes the sketch with it.
+ * Deliberately thin. Colour, width, radius and the dash pattern are set from
+ * `src/lib/sketch/appearance.ts` — the port of the existing app's
+ * `segmentsUtils` — because which of draft, hover, selection, conflict and
+ * freedom wins is an ordered decision with five inputs, and selectors cannot say
+ * "in this order". What is left here is what is genuinely presentational.
  */
 .zds-sketch {
   position: absolute;
@@ -17,55 +18,39 @@
 
 .zds-sketch__segment {
   fill: none;
-  stroke: var(--zds-text-accent);
-  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   /* Drawn over a live video, which can be any colour behind any pixel. */
   paint-order: stroke;
 }
 
-.zds-sketch__segment[data-freedom="Fixed"] {
-  stroke: var(--zds-status-ok);
-}
-
-.zds-sketch__segment[data-freedom="Conflict"] {
-  stroke: var(--zds-status-fault);
-}
-
-.zds-sketch__segment[data-construction="true"] {
-  stroke: var(--zds-text-tertiary);
-  stroke-dasharray: 4 4;
-}
-
-/* The rubber band: the same line, said tentatively. */
-.zds-sketch__segment[data-kind="preview"] {
-  stroke-dasharray: 6 4;
-  opacity: 0.8;
-}
-
-.zds-sketch__segment[data-hovered="true"] {
-  stroke-width: 3;
-}
-
 .zds-sketch__vertex {
-  r: 3.5;
-  fill: var(--zds-surface-panel);
-  stroke: var(--zds-text-accent);
+  /* A filled dot, as the existing app draws it — not a ring. A ring reads as a
+     hole in the geometry at the size a point is drawn. */
+  stroke: none;
+}
+
+/*
+ * Where the point will actually land.
+ *
+ * A ring around the snapped position rather than a change to the point under the
+ * pointer, because the message is "not there, here".
+ */
+.zds-sketch__snap {
+  fill: none;
   stroke-width: 1.5;
 }
 
-.zds-sketch__vertex[data-freedom="Fixed"] {
-  stroke: var(--zds-status-ok);
-}
-
-.zds-sketch__vertex[data-freedom="Conflict"] {
-  stroke: var(--zds-status-fault);
-}
-
-.zds-sketch__vertex[data-hovered="true"] {
-  r: 5;
-  fill: var(--zds-text-accent);
+/*
+ * The axis a snap is following.
+ *
+ * Dashed and thin: it is a statement about alignment, not a piece of the sketch,
+ * and it must not be mistaken for a construction line.
+ */
+.zds-sketch__guide {
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: 0.8;
 }
 
 /*

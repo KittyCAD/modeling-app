@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import type { SketchDrawing, SketchShape } from '@src/lib/sketch/drawing'
-import { distanceToShape, pickInSketch } from '@src/lib/sketch/hitTest'
+import {
+  closestOnShape,
+  distanceToShape,
+  hitsInSketch,
+  pickInSketch,
+} from '@src/lib/sketch/hitTest'
 
 const line: SketchShape = {
   kind: 'line',
@@ -131,5 +136,82 @@ describe('pickInSketch', () => {
     // Which is what an edge-on plane reports, and it must read as "do not pick
     // here" rather than as a very small tolerance.
     expect(pickInSketch(drawing, { x: 5, y: 0.01 }, 0)).toBeNull()
+  })
+})
+
+describe('the tie-breaks ported from the existing app', () => {
+  /*
+   * Two points in the same place is the normal state of a closed profile, and a
+   * comparison that leaves their order to floating-point noise makes the hover
+   * flicker between them while the pointer sits still.
+   */
+  it('decides coincident points by id, not by which was found first', () => {
+    const coincident: SketchDrawing = {
+      shapes: [],
+      vertices: [
+        { id: 3, at: { x: 5, y: 5 }, freedom: 'Free' },
+        { id: 9, at: { x: 5, y: 5 }, freedom: 'Free' },
+      ],
+    }
+
+    expect(pickInSketch(coincident, { x: 5, y: 5 }, 1)?.id).toBe(9)
+    // And the other way round in the list, so it is the id deciding.
+    expect(
+      pickInSketch(
+        { ...coincident, vertices: [...coincident.vertices].reverse() },
+        { x: 5, y: 5 },
+        1
+      )?.id
+    ).toBe(9)
+  })
+
+  it('offers a spline last, under whatever its polygon covers', () => {
+    const overlapping: SketchDrawing = {
+      shapes: [
+        {
+          kind: 'polyline',
+          id: 1,
+          points: [
+            { x: 0, y: 0 },
+            { x: 10, y: 0 },
+          ],
+          construction: false,
+          freedom: 'Free',
+        },
+        { ...line, id: 2 },
+      ],
+      vertices: [],
+    }
+
+    // A control polygon covers a lot of ground that belongs to what is under it.
+    expect(
+      hitsInSketch(overlapping, { x: 5, y: 0 }, 1).map((hit) => hit.id)
+    ).toEqual([2, 1])
+  })
+
+  it('reports every candidate in reach, not just the winner', () => {
+    // A click takes the first; a snap looks for a particular kind.
+    const hits = hitsInSketch(drawing, { x: 9.8, y: 0.1 }, 1)
+    expect(hits.length).toBeGreaterThan(1)
+    expect(hits[0]?.kind).toBe('vertex')
+  })
+})
+
+describe('closestOnShape', () => {
+  it('gives the point on the shape, which is what snapping needs', () => {
+    expect(closestOnShape(line, { x: 5, y: 4 }).closest).toEqual({ x: 5, y: 0 })
+  })
+
+  it('clamps to the end rather than running off the line', () => {
+    expect(closestOnShape(line, { x: 40, y: 0 }).closest).toEqual({
+      x: 10,
+      y: 0,
+    })
+  })
+
+  it('gives a point on the rim for a circle', () => {
+    const on = closestOnShape(circle, { x: 10, y: 0 }).closest
+    expect(on.x).toBeCloseTo(5)
+    expect(on.y).toBeCloseTo(0)
   })
 })

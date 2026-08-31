@@ -5,6 +5,7 @@ import {
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
 import { commandService, commandsValueSpec } from '@src/contracts/commands'
+import { kclFrontendService } from '@src/contracts/kclFrontend'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import {
   sceneInteractionsValueSpec,
@@ -44,6 +45,8 @@ export default defineRegistryItemFactory((ctx) => {
   const interaction = createSketchInteraction({
     session: sessions,
     projection: () => ctx.services.optional(sceneProjectionService),
+    graph: () =>
+      ctx.services.optional(kclFrontendService)?.sceneGraph.value ?? null,
   })
 
   /** True once there is a sketch open with a plane to draw on. */

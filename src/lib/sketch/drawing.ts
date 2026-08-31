@@ -33,7 +33,8 @@ interface ShapeBase {
   /** The segment's id, which is what a selection or a drag is addressed to. */
   id: ApiObjectId
   construction: boolean
-  freedom: Freedom
+  /** Null when the solver has said nothing, which is drawn as unconstrained. */
+  freedom: Freedom | null
 }
 
 export type SketchShape =
