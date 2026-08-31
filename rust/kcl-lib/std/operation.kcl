@@ -1,2 +1,5 @@
+/// ```kcl
+/// x = operation::facing()
+/// ```
 @(impl = std_rust, feature_tree = false)
-export fn facing(): number() {}
+export fn facing(): number(_) {}
