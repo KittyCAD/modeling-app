@@ -1,3 +1,4 @@
+import { undoDepth } from '@codemirror/commands'
 import { type ReadonlySignal, computed, signal } from '@preact/signals'
 import type { FileBackedTextBuffer } from '@src/contracts/buffers'
 import type {
@@ -32,6 +33,19 @@ export function createProjectActionHistory(dependencies: {
   const { changeHistory, bufferForPath, depth = DEFAULT_DEPTH } = dependencies
 
   const actions = signal<readonly ProjectAction[]>([])
+
+  /**
+   * Where each action sits in each buffer's undo stack, `actionId → path → depth`.
+   *
+   * Kept beside the actions rather than on them: a `ProjectAction` is a label
+   * that gets rendered and persisted, and this is a fact about one live
+   * `EditorState` that stops being true the moment the buffer is closed.
+   */
+  const depths = new Map<string, Map<string, number>>()
+
+  const forgetDepths = (actionId: string) => {
+    depths.delete(actionId)
+  }
 
   /** True while the change history still holds rows for the action. */
   const held = (action: ProjectAction) =>
@@ -68,9 +82,57 @@ export function createProjectActionHistory(dependencies: {
        */
       if (actions.peek().some((each) => each.id === action.id)) return
 
+      /*
+       * Where the action landed in each buffer's undo stack, captured now.
+       *
+       * Now, because it can only be read from a live `EditorState` and it is only
+       * meaningful immediately after the dispatches: this runs directly after the
+       * writer finished writing, and every writer already dispatches with
+       * `isolateHistory.of('full')`, so the action owns exactly one group and this
+       * is its depth.
+       *
+       * A writer that types something between its last dispatch and this call
+       * records a depth one too low, and `undoTargetFor` then declines — Ctrl-Z
+       * falls back to the buffer, which is the safe direction to be wrong in.
+       */
+      const perPath = new Map<string, number>()
+      for (const path of action.paths) {
+        const buffer = bufferForPath(path)
+        if (buffer === undefined) continue
+        perPath.set(path, undoDepth(buffer.state.peek()))
+      }
+      depths.set(action.id, perPath)
+
       const next = [...actions.peek(), action]
-      actions.value =
+      const trimmed =
         next.length > depth ? next.slice(next.length - depth) : next
+      for (const dropped of next.slice(0, next.length - trimmed.length)) {
+        forgetDepths(dropped.id)
+      }
+      actions.value = trimmed
+    },
+
+    undoTargetFor(path, currentDepth) {
+      /*
+       * Zero means the buffer has nothing to undo — or has no history extension
+       * at all, in which case every action would match and Ctrl-Z would revert
+       * something the user cannot see the stack for. Declining is right for both.
+       */
+      if (currentDepth === 0) return null
+
+      /*
+       * The newest action *that touched this buffer*, not the newest action
+       * overall. Ctrl-Z is a question about the file somebody is looking at, and
+       * an action that changed a different file is not the answer to it — while
+       * the newest one here, undone completely, is.
+       */
+      for (let at = actions.value.length - 1; at >= 0; at -= 1) {
+        const action = actions.value[at]
+        if (!action.paths.includes(path)) continue
+        if (depths.get(action.id)?.get(path) !== currentDepth) return null
+        return held(action) ? action : null
+      }
+      return null
     },
 
     canRevert(actionId): ReadonlySignal<boolean> {
@@ -120,12 +182,14 @@ export function createProjectActionHistory(dependencies: {
        * nothing.
        */
       actions.value = actions.peek().filter((each) => each.id !== actionId)
+      forgetDepths(actionId)
 
       return outcome
     },
 
     forget(actionId) {
       actions.value = actions.peek().filter((each) => each.id !== actionId)
+      forgetDepths(actionId)
     },
   }
 }

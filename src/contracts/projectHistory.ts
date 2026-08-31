@@ -38,13 +38,9 @@ export interface ProjectAction {
  * of the edits would be a second source of truth whose only distinctive ability
  * is disagreeing with the first.
  *
- * **Not bound to `Ctrl-Z`.** Doing that needs an extension in front of
- * `historyKeymap` deciding, per keystroke, whether the newest project action
- * outranks the buffer's own newest edit — a keymap precedence change affecting
- * every buffer, in a codebase where "text-editing chords belong to whoever is
- * typing" is a stated rule. The palette and an explicit list are the same
- * capability without that risk, and are already better than undoing a three-file
- * operation one pane at a time.
+ * **Bound to `Ctrl-Z`**, through `undoTargetFor` — see the capability in
+ * `editorCapabilities/projectUndo.ts` for how the precedence question is
+ * answered without reading CodeMirror's history internals.
  */
 export interface ProjectActionHistory {
   /** Newest last, the order they were applied. */
@@ -55,6 +51,21 @@ export interface ProjectActionHistory {
   record(action: ProjectAction): void
   /** Whether an action's changes are still exactly undoable. */
   canRevert(actionId: string): ReadonlySignal<boolean>
+  /**
+   * The action `Ctrl-Z` should undo in this buffer, or null to let the buffer
+   * undo its own newest edit.
+   *
+   * Answered by comparing `undoDepth` against the depth recorded when the action
+   * was applied. That is the whole precedence rule, and it is a question about
+   * *position in the undo stack* rather than about time: the buffer's newest
+   * transaction is the wrong thing to ask about, because undoing the user's own
+   * typing is itself a transaction, and after it the action is once again the
+   * next thing to undo.
+   *
+   * Not a signal. It is asked once per keystroke against the state that keystroke
+   * sees, and a stale answer here would revert the wrong thing.
+   */
+  undoTargetFor(path: string, undoDepth: number): ProjectAction | null
   /**
    * Undo one action across every file it touched.
    *

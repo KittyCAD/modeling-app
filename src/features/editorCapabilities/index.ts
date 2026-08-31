@@ -15,6 +15,7 @@ import {
   keybindingScopesValueSpec,
   keybindingService,
 } from '@src/contracts/keybindings'
+import { projectHistoryService } from '@src/contracts/projectHistory'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { selectionService } from '@src/contracts/selection'
 import {
@@ -29,6 +30,7 @@ import {
   createKeymapScopeCapability,
 } from '@src/features/editorCapabilities/keymapScope'
 import { languageCapability } from '@src/features/editorCapabilities/language'
+import { createProjectUndoCapability } from '@src/features/editorCapabilities/projectUndo'
 import { createPersistenceCapability } from '@src/features/editorCapabilities/persistence'
 import { createSelectionRevealCapability } from '@src/features/editorCapabilities/selectionReveal'
 import { zooEditorTheme } from '@src/features/editorCapabilities/theme'
@@ -77,6 +79,25 @@ export default defineRegistryItemFactory((ctx) => {
     keys: () => ctx.services.get(keybindingService),
   })
 
+  /**
+   * One Ctrl-Z for a change that spanned files.
+   *
+   * Optional on both sides: a build with no project history leaves every buffer
+   * with the ordinary undo it always had, and a buffer belonging to no session
+   * has no project-relative path to look an action up by.
+   */
+  const projectUndo = createProjectUndoCapability({
+    history: () => ctx.services.optional(projectHistoryService) ?? null,
+    relativePathFor: (absolute) => {
+      const session = ctx.services.get(projectSessionService).current.peek()
+      if (session === null || session === undefined) return null
+      const buffer = session.buffers
+        .peek()
+        .find((each) => each.path.peek() === absolute)
+      return buffer === undefined ? null : session.relativePathFor(buffer)
+    },
+  })
+
   return {
     item: defineRuntimeRegistryItem({
       id: 'editorCapabilities',
@@ -96,6 +117,7 @@ export default defineRegistryItemFactory((ctx) => {
           textEntry: true,
         }),
 
+        provide(editorCapabilitiesValueSpec, projectUndo),
         provide(editorCapabilitiesValueSpec, keymapScope),
         provide(editorCapabilitiesValueSpec, focusRequestCapability),
         provide(editorCapabilitiesValueSpec, attributionCapability),

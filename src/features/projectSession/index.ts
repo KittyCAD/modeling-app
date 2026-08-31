@@ -14,6 +14,7 @@ import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { fileWatcherService } from '@src/contracts/fileWatcher'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
+import { projectHistoryService } from '@src/contracts/projectHistory'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
 import { unitsService } from '@src/contracts/units'
 import { openDefaultFile } from '@src/features/projectSession/openDefaultFile'
@@ -21,8 +22,9 @@ import {
   type ProjectSession,
   projectSessionService,
 } from '@src/contracts/projectSession'
-import { redo, undo } from '@codemirror/commands'
+import { redo, undo, undoDepth } from '@codemirror/commands'
 import { createProjectSession } from '@src/features/projectSession/createProjectSession'
+import { projectActionToUndo } from '@src/lib/collab/projectUndo'
 
 /**
  * Owns which project is open.
@@ -161,11 +163,32 @@ export default defineRegistryItemFactory((ctx) => {
           icon: 'arrowLeft',
           shortcut: '⌘Z',
           enabled: computed(() => current.value?.activeBuffer.value !== null),
-          // Routed through the buffer, not a view: undo has to work whether or
-          // not the editor pane happens to be mounted.
+          /*
+           * Routed through the buffer, not a view: undo has to work whether or
+           * not the editor pane happens to be mounted.
+           *
+           * And it asks the project's undo stack first, for the same reason the
+           * editor capability does — otherwise `⌘Z` would undo a three-file
+           * operation whole with the editor focused and a third of it from the
+           * feature tree, which is a worse rule than either behaviour alone.
+           */
           run: () => {
-            const buffer = current.peek()?.activeBuffer.peek()
-            buffer?.runCommand(undo)
+            const session = current.peek()
+            const buffer = session?.activeBuffer.peek()
+            if (buffer === null || buffer === undefined) return
+
+            const history = ctx.services.optional(projectHistoryService) ?? null
+            const action = projectActionToUndo({
+              history,
+              path: session?.relativePathFor(buffer) ?? null,
+              undoDepth: undoDepth(buffer.state.peek()),
+            })
+            if (action !== null && history !== null) {
+              history.revert(action.id)
+              return
+            }
+
+            buffer.runCommand(undo)
           },
         }),
         /**
