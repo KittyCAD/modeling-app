@@ -26,7 +26,8 @@ import {
 import { bufferOrigin, requestFocus } from '@src/lib/buffers/annotations'
 import { sourceRangeToUtf16 } from '@src/lib/kcl/sourceRange'
 import { Fragment, type JSX } from 'preact'
-import { useState } from 'preact/hooks'
+import { useRef, useState } from 'preact/hooks'
+import { slotAtY } from '@src/features/featureTree/rollbackSlot'
 import './featureTree.css'
 
 function FeatureNode({
@@ -36,8 +37,7 @@ function FeatureNode({
   reveal,
   edit,
   inactive = false,
-  onDragOver,
-  onDrop,
+  slot,
 }: {
   node: OperationTreeNode
   source: string
@@ -45,8 +45,14 @@ function FeatureNode({
   reveal: (node: OperationTreeNode) => void
   edit: (node: OperationTreeNode) => void
   inactive?: boolean
-  onDragOver?: JSX.DragEventHandler<HTMLLIElement>
-  onDrop?: JSX.DragEventHandler<HTMLLIElement>
+  /**
+   * Which gap in the list sits above this row, for measuring a drag.
+   *
+   * Top-level rows only. The bar goes between the operations of the executing
+   * file, not inside a module's expansion, so a nested row has no slot and is
+   * deliberately not measured.
+   */
+  slot?: number
 }) {
   // Imported modules are useful context but can contain whole models. Folding
   // them initially keeps the executing file's own timeline in view; structural
@@ -86,8 +92,7 @@ function FeatureNode({
       <li
         class="zds-feature-tree__node"
         data-inactive={inactive ? 'true' : undefined}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
+        data-slot={slot}
       >
         <div
           class="zds-feature-tree__row zds-feature-tree__row--branch"
@@ -137,8 +142,7 @@ function FeatureNode({
     <li
       class="zds-feature-tree__node"
       data-inactive={inactive ? 'true' : undefined}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
+      data-slot={slot}
     >
       <button
         type="button"
@@ -159,22 +163,19 @@ function SourceFeatureNode({
   node,
   reveal,
   inactive,
-  onDragOver,
-  onDrop,
+  slot,
 }: {
   node: SourceOutlineNode
   reveal: (node: SourceOutlineNode) => void
   inactive: boolean
-  onDragOver?: JSX.DragEventHandler<HTMLLIElement>
-  onDrop?: JSX.DragEventHandler<HTMLLIElement>
+  slot: number
 }) {
   return (
     <li
       class="zds-feature-tree__node"
       data-inactive={inactive ? 'true' : undefined}
       data-source-outline="true"
-      onDragOver={onDragOver}
-      onDrop={onDrop}
+      data-slot={slot}
     >
       <button
         type="button"
@@ -193,16 +194,30 @@ function SourceFeatureNode({
   )
 }
 
+/**
+ * The rollback bar, dragged with the pointer rather than with HTML5 drag.
+ *
+ * It was a `draggable` element with drop targets on each row, and that was the
+ * wrong tool twice over. The browser insisted on a drag *image* — a 1x1 canvas
+ * was offered and refused, because `setDragImage` wants an element that is in the
+ * document, so what appeared instead was the generic broken-image ghost. And a
+ * drop only counts over an element that called `preventDefault` on every
+ * `dragover`, which the bar's own slot never did: releasing it where you picked
+ * it up, the most natural thing to do, did nothing at all.
+ *
+ * A pointer drag has neither problem, because neither is a thing pointer events
+ * have. It is also what this gesture *is*: sliding a marker along a list, which
+ * is the same shape as the resize handles and not the same shape as moving an
+ * object from one container to another.
+ */
 function RollbackBar({
   preview,
   dragging,
-  onDragStart,
-  onDragEnd,
+  onPointerDown,
 }: {
   preview: boolean
   dragging?: boolean
-  onDragStart?: JSX.DragEventHandler<HTMLButtonElement>
-  onDragEnd?: JSX.DragEventHandler<HTMLButtonElement>
+  onPointerDown?: JSX.PointerEventHandler<HTMLButtonElement>
 }) {
   const tooltip = useTooltip<HTMLButtonElement>({
     content: 'Rollback bar',
@@ -232,10 +247,8 @@ function RollbackBar({
         type="button"
         class="zds-feature-tree__rollback"
         data-dragging={dragging ? 'true' : undefined}
-        draggable
         aria-label="Rollback bar"
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
+        onPointerDown={onPointerDown}
       >
         <span />
       </button>
@@ -271,6 +284,7 @@ export function FeatureTree() {
       sessions.current.value?.executingBuffer.value?.state.value.selection.main
         .head ?? null
   )
+  const list = useRef<HTMLUListElement>(null)
   const [draggingRollback, setDraggingRollback] = useState(false)
   const [previewSlot, setPreviewSlot] = useState<number | null>(null)
 
@@ -410,74 +424,106 @@ export function FeatureTree() {
     ? (previewSlot ?? actualSlot)
     : actualSlot
 
-  const beginRollbackDrag: JSX.DragEventHandler<HTMLButtonElement> = (
-    event
-  ) => {
-    const transfer = event.dataTransfer
-    if (!transfer) {
-      return
-    }
-    transfer.setData('application/zoo-rollback-bar', 'true')
-    transfer.effectAllowed = 'move'
-    const dragImage = document.createElement('canvas')
-    dragImage.width = 1
-    dragImage.height = 1
-    transfer.setDragImage(dragImage, 0, 0)
-    setDraggingRollback(true)
-    setPreviewSlot(actualSlot)
-  }
-
-  const endRollbackDrag = () => {
-    setDraggingRollback(false)
-    setPreviewSlot(null)
-  }
-
-  const previewRollbackAt = (
-    event: JSX.TargetedDragEvent<HTMLLIElement>,
-    index: number
-  ) => {
-    if (!draggingRollback) {
-      return
-    }
-    event.preventDefault()
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'move'
-    }
-    const bounds = event.currentTarget.getBoundingClientRect()
-    setPreviewSlot(
-      event.clientY < bounds.top + bounds.height / 2 ? index : index + 1
-    )
-  }
-
-  const dropRollback = (
-    event: JSX.TargetedDragEvent<HTMLLIElement>,
-    index: number
-  ) => {
-    if (!draggingRollback) {
-      return
-    }
-    event.preventDefault()
+  /**
+   * Commit the bar to a slot, by rewriting the file.
+   *
+   * Refuses when the buffer has moved on from the program the tree was built
+   * from: the slot means "before this operation", and an operation's position is
+   * a fact about text that may have been edited since.
+   */
+  const commitRollback = (slot: number) => {
     const session = sessions.current.peek()
     const buffer = session?.executingBuffer.peek()
-    if (!buffer || buffer.text.peek() !== program.source) {
-      endRollbackDrag()
-      return
-    }
-    const slot = previewSlot ?? index
+    if (!buffer || buffer.text.peek() !== program.source) return
+
     const insertion =
       slot >= nodes.length ? null : nodes[slot].rollbackInsertion
     const changes = moveRollbackBoundary(program.source, insertion)
-    if (changes.length > 0) {
-      buffer.dispatch({
-        changes: changes.map((change) => ({
-          from: change.from,
-          to: change.to,
-          insert: change.insert,
-        })),
-        annotations: bufferOrigin.of('semantic'),
-      })
+    if (changes.length === 0) return
+
+    buffer.dispatch({
+      changes: changes.map((change) => ({
+        from: change.from,
+        to: change.to,
+        insert: change.insert,
+      })),
+      annotations: bufferOrigin.of('semantic'),
+    })
+  }
+
+  /**
+   * Slide the bar.
+   *
+   * The rows are measured on every move rather than once at the start, because
+   * the list reflows underneath the drag: moving the bar greys out the
+   * operations past it, and the preview slot inserts a row. Cached geometry
+   * would drift from what is on screen exactly as far as the bar had travelled.
+   */
+  /**
+   * Slide the bar.
+   *
+   * Listened for on the window rather than on the handle, and not through pointer
+   * capture. Both would normally be the tidier choice — the resize handles use
+   * them — but this drag *re-renders the list it is dragging through*: the
+   * preview slot inserts a row and the operations past the bar grey out. A
+   * listener bound to an element Preact may replace is a drag that dies silently
+   * half way down the list.
+   *
+   * The rows are measured on every move for the same reason. Cached geometry
+   * would drift from what is on screen by exactly as far as the bar had
+   * travelled.
+   */
+  const beginRollbackDrag: JSX.PointerEventHandler<HTMLButtonElement> = (
+    event
+  ) => {
+    if (event.button !== 0) return
+    event.preventDefault()
+
+    let slot = actualSlot
+    setDraggingRollback(true)
+    setPreviewSlot(slot)
+
+    const finish = (commit: boolean) => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onCancel)
+      window.removeEventListener('keydown', onKey)
+
+      setDraggingRollback(false)
+      setPreviewSlot(null)
+      if (commit) commitRollback(slot)
     }
-    endRollbackDrag()
+
+    const onMove = (move: PointerEvent) => {
+      const measured = list.current
+        ? Array.from(list.current.querySelectorAll<HTMLElement>('[data-slot]'))
+        : []
+
+      slot = slotAtY(
+        measured.map((row) => {
+          const bounds = row.getBoundingClientRect()
+          return {
+            index: Number(row.dataset.slot),
+            top: bounds.top,
+            height: bounds.height,
+          }
+        }),
+        move.clientY
+      )
+      setPreviewSlot(slot)
+    }
+
+    const onUp = () => finish(true)
+    const onCancel = () => finish(false)
+    const onKey = (key: KeyboardEvent) => {
+      // A drag you cannot abort is a trap, and HTML5 drag gave this away free.
+      if (key.key === 'Escape') finish(false)
+    }
+
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onCancel)
+    window.addEventListener('keydown', onKey)
   }
 
   if (nodes.length === 0 && !rollback) {
@@ -486,7 +532,7 @@ export function FeatureTree() {
 
   return (
     <nav class="zds-feature-tree" aria-label="Features">
-      <ul class="zds-feature-tree__list">
+      <ul class="zds-feature-tree__list" ref={list}>
         {nodes.map((entry, index) => (
           <Fragment key={entry.key}>
             {actualSlot === index ? (
@@ -494,8 +540,7 @@ export function FeatureTree() {
                 key="rollback"
                 preview={false}
                 dragging={draggingRollback}
-                onDragStart={beginRollbackDrag}
-                onDragEnd={endRollbackDrag}
+                onPointerDown={beginRollbackDrag}
               />
             ) : null}
             {draggingRollback &&
@@ -512,8 +557,7 @@ export function FeatureTree() {
                 reveal={reveal}
                 edit={edit}
                 inactive={index >= displayedSlot}
-                onDragOver={(event) => previewRollbackAt(event, index)}
-                onDrop={(event) => dropRollback(event, index)}
+                slot={index}
               />
             ) : (
               <SourceFeatureNode
@@ -521,8 +565,7 @@ export function FeatureTree() {
                 node={entry.node}
                 reveal={revealSource}
                 inactive={index >= displayedSlot}
-                onDragOver={(event) => previewRollbackAt(event, index)}
-                onDrop={(event) => dropRollback(event, index)}
+                slot={index}
               />
             )}
           </Fragment>
@@ -531,8 +574,7 @@ export function FeatureTree() {
           <RollbackBar
             preview={false}
             dragging={draggingRollback}
-            onDragStart={beginRollbackDrag}
-            onDragEnd={endRollbackDrag}
+            onPointerDown={beginRollbackDrag}
           />
         ) : null}
         {draggingRollback &&
