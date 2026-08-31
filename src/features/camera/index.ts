@@ -5,7 +5,10 @@ import {
 } from '@kittycad/registry'
 import { computed, effect } from '@preact/signals'
 import { commandsValueSpec } from '@src/contracts/commands'
+import { engineConnectionService } from '@src/contracts/engine'
+import { executionCoordinatorService } from '@src/contracts/execution'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
+import { projectSessionService } from '@src/contracts/projectSession'
 import {
   cameraDriverService,
   type StandardView,
@@ -81,6 +84,53 @@ export default defineRegistryItemFactory((ctx) => {
    * renderer that loses its scene is the only thing that knows it happened, so
    * restating is its job, not this effect's.
    */
+  /**
+   * Frame a model the first time it is drawn.
+   *
+   * The engine puts a new scene in front of its own default camera, which is not
+   * a view of anything in particular — so the first thing somebody sees of a file
+   * is geometry at an arbitrary angle and distance. The isometric reset is the
+   * view this app already calls the right one to start from, so it is the one to
+   * arrive at.
+   *
+   * Once per buffer *per connection*, which is one rule covering two cases: a
+   * file opened for the first time gets framed, and a file whose scene was
+   * rebuilt from scratch by a reconnection gets framed again — because a
+   * reconnection leaves the engine back at its own default, and the camera the
+   * user had chosen is gone with the session that held it.
+   *
+   * Never on a later run of the same file. Editing is the case where the camera
+   * must be left exactly alone: somebody lining up a feature does not want the
+   * view snapping back every time the program re-executes.
+   */
+  let stopFraming = () => {}
+  queueMicrotask(() => {
+    const framed = new Set<string>()
+
+    stopFraming = effect(() => {
+      const connection = ctx.services.optional(engineConnectionService)
+      if (connection?.state.value.status !== 'connected') {
+        // A fresh connection is a fresh scene, so everything is unframed again.
+        framed.clear()
+        return
+      }
+
+      const buffer = ctx.services.optional(projectSessionService)?.current.value
+        ?.executingBuffer.value
+      if (!buffer || framed.has(buffer.id)) return
+
+      const state = ctx.services
+        .optional(executionCoordinatorService)
+        ?.stateFor(buffer.id).value
+      // Only once it has drawn something. Framing a scene that failed to build
+      // would point the camera at whatever the last successful run left.
+      if (state?.status !== 'succeeded') return
+
+      framed.add(buffer.id)
+      driver()?.standardView('isometric')
+    })
+  })
+
   let stopStating = () => {}
   queueMicrotask(() => {
     stopStating = effect(() => {
@@ -92,7 +142,10 @@ export default defineRegistryItemFactory((ctx) => {
   return {
     item: defineRuntimeRegistryItem({
       id: 'camera',
-      dispose: () => stopStating(),
+      dispose: () => {
+        stopStating()
+        stopFraming()
+      },
       provides: [
         ...cameraSettings.map((setting) => provide(settingsValueSpec, setting)),
 
