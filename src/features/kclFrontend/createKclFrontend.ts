@@ -282,6 +282,27 @@ export function createKclFrontend(
       return outcomeOf(raw, '')
     },
 
+    async editConstraintValue(
+      sketchId,
+      constraintId,
+      expression,
+      options = {}
+    ) {
+      const available = await ready()
+      if (!available) throw new Error('KCL is not loaded yet.')
+
+      const raw = await available.wasm.edit_constraint_value(
+        JSON.stringify(VERSION),
+        JSON.stringify(sketchId),
+        JSON.stringify(constraintId),
+        expression,
+        available.settings,
+        options.checkpoint ?? true
+      )
+
+      return outcomeOf(raw, '')
+    },
+
     async deleteObjects(sketchId, objects) {
       const available = await ready()
       if (!available) throw new Error('KCL is not loaded yet.')

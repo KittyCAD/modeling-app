@@ -94,3 +94,27 @@ export function suffixForUnitName(name: string | null): NumericSuffix | null {
       return null
   }
 }
+
+/**
+ * A measurement as a person reads it.
+ *
+ * Degrees get their symbol, because an angle without one reads as a length.
+ * Lengths get the bare number: the sketch is written in the file's own unit, so
+ * repeating it on every label says the same thing over and over — and the label
+ * is edited as a KCL *expression*, where a stray `mm` would change the meaning.
+ */
+export function formatMeasure(
+  value: number,
+  units: NumericSuffix | string
+): string {
+  const shown = Number.isInteger(value) ? `${value}` : `${value}`
+  return units === 'Deg' ? `${shown}°` : shown
+}
+
+/**
+ * The same measurement, as the text that would produce it.
+ *
+ * What goes into an edit field, which is not always what is shown: a degree
+ * symbol is for reading, and typing it back into the file would not parse.
+ */
+export const editableMeasure = (value: number): string => `${value}`

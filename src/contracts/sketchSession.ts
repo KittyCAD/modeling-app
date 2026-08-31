@@ -169,6 +169,25 @@ export interface SketchSessionService {
   applyConstraint(tool: ConstraintToolId): void
 
   /**
+   * Dimension what is selected.
+   *
+   * Exactly two things, and what they are decides what the dimension is: two
+   * points give their separation, a point and a line the distance between them,
+   * two parallel lines their separation, and two lines that cross the angle
+   * between them. The value is measured off the geometry as it is now, because
+   * that is what applying a dimension means — *this* distance, from here on.
+   */
+  applyDimension(): void
+  /**
+   * Change what a dimension says.
+   *
+   * An expression rather than a number, because that is what goes into the file:
+   * `2 * width` is as valid as `40`, and being able to type the second and later
+   * edit it into the first is how a sketch becomes parametric.
+   */
+  setDimension(constraintId: ApiObjectId, expression: string): void
+
+  /**
    * Delete what is selected.
    *
    * Segments and constraints both, because both are selectable and both are

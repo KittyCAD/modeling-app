@@ -23,6 +23,7 @@ import {
 } from '@src/features/sceneToolbar/modes'
 import { createSketchInteraction } from '@src/features/sketchOverlay/createSketchInteraction'
 import { SketchScene } from '@src/features/sketchOverlay/SketchScene'
+import { SketchAnnotations } from '@src/features/sketchOverlay/SketchAnnotations'
 import { SketchProblem } from '@src/features/sketchOverlay/SketchProblem'
 import { CONSTRAINT_TOOLS, matchConstraint } from '@src/lib/sketch/constraints'
 import { SKETCH_TOOLS, type SketchToolId } from '@src/lib/sketch/tools'
@@ -169,6 +170,22 @@ export default defineRegistryItemFactory((ctx) => {
         }),
 
         /**
+         * Constraints and dimensions, as DOM over the scene.
+         *
+         * A second item rather than part of the overlay, because it is a
+         * different kind of thing: the overlay is a canvas that takes no pointer
+         * events, and these are buttons and fields that must. In the same zone,
+         * so they sit over the geometry they annotate.
+         */
+        provide(sceneItemsValueSpec, {
+          id: 'sketch.annotations',
+          zone: 'fill',
+          order: 1,
+          visible: drawable,
+          render: () => <SketchAnnotations />,
+        }),
+
+        /**
          * Why a sketch would not open.
          *
          * At an edge rather than in the fill zone, because it has a button and
@@ -218,6 +235,41 @@ export default defineRegistryItemFactory((ctx) => {
 
         ...toolContributions,
         ...constraintContributions,
+
+        /**
+         * Dimension what is selected.
+         *
+         * Beside the constraints rather than in the group, because it is the one
+         * everybody reaches for and because what it produces is different in
+         * kind: a value that can be typed over afterwards.
+         */
+        provide(commandsValueSpec, {
+          id: 'sketch.dimension',
+          title: 'Dimension',
+          category: 'Sketch',
+          icon: 'dimension',
+          description:
+            'Constrain a distance or an angle between two selected things.',
+          enabled: computed(
+            () => (sessions()?.selection.value.length ?? 0) === 2
+          ),
+          run: () => sessions()?.applyDimension(),
+        }),
+
+        provide(toolbarItemsValueSpec, {
+          kind: 'command',
+          id: 'sketch.dimension',
+          mode: SKETCHING_MODE,
+          section: 'constrain',
+          order: 20,
+          commandId: 'sketch.dimension',
+        }),
+
+        provide(keybindingsValueSpec, {
+          keystrokes: ['d'],
+          commandId: 'sketch.dimension',
+          scopes: [SKETCHING_SCOPE],
+        }),
 
         /**
          * Escape, one step at a time.

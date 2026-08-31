@@ -32,6 +32,7 @@ import type {
 import { objectAt, sketchIdAt, sketchRanges } from '@src/lib/sketch/sceneGraph'
 import { sketchIdIn, sketchPlaneSource } from '@src/lib/sketch/sketchPlane'
 import { constraintToolInfo, constraintsFor } from '@src/lib/sketch/constraints'
+import { dimensionFor } from '@src/lib/sketch/dimensions'
 import { planDrag } from '@src/lib/sketch/drag'
 import { buildRectangle } from '@src/lib/sketch/rectangle'
 import {
@@ -474,6 +475,19 @@ export function createSketchSession(
         return
       }
 
+      case 'dimension': {
+        const outcome = await api.editConstraintValue(
+          session.sketchId,
+          action.constraintId,
+          action.expression,
+          { checkpoint: true }
+        )
+        noteIds(outcome)
+        if (outcome.problem) error.value = outcome.problem
+        write(outcome)
+        return
+      }
+
       case 'discard': {
         const constraintIds = action.constraintIds ?? []
         if (action.segmentIds.length === 0 && constraintIds.length === 0) return
@@ -812,6 +826,29 @@ export function createSketchSession(
       }
 
       run([{ kind: 'constrain', constraints }])
+    },
+
+    applyDimension() {
+      const api = frontend()
+      const session = open.peek()
+      const graph = api?.sceneGraph.peek()
+      if (!api || !session || !graph) return
+
+      const dimension = dimensionFor(graph, selection.peek(), units())
+      if (!dimension) {
+        error.value =
+          'Select two points, a point and a line, or two lines to dimension.'
+        return
+      }
+
+      run([{ kind: 'constrain', constraints: [dimension.constraint] }])
+    },
+
+    setDimension(constraintId, expression) {
+      const session = open.peek()
+      if (!session) return
+
+      run([{ kind: 'dimension', constraintId, expression }])
     },
 
     deleteSelection() {

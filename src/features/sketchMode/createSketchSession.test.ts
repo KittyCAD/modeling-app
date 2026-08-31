@@ -256,6 +256,10 @@ const setup = (
         ...(options.renumbers ? { invalidatesIds: true } : {}),
       } as never
     }),
+    editConstraintValue: vi.fn(async () => {
+      calls.push('editConstraintValue')
+      return drawnOutcome() as never
+    }),
     addConstraint: vi.fn(async () => {
       calls.push('addConstraint')
       return {
@@ -1245,6 +1249,67 @@ describe('constraining a selection', () => {
      * already cannot be solved.
      */
     expect(app.frontend.addConstraint).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('dimensioning a selection', () => {
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  it('measures the selection and writes the constraint', async () => {
+    const app = setup()
+    await app.session.enter()
+    // Points 0 at the origin and 1 at (0,0) in the fixture are coincident, so
+    // dimension the two ends of the second line instead: (5,5) to (9,5).
+    app.session.select(3)
+    app.session.select(4, { add: true })
+
+    app.session.applyDimension()
+    await vi.waitFor(() =>
+      expect(app.frontend.addConstraint).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addConstraint).toHaveBeenCalledWith(
+      0,
+      expect.objectContaining({
+        type: 'Distance',
+        segments: [3, 4],
+        distance: { value: 4, units: 'Mm' },
+      }),
+      { checkpoint: true }
+    )
+  })
+
+  it('says what to select when the selection is not dimensionable', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.select(3)
+
+    app.session.applyDimension()
+    await settled()
+
+    expect(app.frontend.addConstraint).not.toHaveBeenCalled()
+    expect(app.session.error.value).toMatch(/two points/)
+  })
+
+  /*
+   * An expression, not a number: dimensions are written into the KCL, so the
+   * value can be `2 * width` as easily as `40`.
+   */
+  it('sets a dimension from an expression', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.setDimension(7, '2 * width')
+    await vi.waitFor(() =>
+      expect(app.frontend.editConstraintValue).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.editConstraintValue).toHaveBeenCalledWith(
+      0,
+      7,
+      '2 * width',
+      { checkpoint: true }
+    )
   })
 })
 

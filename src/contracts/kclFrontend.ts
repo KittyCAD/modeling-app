@@ -186,6 +186,21 @@ export interface KclFrontendService {
     options?: { checkpoint?: boolean }
   ): Promise<SketchOutcome>
 
+  /**
+   * Change what a dimension says, and re-solve.
+   *
+   * The value is a KCL *expression* rather than a number, which is the whole
+   * point of dimensions being written into the file: `2 * width` is as valid as
+   * `40`, and typing the second and later editing it into the first is how a
+   * sketch becomes parametric.
+   */
+  editConstraintValue(
+    sketchId: ApiObjectId,
+    constraintId: ApiObjectId,
+    expression: string,
+    options?: { checkpoint?: boolean }
+  ): Promise<SketchOutcome>
+
   /** Remove geometry — an abandoned draft, most often. */
   deleteObjects(
     sketchId: ApiObjectId,

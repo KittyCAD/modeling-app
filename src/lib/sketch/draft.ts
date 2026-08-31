@@ -202,6 +202,13 @@ export type DraftAction =
    */
   | { kind: 'constrain'; constraints: readonly ApiConstraint[] }
   /**
+   * Change what a dimension says.
+   *
+   * An expression, not a number: dimensions are written into the KCL, so the
+   * value can be `2 * width` as easily as `40`.
+   */
+  | { kind: 'dimension'; constraintId: ApiObjectId; expression: string }
+  /**
    * Take geometry out of the sketch.
    *
    * A draft being abandoned, most often — but the same request deletes a
