@@ -12,6 +12,23 @@ const ELAPSED_TICK_MS = 1_000
 const formatCredits = (value: number) =>
   value >= 10_000 ? `${Math.round(value / 1_000)}k` : value.toLocaleString()
 
+const formatMoney = (value: number) =>
+  value.toLocaleString(undefined, {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 2,
+  })
+
+/**
+ * Usage as credits, at one credit a minute.
+ *
+ * The existing app's own estimate reduces to exactly this: its multiply and
+ * divide by the credit price cancel, leaving elapsed minutes subtracted from the
+ * credit balance. So credits are minute-denominated there, and matching it is
+ * the only way for these two numbers to be about the same thing.
+ */
+const estimatedCredits = (ms: number) => ms / 60_000
+
 function formatElapsed(ms: number): string {
   const total = Math.max(0, Math.round(ms / 1_000))
   const minutes = Math.floor(total / 60)
@@ -86,6 +103,7 @@ export function CreditsField() {
   const credits = useService(creditsService)
 
   const consumers = useComputed(() => credits.consumers.value)
+  const usage = useComputed(() => credits.usage.value)
   const spending = useComputed(() => credits.spending.value)
   const balance = useComputed(() => credits.balance.value)
   const state = useComputed(() => credits.state.value)
@@ -113,10 +131,27 @@ export function CreditsField() {
     return current.monthlyRemaining + current.stableRemaining
   })
 
+  /**
+   * Depleted, and therefore charging.
+   *
+   * Once the pools are empty "0 remaining" has stopped being the useful number
+   * and the amount accruing has started, so the field changes what it counts.
+   */
+  const depleted = useComputed(
+    () => !unlimited.value && remaining.value !== null && remaining.value <= 0
+  )
+
+  const due = useComputed(() => balance.value?.totalDue ?? null)
+
   const summary = useComputed(() => {
     if (unlimited.value) return '∞'
     if (state.value === 'loading') return '…'
     if (remaining.value === null) return '—'
+    if (depleted.value) {
+      // Absent is not zero: the API only sends the amount when asked, so a
+      // missing figure says "depleted" rather than claiming nothing is owed.
+      return due.value === null ? 'depleted' : formatMoney(due.value)
+    }
     return formatCredits(remaining.value)
   })
 
@@ -128,6 +163,11 @@ export function CreditsField() {
         : 'Unlimited credits'
     }
     if (remaining.value === null) return 'Zoo credit balance'
+    if (depleted.value) {
+      return due.value === null
+        ? 'Your credits are used up. Further usage is billed.'
+        : `Your credits are used up. ${formatMoney(due.value)} owed so far.`
+    }
     const count = consumers.value.length
     if (count === 0) return 'Zoo credit balance'
     return `${count} ${count === 1 ? 'conversation' : 'conversations'} spending credits`
@@ -170,6 +210,16 @@ export function CreditsField() {
                 <span>Carried over</span>
                 <span>{balance.value.stableRemaining.toLocaleString()}</span>
               </div>
+              {depleted.value ? (
+                <div class="zds-credits__pool zds-credits__pool--due">
+                  <span>Owed</span>
+                  <span>
+                    {due.value === null
+                      ? 'not reported'
+                      : formatMoney(due.value)}
+                  </span>
+                </div>
+              ) : null}
               <p class="zds-credits__asof">
                 as of {formatAsOf(balance.value.fetchedAt, now)}
               </p>
@@ -201,6 +251,40 @@ export function CreditsField() {
         <p class="zds-credits__idle">Nothing is spending credits.</p>
       ),
     },
+    /*
+     * What each conversation has cost, this session.
+     *
+     * Separate from "spending now" because it outlives it: "what has this
+     * conversation used" is asked after it has gone quiet at least as often as
+     * during. Only shown once there is something to report.
+     */
+    ...(usage.value.length > 0
+      ? [
+          {
+            id: 'usage',
+            label: 'Used this session',
+            content: (
+              <div class="zds-credits__consumers">
+                {usage.value.map((entry) => (
+                  <div class="zds-credits__row" key={entry.groupId}>
+                    <StatusDot
+                      tone={entry.active ? 'busy' : 'idle'}
+                      label={entry.active ? 'Spending' : 'Idle'}
+                    />
+                    <span class="zds-credits__what">{entry.label}</span>
+                    <span class="zds-credits__elapsed">
+                      {`≈${estimatedCredits(entry.totalMs).toFixed(1)}`}
+                    </span>
+                  </div>
+                ))}
+                <p class="zds-credits__asof">
+                  estimated, from how long each held the service busy
+                </p>
+              </div>
+            ),
+          },
+        ]
+      : []),
   ]
 
   return (

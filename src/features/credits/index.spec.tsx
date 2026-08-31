@@ -127,6 +127,7 @@ describe('credits feature', () => {
     consumers.value = [
       {
         id: 'c1:t1',
+        groupId: 'c1',
         kind: 'zookeeper.conversation',
         label: 'Conversation 1',
         project: 'bracket',

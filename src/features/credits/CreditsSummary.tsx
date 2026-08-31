@@ -23,6 +23,19 @@ export function CreditsSummary() {
   const consumers = useComputed(() => credits.consumers.value)
 
   const unlimited = useComputed(() => balance.value?.unlimited ?? false)
+  const due = useComputed(() => balance.value?.totalDue ?? null)
+
+  const remaining = useComputed(() => {
+    const current = balance.value
+    return current === null || current.unlimited
+      ? null
+      : current.monthlyRemaining + current.stableRemaining
+  })
+
+  /** Empty pools: what is owed has become the number worth showing. */
+  const depleted = useComputed(
+    () => remaining.value !== null && remaining.value <= 0
+  )
 
   const total = useComputed(() => {
     const current = balance.value
@@ -50,6 +63,22 @@ export function CreditsSummary() {
             {balance.value?.scope === 'org'
               ? 'via your Zoo org'
               : 'billed by contract'}
+          </p>
+        </>
+      ) : depleted.value ? (
+        <>
+          <p class="zds-home__credits-total">
+            {due.value === null
+              ? 'Depleted'
+              : due.value.toLocaleString(undefined, {
+                  style: 'currency',
+                  currency: 'USD',
+                })}
+          </p>
+          <p class="zds-home__credits-split">
+            {due.value === null
+              ? 'credits used up — further usage is billed'
+              : 'owed so far — credits used up'}
           </p>
         </>
       ) : total.value === null ? (

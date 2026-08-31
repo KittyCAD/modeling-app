@@ -4,6 +4,7 @@ import type {
   CreditBalance,
   CreditConsumer,
   CreditConsumerSource,
+  CreditUsage,
   CreditsService,
 } from '@src/contracts/credits'
 import type { CreditsApi } from '@src/features/credits/creditsApi'
@@ -13,6 +14,9 @@ const MIN_FETCH_INTERVAL_MS = 1_000
 
 /** How often to re-read the balance while signed in. */
 const DEFAULT_POLL_INTERVAL_MS = 60_000
+
+/** How often the usage clock advances while something is spending. */
+const USAGE_TICK_MS = 1_000
 
 export interface CreditsServiceDependencies {
   api: CreditsApi
@@ -78,6 +82,79 @@ export function createCreditsService(
   )
 
   const spending = computed(() => consumers.value.length > 0)
+
+  /**
+   * What each conversation has spent, accumulated across its turns.
+   *
+   * Kept outside the signal graph and advanced by a ticker, because the quantity
+   * being measured is *elapsed time*: no signal changes as a turn runs, so a
+   * computed over the consumer list would report the same number until the turn
+   * ended and then jump.
+   *
+   * Spans are settled on the way out rather than sampled on the way in, so a
+   * conversation that has gone quiet keeps whatever it used.
+   */
+  const settledMs = new Map<string, number>()
+  const labels = new Map<string, { label: string; project: string | null }>()
+  /** Spans currently open, by consumer id, with the time last charged for. */
+  const openSpans = new Map<string, { groupId: string; chargedTo: number }>()
+  const usageVersion = signal(0)
+
+  /**
+   * Move every open span's clock forward, and close the ones that have gone.
+   *
+   * Charging incrementally rather than from `startedAt` at the end means a span
+   * interrupted by a reload or a dispose has still contributed what it ran for.
+   */
+  const chargeUsage = () => {
+    const now = Date.now()
+    const live = consumers.peek()
+    const seen = new Set<string>()
+
+    for (const consumer of live) {
+      seen.add(consumer.id)
+      labels.set(consumer.groupId, {
+        label: consumer.label,
+        project: consumer.project,
+      })
+
+      const open = openSpans.get(consumer.id)
+      // A span first seen after it started is charged from its own start, not
+      // from now, or the first tick would silently lose up to a second.
+      const chargedTo = open?.chargedTo ?? consumer.startedAt
+      const advance = Math.max(0, now - chargedTo)
+
+      settledMs.set(
+        consumer.groupId,
+        (settledMs.get(consumer.groupId) ?? 0) + advance
+      )
+      openSpans.set(consumer.id, { groupId: consumer.groupId, chargedTo: now })
+    }
+
+    for (const id of [...openSpans.keys()]) {
+      if (!seen.has(id)) openSpans.delete(id)
+    }
+
+    usageVersion.value += 1
+  }
+
+  const usage = computed<readonly CreditUsage[]>(() => {
+    // Reading the version is what makes this recompute as the clock advances.
+    void usageVersion.value
+    const activeGroups = new Set(
+      consumers.value.map((consumer) => consumer.groupId)
+    )
+
+    return [...settledMs.entries()]
+      .map(([groupId, totalMs]) => ({
+        groupId,
+        label: labels.get(groupId)?.label ?? groupId,
+        project: labels.get(groupId)?.project ?? null,
+        totalMs,
+        active: activeGroups.has(groupId),
+      }))
+      .toSorted((a, b) => b.totalMs - a.totalMs)
+  })
 
   const state = computed<'idle' | 'loading' | 'ready' | 'error'>(() => {
     if (loading.value && balance.value === null) return 'loading'
@@ -168,6 +245,35 @@ export function createCreditsService(
     })
   )
 
+  /*
+   * The usage clock. Only runs while something is spending: an interval ticking
+   * against an idle app would be a wakeup a second for a number that cannot
+   * have changed.
+   */
+  let usageTimer: ReturnType<typeof setInterval> | undefined
+  stops.push(
+    effect(() => {
+      const active = spending.value
+      if (active && usageTimer === undefined) {
+        // Charged immediately as well as on the interval, so the first second
+        // is not missing from the total.
+        chargeUsage()
+        usageTimer = setInterval(chargeUsage, USAGE_TICK_MS)
+      }
+      if (!active && usageTimer !== undefined) {
+        clearInterval(usageTimer)
+        usageTimer = undefined
+        // One last charge, so the tail between the final tick and the turn
+        // ending is counted.
+        chargeUsage()
+      }
+    })
+  )
+  stops.push(() => {
+    if (usageTimer !== undefined) clearInterval(usageTimer)
+    usageTimer = undefined
+  })
+
   if (pollIntervalMs > 0) {
     const timer = setInterval(() => {
       if (token.peek() !== null) void refresh()
@@ -181,6 +287,7 @@ export function createCreditsService(
     error: computed(() => error.value),
     consumers,
     spending,
+    usage,
     refresh,
     dispose: () => {
       disposed = true

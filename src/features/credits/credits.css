@@ -98,3 +98,8 @@
   font-size: var(--zds-font-size-mini);
   color: var(--zds-text-disabled);
 }
+
+/* What is owed, once the credits are gone: the one figure here that is money. */
+.zds-credits__pool--due {
+  color: var(--zds-text-flag);
+}

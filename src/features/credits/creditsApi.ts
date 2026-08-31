@@ -12,6 +12,7 @@ interface CustomerBalanceResponse {
   monthly_api_credits_remaining?: number
   stable_api_credits_remaining?: number
   monthly_api_credits_refresh_at?: string | null
+  total_due?: number | null
   subscription_details?: {
     modeling_app?: {
       price?: { type?: string }
@@ -119,6 +120,12 @@ export function createCreditsApi(options: {
         stableRemaining: body.stable_api_credits_remaining ?? 0,
         refreshAt: Number.isNaN(refreshAt) ? null : refreshAt,
         unlimited: isContractBilled(body),
+        /*
+         * Absent rather than zero when the API did not send it: the field is
+         * documented as "only returned if requested", so a missing value means
+         * "not told" and rendering it as $0.00 owed would be a fabrication.
+         */
+        totalDue: typeof body.total_due === 'number' ? body.total_due : null,
         scope,
         fetchedAt: Date.now(),
       }

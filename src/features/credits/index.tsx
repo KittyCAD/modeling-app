@@ -86,6 +86,7 @@ export default defineRegistryItemFactory((ctx) => {
           error: computed(() => credits().error.value),
           consumers: computed(() => credits().consumers.value),
           spending: computed(() => credits().spending.value),
+          usage: computed(() => credits().usage.value),
           refresh: () => credits().refresh(),
         }),
       ],

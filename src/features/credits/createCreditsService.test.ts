@@ -12,6 +12,7 @@ const aBalance = (over: Partial<CreditBalance> = {}): CreditBalance => ({
   stableRemaining: 100,
   refreshAt: null,
   unlimited: false,
+  totalDue: null,
   scope: 'user',
   fetchedAt: Date.now(),
   ...over,
@@ -19,6 +20,7 @@ const aBalance = (over: Partial<CreditBalance> = {}): CreditBalance => ({
 
 const aConsumer = (over: Partial<CreditConsumer> = {}): CreditConsumer => ({
   id: 'c1:t1',
+  groupId: 'c1',
   kind: 'zookeeper.conversation',
   label: 'Conversation 1',
   project: 'bracket',
@@ -265,6 +267,110 @@ describe('the credits service', () => {
     expect(service.balance.value?.unlimited).toBe(true)
     expect(service.balance.value?.scope).toBe('org')
     expect(service.state.value).toBe('ready')
+    service.dispose()
+  })
+
+  /*
+   * Usage is elapsed time, so nothing in the signal graph changes while a turn
+   * runs — it has to be advanced by a clock. These tests drive that clock.
+   */
+  it('accumulates usage while a conversation is spending', async () => {
+    const consumers = signal<readonly CreditConsumer[]>([])
+    const { service } = harness({
+      sources: [{ id: 'one', consumers: computed(() => consumers.value) }],
+    })
+
+    expect(service.usage.value).toEqual([])
+
+    consumers.value = [aConsumer({ startedAt: Date.now() })]
+    vi.advanceTimersByTime(120_000)
+
+    const entry = service.usage.value[0]
+    expect(entry?.groupId).toBe('c1')
+    expect(entry?.active).toBe(true)
+    // Two minutes, within a tick either way.
+    expect(entry?.totalMs).toBeGreaterThanOrEqual(119_000)
+    expect(entry?.totalMs).toBeLessThanOrEqual(121_000)
+    service.dispose()
+  })
+
+  /* A conversation that has gone quiet still has to report what it used. */
+  it('keeps a conversation’s usage after it stops spending', async () => {
+    const consumers = signal<readonly CreditConsumer[]>([
+      aConsumer({ startedAt: Date.now() }),
+    ])
+    const { service } = harness({
+      sources: [{ id: 'one', consumers: computed(() => consumers.value) }],
+    })
+
+    vi.advanceTimersByTime(60_000)
+    consumers.value = []
+
+    const entry = service.usage.value[0]
+    expect(entry?.active).toBe(false)
+    expect(entry?.totalMs).toBeGreaterThanOrEqual(59_000)
+    service.dispose()
+  })
+
+  /* Turns are separate spans; the conversation is what accumulates. */
+  it('adds a second turn to the same conversation’s total', async () => {
+    const consumers = signal<readonly CreditConsumer[]>([
+      aConsumer({ id: 'c1:t1', startedAt: Date.now() }),
+    ])
+    const { service } = harness({
+      sources: [{ id: 'one', consumers: computed(() => consumers.value) }],
+    })
+
+    vi.advanceTimersByTime(30_000)
+    consumers.value = []
+    vi.advanceTimersByTime(30_000)
+    consumers.value = [aConsumer({ id: 'c1:t2', startedAt: Date.now() })]
+    vi.advanceTimersByTime(30_000)
+
+    // One row, roughly a minute of *busy* time, not the ninety seconds of
+    // wall-clock that elapsed.
+    expect(service.usage.value).toHaveLength(1)
+    const total = service.usage.value[0]?.totalMs ?? 0
+    expect(total).toBeGreaterThanOrEqual(58_000)
+    expect(total).toBeLessThanOrEqual(63_000)
+    service.dispose()
+  })
+
+  it('keeps two conversations apart', async () => {
+    const consumers = signal<readonly CreditConsumer[]>([
+      aConsumer({ id: 'c1:t1', groupId: 'c1', startedAt: Date.now() }),
+      aConsumer({ id: 'c2:t1', groupId: 'c2', startedAt: Date.now() }),
+    ])
+    const { service } = harness({
+      sources: [{ id: 'one', consumers: computed(() => consumers.value) }],
+    })
+
+    vi.advanceTimersByTime(60_000)
+
+    expect(service.usage.value.map((each) => each.groupId).toSorted()).toEqual([
+      'c1',
+      'c2',
+    ])
+    service.dispose()
+  })
+
+  it('does not run a usage clock while nothing is spending', async () => {
+    const { service } = harness()
+
+    vi.advanceTimersByTime(600_000)
+
+    expect(service.usage.value).toEqual([])
+    service.dispose()
+  })
+
+  it('carries what is owed once the pools are empty', async () => {
+    const { service } = harness({
+      balance: async () =>
+        aBalance({ monthlyRemaining: 0, stableRemaining: 0, totalDue: 4.25 }),
+    })
+    await vi.waitFor(() => expect(service.balance.value).not.toBeNull())
+
+    expect(service.balance.value?.totalDue).toBe(4.25)
     service.dispose()
   })
 })

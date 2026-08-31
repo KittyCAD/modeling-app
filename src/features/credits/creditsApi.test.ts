@@ -213,4 +213,29 @@ describe('the credits API', () => {
 
     expect(balance.unlimited).toBe(false)
   })
+
+  it('reads what is owed', async () => {
+    const request = vi.fn(async () => ok({ total_due: 12.5 }))
+
+    const balance = await api(request as unknown as typeof fetch).balance()
+
+    expect(balance.totalDue).toBe(12.5)
+  })
+
+  /* Documented as only returned when asked for, so absent means "not told". */
+  it('reports an absent amount owed as null rather than zero', async () => {
+    const request = vi.fn(async () => ok({}))
+
+    const balance = await api(request as unknown as typeof fetch).balance()
+
+    expect(balance.totalDue).toBeNull()
+  })
+
+  it('keeps a genuine zero owed distinct from not knowing', async () => {
+    const request = vi.fn(async () => ok({ total_due: 0 }))
+
+    const balance = await api(request as unknown as typeof fetch).balance()
+
+    expect(balance.totalDue).toBe(0)
+  })
 })

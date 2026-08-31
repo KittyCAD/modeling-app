@@ -314,6 +314,8 @@ const zookeeperFeature = defineRegistryItemFactory((ctx) => {
                   // Per turn, so a new turn reads as a new span rather than
                   // inheriting the previous one's elapsed time.
                   id: `${conversation.id}:${turn.id}`,
+                  // The conversation, so turns accumulate into one figure.
+                  groupId: conversation.id,
                   kind: 'zookeeper.conversation' as const,
                   // Numbered by position, the same way the panel's tabs are.
                   label: `Conversation ${index + 1}`,
