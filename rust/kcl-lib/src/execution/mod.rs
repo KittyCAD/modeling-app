@@ -5512,6 +5512,23 @@ z = y
         );
     }
 
+    /// exit() in a return's argument still exits the whole program: the
+    /// Exit control flow from evaluating the argument takes precedence over
+    /// turning the statement into an early return. If it were mistakenly
+    /// treated as the function's return value, execution would continue
+    /// after the call and hit the failing assert.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_of_exit_still_exits_program_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return exit()
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn experimental_parameter() {
         let code = r#"
