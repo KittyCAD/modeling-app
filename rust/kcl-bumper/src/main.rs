@@ -9,8 +9,14 @@ use toml_edit::value;
 
 /// Deps that need to be updated in lock-step.
 const KCL_API_DEPS: [&str; 1] = ["kcl-error"];
-const KCL_LIB_DEPS: [&str; 4] = ["kcl-api", "kcl-derive-docs", "kcl-error", "kcl-syntax"];
 const KCL_LANGUAGE_SERVER_DEPS: [&str; 1] = ["kcl-lib"];
+const KCL_LIB_DEPS: [&str; 5] = [
+    "kcl-api",
+    "kcl-derive-docs",
+    "kcl-engine-codec",
+    "kcl-error",
+    "kcl-syntax",
+];
 const KCL_TEST_SERVER_DEPS: [&str; 1] = ["kcl-lib"];
 
 fn main() -> Result<()> {
@@ -274,6 +280,7 @@ version = "0.2.128"
 
 [dependencies]
 kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
+kcl-engine-codec = { version = "0.1", path = "../kcl-engine-codec" }
 kcl-error = { version = "0.1", path = "../kcl-error" }
         "#;
 
@@ -285,6 +292,12 @@ kcl-error = { version = "0.1", path = "../kcl-error" }
 
         assert_eq!(
             cargo_dot_toml["dependencies"]["kcl-derive-docs"]["version"]
+                .as_value()
+                .and_then(Value::as_str),
+            Some("=0.2.129")
+        );
+        assert_eq!(
+            cargo_dot_toml["dependencies"]["kcl-engine-codec"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
             Some("=0.2.129")

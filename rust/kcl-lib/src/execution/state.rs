@@ -96,13 +96,13 @@ pub(super) struct GlobalState {
     /// `deprecated_since` warnings. Runtime behavior still uses the version
     /// declared by the KCL program.
     pub deprecation_version_override: Option<String>,
-    /// The entry-point (root) module's declared kclVersion, when it is
-    /// 3.0-preview or later. `Some` makes this single version govern
-    /// version-conditional runtime behavior for the whole execution -- every
-    /// module and every function body. `None` (entry point on 1.0/2.0 or
-    /// undeclared) preserves the legacy per-module lookup and its
-    /// caller-version quirk; see [`ExecState::legacy_caller_kcl_version`].
-    /// Assigned unconditionally at the start of every execution.
+    /// The entry-point (root) module's declared kclVersion, when it is KCL 3.0
+    /// or later. `Some` makes this single version govern version-conditional
+    /// runtime behavior for the whole execution -- every module and every
+    /// function body. `None` (entry point on 1.0/2.0 or undeclared) preserves
+    /// the legacy per-module lookup and its caller-version quirk; see
+    /// [`ExecState::legacy_caller_kcl_version`]. Assigned unconditionally at
+    /// the start of every execution.
     pub entry_point_kcl_version: Option<KclVersion>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
@@ -1356,13 +1356,11 @@ impl ExecState {
         self.mod_local.settings.kcl_version
     }
 
-    /// Gate for behaviors introduced in KCL 3.0-preview. True only when the
-    /// entry-point module of this execution declared kclVersion 3.0-preview
-    /// or later.
-    // TODO: Remove the expect once the first 3.0-preview-gated behavior lands.
-    // Tests already call this, so the lint only fires in non-test builds.
-    #[cfg_attr(not(test), expect(dead_code))]
-    pub(crate) fn entry_point_is_v3(&self) -> bool {
+    /// Gate for behaviors introduced in KCL 3.0. True only when the entry-point
+    /// module of this execution declares KCL 3.0 or later. This never looks at
+    /// [`Self::legacy_caller_kcl_version()`] so that control flow behavior
+    /// never varies within a single execution.
+    pub(crate) fn use_kcl_v3_control_flow(&self) -> bool {
         self.global
             .entry_point_kcl_version
             .is_some_and(|v| v >= KclVersion::V3Preview)
