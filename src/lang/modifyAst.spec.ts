@@ -2,6 +2,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createArrayExpression,
+  createAnnotation,
   createCallExpressionStdLibKw,
   createIdentifier,
   createLabeledArg,
@@ -14,6 +15,7 @@ import {
   findUniqueName,
 } from '@src/lang/create'
 import {
+  addModuleImport,
   addSketchTo,
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
@@ -112,6 +114,17 @@ describe('Testing createIdentifier', () => {
     const result = createIdentifier('myVar')
     expect(result.type).toBe('Identifier')
     expect(result.name).toBe('myVar')
+  })
+})
+describe('Testing createAnnotation', () => {
+  it('should create an anonymous annotation', () => {
+    const result = createAnnotation({
+      targetRepresentation: createLocalName('mesh'),
+    })
+    expect(result.type).toBe('Annotation')
+    expect(result.name).toBeNull()
+    expect(result.properties?.[0].key.name).toBe('targetRepresentation')
+    expect(result.properties?.[0].value).toEqual(createLocalName('mesh'))
   })
 })
 describe('Testing createObjectExpression', () => {
@@ -288,6 +301,27 @@ describe('Testing addSketchTo', () => {
   |> line(end = "default")
 `)
   })
+})
+
+describe('Testing addModuleImport', () => {
+  const emptyProgram = () =>
+    assertParse('@settings(experimentalFeatures = allow)\n', instanceInThisFile)
+
+  it.each(['mesh', 'brep'] as const)(
+    'adds the %s STEP representation annotation',
+    (representation) => {
+      const result = addModuleImport({
+        ast: emptyProgram(),
+        path: 'cube.step',
+        localName: 'cube',
+        representation,
+      })
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toBe(
+        `@settings(experimentalFeatures = allow)\n\n@(targetRepresentation = ${representation})\nimport "cube.step" as cube\n`
+      )
+    }
+  )
 })
 
 function giveSketchFnCallTagTestHelper(
