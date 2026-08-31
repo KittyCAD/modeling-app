@@ -11,7 +11,10 @@ import type { FileEntry, Project } from '@src/lib/project'
 import ProjectSidebarMenu, {
   ProjectBreadcrumbButton,
   canNavigateHome,
+  duplicateProjectAfterKclFlush,
 } from '@src/components/ProjectSidebarMenu'
+import type { App } from '@src/lib/app'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
@@ -115,5 +118,46 @@ describe('ProjectSidebarMenu tests', () => {
     expect(await screen.findByRole('tooltip')).toHaveTextContent(
       'Simple Box / parts / generated / nested-part.kcl'
     )
+  })
+
+  test('flushes the active KCL file before duplicating the current project', async () => {
+    const callOrder: string[] = []
+    const flushWriteToFile = vi.fn(async () => {
+      callOrder.push('flush')
+    })
+    const send = vi.fn(() => {
+      callOrder.push('send')
+    })
+    const app = {
+      singletons: {
+        kclManager: {
+          code: 'generated point-and-click KCL',
+          flushWriteToFile,
+        },
+      },
+      systemIOActor: {
+        send,
+      },
+    } as unknown as App
+
+    await duplicateProjectAfterKclFlush({
+      app,
+      project: projectWellFormed,
+    })
+
+    expect(flushWriteToFile).toHaveBeenCalledWith(
+      'generated point-and-click KCL',
+      undefined,
+      { suppressConflictToast: true }
+    )
+    expect(send).toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.duplicateProject,
+      data: {
+        projectName: projectWellFormed.name,
+        projectPath: projectWellFormed.path,
+        requestedProjectName: projectWellFormed.title,
+      },
+    })
+    expect(callOrder).toEqual(['flush', 'send'])
   })
 })
