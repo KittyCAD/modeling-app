@@ -365,6 +365,11 @@ jobs:
         id: deps-install
         run: npm install
 
+      # Electron 44 installs its binary lazily. Do it once before Playwright
+      # forks workers so they do not extract into the same dist concurrently.
+      - name: Install Electron binary
+        run: node node_modules/electron/install.js
+
       - name: Download browser cache
         uses: actions/cache@v6.1.0
         with:
