@@ -94,6 +94,8 @@ export const systemIOMachine = setup({
             projectName: string
             projectPath: string
             requestedProjectName: string
+            currentFilePath?: string | null
+            currentFileContents?: string
           }
         }
       | {
@@ -1179,6 +1181,8 @@ export const systemIOMachine = setup({
             projectName: event.data.projectName,
             projectPath: event.data.projectPath,
             requestedProjectName: event.data.requestedProjectName,
+            currentFilePath: event.data.currentFilePath,
+            currentFileContents: event.data.currentFileContents,
           }
         },
         onDone: {
