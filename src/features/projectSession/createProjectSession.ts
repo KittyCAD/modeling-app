@@ -31,6 +31,18 @@ export interface ProjectSessionDependencies {
   queue: FsOperationQueue
   /** Absent on platforms with nothing external to watch. */
   watcher?: FileWatcher
+  /**
+   * What a file created with no content should contain.
+   *
+   * A dependency rather than a constant because it is *policy*: a new KCL file
+   * gets a `@settings` annotation naming the language version and, when it is not
+   * the default, the project's unit. That policy needs the settings cascade and a
+   * WASM module, neither of which a buffer collection should know about.
+   *
+   * Absent means empty, which is what it was before: a session with no policy
+   * still creates files.
+   */
+  initialContents?: (path: string) => Promise<string>
 }
 
 let operationCounter = 0
@@ -248,6 +260,17 @@ export function createProjectSession(
 
   const createFile: ProjectSession['createFile'] = async (path, contents) => {
     const relative = normalizePath(path)
+
+    /*
+     * Asked for before the queue, not inside it.
+     *
+     * Writing the annotation loads a WASM module the first time, and holding the
+     * write lock for the length of a multi-megabyte import would stall every
+     * other file operation behind a formatter.
+     */
+    const initial =
+      contents ?? (await dependencies.initialContents?.(relative)) ?? ''
+
     await queue.enqueue(absolutePath(relative), async () => {
       await refuseIfTaken(relative)
       const parent = dirname(relative)
@@ -256,7 +279,7 @@ export function createProjectSession(
       if (parent && parent !== '.') {
         await fileSystem.makeDirectory(absolutePath(parent))
       }
-      await fileSystem.writeTextFile(absolutePath(relative), contents ?? '')
+      await fileSystem.writeTextFile(absolutePath(relative), initial)
     })
     await refreshFiles()
   }

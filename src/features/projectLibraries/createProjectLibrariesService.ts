@@ -64,7 +64,19 @@ export function createProjectLibrariesService(
     ) => readonly ProjectLibrarySetting[])[]
   >,
   target: RuntimeTarget = fileSystem.id === 'opfs' ? 'web' : 'desktop',
-  authStatus: ReadonlySignal<AuthStatus> = computed(() => 'signedIn')
+  authStatus: ReadonlySignal<AuthStatus> = computed(() => 'signedIn'),
+  /**
+   * What a new project's entry file starts as.
+   *
+   * A dependency because it is policy that needs the settings cascade and a WASM
+   * module — see `lib/kcl/metaSettings.ts` — and because it must be the *same*
+   * policy that applies to a file created inside an open project. Two places
+   * deciding what a new KCL file says is two places to get it wrong.
+   *
+   * Defaults to empty, which is what it was: a library with no policy still
+   * creates projects.
+   */
+  initialKclContents: () => Promise<string> = async () => ''
 ): ProjectLibrariesService & { dispose: () => void } {
   const stored = signal<readonly ProjectLibrarySetting[]>(readStoredSettings())
   const seeded = signal(stored.value.length > 0)
@@ -430,7 +442,10 @@ export function createProjectLibrariesService(
       const created = await operation.run({
         library: target,
         requestedTitle,
-        initialFile: { name: 'main.kcl', contents: '' },
+        initialFile: {
+          name: 'main.kcl',
+          contents: await initialKclContents(),
+        },
       })
       await refresh(libraryId)
       return created ? (realization(created.id) ?? created) : undefined

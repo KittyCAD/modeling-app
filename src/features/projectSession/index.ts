@@ -15,6 +15,7 @@ import { fileSystemService } from '@src/contracts/fileSystem'
 import { fileWatcherService } from '@src/contracts/fileWatcher'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
+import { unitsService } from '@src/contracts/units'
 import { openDefaultFile } from '@src/features/projectSession/openDefaultFile'
 import {
   type ProjectSession,
@@ -85,6 +86,18 @@ export default defineRegistryItemFactory((ctx) => {
         themes: themes(),
         queue: queue(),
         watcher: watcher(),
+        /*
+         * What a new file starts as.
+         *
+         * KCL files get a settings annotation; anything else starts empty,
+         * because a `.md` with a KCL attribute at the top would be nonsense.
+         * Optional service, so a build without units still creates files.
+         */
+        initialContents: async (path) =>
+          path.endsWith('.kcl')
+            ? ((await ctx.services.optional(unitsService)?.newFileContents()) ??
+              '')
+            : '',
       })
       /*
        * Land in a file rather than in an empty editor. This is the only place

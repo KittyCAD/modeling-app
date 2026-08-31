@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { combineCapabilities } from '@src/contracts/buffers'
 import type { FileChange, FileWatcher } from '@src/contracts/fileWatcher'
 import { createPersistenceCapability } from '@src/features/editorCapabilities/persistence'
@@ -650,6 +650,54 @@ describe('project files', () => {
       expect(fileSystem.files.get('/projects/bracket/seed.kcl')).toBe(
         'width = 2'
       )
+    })
+
+    /*
+     * What a new KCL file says is policy — the language version, and the unit
+     * when it is not the default — and it needs the settings cascade and a WASM
+     * module, so it arrives as a dependency rather than living here.
+     */
+    it('asks for the initial contents of a file it was given none for', async () => {
+      const initialContents = vi.fn(
+        async (path: string) => `@settings(kclVersion = 2.0) // ${path}\n`
+      )
+      const annotating = createProjectSession(realization, library, {
+        fileSystem,
+        capabilities: combineCapabilities([]),
+        themes: [],
+        queue: createFsOperationQueue(),
+        initialContents,
+      })
+      await settle()
+
+      await annotating.createFile('part.kcl')
+
+      expect(initialContents).toHaveBeenCalledWith('part.kcl')
+      expect(fileSystem.files.get('/projects/bracket/part.kcl')).toBe(
+        '@settings(kclVersion = 2.0) // part.kcl\n'
+      )
+      annotating.dispose()
+    })
+
+    it('prefers contents the caller gave over the policy', async () => {
+      const initialContents = vi.fn(async () => 'annotated')
+      const annotating = createProjectSession(realization, library, {
+        fileSystem,
+        capabilities: combineCapabilities([]),
+        themes: [],
+        queue: createFsOperationQueue(),
+        initialContents,
+      })
+      await settle()
+
+      await annotating.createFile('given.kcl', 'width = 2')
+
+      // A file being copied in brings its own annotation.
+      expect(initialContents).not.toHaveBeenCalled()
+      expect(fileSystem.files.get('/projects/bracket/given.kcl')).toBe(
+        'width = 2'
+      )
+      annotating.dispose()
     })
 
     it('makes the directories a path implies', async () => {

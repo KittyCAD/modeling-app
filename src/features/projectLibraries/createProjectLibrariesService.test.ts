@@ -30,7 +30,9 @@ function createHarness(
       path: DEFAULT_ROOT,
       type: DIRECTORY_LIBRARY_TYPE,
     },
-  ]
+  ],
+  /** What a new project's entry file contains. Empty, as it is with no policy. */
+  initialKclContents = ''
 ) {
   const fileSystem = createFakeFileSystem(files) as FakeFileSystem & {
     defaultRoot: ReturnType<typeof computed<string>>
@@ -69,7 +71,14 @@ function createHarness(
   return {
     fileSystem,
     root,
-    service: createProjectLibrariesService(fileSystem, types, defaultFactories),
+    service: createProjectLibrariesService(
+      fileSystem,
+      types,
+      defaultFactories,
+      undefined,
+      undefined,
+      async () => initialKclContents
+    ),
   }
 }
 
@@ -517,6 +526,27 @@ describe('project libraries service', () => {
     const created = await service.createProject(libraryId, 'fresh')
 
     expect(fileSystem.files.has(`${created?.path}/main.kcl`)).toBe(true)
+  })
+
+  /*
+   * The same policy a file created *inside* a project gets — the annotation is
+   * decided in one place, because two places deciding what a new KCL file says
+   * is two places to get it wrong.
+   */
+  it('writes the entry file with whatever the KCL policy says', async () => {
+    const { fileSystem, service } = createHarness(
+      {},
+      undefined,
+      '@settings(defaultLengthUnit = in, kclVersion = 2.0)\n'
+    )
+    const libraryId = service.libraries.value[0].id
+
+    const created = await service.createProject(libraryId, 'inches')
+
+    expect(fileSystem.files.get(`${created?.path}/main.kcl`)).toBe(
+      '@settings(defaultLengthUnit = in, kclVersion = 2.0)\n'
+    )
+    service.dispose()
   })
 
   it('does not collide with an existing folder', async () => {
