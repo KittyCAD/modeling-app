@@ -5120,19 +5120,6 @@ box = filletedBox()
         assert_eq!(emitted_fillet_versions_everywhere(&result), vec![EdgeCutVersion::V1]);
     }
 
-    /// Runs `code` under both executors and returns the per-executor results,
-    /// so early-return semantics are pinned on each regardless of the local
-    /// `KCL_EXECUTOR` setting.
-    async fn parse_execute_each_executor(
-        code: &str,
-    ) -> Vec<(machine::ExecutorKind, Result<ExecTestResults, KclError>)> {
-        let mut results = Vec::new();
-        for kind in [machine::ExecutorKind::Recursive, machine::ExecutorKind::Machine] {
-            results.push((kind, parse_execute_with_executor_kind(code, None, kind).await));
-        }
-        results
-    }
-
     #[track_caller]
     fn variable_f64(result: &ExecTestResults, name: &str) -> f64 {
         mem_get_json(result.exec_state.stack(), result.mem_env, name)
@@ -5149,10 +5136,8 @@ fn f() {
 }
 x = f()
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
-            assert_eq!(variable_f64(&result, "x"), 1.0, "{kind}");
-        }
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5164,10 +5149,8 @@ fn f() {
 }
 x = f()
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
-            assert_eq!(variable_f64(&result, "x"), 1.0, "{kind}");
-        }
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5185,11 +5168,9 @@ fn f(@b) {
 x = f(true)
 y = f(false)
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
-            assert_eq!(variable_f64(&result, "x"), 1.0, "{kind}");
-            assert_eq!(variable_f64(&result, "y"), 2.0, "{kind}");
-        }
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+        assert_eq!(variable_f64(&result, "y"), 2.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5213,12 +5194,10 @@ x = f(true, b = true)
 y = f(true, b = false)
 z = f(false, b = false)
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
-            assert_eq!(variable_f64(&result, "x"), 10.0, "{kind}");
-            assert_eq!(variable_f64(&result, "y"), 200.0, "{kind}");
-            assert_eq!(variable_f64(&result, "z"), 200.0, "{kind}");
-        }
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 10.0);
+        assert_eq!(variable_f64(&result, "y"), 200.0);
+        assert_eq!(variable_f64(&result, "z"), 200.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5234,10 +5213,8 @@ fn outer() {
 }
 x = outer()
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
-            assert_eq!(variable_f64(&result, "x"), 6.0, "{kind}");
-        }
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 6.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5249,10 +5226,8 @@ fn f(): number(mm) {
 }
 x = f()
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
-            assert_eq!(variable_f64(&result, "x"), 1.0, "{kind}");
-        }
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
 
         // A coercion failure surfaces as an error (on the machine, this
         // exercises unwind_return's error path).
@@ -5262,14 +5237,8 @@ fn f(): number(mm) {
 }
 x = f()
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let err = result.expect_err(&format!("{kind}: coercion failure should error"));
-            assert!(
-                err.message().contains("type"),
-                "{kind}: unexpected message: {}",
-                err.message()
-            );
-        }
+        let err = parse_execute(code).await.expect_err("coercion failure should error");
+        assert!(err.message().contains("type"), "unexpected message: {}", err.message());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5277,13 +5246,10 @@ x = f()
         // A return statement at the top level is rejected in all versions.
         for header in ["", "@settings(kclVersion = \"3.0-preview\")\n"] {
             let code = format!("{header}return 1\n");
-            for (kind, result) in parse_execute_each_executor(&code).await {
-                assert_eq!(
-                    result.expect_err(&format!("{kind}: should error")).message(),
-                    "Cannot return from outside a function.",
-                    "{kind}"
-                );
-            }
+            assert_eq!(
+                parse_execute(&code).await.expect_err("should error").message(),
+                "Cannot return from outside a function."
+            );
         }
 
         // Under KCL 3.0, a return escaping a top-level if-arm is also rejected
@@ -5297,13 +5263,10 @@ x = if true {
   0
 }
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            assert_eq!(
-                result.expect_err(&format!("{kind}: should error")).message(),
-                "Cannot return from outside a function.",
-                "{kind}"
-            );
-        }
+        assert_eq!(
+            parse_execute(code).await.expect_err("should error").message(),
+            "Cannot return from outside a function."
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5316,9 +5279,7 @@ fn f() {
 x = f()
 assert(1, isEqualTo = 2, error = "code after exit ran")
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
-        }
+        parse_execute(code).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5333,10 +5294,8 @@ fn f() {
 }
 x = f()
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
-            assert_eq!(variable_f64(&result, "x"), 42.0, "{kind}");
-        }
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 42.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5353,10 +5312,8 @@ fn f() {
 }
 x = f()
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
-            assert_eq!(variable_f64(&result, "x"), 0.0, "{kind}");
-        }
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 0.0);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5367,14 +5324,12 @@ x = f()
 }
 x = f()
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let err = result.expect_err(&format!("{kind}: should error"));
-            assert!(
-                err.message().contains("ran past return"),
-                "{kind}: unexpected message: {}",
-                err.message()
-            );
-        }
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("ran past return"),
+            "unexpected message: {}",
+            err.message()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5385,13 +5340,10 @@ x = f()
 }
 x = f()
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            assert_eq!(
-                result.expect_err(&format!("{kind}: should error")).message(),
-                "Multiple returns from a single function.",
-                "{kind}"
-            );
-        }
+        assert_eq!(
+            parse_execute(code).await.expect_err("should error").message(),
+            "Multiple returns from a single function."
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5410,13 +5362,10 @@ x = f()
 }
 x = f()
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            assert_eq!(
-                result.expect_err(&format!("{kind}: should error")).message(),
-                "Multiple returns from a single function.",
-                "{kind}"
-            );
-        }
+        assert_eq!(
+            parse_execute(code).await.expect_err("should error").message(),
+            "Multiple returns from a single function."
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5431,11 +5380,9 @@ x = f()
   0
 }
 "#;
-        for (kind, result) in parse_execute_each_executor(code).await {
-            let result = result.unwrap_or_else(|e| panic!("{kind}: {}", e.message()));
-            assert_eq!(variable_f64(&result, "x"), 0.0, "{kind}");
-            assert_eq!(variable_f64(&result, memory::RETURN_NAME), 1.0, "{kind}");
-        }
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 0.0);
+        assert_eq!(variable_f64(&result, memory::RETURN_NAME), 1.0);
     }
 
     /// Early return is gated on the entry point's kclVersion, not the
