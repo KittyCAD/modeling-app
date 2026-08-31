@@ -693,6 +693,39 @@ s1 = sketch(on = YZ) {
 extrude(missing_sketch, length = 5mm)
 """
 
+mock_csg_file = os.path.join(
+    kcl_dir, "e2e", "executor", "inputs", "repro_mock_subtract.kcl"
+)
+mock_import_file = os.path.join(files_dir, "sketch_constraint_import_main.kcl")
+mock_generated_faces_file = os.path.join(
+    kcl_dir,
+    "e2e",
+    "executor",
+    "inputs",
+    "boolean-setup-with-sketch-solve-on-faces.kcl",
+)
+mock_solved_point_reference_file = os.path.join(
+    tests_dir, "use_point_from_other_sketch", "input.kcl"
+)
+
+function_loop_condition_sketches_code = """
+@settings(experimentalFeatures = allow)
+
+fn makeSketch(@ignored) {
+  result = sketch(on = XY) {
+    line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+  }
+  return result
+}
+
+fromLoop = map([0, 1], f = makeSketch)
+fromCondition = if true {
+  makeSketch(2)
+} else {
+  makeSketch(3)
+}
+"""
+
 parse_error_sketch_code = """
 @settings(experimentalFeatures = allow)
 
@@ -853,6 +886,91 @@ async def test_sketch_constraint_status_parse_error_returns_report():
     assert report.kcl_error.phase == "parse"
     assert "KCL Syntax error" in report.kcl_error.text
     assert "Unexpected token" in report.kcl_error.text
+
+
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_mock_solves_without_engine():
+    report = await kcl.get_sketch_constraint_status_code(
+        fully_constrained_sketch_code, mock=True
+    )
+    assert report.total_sketches() == 1
+    assert len(report.fully_constrained) == 1
+    assert len(report.errors) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
+
+
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_mock_preserves_status_categories():
+    report = await kcl.get_sketch_constraint_status_code(
+        named_sketches_all_statuses_code, mock=True
+    )
+    assert report.total_sketches() == 3
+    assert report.fully_constrained[0].name == "fixedSketch"
+    assert report.under_constrained[0].name == "looseSketch"
+    assert report.over_constrained[0].name == "conflictSketch"
+    assert report.is_complete is True
+    assert report.kcl_error is None
+
+
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_mock_completes_after_csg():
+    report = await kcl.get_sketch_constraint_status(mock_csg_file, mock=True)
+    assert report.total_sketches() == 3
+    assert len(report.errors) == 0
+    assert report.is_complete is True
+    assert report.kcl_error is None
+
+
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_mock_returns_partial_status_after_error():
+    report = await kcl.get_sketch_constraint_status_code(
+        execution_error_after_sketch_code, mock=True
+    )
+    assert report.total_sketches() == 1
+    assert report.fully_constrained[0].name == "s1"
+    assert report.is_complete is False
+    assert report.kcl_error is not None
+    assert report.kcl_error.phase == "execution"
+    assert "missing_sketch" in report.kcl_error.text
+
+
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_mock_handles_imported_function():
+    report = await kcl.get_sketch_constraint_status(mock_import_file, mock=True)
+    assert report.total_sketches() == 1
+    assert report.under_constrained[0].name == "result"
+    assert report.is_complete is True
+    assert report.kcl_error is None
+
+
+@pytest.mark.asyncio
+async def test_sketch_constraint_status_mock_handles_functions_loops_and_conditions():
+    report = await kcl.get_sketch_constraint_status_code(
+        function_loop_condition_sketches_code, mock=True
+    )
+    assert report.total_sketches() == 3
+    assert len(report.under_constrained) == 3
+    assert all(status.name == "result" for status in report.under_constrained)
+    assert report.is_complete is True
+    assert report.kcl_error is None
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("path", "expected_sketches"),
+    [
+        (mock_generated_faces_file, 6),
+        (mock_solved_point_reference_file, 2),
+    ],
+)
+async def test_sketch_constraint_status_mock_handles_geometry_dependencies(
+    path: str, expected_sketches: int
+):
+    report = await kcl.get_sketch_constraint_status(path, mock=True)
+    assert report.total_sketches() == expected_sketches
+    assert report.is_complete is True
+    assert report.kcl_error is None
 
 
 @requires_engine

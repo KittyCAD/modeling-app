@@ -382,7 +382,7 @@ async fn execute_impl(input: KclInput, mock: bool) -> PyResult<ExecOutcome> {
     })
 }
 
-async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstraintReport> {
+async fn sketch_constraint_report_impl(input: KclInput, mock: bool) -> PyResult<SketchConstraintReport> {
     let (code, path, filename) = match input {
         KclInput::Path(input_path) => {
             let (code, path) = get_code_and_file_path(&input_path).await.map_err(to_py_exception)?;
@@ -400,7 +400,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false, None).await.map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(path, mock, None).await.map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
@@ -603,18 +603,20 @@ async fn mock_execute(path: String) -> PyResult<ExecOutcome> {
     spawn_py(async move { execute_impl(KclInput::Path(path), true).await }).await
 }
 
-/// Execute a kcl file and return a report of sketch constraint status.
+/// Execute a kcl file and return a report of sketch constraint status. Set `mock` to true to solve sketches without
+/// sending modeling commands to the engine.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn get_sketch_constraint_status(path: String) -> PyResult<SketchConstraintReport> {
-    spawn_py(async move { sketch_constraint_report_impl(KclInput::Path(path)).await }).await
+#[pyfunction(signature = (path, *, mock=false))]
+async fn get_sketch_constraint_status(path: String, mock: bool) -> PyResult<SketchConstraintReport> {
+    spawn_py(async move { sketch_constraint_report_impl(KclInput::Path(path), mock).await }).await
 }
 
-/// Execute kcl code and return a report of sketch constraint status.
+/// Execute kcl code and return a report of sketch constraint status. Set `mock` to true to solve sketches without
+/// sending modeling commands to the engine.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
-#[pyfunction]
-async fn get_sketch_constraint_status_code(code: String) -> PyResult<SketchConstraintReport> {
-    spawn_py(async move { sketch_constraint_report_impl(KclInput::Code(code)).await }).await
+#[pyfunction(signature = (code, *, mock=false))]
+async fn get_sketch_constraint_status_code(code: String, mock: bool) -> PyResult<SketchConstraintReport> {
+    spawn_py(async move { sketch_constraint_report_impl(KclInput::Code(code), mock).await }).await
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]

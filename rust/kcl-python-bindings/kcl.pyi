@@ -1373,14 +1373,16 @@ async def format_dir(dir: builtins.str) -> None:
     Format a whole directory of kcl code.
     """
 
-async def get_sketch_constraint_status(path: builtins.str) -> zooSketchConstraintReport:
+async def get_sketch_constraint_status(path: builtins.str, *, mock: builtins.bool = ...) -> zooSketchConstraintReport:
     r"""
-    Execute a kcl file and return a report of sketch constraint status.
+    Execute a kcl file and return a report of sketch constraint status. Set `mock` to true to solve sketches without
+    sending modeling commands to the engine.
     """
 
-async def get_sketch_constraint_status_code(code: builtins.str) -> zooSketchConstraintReport:
+async def get_sketch_constraint_status_code(code: builtins.str, *, mock: builtins.bool = ...) -> zooSketchConstraintReport:
     r"""
-    Execute kcl code and return a report of sketch constraint status.
+    Execute kcl code and return a report of sketch constraint status. Set `mock` to true to solve sketches without
+    sending modeling commands to the engine.
     """
 
 async def import_and_snapshot(filepaths: typing.Sequence[builtins.str], format: zooInputFormat3d, image_format: zooImageFormat, *, zoom: typing.Optional[builtins.bool] = None, highlight_edges: typing.Optional[builtins.bool] = None) -> builtins.list[builtins.int]: ...
