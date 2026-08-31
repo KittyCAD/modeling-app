@@ -7,6 +7,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type { SketchSelectionId } from '@src/contracts/sketchSession'
+import { millimetres } from '@src/lib/kcl/units'
 import type { PlanePoint } from '@src/lib/scene/projection'
 import { classify } from '@src/lib/sketch/constraints'
 import { roundOff } from '@src/lib/sketch/draft'
@@ -29,6 +30,20 @@ import { objectAt, pointAt } from '@src/lib/sketch/sceneGraph'
  * too, so a dimension applied here is one the existing app would also produce;
  * it is the two axis-aligned variants that are not reachable.
  */
+
+/**
+ * A position for drawing, rather than for writing.
+ *
+ * Everything measured here stays in the *file's* unit, because that is what a
+ * constraint's value and its label position are written in. A position handed to
+ * whoever draws it has to be millimetres instead, which is the unit the plane
+ * frame and the camera are in — so the conversion happens at that boundary and
+ * nowhere else.
+ */
+const forDrawing = (at: PlanePoint, units: NumericSuffix): PlanePoint => ({
+  x: millimetres(at.x, units),
+  y: millimetres(at.y, units),
+})
 
 /** Angles are always written in degrees, whatever the file's length unit is. */
 const ANGLE_UNITS: NumericSuffix = 'Deg'
@@ -181,7 +196,7 @@ export function dimensionFor(
         labelPosition: labelNumber(middle(from, to), units),
         source: { expr: `${roundOff(distance)}`, is_literal: true },
       },
-      labelAt: middle(from, to),
+      labelAt: forDrawing(middle(from, to), units),
     }
   }
 
@@ -206,7 +221,7 @@ export function dimensionFor(
           labelPosition: labelNumber(labelAt, units),
           source: { expr: `${roundOff(distance)}`, is_literal: true },
         },
-        labelAt,
+        labelAt: forDrawing(labelAt, units),
       }
     }
 
@@ -229,7 +244,7 @@ export function dimensionFor(
         labelPosition: labelNumber(labelAt, units),
         source: { expr: `${roundOff(angle)}deg`, is_literal: true },
       },
-      labelAt,
+      labelAt: forDrawing(labelAt, units),
     }
   }
 
@@ -260,7 +275,7 @@ export function dimensionFor(
       labelPosition: labelNumber(labelAt, units),
       source: { expr: `${roundOff(distance)}`, is_literal: true },
     },
-    labelAt,
+    labelAt: forDrawing(labelAt, units),
   }
 }
 
@@ -323,7 +338,9 @@ export function dimensionsOf(
       id,
       value: measure.value,
       units: measure.units,
-      at: label ? { x: label.x.value, y: label.y.value } : null,
+      at: label
+        ? forDrawing({ x: label.x.value, y: label.y.value }, label.x.units)
+        : null,
       type: constraint.type,
     })
   }

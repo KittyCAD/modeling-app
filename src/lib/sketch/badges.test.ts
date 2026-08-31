@@ -66,6 +66,59 @@ const graphWith = (constraints: readonly ApiConstraint[]) => {
 }
 
 describe('where a constraint is drawn', () => {
+  /*
+   * Millimetres, like the drawing's, because that is the unit the plane frame and
+   * the camera are in. The fixture is written in millimetres, so the numbers pass
+   * straight through — a file in inches would not.
+   */
+  it('converts a position written in another unit', () => {
+    const inches: ApiObject[] = [
+      at(0, {
+        type: 'Segment',
+        segment: {
+          type: 'Point',
+          position: {
+            x: { value: 1, units: 'Inch' },
+            y: { value: 0, units: 'Inch' },
+          },
+          ctor: null,
+          owner: null,
+          freedom: 'Free',
+          constraints: [],
+        },
+      } as never),
+      at(1, {
+        type: 'Constraint',
+        constraint: {
+          type: 'Fixed',
+          points: [
+            {
+              point: 0,
+              position: {
+                x: { value: 1, units: 'Inch' },
+                y: { value: 0, units: 'Inch' },
+              },
+            },
+          ],
+        },
+      } as never),
+    ]
+    inches[SKETCH_ID] = at(SKETCH_ID, {
+      type: 'Sketch',
+      args: { on: { default: 'XY' } },
+      plane: 99,
+      segments: [0],
+      constraints: [1],
+    } as never)
+
+    const found = badgesOf(
+      { objects: inches } as unknown as SceneGraph,
+      SKETCH_ID
+    )
+
+    expect(found[0]?.at.x).toBeCloseTo(25.4)
+  })
+
   it('puts a coincidence on the first point it names', () => {
     const found = badgesOf(
       graphWith([{ type: 'Coincident', segments: [1, 0] }]),

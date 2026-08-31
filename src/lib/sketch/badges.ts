@@ -4,6 +4,7 @@ import type {
   ApiObjectId,
   SceneGraph,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { millimetres } from '@src/lib/kcl/units'
 import type { PlanePoint } from '@src/lib/scene/projection'
 import { objectAt, pointAt, segmentAt } from '@src/lib/sketch/sceneGraph'
 
@@ -25,6 +26,11 @@ import { objectAt, pointAt, segmentAt } from '@src/lib/sketch/sceneGraph'
  * dimension lines. This puts each on the thing it constrains and lets the layer
  * fan out anything that collides. Same information, less machinery, and the
  * ported part is the one that matters: which icon means which constraint.
+ *
+ * Positions are in millimetres, like the drawing's, because that is the unit the
+ * plane frame and the camera are in. The graph reports whatever the file was
+ * written in, so every coordinate converts on the way through — a file in inches
+ * would otherwise place its badges twenty-five times too far out.
  */
 
 export interface ConstraintBadge {
@@ -79,7 +85,12 @@ function centreOf(graph: SceneGraph, id: ApiObjectId): PlanePoint | null {
   const segment = segmentAt(graph, id)
   if (!segment) return null
 
-  return middle(segment.points.map((point) => ({ x: point.x, y: point.y })))
+  return middle(
+    segment.points.map((point) => ({
+      x: millimetres(point.x, point.units),
+      y: millimetres(point.y, point.units),
+    }))
+  )
 }
 
 /** Where a point or segment id sits, whichever it turns out to be. */
@@ -90,7 +101,12 @@ function anchorOf(
   if (id === 'ORIGIN') return { x: 0, y: 0 }
 
   const point = pointAt(graph, id)
-  if (point) return { x: point.x, y: point.y }
+  if (point) {
+    return {
+      x: millimetres(point.x, point.units),
+      y: millimetres(point.y, point.units),
+    }
+  }
 
   return centreOf(graph, id)
 }
