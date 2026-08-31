@@ -12,6 +12,7 @@ import {
 import { deriveChanges } from '@src/features/zookeeper/deriveEdit'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
 import { createChangeHistory } from '@src/lib/collab/changeHistory'
+import { type WriteClaims, createWriteClaims } from '@src/lib/collab/claims'
 import { createDivergenceLedger } from '@src/lib/collab/divergence'
 import { followLocalChanges } from '@src/lib/collab/followLocalChanges'
 import { inverseForContribution } from '@src/lib/collab/revert'
@@ -46,12 +47,13 @@ const textOf = (buffer: FileBackedTextBuffer) =>
 function writerOn(
   author: string,
   buffer: FileBackedTextBuffer,
-  seenContent: string
+  seenContent: string,
+  path = PATH
 ) {
   const ledger = createDivergenceLedger()
-  ledger.begin(PATH, seenContent.length)
+  ledger.begin(path, seenContent.length)
   const dispose = followLocalChanges({
-    path: PATH,
+    path,
     buffer,
     ledger,
     remoteAuthor: author,
@@ -62,19 +64,35 @@ function writerOn(
   return {
     ledger,
     dispose,
+    /**
+     * Take the file as it now is, forgetting the drift.
+     *
+     * What a writer must do after being told it was `waiting`: its previous
+     * output was computed against a document somebody else has since changed.
+     */
+    resync(current: string) {
+      view = current
+      ledger.begin(path, current.length)
+    },
     /** Send a whole new version of the file, as the service would. */
-    send(contents: string, contributionId: string, target: ApplyTarget) {
+    send(
+      contents: string,
+      contributionId: string,
+      target: ApplyTarget,
+      claims?: WriteClaims
+    ) {
       const derived = deriveChanges({
-        baseline: new Map([[PATH, view]]),
-        outputs: { [PATH]: contents },
+        baseline: new Map([[path, view]]),
+        outputs: { [path]: contents },
       })
       const outcome = applyChanges({
         changes: derived.changes,
-        baseline: new Map([[PATH, view]]),
+        baseline: new Map([[path, view]]),
         target,
         ledger,
         author,
         contributionId,
+        ...(claims === undefined ? {} : { claims }),
       })
       if (outcome.applied.length > 0) view = contents
       return outcome
@@ -230,6 +248,210 @@ describe('two writers on one file', () => {
     expect(second.applied).toEqual([PATH])
     expect(second.conflicts).toEqual([])
     expect(textOf(buffer)).toBe('width = 10\ndepth = 332\nheight = 4\n')
+
+    writerA.dispose()
+    writerB.dispose()
+  })
+
+  /** The same scenario, with claims: the second writer is held off instead. */
+  it('holds the second writer off that same scenario, claimed', () => {
+    const buffer = createFileBackedTextBuffer({
+      path: PATH,
+      contents: BASE,
+      languageId: 'kcl',
+      capabilities: combineCapabilities([historyCapability]),
+    })
+    const target: ApplyTarget = {
+      bufferForPath: (path) => (path === PATH ? buffer : undefined),
+      executingBufferId: () => null,
+    }
+
+    const claims = createWriteClaims()
+    const writerA = writerOn(A, buffer, BASE)
+    const writerB = writerOn(B, buffer, BASE)
+
+    const first = writerA.send(
+      'width = 10\ndepth = 22\nheight = 4\n',
+      'a-turn-1',
+      target,
+      claims
+    )
+    expect(first.applied).toEqual([PATH])
+
+    const second = writerB.send(
+      'width = 10\ndepth = 33\nheight = 4\n',
+      'b-turn-1',
+      target,
+      claims
+    )
+
+    // Nothing written, nothing garbled, and B is told why.
+    expect(second.applied).toEqual([])
+    expect(second.waiting).toEqual([PATH])
+    expect(textOf(buffer)).toBe('width = 10\ndepth = 22\nheight = 4\n')
+    expect(claims.holder(PATH)).toBe(A)
+
+    writerA.dispose()
+    writerB.dispose()
+  })
+
+  /**
+   * **A claim alone is not enough, and this is the second half of the same
+   * lesson.** Being held off buys time; it does not make the held output valid.
+   *
+   * B's output was computed against a document A has since changed, and B's diff
+   * is still disjoint from A's — so simply retrying it once the claim frees
+   * reproduces exactly the nonsense the claim was meant to prevent.
+   *
+   * The rule that follows: a writer told to wait must **resync** — advance its
+   * view to the current content and re-derive, or ask its model again — rather
+   * than replay what it already had. `waiting` is therefore an instruction to
+   * recapture, not a hint to retry.
+   */
+  it('still merges badly if a held-off writer replays its stale output', () => {
+    const buffer = createFileBackedTextBuffer({
+      path: PATH,
+      contents: BASE,
+      languageId: 'kcl',
+      capabilities: combineCapabilities([historyCapability]),
+    })
+    const target: ApplyTarget = {
+      bufferForPath: (path) => (path === PATH ? buffer : undefined),
+      executingBufferId: () => null,
+    }
+
+    const claims = createWriteClaims()
+    const writerA = writerOn(A, buffer, BASE)
+    const writerB = writerOn(B, buffer, BASE)
+
+    writerA.send(
+      'width = 10\ndepth = 22\nheight = 4\n',
+      'a-turn-1',
+      target,
+      claims
+    )
+    writerB.send(
+      'width = 10\ndepth = 33\nheight = 4\n',
+      'b-turn-1',
+      target,
+      claims
+    )
+    claims.release(A)
+
+    // The naive thing: send the same output again now the claim is free.
+    const replayed = writerB.send(
+      'width = 10\ndepth = 33\nheight = 4\n',
+      'b-turn-1',
+      target,
+      claims
+    )
+
+    expect(replayed.applied).toEqual([PATH])
+    expect(textOf(buffer)).toBe('width = 10\ndepth = 332\nheight = 4\n')
+
+    writerA.dispose()
+    writerB.dispose()
+  })
+
+  /** The correct response to `waiting`: resync, then re-derive. */
+  it('applies cleanly when a held-off writer resyncs first', () => {
+    const buffer = createFileBackedTextBuffer({
+      path: PATH,
+      contents: BASE,
+      languageId: 'kcl',
+      capabilities: combineCapabilities([historyCapability]),
+    })
+    const target: ApplyTarget = {
+      bufferForPath: (path) => (path === PATH ? buffer : undefined),
+      executingBufferId: () => null,
+    }
+
+    const claims = createWriteClaims()
+    const writerA = writerOn(A, buffer, BASE)
+    const writerB = writerOn(B, buffer, BASE)
+
+    writerA.send(
+      'width = 10\ndepth = 22\nheight = 4\n',
+      'a-turn-1',
+      target,
+      claims
+    )
+    const held = writerB.send(
+      'width = 10\ndepth = 33\nheight = 4\n',
+      'b-turn-1',
+      target,
+      claims
+    )
+    expect(held.waiting).toEqual([PATH])
+
+    claims.release(A)
+
+    // B takes the file as it now is, and states its intent against that.
+    writerB.resync(textOf(buffer))
+    const after = writerB.send(
+      'width = 10\ndepth = 33\nheight = 4\n',
+      'b-turn-2',
+      target,
+      claims
+    )
+
+    expect(after.applied).toEqual([PATH])
+    expect(after.conflicts).toEqual([])
+    // Coherent: B's value won the line outright, rather than being interleaved.
+    expect(textOf(buffer)).toBe('width = 10\ndepth = 33\nheight = 4\n')
+
+    writerA.dispose()
+    writerB.dispose()
+  })
+
+  /**
+   * The case that motivated having more than one conversation at all. Claims
+   * must not cost anything here — two writers on different files never contend.
+   */
+  it('lets two writers work on different files at once', () => {
+    const main = createFileBackedTextBuffer({
+      path: 'main.kcl',
+      contents: BASE,
+      languageId: 'kcl',
+      capabilities: combineCapabilities([historyCapability]),
+    })
+    const lid = createFileBackedTextBuffer({
+      path: 'lid.kcl',
+      contents: '// lid\n',
+      languageId: 'kcl',
+      capabilities: combineCapabilities([historyCapability]),
+    })
+    const target: ApplyTarget = {
+      bufferForPath: (path) => {
+        if (path === 'main.kcl') return main
+        if (path === 'lid.kcl') return lid
+        return undefined
+      },
+      executingBufferId: () => null,
+    }
+
+    const claims = createWriteClaims()
+    const writerA = writerOn(A, main, BASE, 'main.kcl')
+    const writerB = writerOn(B, lid, '// lid\n', 'lid.kcl')
+
+    const first = writerA.send(
+      'width = 24\ndepth = 2\nheight = 4\n',
+      'a-turn-1',
+      target,
+      claims
+    )
+    const second = writerB.send(
+      '// lid\nthickness = 1\n',
+      'b-turn-1',
+      target,
+      claims
+    )
+
+    expect(first.applied).toEqual(['main.kcl'])
+    expect(second.applied).toEqual(['lid.kcl'])
+    expect(second.waiting).toEqual([])
+    expect(textOf(main)).toBe('width = 24\ndepth = 2\nheight = 4\n')
+    expect(textOf(lid)).toBe('// lid\nthickness = 1\n')
 
     writerA.dispose()
     writerB.dispose()

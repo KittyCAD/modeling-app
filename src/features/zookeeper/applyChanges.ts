@@ -4,6 +4,7 @@ import type { FileBackedTextBuffer } from '@src/contracts/buffers'
 import type { TextEdit } from '@src/contracts/modelingOperations'
 import type { ProposedFileChange } from '@src/features/zookeeper/deriveEdit'
 import { bufferOrigin } from '@src/lib/buffers/annotations'
+import type { WriteClaims } from '@src/lib/collab/claims'
 import type { DivergenceLedger } from '@src/lib/collab/divergence'
 import { type ConflictReason, rebaseEdits } from '@src/lib/collab/rebase'
 
@@ -54,6 +55,15 @@ export interface ApplyOutcome {
   applied: readonly string[]
   conflicts: readonly PathConflict[]
   deferred: readonly DeferredChange[]
+  /**
+   * Paths another writer is mid-turn on, so nothing was written to them.
+   *
+   * Distinct from a conflict, which says the change cannot be applied at all, and
+   * from a deferral, which asks the caller to do something else first. This says
+   * *not yet*: the same change may well apply once the claim frees, rebased
+   * against whatever the other writer did in the meantime.
+   */
+  waiting: readonly string[]
 }
 
 /**
@@ -81,12 +91,22 @@ export function applyChanges(input: {
   author: string
   /** What these changes should be undone along with. */
   contributionId: string
+  /**
+   * Who may write to which file, when more than one writer is live.
+   *
+   * Optional so a single-writer caller needs no ceremony, but **required for
+   * correctness once two conversations can run at once** — see
+   * `src/lib/collab/claims.ts` for the case that makes it so.
+   */
+  claims?: WriteClaims
 }): ApplyOutcome {
-  const { changes, baseline, target, ledger, author, contributionId } = input
+  const { changes, baseline, target, ledger, author, contributionId, claims } =
+    input
 
   const applied: string[] = []
   const conflicts: PathConflict[] = []
   const deferred: DeferredChange[] = []
+  const waiting: string[] = []
 
   for (const change of ordered(changes, target)) {
     if (change.kind !== 'modify') {
@@ -103,6 +123,17 @@ export function applyChanges(input: {
     const held = baseline.get(change.path)
     if (held === undefined) {
       deferred.push({ path: change.path, reason: 'noBaseline' })
+      continue
+    }
+
+    /*
+     * Claimed here rather than up front, for the same reason the rebase happens
+     * here: there is no await between taking the claim and writing, so nothing
+     * can slip in between. Claiming every path before applying any would also
+     * mean a batch that conflicts on one path holds the others hostage.
+     */
+    if (claims !== undefined && !claims.claim(change.path, author)) {
+      waiting.push(change.path)
       continue
     }
 
@@ -164,7 +195,7 @@ export function applyChanges(input: {
     applied.push(change.path)
   }
 
-  return { applied, conflicts, deferred }
+  return { applied, conflicts, deferred, waiting }
 }
 
 /**
