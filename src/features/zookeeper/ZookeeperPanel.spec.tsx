@@ -11,10 +11,14 @@ import { AppProvider } from '@src/app/context'
 import type {
   Conversation,
   ConversationConnection,
+  StoredConversation,
   Turn,
 } from '@src/contracts/zookeeper'
 import { zookeeperService } from '@src/contracts/zookeeper'
-import { ZookeeperPanel } from '@src/features/zookeeper/ZookeeperPanel'
+import {
+  ZookeeperHeaderActions,
+  ZookeeperPanel,
+} from '@src/features/zookeeper/ZookeeperPanel'
 
 /**
  * The panel, rendered.
@@ -30,13 +34,26 @@ let host: HTMLDivElement | null = null
 function mount(options: {
   reason?: string | null
   conversation?: Conversation | null
+  /** More than one, for the tab strip. The first is active. */
+  conversations?: Conversation[]
   open?: () => void
+  onActivate?: (id: string) => void
+  onClose?: (id: string) => void
+  /** Render the header button instead of the panel body. */
+  header?: boolean
+  /** Conversations on disk, for the resume list. */
+  stored?: StoredConversation[]
 }) {
   const reason = signal<string | null>(options.reason ?? null)
   const conversations = new Map<string, Conversation>()
+  for (const each of options.conversations ?? []) {
+    conversations.set(each.id, each)
+  }
   if (options.conversation) {
     conversations.set(options.conversation.id, options.conversation)
   }
+  const activeId =
+    options.conversation?.id ?? options.conversations?.[0]?.id ?? null
 
   const registry = new Registry()
   registry.configure([
@@ -45,17 +62,20 @@ function mount(options: {
       providesServices: [
         provideService(zookeeperService, {
           conversations: computed(() => conversations),
-          active: computed(() => options.conversation?.id ?? null),
+          active: computed(() => activeId),
           available: computed(() => reason.value === null),
           unavailableReason: computed(() => reason.value),
           open: () => {
             options.open?.()
             return null
           },
-          close: () => {},
-          activate: () => {},
+          close: (id) => options.onClose?.(id),
+          activate: (id) => options.onActivate?.(id),
           conversation: (id) => conversations.get(id),
           holderOf: () => computed(() => null),
+          stored: computed(() => options.stored ?? []),
+          resume: () => null,
+          forget: () => {},
         }),
       ],
       provides: [],
@@ -67,7 +87,11 @@ function mount(options: {
   void act(() => {
     render(
       <AppProvider value={{ registry, dispose: () => {} }}>
-        <ZookeeperPanel />
+        {options.header === true ? (
+          <ZookeeperHeaderActions />
+        ) : (
+          <ZookeeperPanel />
+        )}
       </AppProvider>,
       host as HTMLDivElement
     )
@@ -76,6 +100,7 @@ function mount(options: {
 }
 
 function fakeConversation(options: {
+  id?: string
   turns?: Turn[]
   connection?: ConversationConnection
   status?: 'idle' | 'streaming' | 'waiting' | 'failed'
@@ -84,9 +109,10 @@ function fakeConversation(options: {
   onRevert?: (turnId: string) => void
 }): Conversation {
   const transcript: Signal<readonly Turn[]> = signal(options.turns ?? [])
+  const id = options.id ?? 'c1'
   return {
-    id: 'c1',
-    author: 'zookeeper:c1',
+    id,
+    author: `zookeeper:${id}`,
     transcript: computed(() => transcript.value),
     status: computed(() => options.status ?? 'idle'),
     conflicts: computed(() => []),
@@ -299,6 +325,143 @@ describe('ZookeeperPanel', () => {
 
     expect(view.textContent).toContain('Waiting for main.kcl')
     expect(view.textContent).toContain('another conversation is editing it')
+  })
+
+  it('shows no tab strip for a single conversation', () => {
+    const view = mount({ conversation: fakeConversation({}) })
+
+    expect(view.querySelector('[role="tablist"]')).toBeNull()
+  })
+
+  /**
+   * The strip appears when "Zookeeper" stops being one thing, which is also when
+   * the waiting message starts naming them — so the labels match it.
+   */
+  it('shows a tab per conversation once there are two', () => {
+    const view = mount({
+      conversations: [
+        fakeConversation({ id: 'a' }),
+        fakeConversation({ id: 'b' }),
+      ],
+    })
+
+    const tabs = [...view.querySelectorAll('[role="tab"]')]
+    expect(tabs).toHaveLength(2)
+    expect(tabs[0].textContent).toContain('Zookeeper (1)')
+    expect(tabs[1].textContent).toContain('Zookeeper (2)')
+    expect(tabs[0].getAttribute('aria-selected')).toBe('true')
+    expect(tabs[1].getAttribute('aria-selected')).toBe('false')
+  })
+
+  it('switches conversation when a tab is clicked', () => {
+    const onActivate = vi.fn()
+    const view = mount({
+      conversations: [
+        fakeConversation({ id: 'a' }),
+        fakeConversation({ id: 'b' }),
+      ],
+      onActivate,
+    })
+
+    const tabs = [...view.querySelectorAll('[role="tab"]')]
+    void act(() => {
+      ;(tabs[1] as HTMLElement).click()
+    })
+
+    expect(onActivate).toHaveBeenCalledWith('b')
+  })
+
+  it('closes the conversation whose close button was pressed', () => {
+    const onClose = vi.fn()
+    const view = mount({
+      conversations: [
+        fakeConversation({ id: 'a' }),
+        fakeConversation({ id: 'b' }),
+      ],
+      onClose,
+    })
+
+    const close = [...view.querySelectorAll('button')].find((button) =>
+      button.getAttribute('aria-label')?.includes('Close Zookeeper (2)')
+    )
+    void act(() => {
+      close?.click()
+    })
+
+    expect(onClose).toHaveBeenCalledWith('b')
+  })
+
+  /** A conversation working while you look at another one is worth seeing. */
+  it('marks a background conversation that is busy', () => {
+    const view = mount({
+      conversations: [
+        fakeConversation({ id: 'a' }),
+        fakeConversation({ id: 'b', status: 'streaming' }),
+      ],
+    })
+
+    const marks = [...view.querySelectorAll('.zds-zoo__tabMark')]
+    expect(marks).toHaveLength(1)
+    expect(marks[0].getAttribute('data-status')).toBe('streaming')
+  })
+
+  it('opens another conversation from the header', () => {
+    const open = vi.fn()
+    const view = mount({ header: true, open })
+
+    void act(() => {
+      view.querySelector('button')?.click()
+    })
+
+    expect(open).toHaveBeenCalled()
+  })
+
+  it('disables the header button while unavailable', () => {
+    const view = mount({ header: true, reason: 'Sign in to use Zookeeper.' })
+
+    expect(view.querySelector('button')?.disabled).toBe(true)
+  })
+
+  /**
+   * The point of writing transcripts to disk: one you cannot get back to is only
+   * an audit trail.
+   */
+  it('lists earlier conversations, titled by their first prompt', () => {
+    const view = mount({
+      conversation: null,
+      stored: [
+        {
+          id: 'old',
+          remoteId: 'r1',
+          createdAt: 1,
+          turns: [turn({ prompt: 'add a fillet' })],
+        },
+      ],
+    })
+
+    expect(view.textContent).toContain('Earlier conversations')
+    expect(view.textContent).toContain('add a fillet')
+    expect(view.textContent).toContain('1 turn')
+  })
+
+  it('shows no earlier-conversation list when there is nothing stored', () => {
+    const view = mount({ conversation: null, stored: [] })
+
+    expect(view.textContent).not.toContain('Earlier conversations')
+  })
+
+  /**
+   * Said plainly rather than offered as a button that would do something weaker
+   * than it claims: the change history those edits were applied against died
+   * with the session.
+   */
+  it('says an earlier session’s edits can no longer be reverted', () => {
+    const view = mount({
+      conversation: null,
+      stored: [{ id: 'old', remoteId: null, createdAt: 1, turns: [turn()] }],
+    })
+
+    expect(view.textContent).toContain('can no longer be reverted')
   })
 
   it('marks a failed turn', () => {

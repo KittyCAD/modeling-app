@@ -1,10 +1,82 @@
 /* The Zookeeper panel: a transcript of what the agent did, and a prompt. */
 
-.zds-zoo {
+.zds-zoo,
+.zds-zoo__body {
   display: flex;
   flex-direction: column;
   block-size: 100%;
   min-block-size: 0;
+}
+
+/* One conversation needs no tab strip; the body takes the whole panel. */
+.zds-zoo__body {
+  flex: 1;
+}
+
+.zds-zoo__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--zds-space-1);
+  padding: var(--zds-space-2) var(--zds-space-3);
+  border-block-end: 1px solid var(--zds-border-subtle);
+}
+
+.zds-zoo__tab {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+}
+
+.zds-zoo__tabButton {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-2);
+  padding-inline: var(--zds-space-2);
+  block-size: var(--zds-size-control-sm);
+  border: 1px solid transparent;
+  border-radius: var(--zds-radius-content);
+  background: none;
+  color: var(--zds-text-secondary);
+  font: inherit;
+  font-size: var(--zds-font-size-mini);
+  cursor: pointer;
+}
+
+.zds-zoo__tabButton:hover {
+  background: var(--zds-surface-hover);
+  color: var(--zds-text-primary);
+}
+
+.zds-zoo__tabButton[aria-selected="true"] {
+  background: var(--zds-surface-selected);
+  color: var(--zds-text-primary);
+  /* The datum motif: this is the one you are talking to. */
+  box-shadow: inset var(--zds-size-datum-stripe) 0 0 0 var(--zds-accent);
+}
+
+.zds-zoo__tabButton:focus-visible {
+  border-color: var(--zds-border-focus);
+  outline: none;
+}
+
+/* A conversation working in the background is worth seeing from another tab. */
+.zds-zoo__tabMark {
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: var(--zds-radius-pill);
+  background: var(--zds-text-tertiary);
+}
+
+.zds-zoo__tabMark[data-status="streaming"] {
+  background: var(--zds-accent);
+}
+
+.zds-zoo__tabMark[data-status="waiting"] {
+  background: var(--zds-status-warn);
+}
+
+.zds-zoo__tabMark[data-status="failed"] {
+  background: var(--zds-status-fault);
 }
 
 /* The transcript takes the remaining height and scrolls; the composer does not,
@@ -132,4 +204,86 @@
 .zds-zoo__composerActions {
   display: flex;
   justify-content: flex-end;
+}
+
+/* Earlier conversations ---------------------------------------------- */
+
+.zds-zoo__stored {
+  padding: var(--zds-space-3);
+  border-block-start: 1px solid var(--zds-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-2);
+}
+
+.zds-zoo__storedTitle {
+  margin: 0;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  font-weight: var(--zds-font-weight-regular);
+  letter-spacing: var(--zds-tracking-label);
+  text-transform: uppercase;
+  color: var(--zds-text-tertiary);
+}
+
+.zds-zoo__storedList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+}
+
+.zds-zoo__storedItem {
+  display: flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+}
+
+.zds-zoo__storedButton {
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--zds-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--zds-radius-content);
+  background: none;
+  text-align: start;
+  font: inherit;
+  color: var(--zds-text-secondary);
+  cursor: pointer;
+}
+
+.zds-zoo__storedButton:hover {
+  background: var(--zds-surface-hover);
+  color: var(--zds-text-primary);
+}
+
+.zds-zoo__storedButton:focus-visible {
+  border-color: var(--zds-border-focus);
+  outline: none;
+}
+
+/* The first prompt is the closest thing a conversation has to a title. */
+.zds-zoo__storedPrompt {
+  font-size: var(--zds-font-size-small);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-zoo__storedMeta {
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  color: var(--zds-text-tertiary);
+}
+
+.zds-zoo__storedNote {
+  margin: 0;
+  font-size: var(--zds-font-size-mini);
+  color: var(--zds-text-tertiary);
+  line-height: var(--zds-line-height-body);
 }

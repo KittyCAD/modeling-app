@@ -8,11 +8,15 @@ import { computed } from '@preact/signals'
 import { authService } from '@src/contracts/auth'
 import { commandsValueSpec } from '@src/contracts/commands'
 import { fileSystemService } from '@src/contracts/fileSystem'
+import { fsOperationQueueService } from '@src/contracts/fsOperations'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import { layoutAreasValueSpec, layoutService } from '@src/contracts/layout'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { ZOOKEEPER_AREA_ID, zookeeperService } from '@src/contracts/zookeeper'
-import { ZookeeperPanel } from '@src/features/zookeeper/ZookeeperPanel'
+import {
+  ZookeeperHeaderActions,
+  ZookeeperPanel,
+} from '@src/features/zookeeper/ZookeeperPanel'
 import { createZookeeperService } from '@src/features/zookeeper/createZookeeperService'
 
 /**
@@ -33,6 +37,7 @@ export default defineRegistryItemFactory((ctx) => {
   const auth = () => ctx.services.get(authService)
   const sessions = () => ctx.services.get(projectSessionService)
   const fileSystem = () => ctx.services.get(fileSystemService)
+  const queue = () => ctx.services.get(fsOperationQueueService)
   const layout = () => ctx.services.get(layoutService)
 
   let built: ReturnType<typeof createZookeeperService> | null = null
@@ -49,6 +54,7 @@ export default defineRegistryItemFactory((ctx) => {
       auth: auth(),
       sessions: sessions(),
       fileSystem: fileSystem(),
+      queue: queue(),
       /*
        * Absent in a build with no service configured, which is a supported state
        * rather than a misconfiguration: the panel says so once instead of failing
@@ -84,6 +90,9 @@ export default defineRegistryItemFactory((ctx) => {
           activate: (id) => zookeeper().activate(id),
           conversation: (id) => zookeeper().conversation(id),
           holderOf: (path) => zookeeper().holderOf(path),
+          stored: computed(() => zookeeper().stored.value),
+          resume: (id) => zookeeper().resume(id),
+          forget: (id) => zookeeper().forget(id),
         }),
       ],
       provides: [
@@ -93,6 +102,7 @@ export default defineRegistryItemFactory((ctx) => {
           icon: 'elephant',
           shortcut: '⌘3',
           render: () => <ZookeeperPanel />,
+          headerActions: () => <ZookeeperHeaderActions />,
         }),
 
         provide(commandsValueSpec, {

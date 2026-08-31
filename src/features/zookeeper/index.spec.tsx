@@ -8,8 +8,9 @@ import { describe, expect, it } from 'vitest'
 import type { AuthService } from '@src/contracts/auth'
 import { authService } from '@src/contracts/auth'
 import { commandsValueSpec } from '@src/contracts/commands'
-import type { FileSystem } from '@src/contracts/fileSystem'
 import { fileSystemService } from '@src/contracts/fileSystem'
+import { fsOperationQueueService } from '@src/contracts/fsOperations'
+import { createFsOperationQueue } from '@src/features/fsOperations/createFsOperationQueue'
 import { layoutAreasValueSpec, layoutService } from '@src/contracts/layout'
 import type {
   ProjectSession,
@@ -19,6 +20,7 @@ import { projectSessionService } from '@src/contracts/projectSession'
 import type { LayoutService } from '@src/contracts/layout'
 import { ZOOKEEPER_AREA_ID, zookeeperService } from '@src/contracts/zookeeper'
 import zookeeperFeature from '@src/features/zookeeper'
+import { createFakeFileSystem } from '@src/test/fakeFileSystem'
 
 /**
  * The registry item, built by the real container.
@@ -45,7 +47,10 @@ function harness(
     current: computed(() => current.value),
   } as unknown as ProjectSessionService
 
-  const fileSystem = {} as unknown as FileSystem
+  // Real ones: transcripts are written on turn boundaries, and a stub would make
+  // those writes silently do nothing.
+  const fileSystem = createFakeFileSystem()
+  const queue = createFsOperationQueue()
 
   const layout = {
     isAreaOpen: () => computed(() => false),
@@ -61,6 +66,7 @@ function harness(
         provideService(authService, auth),
         provideService(projectSessionService, sessions),
         provideService(fileSystemService, fileSystem),
+        provideService(fsOperationQueueService, queue),
         provideService(layoutService, layout),
       ],
       provides: [],

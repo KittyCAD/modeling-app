@@ -1,12 +1,13 @@
 import { computed, signal } from '@preact/signals'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import type { AuthService } from '@src/contracts/auth'
-import type { FileSystem } from '@src/contracts/fileSystem'
 import type {
   ProjectSession,
   ProjectSessionService,
 } from '@src/contracts/projectSession'
+import { createFsOperationQueue } from '@src/features/fsOperations/createFsOperationQueue'
 import { createZookeeperService } from '@src/features/zookeeper/createZookeeperService'
+import { createFakeFileSystem } from '@src/test/fakeFileSystem'
 
 /** A socket that never opens, so nothing here waits on a network. */
 class InertWebSocket {
@@ -31,11 +32,15 @@ class InertWebSocket {
 
 const URL_BASE = 'wss://zookeeper.example/ws'
 
+/** Let the store's reads and writes finish. */
+const settle = () => new Promise((resolve) => setTimeout(resolve, 0))
+
 function setup(
   options: {
     url?: string | undefined
     token?: string | null
     session?: ProjectSession | null
+    files?: Record<string, string>
   } = {}
 ) {
   const token = signal<string | null>(
@@ -51,15 +56,19 @@ function setup(
   const sessions = {
     current: computed(() => current.value),
   } as unknown as ProjectSessionService
-  const fileSystem = {} as unknown as FileSystem
+  // A real fake filesystem, because transcripts are written on turn boundaries
+  // and a stub would make those writes silently do nothing.
+  const fileSystem = createFakeFileSystem(options.files ?? {})
 
   return {
     token,
     current,
+    fileSystem,
     service: createZookeeperService({
       auth,
       sessions,
       fileSystem,
+      queue: createFsOperationQueue(),
       url: 'url' in options ? options.url : URL_BASE,
     }),
   }
@@ -69,6 +78,7 @@ function fakeSession(): ProjectSession {
   return {
     bufferForPath: () => undefined,
     executingBuffer: computed(() => null),
+    project: computed(() => ({ path: '/projects/bracket' })),
     captureSnapshot: () => ({
       operationId: 'op-1',
       capturedAt: 0,
@@ -239,6 +249,143 @@ describe('createZookeeperService', () => {
 
     expect(service.active.value).toBe(id)
     expect(service.conversations.value.size).toBe(1)
+  })
+
+  /**
+   * Turn boundaries only, so this is the seam persistence hangs off. A conversation
+   * with no finished turn has nothing worth writing.
+   */
+  it('writes nothing until a turn settles', async () => {
+    const { service, fileSystem } = setup()
+
+    service.open()
+    await settle()
+
+    expect([...fileSystem.files.keys()]).not.toContainEqual(
+      expect.stringContaining('.zoo/conversations')
+    )
+  })
+
+  it('lists nothing stored for a project with no transcripts', async () => {
+    const { service } = setup()
+    await settle()
+
+    expect(service.stored.value).toEqual([])
+  })
+
+  /**
+   * Written by an earlier session, so this is what a reload actually sees.
+   */
+  it('finds a transcript an earlier session left behind', async () => {
+    const stored = [
+      JSON.stringify({
+        v: 1,
+        kind: 'meta',
+        id: 'old',
+        remoteId: 'remote-9',
+        createdAt: 500,
+      }),
+      JSON.stringify({
+        v: 1,
+        kind: 'turn',
+        turn: {
+          id: 't1',
+          prompt: 'add a fillet',
+          response: 'Done.',
+          at: 500,
+          status: 'complete',
+          paths: ['main.kcl'],
+          conflicts: [],
+          waiting: [],
+        },
+      }),
+    ].join('\n')
+
+    const { service } = setup({
+      files: {
+        '/projects/bracket/.zoo/conversations/old.jsonl': `${stored}\n`,
+      },
+    })
+    await settle()
+
+    expect(service.stored.value.map((each) => each.id)).toEqual(['old'])
+    expect(service.stored.value[0].turns[0].prompt).toBe('add a fillet')
+  })
+
+  it('reopens a stored conversation with its turns', async () => {
+    const stored = [
+      JSON.stringify({
+        v: 1,
+        kind: 'meta',
+        id: 'old',
+        remoteId: 'remote-9',
+        createdAt: 500,
+      }),
+      JSON.stringify({
+        v: 1,
+        kind: 'turn',
+        turn: {
+          id: 't1',
+          prompt: 'add a fillet',
+          response: 'Done.',
+          at: 500,
+          status: 'complete',
+          paths: [],
+          conflicts: [],
+          waiting: [],
+        },
+      }),
+    ].join('\n')
+
+    const { service } = setup({
+      files: {
+        '/projects/bracket/.zoo/conversations/old.jsonl': `${stored}\n`,
+      },
+    })
+    await settle()
+
+    const id = service.resume('old')
+
+    expect(id).toBe('old')
+    expect(service.conversation('old')?.transcript.value).toHaveLength(1)
+    expect(service.active.value).toBe('old')
+  })
+
+  it('activates a conversation already open rather than opening it twice', async () => {
+    const { service } = setup()
+    const id = service.open()
+    await settle()
+    if (id === null) return
+
+    expect(service.resume(id)).toBe(id)
+    expect(service.conversations.value.size).toBe(1)
+  })
+
+  it('declines to resume one it has never heard of', async () => {
+    const { service } = setup()
+    await settle()
+
+    expect(service.resume('nope')).toBeNull()
+  })
+
+  it('forgets a stored conversation, on disk as well', async () => {
+    const stored = JSON.stringify({
+      v: 1,
+      kind: 'meta',
+      id: 'old',
+      remoteId: null,
+      createdAt: 500,
+    })
+    const path = '/projects/bracket/.zoo/conversations/old.jsonl'
+    const { service, fileSystem } = setup({ files: { [path]: `${stored}\n` } })
+    await settle()
+    expect(service.stored.value).toHaveLength(1)
+
+    service.forget('old')
+    await settle()
+
+    expect(service.stored.value).toEqual([])
+    expect(fileSystem.files.has(path)).toBe(false)
   })
 
   it('reports nobody holding a path that is untouched', () => {

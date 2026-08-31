@@ -123,6 +123,33 @@ export interface ZookeeperService {
   conversation(id: ConversationId): Conversation | undefined
   /** Which conversation, if any, currently holds the write claim on a path. */
   holderOf(path: string): ReadonlySignal<string | null>
+
+  /**
+   * Conversations stored for this project, newest first.
+   *
+   * Read from disk when the project opens. Populated even for conversations that
+   * are not currently open, which is the point: a transcript that survives a
+   * reload is only useful if something lists it.
+   */
+  readonly stored: ReadonlySignal<readonly StoredConversation[]>
+  /**
+   * Reopen a stored conversation.
+   *
+   * Its turns come back for reading and its remote id is used to ask the service
+   * to replay. Its *edits* do not come back as revertible: the change history
+   * they were applied against died with the session that made them.
+   */
+  resume(id: ConversationId): ConversationId | null
+  /** Forget a stored conversation, on disk as well as here. */
+  forget(id: ConversationId): void
+}
+
+/** A conversation on disk. */
+export interface StoredConversation {
+  id: ConversationId
+  remoteId: string | null
+  createdAt: number
+  turns: readonly Turn[]
 }
 
 export const zookeeperContract = defineContract({

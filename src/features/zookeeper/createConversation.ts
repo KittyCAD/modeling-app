@@ -50,6 +50,23 @@ export interface ConversationDependencies {
    * is what a test with a fake transport means.
    */
   connection?: ReadonlySignal<ConversationConnection>
+  /**
+   * Turns from a stored transcript, when this conversation is being resumed.
+   *
+   * Display only. The divergence ledger deliberately starts empty: those turns
+   * were applied in a session whose in-memory change history is gone, so an
+   * exact revert of them is no longer possible — see the note on durable revert
+   * in `src/lib/collab/revert.ts`.
+   */
+  initialTurns?: readonly Turn[]
+  /**
+   * Called when a turn reaches a resting state.
+   *
+   * The hook for persistence, and it fires at *turn* boundaries rather than on
+   * every streamed token on purpose: a transcript is written by rewriting the
+   * file, which is cheap per turn and ruinous per delta.
+   */
+  onTurnSettled?: () => void
   /** Ids for turns. Injected so a test can read them. */
   nextTurnId?: () => string
 }
@@ -90,6 +107,8 @@ export function createConversation(
     claims,
     captureProject,
     connection,
+    initialTurns,
+    onTurnSettled,
     nextTurnId,
   } = dependencies
 
@@ -99,11 +118,16 @@ export function createConversation(
   /** One subscription per path we have begun tracking. */
   const following = new Map<string, () => void>()
 
-  const transcript = signal<readonly Turn[]>([])
+  const transcript = signal<readonly Turn[]>(initialTurns ?? [])
   const conflicts = signal<readonly PathConflict[]>([])
 
   let turn: { id: string; controller: AbortController } | null = null
-  let turnCounter = 0
+  /*
+   * Seeded past any restored turn, so a resumed conversation cannot mint an id
+   * that already appears in its own transcript — which would make `revert` and
+   * the transcript's own keys ambiguous.
+   */
+  let turnCounter = initialTurns?.length ?? 0
 
   const mintTurnId = nextTurnId ?? (() => `${id}-turn-${++turnCounter}`)
 
@@ -214,6 +238,7 @@ export function createConversation(
     }))
     claims?.release(author)
     if (turn?.id === turnId) turn = null
+    onTurnSettled?.()
   }
 
   const stopListening = transport.onMessage((message) => {

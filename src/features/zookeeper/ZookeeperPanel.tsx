@@ -6,6 +6,31 @@ import { zookeeperService } from '@src/contracts/zookeeper'
 import './zookeeper.css'
 
 /**
+ * The panel's header button.
+ *
+ * In the chrome rather than the body because it belongs to the panel, not to any
+ * one conversation — and because the body's own "start a conversation" button
+ * only exists in the empty state, so without this there would be no way to open
+ * a second one.
+ */
+export function ZookeeperHeaderActions() {
+  const zookeeper = useService(zookeeperService)
+  const available = useComputed(() => zookeeper.available.value)
+
+  return (
+    <Button
+      label="New conversation"
+      iconOnly
+      icon="plus"
+      size="small"
+      variant="ghost"
+      disabled={!available.value}
+      onClick={() => zookeeper.open()}
+    />
+  )
+}
+
+/**
  * The agent, as a participant in the project.
  *
  * Deliberately not a chat window that happens to write files. The transcript
@@ -37,23 +62,146 @@ export function ZookeeperPanel() {
 
   if (active.value === null) {
     return (
-      <EmptyState
-        icon="elephant"
-        eyebrow="Zookeeper"
-        title="No conversation open"
-        description="Ask for a change and Zookeeper edits the project alongside you."
-        actions={
-          <Button
-            label="Start a conversation"
-            variant="primary"
-            onClick={() => zookeeper.open()}
-          />
-        }
-      />
+      <div class="zds-zoo">
+        <EmptyState
+          icon="elephant"
+          eyebrow="Zookeeper"
+          title="No conversation open"
+          description="Ask for a change and Zookeeper edits the project alongside you."
+          actions={
+            <Button
+              label="Start a conversation"
+              variant="primary"
+              onClick={() => zookeeper.open()}
+            />
+          }
+        />
+        <StoredConversations />
+      </div>
     )
   }
 
-  return <ConversationView conversation={active.value} />
+  return (
+    <div class="zds-zoo">
+      <ConversationTabs />
+      <ConversationView conversation={active.value} />
+    </div>
+  )
+}
+
+/**
+ * Conversations this project has had before.
+ *
+ * The point of writing transcripts to disk: one you cannot get back to is only
+ * an audit trail. Reopening brings the turns back for reading and asks the
+ * service to replay its side.
+ *
+ * What it does *not* bring back is the ability to revert those edits exactly —
+ * the change history they were applied against died with the session, so the
+ * list says so rather than offering a button that would quietly do something
+ * weaker than it claims.
+ */
+function StoredConversations() {
+  const zookeeper = useService(zookeeperService)
+  const stored = useComputed(() => zookeeper.stored.value)
+
+  if (stored.value.length === 0) return null
+
+  return (
+    <section class="zds-zoo__stored">
+      <h3 class="zds-zoo__storedTitle">Earlier conversations</h3>
+      <ul class="zds-zoo__storedList">
+        {stored.value.map((conversation) => (
+          <li class="zds-zoo__storedItem" key={conversation.id}>
+            <button
+              type="button"
+              class="zds-zoo__storedButton"
+              onClick={() => zookeeper.resume(conversation.id)}
+            >
+              <span class="zds-zoo__storedPrompt">
+                {conversation.turns.at(0)?.prompt ?? 'Empty conversation'}
+              </span>
+              <span class="zds-zoo__storedMeta">
+                {`${conversation.turns.length} turn${
+                  conversation.turns.length === 1 ? '' : 's'
+                }`}
+              </span>
+            </button>
+            <Button
+              label="Forget this conversation"
+              iconOnly
+              icon="trash"
+              size="small"
+              variant="ghost"
+              onClick={() => zookeeper.forget(conversation.id)}
+            />
+          </li>
+        ))}
+      </ul>
+      <p class="zds-zoo__storedNote">
+        Reopening shows what was said. Edits from an earlier session can no
+        longer be reverted turn by turn.
+      </p>
+    </section>
+  )
+}
+
+/**
+ * Which collaborator you are talking to.
+ *
+ * Hidden with one conversation, because a tab strip over a single tab is noise.
+ * It appears the moment a second exists, which is also the moment "Zookeeper"
+ * stops being a single thing and the label has to say which one.
+ */
+function ConversationTabs() {
+  const zookeeper = useService(zookeeperService)
+  const entries = useComputed(() => [...zookeeper.conversations.value.values()])
+  const active = useComputed(() => zookeeper.active.value)
+
+  if (entries.value.length < 2) return null
+
+  return (
+    <div class="zds-zoo__tabs" role="tablist" aria-label="Conversations">
+      {entries.value.map((conversation, index) => (
+        <div class="zds-zoo__tab" key={conversation.id}>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={active.value === conversation.id}
+            class="zds-zoo__tabButton"
+            onClick={() => zookeeper.activate(conversation.id)}
+          >
+            {/* Numbered rather than named: a conversation has no title until
+                somebody gives it one, and "Zookeeper (2)" is what the waiting
+                message calls it. */}
+            {`Zookeeper (${index + 1})`}
+            <StatusMark conversation={conversation} />
+          </button>
+          <Button
+            label={`Close Zookeeper (${index + 1})`}
+            iconOnly
+            icon="close"
+            size="small"
+            variant="ghost"
+            onClick={() => zookeeper.close(conversation.id)}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/** A dot on a tab, so a conversation working in the background is visible. */
+function StatusMark({ conversation }: { conversation: Conversation }) {
+  const status = useComputed(() => conversation.status.value)
+  if (status.value === 'idle') return null
+  return (
+    <span
+      class="zds-zoo__tabMark"
+      data-status={status.value}
+      aria-label={status.value}
+    />
+  )
 }
 
 function ConversationView({ conversation }: { conversation: Conversation }) {
@@ -73,7 +221,7 @@ function ConversationView({ conversation }: { conversation: Conversation }) {
   }
 
   return (
-    <div class="zds-zoo">
+    <div class="zds-zoo__body">
       <div class="zds-zoo__transcript">
         {turns.value.length === 0 ? (
           <p class="zds-zoo__hint">
