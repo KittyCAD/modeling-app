@@ -727,6 +727,89 @@ describe('turning to face the plane', () => {
   })
 })
 
+describe('the other tools', () => {
+  /** Long enough for the action queue to drain. */
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  it('writes a point and stays ready for the next one', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('point')
+
+    app.session.place({ x: 4, y: 5 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addSegment).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledWith(
+      0,
+      {
+        type: 'Point',
+        position: {
+          x: { type: 'Var', value: 4, units: 'Mm' },
+          y: { type: 'Var', value: 5, units: 'Mm' },
+        },
+      },
+      { label: 'point', checkpoint: true }
+    )
+    // Nothing to drag open, so nothing is held and the tool is ready again.
+    expect(app.session.draft.value).toEqual({ kind: 'idle' })
+    expect(app.session.tool.value).toBe('point')
+  })
+
+  it('writes a circle only once its radius is known', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('circle')
+
+    app.session.place({ x: 0, y: 0 })
+    await settled()
+
+    // A circle of no radius is degenerate, so the centre click writes nothing.
+    expect(app.frontend.addSegment).not.toHaveBeenCalled()
+    expect(app.session.draft.value).toEqual({
+      kind: 'pending',
+      points: [{ x: 0, y: 0 }],
+    })
+
+    app.session.place({ x: 10, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addSegment).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledWith(
+      0,
+      expect.objectContaining({
+        type: 'Circle',
+        center: {
+          x: { type: 'Var', value: 0, units: 'Mm' },
+          y: { type: 'Var', value: 0, units: 'Mm' },
+        },
+        start: {
+          x: { type: 'Var', value: 10, units: 'Mm' },
+          y: { type: 'Var', value: 0, units: 'Mm' },
+        },
+      }),
+      { label: 'circle', checkpoint: true }
+    )
+  })
+
+  it('forgets a half-started circle when the tool changes', async () => {
+    const app = setup()
+    await app.session.enter()
+    app.session.equip('circle')
+    app.session.place({ x: 0, y: 0 })
+    await settled()
+
+    app.session.equip('line')
+    await settled()
+
+    expect(app.session.draft.value).toEqual({ kind: 'idle' })
+    // Nothing was written, so nothing has to be deleted.
+    expect(app.frontend.deleteObjects).not.toHaveBeenCalled()
+  })
+})
+
 describe('dragging a point', () => {
   /*
    * The bug this covers is the whole reason dragging felt broken: `moveTo`

@@ -260,7 +260,10 @@ export function createSketchSession(
           checkpoint: true,
         })
         write(outcome)
-        settleDraft(outcome)
+        // Only a shape that is dragged open has something to take hold of. A
+        // point or a finished circle is done, and the tool stays equipped for
+        // the next one.
+        if (action.hold === 'end') settleDraft(outcome)
         return
       }
 

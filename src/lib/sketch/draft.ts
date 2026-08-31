@@ -37,6 +37,19 @@ export type DraftState =
   /** Nothing started. The next click begins a segment. */
   | { kind: 'idle' }
   /**
+   * Clicks collected, with nothing in the sketch yet.
+   *
+   * For the shapes that cannot exist from one click. A circle of no radius is
+   * not a circle the solver can hold an opinion about, so its centre is
+   * remembered here and the segment is written on the second click — which is
+   * what the existing app does too.
+   *
+   * The pointer is deliberately *not* stored. Whatever draws the preview already
+   * follows the pointer for hovering, so keeping a copy here would be a second
+   * source of truth updated on every pointer event.
+   */
+  | { kind: 'pending'; points: readonly PlanePoint[] }
+  /**
    * Rubber-banding. `pointId` is the end being dragged.
    *
    * `segmentIds` is everything this draft created, so abandoning it can take all
@@ -77,8 +90,20 @@ export type DraftState =
 
 /** What the tool wants the frontend to do. */
 export type DraftAction =
-  /** Write a zero-length segment; its end point becomes the draft. */
-  | { kind: 'begin'; segment: SegmentCtor; label: string }
+  /**
+   * Write a segment.
+   *
+   * `hold` is what happens next: `end` takes hold of the new segment's end point
+   * so the pointer drags it open, and `none` is a shape that is finished the
+   * moment it exists — a point, or a circle whose radius came from the click that
+   * created it.
+   */
+  | {
+      kind: 'begin'
+      segment: SegmentCtor
+      label: string
+      hold: 'end' | 'none'
+    }
   /** Move the draft's end point. `commit` false is a preview solve. */
   | { kind: 'move'; pointId: ApiObjectId; to: PlanePoint; commit: boolean }
   /**
@@ -112,8 +137,10 @@ export interface DraftStep {
   actions: readonly DraftAction[]
 }
 
-/** The label the existing app gives every line it writes. */
+/** The labels the existing app gives what it writes, kept identical. */
 export const LINE_SEGMENT_LABEL = 'line-segment'
+export const POINT_SEGMENT_LABEL = 'point'
+export const CIRCLE_SEGMENT_LABEL = 'circle'
 
 /**
  * Two decimal places, which is `roundOff`'s default in the existing app.
@@ -156,6 +183,32 @@ export const zeroLengthLine = (
   end: coordinate(at, units),
 })
 
+/** A standalone point, which is a segment of its own in the graph. */
+export const pointSegment = (
+  at: PlanePoint,
+  units: NumericSuffix
+): SegmentCtor => ({
+  type: 'Point',
+  position: coordinate(at, units),
+})
+
+/**
+ * A circle from its centre and a point on it.
+ *
+ * The rim point is what the graph stores rather than a radius, which is why the
+ * second click is the shape rather than a number: the point stays in the sketch
+ * and can be dragged, constrained and dimensioned afterwards.
+ */
+export const circleFrom = (
+  center: PlanePoint,
+  rim: PlanePoint,
+  units: NumericSuffix
+): SegmentCtor => ({
+  type: 'Circle',
+  center: coordinate(center, units),
+  start: coordinate(rim, units),
+})
+
 /** Where a point should go, as an edit to an existing one. */
 export const pointAt = (at: PlanePoint, units: NumericSuffix): SegmentCtor => ({
   type: 'Point',
@@ -189,18 +242,28 @@ export function place(
 ): DraftStep {
   switch (state.kind) {
     case 'idle':
+      return first(at, context)
+
+    case 'pending': {
+      const [start] = state.points
+      // A tool that collects clicks but has no second step is a bug in the
+      // table below rather than something to guess about.
+      if (!start || context.tool !== 'circle') {
+        return { state: { kind: 'idle' }, actions: [] }
+      }
+
       return {
-        // The point id is not known until the frontend answers, so the state
-        // stays idle here and the caller settles it with `began`.
-        state,
+        state: { kind: 'idle' },
         actions: [
           {
             kind: 'begin',
-            segment: zeroLengthLine(at, context.units),
-            label: LINE_SEGMENT_LABEL,
+            segment: circleFrom(start, at, context.units),
+            label: CIRCLE_SEGMENT_LABEL,
+            hold: 'none',
           },
         ],
       }
+    }
 
     case 'drawing':
       return {
@@ -222,6 +285,63 @@ export function place(
 }
 
 /**
+ * The first click of a shape.
+ *
+ * Where the tools differ most, so it is one place rather than a branch inside
+ * every transition. Three answers: write a finished shape, write something to
+ * drag open, or remember the click because one click is not yet a shape.
+ */
+function first(at: PlanePoint, context: DraftContext): DraftStep {
+  switch (context.tool) {
+    case 'line':
+      return {
+        // The point id is not known until the frontend answers, so the state
+        // stays idle here and the caller settles it with `begun`.
+        state: { kind: 'idle' },
+        actions: [
+          {
+            kind: 'begin',
+            segment: zeroLengthLine(at, context.units),
+            label: LINE_SEGMENT_LABEL,
+            hold: 'end',
+          },
+        ],
+      }
+
+    case 'point':
+      // Finished the moment it exists. There is nothing to drag open and nothing
+      // to chain from, so the tool stays equipped and the next click is another
+      // point.
+      return {
+        state: { kind: 'idle' },
+        actions: [
+          {
+            kind: 'begin',
+            segment: pointSegment(at, context.units),
+            label: POINT_SEGMENT_LABEL,
+            hold: 'none',
+          },
+        ],
+      }
+
+    case 'circle':
+      /*
+       * Remembered rather than written.
+       *
+       * A circle of no radius is degenerate — there is no rim point for the
+       * solver to hold an opinion about — so nothing goes into the sketch until
+       * the second click says how big it is. The preview in between is drawn
+       * from this state and the pointer, and is the one thing on screen that is
+       * not solver truth; there is no solver truth to be had yet.
+       */
+      return { state: { kind: 'pending', points: [at] }, actions: [] }
+
+    case null:
+      return { state: { kind: 'idle' }, actions: [] }
+  }
+}
+
+/**
  * A pointer move.
  *
  * Drags the draft when there is one, and *creates* one when a chain is waiting —
@@ -234,6 +354,11 @@ export function moveTo(
 ): DraftStep {
   switch (state.kind) {
     case 'idle':
+      return { state, actions: [] }
+
+    case 'pending':
+      // The preview is drawn from the collected clicks and the pointer, so a
+      // move asks the frontend for nothing at all.
       return { state, actions: [] }
 
     case 'drawing':
@@ -249,8 +374,8 @@ export function moveTo(
 
     case 'chaining': {
       // The only state whose next step is to *create* something, so the only
-      // one that needs to know what tool is drawing.
-      if (!context.tool) return { state, actions: [] }
+      // one that needs to know what tool is drawing. Only a line chains.
+      if (context.tool !== 'line') return { state, actions: [] }
 
       return {
         state,
@@ -348,6 +473,10 @@ export function abandon(state: DraftState): DraftStep {
       actions: [{ kind: 'discard', segmentIds: state.segmentIds }],
     }
   }
+
+  // Nothing was written, so there is nothing to take away: collected clicks
+  // live here and nowhere else.
+  if (state.kind === 'pending') return { state: { kind: 'idle' }, actions: [] }
 
   return { state: { kind: 'idle' }, actions: [] }
 }

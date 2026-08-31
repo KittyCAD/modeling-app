@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
+  CIRCLE_SEGMENT_LABEL,
   LINE_SEGMENT_LABEL,
+  POINT_SEGMENT_LABEL,
   abandon,
   advanceDrag,
   beginDrag,
@@ -8,8 +10,10 @@ import {
   endDrag,
   expr,
   isMidDraft,
+  circleFrom,
   moveTo,
   place,
+  pointSegment,
   roundOff,
   zeroLengthLine,
 } from '@src/lib/sketch/draft'
@@ -35,6 +39,7 @@ describe('the first click', () => {
         kind: 'begin',
         segment: zeroLengthLine({ x: 3, y: 4 }, 'Mm'),
         label: LINE_SEGMENT_LABEL,
+        hold: 'end',
       },
     ])
 
@@ -231,5 +236,94 @@ describe('dragging something already in the sketch', () => {
 
   it('ends nothing when no drag is in progress', () => {
     expect(endDrag(idle, { x: 1, y: 1 }).actions).toEqual([])
+  })
+})
+
+describe('the point tool', () => {
+  const context = { tool: 'point' as const, units: 'Mm' as const }
+
+  /*
+   * Finished the moment it exists. There is nothing to drag open and nothing to
+   * chain from, so the tool stays equipped and the next click is another point.
+   */
+  it('writes a finished point and holds nothing', () => {
+    const step = place(idle, { x: 3, y: 4 }, context)
+
+    expect(step.actions).toEqual([
+      {
+        kind: 'begin',
+        segment: pointSegment({ x: 3, y: 4 }, 'Mm'),
+        label: POINT_SEGMENT_LABEL,
+        hold: 'none',
+      },
+    ])
+    expect(step.state).toEqual(idle)
+  })
+})
+
+describe('the circle tool', () => {
+  const context = { tool: 'circle' as const, units: 'Mm' as const }
+
+  /*
+   * A circle of no radius is degenerate — there is no rim point for the solver to
+   * hold an opinion about — so the first click writes nothing.
+   */
+  it('remembers the centre rather than writing one', () => {
+    const step = place(idle, { x: 1, y: 1 }, context)
+
+    expect(step.actions).toEqual([])
+    expect(step.state).toEqual({ kind: 'pending', points: [{ x: 1, y: 1 }] })
+  })
+
+  it('asks the frontend for nothing while the radius is being chosen', () => {
+    const pending = { kind: 'pending' as const, points: [{ x: 1, y: 1 }] }
+
+    // The preview is drawn from the collected clicks and the pointer, so there
+    // is nothing to solve.
+    expect(moveTo(pending, { x: 9, y: 9 }, context).actions).toEqual([])
+  })
+
+  it('writes the circle on the second click, from centre and rim', () => {
+    const pending = { kind: 'pending' as const, points: [{ x: 0, y: 0 }] }
+
+    const step = place(pending, { x: 5, y: 0 }, context)
+
+    expect(step.actions).toEqual([
+      {
+        kind: 'begin',
+        segment: circleFrom({ x: 0, y: 0 }, { x: 5, y: 0 }, 'Mm'),
+        label: CIRCLE_SEGMENT_LABEL,
+        hold: 'none',
+      },
+    ])
+    expect(step.state).toEqual(idle)
+  })
+
+  it('keeps the rim as a point rather than as a radius', () => {
+    const circle = circleFrom({ x: 0, y: 0 }, { x: 5, y: 0 }, 'Mm')
+
+    /*
+     * Which is what the graph stores, and why the second click is a shape rather
+     * than a number: the rim point stays in the sketch and can be dragged,
+     * constrained and dimensioned afterwards.
+     */
+    expect(circle).toEqual({
+      type: 'Circle',
+      center: {
+        x: { type: 'Var', value: 0, units: 'Mm' },
+        y: { type: 'Var', value: 0, units: 'Mm' },
+      },
+      start: {
+        x: { type: 'Var', value: 5, units: 'Mm' },
+        y: { type: 'Var', value: 0, units: 'Mm' },
+      },
+    })
+  })
+
+  it('throws collected clicks away with nothing to delete', () => {
+    const pending = { kind: 'pending' as const, points: [{ x: 1, y: 1 }] }
+
+    // Nothing was written, so there is nothing to take away.
+    expect(abandon(pending)).toEqual({ state: idle, actions: [] })
   })
 })

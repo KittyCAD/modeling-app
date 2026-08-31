@@ -10,6 +10,7 @@ import type { SketchScene as Scene } from '@src/features/sketchOverlay/createSke
 import type { drawSketch } from '@src/features/sketchOverlay/sketchSegments'
 import { draftSegmentIds } from '@src/lib/sketch/draft'
 import { drawingOf } from '@src/lib/sketch/drawing'
+import { previewShapes } from '@src/lib/sketch/preview'
 import { SKETCH_HOVER_DISTANCE_PX, pickInSketch } from '@src/lib/sketch/hitTest'
 import './sketchOverlay.css'
 
@@ -154,12 +155,31 @@ export function SketchScene({ pointer }: { pointer: SketchPointer }) {
         ? pickInSketch(drawing, where, SKETCH_HOVER_DISTANCE_PX / scale)
         : null
 
+    /*
+     * The shape-to-be, for the tools whose first click is not yet a shape.
+     *
+     * Added after the hover is worked out, on purpose: a preview is not
+     * something you can hover, pick or snap to, and including it in the drawing
+     * the hit test reads would offer all three.
+     */
+    const preview = previewShapes(
+      sessions.draft.value,
+      sessions.tool.value,
+      where
+    )
+
     paint(
       built.group,
-      drawing,
+      preview.length > 0
+        ? { ...drawing, shapes: [...drawing.shapes, ...preview] }
+        : drawing,
       {
         theme,
-        drafts: new Set(draftSegmentIds(sessions.draft.value)),
+        drafts: new Set([
+          ...draftSegmentIds(sessions.draft.value),
+          // Drawn grey, like any other uncommitted geometry.
+          ...preview.map((shape) => shape.id),
+        ]),
         hoveredId: hovered?.id ?? null,
       },
       built.viewport()

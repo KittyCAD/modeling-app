@@ -24,6 +24,7 @@ import {
 import { createSketchInteraction } from '@src/features/sketchOverlay/createSketchInteraction'
 import { SketchScene } from '@src/features/sketchOverlay/SketchScene'
 import { SketchProblem } from '@src/features/sketchOverlay/SketchProblem'
+import { SKETCH_TOOLS, type SketchToolId } from '@src/lib/sketch/tools'
 
 /**
  * Drawing in a sketch: what it looks like, and what the pointer does.
@@ -52,12 +53,52 @@ export default defineRegistryItemFactory((ctx) => {
   /** True once there is a sketch open with a plane to draw on. */
   const drawable = computed(() => sessions()?.open.value?.plane != null)
 
-  const equip = (tool: 'line') => () => {
+  const equip = (tool: SketchToolId) => () => {
     const session = sessions()
     // A second press of the same tool puts it down, which is how somebody stops
     // drawing without reaching for anything.
     session?.equip(session.tool.value === tool ? null : tool)
   }
+
+  /**
+   * One command, one toolbar slot and one key per tool.
+   *
+   * Generated from the table rather than written out, because every tool wants
+   * exactly the same three things and the only differences — the name, the icon,
+   * the letter — are what the table holds. Adding a tool is then a row plus its
+   * behaviour in `draft.ts`, with nothing to keep in step by hand.
+   */
+  const toolContributions = SKETCH_TOOLS.flatMap((tool) => {
+    const commandId = `sketch.tool.${tool.id}`
+
+    return [
+      provide(commandsValueSpec, {
+        id: commandId,
+        title: tool.title,
+        category: 'Sketch',
+        icon: tool.icon,
+        description: tool.description,
+        enabled: drawable,
+        active: computed(() => sessions()?.tool.value === tool.id),
+        run: equip(tool.id),
+      }),
+
+      provide(toolbarItemsValueSpec, {
+        kind: 'command' as const,
+        id: commandId,
+        mode: SKETCHING_MODE,
+        section: 'draw',
+        order: tool.order,
+        commandId,
+      }),
+
+      provide(keybindingsValueSpec, {
+        keystrokes: [tool.key],
+        commandId,
+        scopes: [SKETCHING_SCOPE],
+      }),
+    ]
+  })
 
   return {
     model: { pointer: interaction.pointer },
@@ -122,31 +163,7 @@ export default defineRegistryItemFactory((ctx) => {
           attach: interaction.attachPick,
         }),
 
-        provide(commandsValueSpec, {
-          id: 'sketch.tool.line',
-          title: 'Line',
-          category: 'Sketch',
-          icon: 'line',
-          description: 'Draw a line between two points in the open sketch.',
-          enabled: drawable,
-          active: computed(() => sessions()?.tool.value === 'line'),
-          run: equip('line'),
-        }),
-
-        provide(toolbarItemsValueSpec, {
-          kind: 'command',
-          id: 'sketch.tool.line',
-          mode: SKETCHING_MODE,
-          section: 'draw',
-          order: 10,
-          commandId: 'sketch.tool.line',
-        }),
-
-        provide(keybindingsValueSpec, {
-          keystrokes: ['l'],
-          commandId: 'sketch.tool.line',
-          scopes: [SKETCHING_SCOPE],
-        }),
+        ...toolContributions,
 
         /**
          * Escape, one step at a time.
