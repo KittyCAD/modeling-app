@@ -17,7 +17,11 @@ import {
   requestExecution,
   suppressExecution,
 } from '@src/lib/buffers/annotations'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import { kclErrorMessage } from '@src/lib/kcl/errors'
+import { suffixForUnitName } from '@src/lib/kcl/units'
+import { defaultLengthUnitOf } from '@src/lib/kclStdlib/program'
 import { textDiff } from '@src/lib/buffers/textDiff'
 import type { PlaneFrame, PlanePoint } from '@src/lib/scene/projection'
 import type {
@@ -27,12 +31,15 @@ import type {
 import { objectAt, sketchIdAt, sketchRanges } from '@src/lib/sketch/sceneGraph'
 import { sketchIdIn, sketchPlaneSource } from '@src/lib/sketch/sketchPlane'
 import {
-  type SketchToolId,
-  type SketchToolState,
-  cancelTool,
-  equipTool,
-  placePoint,
-} from '@src/lib/sketch/tools'
+  type DraftAction,
+  type DraftState,
+  abandon,
+  begun,
+  moveTo as moveDraft,
+  place as placeDraft,
+  pointAt,
+} from '@src/lib/sketch/draft'
+import type { SketchToolId } from '@src/lib/sketch/tools'
 
 export interface SketchSessionDependencies {
   frontend: () => KclFrontendService | undefined
@@ -92,7 +99,8 @@ export function createSketchSession(
   const open = signal<OpenSketch | null>(null)
   const busy = signal(false)
   const error = signal<string | null>(null)
-  const tool = signal<SketchToolState | null>(null)
+  const tool = signal<SketchToolId | null>(null)
+  const draft = signal<DraftState>({ kind: 'idle' })
 
   /**
    * Mutations run one at a time, in the order they were asked for.
@@ -207,6 +215,149 @@ export function createSketchSession(
     })
   }
 
+  /**
+   * The unit to write numbers in.
+   *
+   * The file's own, from its `@settings` annotation, so a sketch drawn in a file
+   * that works in inches is written in inches. Millimetres when the file says
+   * nothing — which is also what an unsuffixed number means, so the two agree.
+   */
+  const units = (): NumericSuffix => {
+    const ast = program()
+    if (!ast) return 'Mm'
+    return suffixForUnitName(defaultLengthUnitOf(ast as Program)) ?? 'Mm'
+  }
+
+  /** Actions run one at a time, in order, for the reason `queue` exists. */
+  const run = (actions: readonly DraftAction[]) => {
+    if (actions.length === 0) return
+    error.value = null
+
+    queue = queue
+      .catch(() => {})
+      .then(async () => {
+        for (const action of actions) await perform(action)
+      })
+      .catch((caught: unknown) => {
+        error.value = kclErrorMessage(caught, 'That could not be drawn.')
+      })
+  }
+
+  /** One draft action, against the frontend. */
+  const perform = async (action: DraftAction) => {
+    const api = frontend()
+    const session = open.peek()
+    if (!api || !session) return
+
+    switch (action.kind) {
+      case 'begin': {
+        const outcome = await api.addSegment(session.sketchId, action.segment, {
+          label: action.label,
+          checkpoint: true,
+        })
+        write(outcome)
+        settleDraft(outcome)
+        return
+      }
+
+      case 'chain': {
+        const outcome = await api.chainSegment(
+          session.sketchId,
+          action.fromPointId,
+          action.segment,
+          { label: action.label, checkpoint: true }
+        )
+        write(outcome)
+        settleDraft(outcome)
+        return
+      }
+
+      case 'move': {
+        const outcome = await api.editSegments(
+          session.sketchId,
+          [{ id: action.pointId, ctor: pointAt(action.to, units()) }],
+          { commit: action.commit, checkpoint: action.commit }
+        )
+        /*
+         * Only a commit reaches the file.
+         *
+         * A preview is thrown away on the next move, so writing its text would
+         * churn the document once per pointer event — hundreds of undo entries
+         * for one line, and the cursor jumping through all of them.
+         */
+        if (action.commit) write(outcome)
+        return
+      }
+
+      case 'discard': {
+        if (action.segmentIds.length === 0) return
+        const outcome = await api.deleteObjects(session.sketchId, {
+          segmentIds: action.segmentIds,
+        })
+        write(outcome)
+        return
+      }
+    }
+  }
+
+  /**
+   * Take hold of what a `begin` or `chain` just created.
+   *
+   * The point to drag is not known until the frontend answers, so the state is
+   * settled here rather than by the transition — and if no line came back the
+   * draft is dropped rather than pointed at something that may not exist.
+   */
+  const settleDraft = (outcome: SketchOutcome) => {
+    const found = begun(outcome.graph, outcome.newObjects)
+    draft.value = found
+      ? {
+          kind: 'drawing',
+          pointId: found.pointId,
+          segmentIds: found.segmentIds,
+        }
+      : { kind: 'idle' }
+  }
+
+  /** The most recent rubber-band request, waiting for the solver to be free. */
+  let latestMove: DraftAction | null = null
+  let previewing = false
+
+  /**
+   * Drain the pending move, then whatever arrived while it ran.
+   *
+   * One solve in flight at a time. Pacing by animation frame would still allow
+   * two to overlap on a slow solve, and the frontend holds one copy of the
+   * sketch — so the second to land would answer about a position the first had
+   * already moved away from.
+   */
+  const drainMoves = async () => {
+    if (previewing) return
+    previewing = true
+
+    try {
+      while (latestMove) {
+        const action = latestMove
+        latestMove = null
+        // Dropped if the draft ended while this waited its turn: editing a
+        // deleted point is an error, and an abandoned draft is a normal thing.
+        if (draft.peek().kind !== 'drawing') break
+        await perform(action)
+      }
+    } catch (caught) {
+      error.value = kclErrorMessage(caught, 'That could not be drawn.')
+    } finally {
+      previewing = false
+    }
+  }
+
+  /** Throw away whatever is being drawn, and stop drawing it. */
+  const discardDraft = async () => {
+    latestMove = null
+    const step = abandon(draft.peek())
+    draft.value = step.state
+    run(step.actions)
+  }
+
   return {
     open: computed(() => open.value),
     busy: computed(() => busy.value),
@@ -217,6 +368,7 @@ export function createSketchSession(
     },
     canEnter,
     tool: computed(() => tool.value),
+    draft: computed(() => draft.value),
 
     async enter() {
       if (open.peek() || busy.peek()) return
@@ -321,6 +473,7 @@ export function createSketchSession(
       busy.value = true
       // Anything half-drawn is abandoned rather than completed: leaving is not
       // a way of finishing the line you were in the middle of.
+      void discardDraft()
       tool.value = null
 
       // Behind whatever is still in flight, so the file the frontend writes back
@@ -352,47 +505,64 @@ export function createSketchSession(
 
     equip(next: SketchToolId | null) {
       if (!open.peek()) return
-      tool.value = next === null ? null : equipTool(next)
+      if (next === tool.peek()) return
+
+      // Putting a tool down abandons whatever it was drawing, which is the same
+      // thing Escape does and for the same reason.
+      void discardDraft()
+      tool.value = next
+    },
+
+    finishChain() {
+      void discardDraft()
     },
 
     cancelTool() {
-      const current = tool.peek()
-      tool.value = current ? cancelTool(current) : null
+      void discardDraft()
     },
 
     place(at: PlanePoint) {
       const current = tool.peek()
-      const session = open.peek()
-      const api = frontend()
-      if (!current || !session || !api) return
+      if (!current || !open.peek()) return
 
-      const step = placePoint(current, at)
-      tool.value = step.state
-      if (step.actions.length === 0) return
+      const step = placeDraft(draft.peek(), at, {
+        tool: current,
+        units: units(),
+      })
+      draft.value = step.state
+      run(step.actions)
+    },
 
-      error.value = null
+    moveTo(at: PlanePoint) {
+      const current = tool.peek()
+      if (!current || !open.peek()) return
+      if (draft.peek().kind === 'idle') return
 
-      queue = queue
-        .catch(() => {})
-        .then(async () => {
-          // Read again: the session can have been left while this waited its
-          // turn, and drawing into a closed sketch would reopen it by accident.
-          if (open.peek()?.sketchId !== session.sketchId) return
+      const step = moveDraft(draft.peek(), at, {
+        tool: current,
+        units: units(),
+      })
+      draft.value = step.state
 
-          for (const action of step.actions) {
-            const outcome = await api.addSegment(
-              session.sketchId,
-              action.segment
-            )
-            write(outcome)
-          }
-        })
-        .catch((caught: unknown) => {
-          error.value =
-            caught instanceof Error
-              ? caught.message
-              : 'That could not be drawn.'
-        })
+      /*
+       * A move is superseded rather than queued.
+       *
+       * The pointer produces events far faster than a solve comes back, and
+       * every one of them asks for the same thing at a newer position — so
+       * keeping a queue would mean replaying a trail the user has already left
+       * behind. Only the latest is worth having, and `latestMove` is where it
+       * waits.
+       */
+      const preview = step.actions.find(
+        (action) => action.kind === 'move' && !action.commit
+      )
+      if (preview) {
+        latestMove = preview
+        void drainMoves()
+        return
+      }
+
+      run(step.actions)
     },
   }
 }

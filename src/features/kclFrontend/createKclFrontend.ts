@@ -214,5 +214,66 @@ export function createKclFrontend(
 
       return outcomeOf(raw, '')
     },
+
+    async editSegments(sketchId, segments, options = {}) {
+      const available = await ready()
+      if (!available) throw new Error('KCL is not loaded yet.')
+
+      const commit = options.commit ?? true
+
+      const raw = await available.wasm.edit_segments(
+        JSON.stringify(VERSION),
+        JSON.stringify(sketchId),
+        JSON.stringify(segments),
+        available.settings,
+        // kcl-lib refuses a checkpoint on a preview, so a caller that asks for
+        // both is asking for an error rather than for something subtle.
+        commit ? (options.checkpoint ?? false) : false,
+        // No anchors, no drag anchors, no label edits: those belong to dragging
+        // existing geometry and to moving dimension labels, neither of which is
+        // wired yet. `null` is "anchor every edited segment", which is the
+        // default the existing app relies on.
+        JSON.stringify(null),
+        JSON.stringify([]),
+        commit,
+        JSON.stringify([])
+      )
+
+      return outcomeOf(raw, '')
+    },
+
+    async chainSegment(sketchId, previousEndPointId, segment, options = {}) {
+      const available = await ready()
+      if (!available) throw new Error('KCL is not loaded yet.')
+
+      const raw = await available.wasm.chain_segment(
+        JSON.stringify(VERSION),
+        JSON.stringify(sketchId),
+        JSON.stringify(previousEndPointId),
+        JSON.stringify(segment),
+        options.label,
+        available.settings,
+        options.checkpoint ?? false
+      )
+
+      return outcomeOf(raw, '')
+    },
+
+    async deleteObjects(sketchId, objects) {
+      const available = await ready()
+      if (!available) throw new Error('KCL is not loaded yet.')
+
+      const raw = await available.wasm.delete_objects(
+        JSON.stringify(VERSION),
+        JSON.stringify(sketchId),
+        JSON.stringify(objects.constraintIds ?? []),
+        JSON.stringify(objects.segmentIds ?? []),
+        available.settings,
+        // Abandoning a draft is not a step anybody wants to undo back into.
+        false
+      )
+
+      return outcomeOf(raw, '')
+    },
   }
 }

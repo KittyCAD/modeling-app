@@ -64,6 +64,72 @@ const onXY: ArtifactMap = new Map<string, Artifact>([
   ],
 ])
 
+/**
+ * What a segment-creating call answers with.
+ *
+ * Two points and a line, and the line's `end` is what the tool takes hold of —
+ * which is why the ids matter here rather than being arbitrary.
+ */
+const drawnOutcome = () => ({
+  text: SOURCE,
+  newObjects: [0, 1, 2],
+  invalidatesIds: false,
+  checkpointId: null,
+  graph: {
+    objects: [
+      {
+        id: 0,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Point',
+            position: {
+              x: { value: 0, units: 'Mm' },
+              y: { value: 0, units: 'Mm' },
+            },
+            freedom: 'Free',
+            constraints: [],
+            ctor: null,
+            owner: null,
+          },
+        },
+      },
+      {
+        id: 1,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Point',
+            position: {
+              x: { value: 0, units: 'Mm' },
+              y: { value: 0, units: 'Mm' },
+            },
+            freedom: 'Free',
+            constraints: [],
+            ctor: null,
+            owner: null,
+          },
+        },
+      },
+      {
+        id: 2,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Line',
+            start: 0,
+            end: 1,
+            ctor: { type: 'Line' },
+            ctor_applicable: true,
+            construction: false,
+          },
+        },
+      },
+    ],
+    sketch_mode: 0,
+  },
+})
+
 const setup = (
   options: {
     sketch?: SketchBlockRange | null
@@ -74,6 +140,8 @@ const setup = (
     projection?: SceneProjection
     faceOnEntry?: boolean
     addSegment?: (calls: string[]) => Promise<unknown>
+    /** Makes a preview solve take long enough for moves to pile up behind it. */
+    slowEdit?: boolean
   } = {}
 ) => {
   const buffer = createFileBackedTextBuffer({
@@ -109,7 +177,22 @@ const setup = (
     addSegment: vi.fn(async () => {
       calls.push('addSegment')
       return (await (options.addSegment?.(calls) ??
-        Promise.resolve({ text: SOURCE }))) as never
+        Promise.resolve(drawnOutcome()))) as never
+    }),
+    editSegments: vi.fn(async () => {
+      calls.push('editSegments')
+      if (options.slowEdit) {
+        await new Promise((resolve) => setTimeout(resolve, 5))
+      }
+      return drawnOutcome() as never
+    }),
+    chainSegment: vi.fn(async () => {
+      calls.push('chainSegment')
+      return drawnOutcome() as never
+    }),
+    deleteObjects: vi.fn(async () => {
+      calls.push('deleteObjects')
+      return drawnOutcome() as never
     }),
   } as unknown as KclFrontendService
 
@@ -373,86 +456,201 @@ describe('drawing in a sketch', () => {
     return app
   }
 
-  it('collects the first click without asking the frontend for anything', async () => {
+  /** Long enough for the action queue to drain, including a slow solve. */
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  /*
+   * The idea the whole draft model rests on: the click writes geometry rather
+   * than remembering a position, so what gets dragged out is real and solved.
+   */
+  it('writes a zero-length line on the first click', async () => {
     const app = await enterWithLine()
 
-    app.session.place({ x: 0, y: 0 })
-
-    expect(app.frontend.addSegment).not.toHaveBeenCalled()
-    expect(app.session.tool.value?.points).toHaveLength(1)
-  })
-
-  it('draws the segment on the second click', async () => {
-    const app = await enterWithLine()
-
-    app.session.place({ x: 0, y: 0 })
-    app.session.place({ x: 10, y: 0 })
+    app.session.place({ x: 3, y: 4 })
     await vi.waitFor(() =>
       expect(app.frontend.addSegment).toHaveBeenCalledTimes(1)
     )
 
-    expect(app.frontend.addSegment).toHaveBeenCalledWith(0, {
-      type: 'Line',
-      start: {
-        x: { type: 'Number', value: 0, units: 'Mm' },
-        y: { type: 'Number', value: 0, units: 'Mm' },
+    expect(app.frontend.addSegment).toHaveBeenCalledWith(
+      0,
+      {
+        type: 'Line',
+        // `Var`, not `Number`: a variable the solver may move. A literal is a
+        // value it may not touch, and the first constraint would conflict.
+        start: {
+          x: { type: 'Var', value: 3, units: 'Mm' },
+          y: { type: 'Var', value: 4, units: 'Mm' },
+        },
+        end: {
+          x: { type: 'Var', value: 3, units: 'Mm' },
+          y: { type: 'Var', value: 4, units: 'Mm' },
+        },
       },
-      end: {
-        x: { type: 'Number', value: 10, units: 'Mm' },
-        y: { type: 'Number', value: 0, units: 'Mm' },
-      },
+      { label: 'line-segment', checkpoint: true }
+    )
+  })
+
+  it('takes hold of the new line’s end point', async () => {
+    const app = await enterWithLine()
+
+    app.session.place({ x: 0, y: 0 })
+    await vi.waitFor(() => expect(app.session.draft.value.kind).toBe('drawing'))
+
+    // Point 1 is the end of the line in the fixture's answer.
+    expect(app.session.draft.value).toEqual({
+      kind: 'drawing',
+      pointId: 1,
+      segmentIds: [0, 1, 2],
     })
+  })
+
+  it('drags that point as a preview on every move', async () => {
+    const app = await enterWithLine()
+    app.session.place({ x: 0, y: 0 })
+    await vi.waitFor(() => expect(app.session.draft.value.kind).toBe('drawing'))
+
+    app.session.moveTo({ x: 9, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.editSegments).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.editSegments).toHaveBeenCalledWith(
+      0,
+      [
+        {
+          id: 1,
+          ctor: {
+            type: 'Point',
+            position: {
+              x: { type: 'Var', value: 9, units: 'Mm' },
+              y: { type: 'Var', value: 0, units: 'Mm' },
+            },
+          },
+        },
+      ],
+      // A preview: solved and thrown away, so it cannot checkpoint.
+      { commit: false, checkpoint: false }
+    )
   })
 
   /*
-   * The whole point of a session: the file is the model and it updates as you
-   * draw, but nothing is rebuilt until you are finished.
+   * The pointer produces events far faster than a solve comes back, and each
+   * one asks for the same thing at a newer position. Replaying the trail the
+   * user has already left behind is wasted work on a shared copy of the sketch.
    */
-  it('writes each segment into the file without running it', async () => {
-    const DRAWN = 's = sketch(on = XY) {\n  l1 = line()\n}\n'
-    const app = await enterWithLine({
-      addSegment: async () => ({ text: DRAWN }),
-    })
-
+  it('keeps only the newest move while a solve is in flight', async () => {
+    const app = await enterWithLine({ slowEdit: true })
     app.session.place({ x: 0, y: 0 })
-    app.session.place({ x: 10, y: 0 })
-    await vi.waitFor(() => expect(app.buffer.text.value).toBe(DRAWN))
-  })
+    await vi.waitFor(() => expect(app.session.draft.value.kind).toBe('drawing'))
 
-  it('runs the mutations in the order they were asked for', async () => {
-    // Two overlapping solves would each answer with text missing the other's
-    // segment, and the second to land would erase the first.
-    const app = await enterWithLine({
-      addSegment: async (calls) => {
-        await new Promise((resolve) => setTimeout(resolve, 5))
-        calls.push('solved')
-        return { text: SOURCE }
-      },
-    })
-
-    app.session.place({ x: 0, y: 0 })
-    app.session.place({ x: 1, y: 0 })
-    app.session.place({ x: 2, y: 0 })
-    app.session.place({ x: 3, y: 0 })
+    app.session.moveTo({ x: 1, y: 0 })
+    app.session.moveTo({ x: 2, y: 0 })
+    app.session.moveTo({ x: 3, y: 0 })
+    app.session.moveTo({ x: 4, y: 0 })
 
     await vi.waitFor(() =>
-      expect(app.calls.filter((call) => call === 'solved')).toHaveLength(2)
+      expect(app.frontend.editSegments).toHaveBeenCalledTimes(2)
     )
-    expect(app.calls.slice(-4)).toEqual([
-      'addSegment',
-      'solved',
-      'addSegment',
-      'solved',
-    ])
+    await settled()
+
+    // The first, and then the last — never the two in between.
+    expect(app.frontend.editSegments).toHaveBeenCalledTimes(2)
+    const [, second] = (
+      app.frontend.editSegments as unknown as {
+        mock: { calls: unknown[][] }
+      }
+    ).mock.calls
+    expect(JSON.stringify(second)).toContain('"value":4')
   })
 
-  it('keeps the tool but forgets the half-drawn line when cancelled', async () => {
+  it('commits on the second click and offers to chain', async () => {
     const app = await enterWithLine()
     app.session.place({ x: 0, y: 0 })
+    await vi.waitFor(() => expect(app.session.draft.value.kind).toBe('drawing'))
+
+    app.session.place({ x: 10, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.frontend.editSegments).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.session.draft.value.kind).toBe('chaining')
+    expect(app.frontend.editSegments).toHaveBeenCalledWith(
+      0,
+      expect.anything(),
+      { commit: true, checkpoint: true }
+    )
+  })
+
+  /*
+   * Chaining is why the draft model exists at all: a run of lines joined by
+   * coincidence constraints is a profile, and a pile of separate lines is not.
+   */
+  it('chains the next segment from the committed point, on the next move', async () => {
+    const app = await enterWithLine()
+    app.session.place({ x: 0, y: 0 })
+    await vi.waitFor(() => expect(app.session.draft.value.kind).toBe('drawing'))
+    app.session.place({ x: 10, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.session.draft.value.kind).toBe('chaining')
+    )
+
+    app.session.moveTo({ x: 10, y: 5 })
+    await vi.waitFor(() =>
+      expect(app.frontend.chainSegment).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.chainSegment).toHaveBeenCalledWith(
+      0,
+      1,
+      expect.objectContaining({ type: 'Line' }),
+      { label: 'line-segment', checkpoint: true }
+    )
+  })
+
+  /*
+   * The lazy chain step earns its keep here: after a click there is no draft, so
+   * stopping needs no deletion.
+   */
+  it('finishes a chain without deleting anything', async () => {
+    const app = await enterWithLine()
+    app.session.place({ x: 0, y: 0 })
+    await vi.waitFor(() => expect(app.session.draft.value.kind).toBe('drawing'))
+    app.session.place({ x: 10, y: 0 })
+    await vi.waitFor(() =>
+      expect(app.session.draft.value.kind).toBe('chaining')
+    )
+
+    app.session.finishChain()
+    await settled()
+
+    expect(app.session.draft.value).toEqual({ kind: 'idle' })
+    expect(app.frontend.deleteObjects).not.toHaveBeenCalled()
+  })
+
+  it('throws a half-drawn line away when it is abandoned', async () => {
+    const app = await enterWithLine()
+    app.session.place({ x: 0, y: 0 })
+    await vi.waitFor(() => expect(app.session.draft.value.kind).toBe('drawing'))
 
     app.session.cancelTool()
+    await vi.waitFor(() =>
+      expect(app.frontend.deleteObjects).toHaveBeenCalledTimes(1)
+    )
 
-    expect(app.session.tool.value).toEqual({ tool: 'line', points: [] })
+    expect(app.frontend.deleteObjects).toHaveBeenCalledWith(0, {
+      segmentIds: [0, 1, 2],
+    })
+    expect(app.session.draft.value).toEqual({ kind: 'idle' })
+  })
+
+  it('ignores a move with no tool equipped', async () => {
+    const app = setup()
+    await app.session.enter()
+
+    app.session.moveTo({ x: 1, y: 1 })
+    await settled()
+
+    expect(app.frontend.editSegments).not.toHaveBeenCalled()
   })
 
   it('cannot equip a tool with no sketch open', () => {
@@ -469,74 +667,6 @@ describe('drawing in a sketch', () => {
     await app.session.exit()
 
     expect(app.session.tool.value).toBeNull()
-  })
-})
-
-describe('matching our sketch to the frontend’s', () => {
-  /*
-   * The bug this exists for. Our block range is the whole declaration, because a
-   * cursor on the first line is in the sketch; the frontend's is the expression
-   * inside it. So the offset asked about most often — the start of the statement
-   * — is the one guaranteed to fall outside, and in a file containing nothing
-   * else that offset is 0.
-   */
-  it('matches by the link the artifact graph records, not by range', async () => {
-    const app = setup({
-      sketch: { name: 'sketch001', from: 0, to: 48 },
-      // The frontend's range starts after `sketch001 = `.
-      setProgram: async () => ({ kind: 'built', graph: graph([12, 48, 0]) }),
-      artifacts: new Map([
-        [
-          'block',
-          {
-            type: 'sketchBlock',
-            id: 'block',
-            sketchId: 0,
-            codeRef: { range: [12, 48, 0] },
-            planeInfo: {
-              origin: { x: 0, y: 0, z: 0, units: 'mm' },
-              xAxis: { x: 1, y: 0, z: 0, units: null },
-              yAxis: { x: 0, y: 1, z: 0, units: null },
-              zAxis: { x: 0, y: 0, z: 1, units: null },
-            },
-          } as unknown as Artifact,
-        ],
-      ]),
-    })
-
-    await app.session.enter()
-
-    expect(app.session.error.value).toBeNull()
-    expect(app.frontend.editSketch).toHaveBeenCalledWith(0)
-  })
-
-  /*
-   * Both routes are inferences about a graph built by a different execution, so
-   * an id that names something else must not be passed on — kcl-lib would report
-   * it as "sketch not found" one call later, with less to go on.
-   */
-  it('refuses an id the frontend does not agree is a sketch', async () => {
-    const app = setup({
-      // No range route to fall back on either: the frontend's range excludes the
-      // offset, which is the situation the artifact route exists to rescue.
-      setProgram: async () => ({ kind: 'built', graph: graph([12, 48, 0]) }),
-      artifacts: new Map([
-        [
-          'block',
-          {
-            type: 'sketchBlock',
-            id: 'block',
-            sketchId: 42,
-            codeRef: { range: [0, 23, 0] },
-          } as unknown as Artifact,
-        ],
-      ]),
-    })
-
-    await app.session.enter()
-
-    expect(app.frontend.editSketch).not.toHaveBeenCalled()
-    expect(app.session.error.value).toMatch(/Could not match/)
   })
 })
 

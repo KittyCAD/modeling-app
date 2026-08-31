@@ -2,7 +2,8 @@ import { defineContract, defineService } from '@kittycad/registry'
 import type { ApiObjectId } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { ReadonlySignal } from '@preact/signals'
 import type { PlaneFrame, PlanePoint } from '@src/lib/scene/projection'
-import type { SketchToolId, SketchToolState } from '@src/lib/sketch/tools'
+import type { DraftState } from '@src/lib/sketch/draft'
+import type { SketchToolId } from '@src/lib/sketch/tools'
 
 /** A sketch open for editing. */
 export interface OpenSketch {
@@ -54,13 +55,25 @@ export interface SketchSessionService {
   readonly canEnter: ReadonlySignal<boolean>
 
   /**
-   * The tool the next click goes to, and what it has collected.
+   * The tool the next click goes to.
    *
    * Null means clicking selects rather than draws, which is the state a session
    * starts and returns to. Held here rather than in the toolbar because it is
    * part of what the session *is*: leaving takes the tool with it.
    */
-  readonly tool: ReadonlySignal<SketchToolState | null>
+  readonly tool: ReadonlySignal<SketchToolId | null>
+  /**
+   * What the tool is in the middle of drawing.
+   *
+   * A *real* segment, not a remembered position: the first click writes a
+   * zero-length line into the sketch and every pointer move asks the solver to
+   * move its end. So what is being dragged out is already constrained, already
+   * snapped, and already the thing you will get.
+   *
+   * Exposed so a drawing can colour the draft as provisional — it is in the
+   * graph like everything else, and nothing but this says it is not finished.
+   */
+  readonly draft: ReadonlySignal<DraftState>
 
   /**
    * Open the sketch the cursor or selection is in.
@@ -82,6 +95,16 @@ export interface SketchSessionService {
    * which is what lets a different renderer drive the same tools.
    */
   place(at: PlanePoint): void
+  /**
+   * The pointer moved, in the plane's own millimetres.
+   *
+   * Drives the rubber band, which is a solve rather than a drawn line — so this
+   * is a request the frontend answers, and the session keeps only the most
+   * recent one while an answer is outstanding.
+   */
+  moveTo(at: PlanePoint): void
+  /** Stop a chain of segments without leaving the tool. */
+  finishChain(): void
   /** Abandon what the tool was part way through, keeping it equipped. */
   cancelTool(): void
 }

@@ -149,7 +149,19 @@ export function createSketchInteraction(
         }
         const where = planePointFor(element, event)
         at.value = where
-        snap.value = snapFor(where, event, viewportOf(element))
+        const candidate = snapFor(where, event, viewportOf(element))
+        snap.value = candidate
+
+        /*
+         * And drag the draft to it.
+         *
+         * The snapped position, not the pointer's, because the rubber band has
+         * to end where the click will land — a preview that follows the cursor
+         * past a snap target is a preview that lies about the next click.
+         */
+        if (where && drawing()) {
+          dependencies.session()?.moveTo(snappedPosition(candidate, where))
+        }
       }
 
       const onPointerLeave = () => {
@@ -187,6 +199,18 @@ export function createSketchInteraction(
           Math.abs(event.clientX - pressed.x) > CLICK_SLOP ||
           Math.abs(event.clientY - pressed.y) > CLICK_SLOP
         ) {
+          return
+        }
+
+        /*
+         * A double click ends the chain.
+         *
+         * Checked before placing, because the second click of the pair has
+         * already committed a segment: what is being said is "and no more",
+         * not "and one more".
+         */
+        if (event.detail >= 2) {
+          dependencies.session()?.finishChain()
           return
         }
 

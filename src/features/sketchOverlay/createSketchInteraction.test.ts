@@ -4,7 +4,7 @@ import type { SceneProjection } from '@src/contracts/sceneProjection'
 import type { SketchSessionService } from '@src/contracts/sketchSession'
 import type { OpenSketch } from '@src/contracts/sketchSession'
 import type { SceneGraph } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { SketchToolState } from '@src/lib/sketch/tools'
+import type { SketchToolId } from '@src/lib/sketch/tools'
 import { createSketchInteraction } from '@src/features/sketchOverlay/createSketchInteraction'
 
 const plane = {
@@ -29,7 +29,7 @@ const pointer = (type: string, x = 40, y = 60, button = 0) => {
 function setup(
   options: {
     open?: OpenSketch | null
-    tool?: SketchToolState | null
+    tool?: SketchToolId | null
     graph?: SceneGraph | null
   } = {}
 ) {
@@ -38,10 +38,18 @@ function setup(
       ? { sketchId: 0, name: 's', plane, planeProblem: null }
       : options.open
   )
-  const tool = signal<SketchToolState | null>(options.tool ?? null)
+  const tool = signal<SketchToolId | null>(options.tool ?? null)
   const place = vi.fn()
+  const moveTo = vi.fn()
+  const finishChain = vi.fn()
 
-  const session = { open, tool, place } as unknown as SketchSessionService
+  const session = {
+    open,
+    tool,
+    place,
+    moveTo,
+    finishChain,
+  } as unknown as SketchSessionService
 
   // The identity projection: an element pixel is a plane millimetre, which
   // keeps the arithmetic out of the way of what is being tested.
@@ -80,6 +88,8 @@ function setup(
     tool,
     open,
     place,
+    moveTo,
+    finishChain,
     dispose: () => {
       dispose()
       disposePick()
@@ -105,7 +115,7 @@ describe('createSketchInteraction', () => {
   })
 
   it('places a point where a click landed', () => {
-    const app = setup({ tool: { tool: 'line', points: [] } })
+    const app = setup({ tool: 'line' })
 
     app.element.dispatchEvent(pointer('pointerdown', 20, 30))
     app.element.dispatchEvent(pointer('pointerup', 20, 30))
@@ -118,7 +128,7 @@ describe('createSketchInteraction', () => {
    * finished, so the claim has to happen on the press.
    */
   it('claims the press so the camera does not orbit', () => {
-    const app = setup({ tool: { tool: 'line', points: [] } })
+    const app = setup({ tool: 'line' })
     const event = pointer('pointerdown')
     const claimed = vi.spyOn(event, 'stopImmediatePropagation')
 
@@ -143,7 +153,7 @@ describe('createSketchInteraction', () => {
   })
 
   it('does not mistake a drag for a click', () => {
-    const app = setup({ tool: { tool: 'line', points: [] } })
+    const app = setup({ tool: 'line' })
 
     app.element.dispatchEvent(pointer('pointerdown', 20, 30))
     app.element.dispatchEvent(pointer('pointerup', 60, 30))
@@ -152,7 +162,7 @@ describe('createSketchInteraction', () => {
   })
 
   it('ignores buttons that are not the primary one', () => {
-    const app = setup({ tool: { tool: 'line', points: [] } })
+    const app = setup({ tool: 'line' })
 
     app.element.dispatchEvent(pointer('pointerdown', 20, 30, 2))
     app.element.dispatchEvent(pointer('pointerup', 20, 30, 2))
@@ -170,7 +180,7 @@ describe('createSketchInteraction', () => {
   })
 
   it('stops listening when the viewport goes away', () => {
-    const app = setup({ tool: { tool: 'line', points: [] } })
+    const app = setup({ tool: 'line' })
     app.dispose()
 
     app.element.dispatchEvent(pointer('pointerdown', 20, 30))
@@ -206,7 +216,7 @@ describe('clicks that are not drawing', () => {
   })
 
   it('leaves a tool’s clicks to the tool', () => {
-    const app = setup({ tool: { tool: 'line', points: [] } })
+    const app = setup({ tool: 'line' })
     const event = pointer('pointerup', 20, 30)
     const claimed = vi.spyOn(event, 'stopImmediatePropagation')
 
@@ -301,7 +311,7 @@ describe('snapping', () => {
 
   const drawing = () =>
     setup({
-      tool: { tool: 'line', points: [] },
+      tool: 'line',
       graph,
       // The sketch is object 3 in the fixture; ids are array indices.
       open: { sketchId: 3, name: 's', plane, planeProblem: null },
@@ -360,5 +370,42 @@ describe('snapping', () => {
     app.element.dispatchEvent(pointer('pointerleave'))
 
     expect(app.interaction.pointer.snap.value).toBeNull()
+  })
+})
+
+describe('the rubber band', () => {
+  it('drags the draft to the snapped position, not to the pointer', () => {
+    const app = setup({ tool: 'line' })
+
+    app.element.dispatchEvent(pointer('pointermove', 40, 60))
+
+    // A preview that follows the cursor past a snap target lies about where the
+    // next click will land.
+    expect(app.moveTo).toHaveBeenCalledWith({ x: 40, y: 60 })
+  })
+
+  it('says nothing while no tool is equipped', () => {
+    const app = setup()
+
+    app.element.dispatchEvent(pointer('pointermove', 40, 60))
+
+    expect(app.moveTo).not.toHaveBeenCalled()
+  })
+
+  /*
+   * The second click of the pair has already committed a segment, so what a
+   * double click says is "and no more" rather than "and one more".
+   */
+  it('ends the chain on a double click, without placing again', () => {
+    const app = setup({ tool: 'line' })
+    const press = pointer('pointerdown', 20, 30)
+    const release = pointer('pointerup', 20, 30)
+    Object.defineProperty(release, 'detail', { value: 2 })
+
+    app.element.dispatchEvent(press)
+    app.element.dispatchEvent(release)
+
+    expect(app.finishChain).toHaveBeenCalledTimes(1)
+    expect(app.place).not.toHaveBeenCalled()
   })
 })

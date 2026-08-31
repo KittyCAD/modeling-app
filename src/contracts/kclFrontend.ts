@@ -1,6 +1,7 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type {
   ApiObjectId,
+  ExistingSegmentCtor,
   SceneGraph,
   SegmentCtor,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -99,6 +100,49 @@ export interface KclFrontendService {
     sketchId: ApiObjectId,
     segment: SegmentCtor,
     options?: { label?: string; checkpoint?: boolean }
+  ): Promise<SketchOutcome>
+
+  /**
+   * Move existing geometry, and solve.
+   *
+   * The call that makes a rubber band real. Dragging a draft point through this
+   * on every pointer move means the line you are dragging out is the line the
+   * solver produced — snapped, constrained and possibly refused — rather than a
+   * straight line drawn between two positions that the solver may disagree with
+   * the moment you let go.
+   *
+   * `commit` is the difference between a preview and an edit. A preview solves
+   * and hands back the result without settling the initial guesses, so it can be
+   * thrown away; a commit keeps them. kcl-lib refuses a checkpoint on a preview,
+   * which is the same statement from the other side.
+   */
+  editSegments(
+    sketchId: ApiObjectId,
+    segments: readonly ExistingSegmentCtor[],
+    options?: { checkpoint?: boolean; commit?: boolean }
+  ): Promise<SketchOutcome>
+
+  /**
+   * Add a segment starting where another ended, joined to it.
+   *
+   * Not the same as adding a segment that happens to start at the same place:
+   * this writes the coincidence as a constraint, which is what makes a chain of
+   * lines a profile rather than a pile of separate edges.
+   */
+  chainSegment(
+    sketchId: ApiObjectId,
+    previousEndPointId: ApiObjectId,
+    segment: SegmentCtor,
+    options?: { label?: string; checkpoint?: boolean }
+  ): Promise<SketchOutcome>
+
+  /** Remove geometry — an abandoned draft, most often. */
+  deleteObjects(
+    sketchId: ApiObjectId,
+    objects: {
+      constraintIds?: readonly ApiObjectId[]
+      segmentIds?: readonly ApiObjectId[]
+    }
   ): Promise<SketchOutcome>
 }
 

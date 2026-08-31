@@ -67,3 +67,30 @@ export function millimetres(
       : lengthUnitOf(unit as NumericSuffix)
   return length ? value * MILLIMETRES_PER[length] : value
 }
+
+/**
+ * The `NumericSuffix` for a unit written in a `@settings` annotation.
+ *
+ * KCL spells units one way in source and another in the numeric model — `in`
+ * versus `Inch` — and this is the crossing. Null for anything unrecognised,
+ * which a caller should read as "write no suffix" rather than as millimetres:
+ * an unsuffixed number already means the file's default.
+ */
+export function suffixForUnitName(name: string | null): NumericSuffix | null {
+  switch (name) {
+    case 'mm':
+      return 'Mm'
+    case 'cm':
+      return 'Cm'
+    case 'm':
+      return 'M'
+    case 'in':
+      return 'Inch'
+    case 'ft':
+      return 'Ft'
+    case 'yd':
+      return 'Yd'
+    default:
+      return null
+  }
+}

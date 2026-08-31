@@ -22,8 +22,8 @@ import {
   getSegmentLineWidth,
 } from '@src/lib/sketch/appearance'
 import { SKETCH_HOVER_DISTANCE_PX, pickInSketch } from '@src/lib/sketch/hitTest'
+import { draftSegmentIds } from '@src/lib/sketch/draft'
 import { isAxisSnapTarget } from '@src/lib/sketch/snapping'
-import { previewOf } from '@src/lib/sketch/tools'
 import { themeService } from '@src/contracts/theme'
 import type { SketchPointer } from '@src/features/sketchOverlay/createSketchInteraction'
 import './sketchOverlay.css'
@@ -159,12 +159,17 @@ export function SketchOverlay({ pointer }: { pointer: SketchPointer }) {
 
   const hovered = hoverIn(drawing, plane, size)
 
-  const tool = sessions.tool.value
   const snap = pointer.snap.value
-  const preview =
-    drawable && tool
-      ? previewOf(tool, snap?.position ?? pointer.at.value)
-      : null
+
+  /*
+   * Which segments are provisional.
+   *
+   * There is no separate preview any more: the segment being dragged out is in
+   * the graph like every other, and this is the only thing that says it is not
+   * finished yet. Drawing it as a draft — grey, by the ported precedence ladder
+   * — is what tells somebody the difference.
+   */
+  const drafts = new Set(draftSegmentIds(sessions.draft.value))
 
   /**
    * Where the point would land, marked.
@@ -275,9 +280,9 @@ export function SketchOverlay({ pointer }: { pointer: SketchPointer }) {
       // KCL, which is text and is where a screen reader should be.
       aria-hidden="true"
     >
-      {drawing.shapes.map((item) => shape(item, `segment-${item.id}`, false))}
-      {/* The rubber band, drawn as a draft: grey, because it is not committed. */}
-      {preview ? shape(preview, 'preview', true) : null}
+      {drawing.shapes.map((item) =>
+        shape(item, `segment-${item.id}`, drafts.has(item.id))
+      )}
       {snapGuide}
       {drawing.vertices.map(vertex)}
       {snapMarker}

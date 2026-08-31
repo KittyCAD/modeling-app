@@ -325,3 +325,32 @@ export function freeName(program: Program, stem: string): string {
   // A thousand of anything means the naming scheme is not the problem.
   return `${stem}${Date.now()}`
 }
+
+/**
+ * The file's default length unit, from its `@settings` annotation.
+ *
+ * What it is for is writing numbers back. A sketch tool that writes `10mm` into
+ * a file whose author works in inches is correct and reads as though the app has
+ * a different idea of the drawing than they do, so the unit written is the unit
+ * the file already declares.
+ *
+ * Null when the file says nothing, which is the common case and means the
+ * project default applies — and a number written with no suffix then means the
+ * right thing without this having to guess what that default is.
+ */
+export function defaultLengthUnitOf(program: Program): string | null {
+  for (const attribute of program.innerAttrs ?? []) {
+    if (attribute.name?.name !== 'settings') continue
+
+    for (const property of attribute.properties ?? []) {
+      if (property.key.name !== 'defaultLengthUnit') continue
+      // The value is a bare name — `mm`, `in` — so it parses as a name rather
+      // than as a string literal.
+      if (property.value.type === 'Name') {
+        return property.value.name?.name ?? null
+      }
+    }
+  }
+
+  return null
+}

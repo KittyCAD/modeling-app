@@ -65,6 +65,41 @@ export interface KclWasmContext {
     settings: string,
     createCheckpoint: boolean
   ): Promise<unknown>
+  /**
+   * The nine arguments are kcl-lib's, in kcl-lib's order.
+   *
+   * Faithful rather than tidied, because this declaration exists to describe a
+   * boundary somebody else owns: reordering or defaulting anything here would
+   * make the wrapper look like the wrong call was being made.
+   */
+  edit_segments(
+    versionJson: string,
+    sketchJson: string,
+    segmentsJson: string,
+    settings: string,
+    createCheckpoint: boolean,
+    anchorSegmentIdsJson: string,
+    dragAnchorsJson: string,
+    commitSolverResults: boolean,
+    constraintLabelEditsJson: string
+  ): Promise<unknown>
+  chain_segment(
+    versionJson: string,
+    sketchJson: string,
+    previousSegmentEndPointIdJson: string,
+    segmentJson: string,
+    label: string | undefined,
+    settings: string,
+    createCheckpoint: boolean
+  ): Promise<unknown>
+  delete_objects(
+    versionJson: string,
+    sketchJson: string,
+    constraintIdsJson: string,
+    segmentIdsJson: string,
+    settings: string,
+    createCheckpoint: boolean
+  ): Promise<unknown>
   sketch_execute_mock(
     versionJson: string,
     sketchJson: string,

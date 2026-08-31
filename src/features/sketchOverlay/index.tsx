@@ -56,7 +56,7 @@ export default defineRegistryItemFactory((ctx) => {
     const session = sessions()
     // A second press of the same tool puts it down, which is how somebody stops
     // drawing without reaching for anything.
-    session?.equip(session.tool.value?.tool === tool ? null : tool)
+    session?.equip(session.tool.value === tool ? null : tool)
   }
 
   return {
@@ -129,7 +129,7 @@ export default defineRegistryItemFactory((ctx) => {
           icon: 'line',
           description: 'Draw a line between two points in the open sketch.',
           enabled: drawable,
-          active: computed(() => sessions()?.tool.value?.tool === 'line'),
+          active: computed(() => sessions()?.tool.value === 'line'),
           run: equip('line'),
         }),
 
@@ -171,8 +171,11 @@ export default defineRegistryItemFactory((ctx) => {
           run: () => {
             const session = sessions()
             const tool = session?.tool.value
+            const drawing = session?.draft.value.kind !== 'idle'
 
-            if (tool && tool.points.length > 0) {
+            if (tool && drawing) {
+              // Throws the draft segment away and stops the chain, leaving the
+              // tool in hand.
               session?.cancelTool()
               return
             }
