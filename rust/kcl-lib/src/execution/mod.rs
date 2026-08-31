@@ -5459,6 +5459,31 @@ assert(total, isEqualTo = 6, error = "reduce total")
         assert_eq!(variable_f64(&result, "total"), 6.0);
     }
 
+    /// unwind_return must decrement the machine call depth like a normal
+    /// call completion; otherwise sequential early-return calls would
+    /// accumulate depth until the runaway guard trips. The recursive
+    /// executor doesn't use the counter, so the bound is trivially true
+    /// there.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn early_returns_do_not_leak_machine_call_depth() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn one() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+total = reduce([1..100], initial = 0, f = fn(@i, accum) {
+  return accum + one()
+})
+assert(total, isEqualTo = 100, error = "each call returns 1")
+"#;
+        let result = parse_execute(code).await.unwrap();
+        // Real nesting here is a few levels (reduce callback then one()).
+        // If early returns leaked a level per call, the 100 sequential
+        // calls would push the high water toward 100.
+        let high_water = result.exec_state.global.machine_depth_high_water;
+        assert!(high_water < 10, "high water: {high_water}");
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn experimental_parameter() {
         let code = r#"
