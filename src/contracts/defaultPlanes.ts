@@ -73,10 +73,55 @@ export interface DefaultPlanesService {
   resetOverrides(): void
 }
 
+/**
+ * The thing that can actually show a plane.
+ *
+ * The fourth seam beside `cameraDriverService`, `scenePickerService` and
+ * `sceneProjectionService`, and it exists because everything about *how* the
+ * default planes are arranged is one renderer's opinion. On the Zoo engine they
+ * are six objects minted by every kcl run, addressed by uuid, forgotten whenever
+ * a scene restarts, and toggled by a fire-and-forget `object_visible`. None of
+ * that is true of a plane; all of it is true of that engine today, and it is the
+ * part being reworked.
+ *
+ * So the policy above this line knows three planes and a rule, and says which
+ * ones it wants. A driver knows what a plane is made of where it draws, whether
+ * anything needs restating, and what a command looks like. Replacing the
+ * renderer replaces one file.
+ *
+ * Idempotent by contract: the policy restates its whole intent whenever anything
+ * changes, and it is the driver's job to work out that there is nothing to send.
+ */
+export interface DefaultPlaneDriver {
+  /** `engine`, for diagnostics. */
+  readonly id: string
+  /**
+   * Whether there are planes to address at all.
+   *
+   * False on the Zoo engine until a run has minted them, which is why the
+   * outline can have nothing to list. A renderer that simply owns three planes
+   * would say true from the start and the policy would not notice the
+   * difference.
+   */
+  readonly available: ReadonlySignal<boolean>
+  /**
+   * Show or hide one plane — every object it happens to be made of.
+   *
+   * Takes a plane, never an object id: that a plane is two coincident squares on
+   * this engine is the driver's business, and a renderer with one object per
+   * plane implements the same call with half the work.
+   */
+  setVisible(plane: DefaultPlaneName, visible: boolean): void
+}
+
 export const defaultPlanesContract = defineContract({
   defaultPlanesService: defineService<DefaultPlanesService>(
     'scene.defaultPlanes'
   ),
+  defaultPlaneDriverService: defineService<DefaultPlaneDriver>(
+    'scene.defaultPlanes.driver'
+  ),
 })
 
-export const { defaultPlanesService } = defaultPlanesContract
+export const { defaultPlanesService, defaultPlaneDriverService } =
+  defaultPlanesContract

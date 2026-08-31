@@ -1,6 +1,6 @@
 import { type ReadonlySignal, computed, effect, signal } from '@preact/signals'
-import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type {
+  DefaultPlaneDriver,
   DefaultPlaneName,
   DefaultPlaneView,
   DefaultPlanesService,
@@ -8,43 +8,30 @@ import type {
 } from '@src/contracts/defaultPlanes'
 
 /**
- * The three planes, and the two engine objects each one is made of.
+ * The three planes there are.
  *
- * `front` and `back` are the same square with opposite normals — same origin,
- * negated axes — so they are one plane to a user and two ids to the engine. They
- * are shown and hidden together, because a plane visible only from the front
- * disappears when you orbit behind it, and hiding one alone does nothing anybody
- * can see.
- *
- * The back id keeps its own identity for one reason: a pick on that face is a
- * pick on `-XY`, which is what should be written when somebody sketches on a
- * plane they were looking at from behind.
+ * Three, not six. That the Zoo engine draws each one as a front and a back is
+ * true of that engine and lives in its driver; up here a plane is a plane, and
+ * this list is what the outline shows.
  */
-const PLANES: readonly {
-  name: DefaultPlaneName
-  title: string
-  front: keyof DefaultPlanes
-  back: keyof DefaultPlanes
-}[] = [
-  { name: 'xy', title: 'XY', front: 'xy', back: 'negXy' },
-  { name: 'xz', title: 'XZ', front: 'xz', back: 'negXz' },
-  { name: 'yz', title: 'YZ', front: 'yz', back: 'negYz' },
+const PLANES: readonly { name: DefaultPlaneName; title: string }[] = [
+  { name: 'xy', title: 'XY' },
+  { name: 'xz', title: 'XZ' },
+  { name: 'yz', title: 'YZ' },
 ]
 
 export interface DefaultPlanesDependencies {
-  /** The ids the last run created, or null before anything has run. */
-  ids: ReadonlySignal<DefaultPlanes | null>
+  /**
+   * Whatever can actually show a plane, once there is one.
+   *
+   * A getter rather than a signal because it is resolved from the container, and
+   * that may not be done while the graph is being flattened. Null when nothing
+   * renders — a headless test, or an app with no scene — and then this is a
+   * model nobody is watching, which is a perfectly good thing for it to be.
+   */
+  driver: () => DefaultPlaneDriver | null
   /** Whether the last run put anything on screen. */
   sceneIsEmpty: ReadonlySignal<boolean>
-  /** Show or hide one plane on the engine. */
-  setHidden: (id: string, hidden: boolean) => void
-  /**
-   * Bumps when the engine starts a fresh scene.
-   *
-   * Everything the app told it is forgotten then, so every plane has to be
-   * restated rather than skipped as already-correct.
-   */
-  sceneEpoch: ReadonlySignal<number>
 }
 
 /**
@@ -55,14 +42,16 @@ export interface DefaultPlanesDependencies {
  * 1. A plane on `auto` is visible when the scene is empty.
  * 2. A plane the user has touched does what they said, until they put it back.
  *
- * A plane is *two* engine objects — the square and its back face — and they move
- * together. Six objects, three rows: the back face is the same square seen from
- * behind, so toggling it alone changes nothing anybody can see, and leaving it
- * hidden makes the plane vanish when you orbit past it.
+ * That is the whole of it, and it is deliberately all that is here. There are no
+ * object ids, no commands, no idea of what a plane is made of and no memory of
+ * what anything has been told — those belong to whatever is drawing, behind
+ * `defaultPlaneDriverService`, because they are the parts that change when the
+ * renderer does. What is left is a policy, and it is renderer-independent by
+ * construction rather than by intention.
  *
- * Everything else here is reconciliation: work out what each plane *should* be,
- * compare it to what the engine was last told, and send the difference. Nothing
- * mirrors the engine's state; the engine is brought to ours.
+ * It states its whole intent on every change rather than sending differences.
+ * Working out that there is nothing to do is the driver's job, and putting it
+ * there means the policy cannot get out of step with a scene it never sees.
  */
 export function createDefaultPlanes(
   dependencies: DefaultPlanesDependencies
@@ -82,71 +71,48 @@ export function createDefaultPlanes(
     return dependencies.sceneIsEmpty.value
   }
 
+  const available = computed(
+    () => dependencies.driver()?.available.value ?? false
+  )
+
   const planes = computed<readonly DefaultPlaneView[]>(() =>
     PLANES.map(({ name, title }) => ({
       name,
       title,
-      visible: dependencies.ids.value !== null && wanted(name),
+      visible: available.value && wanted(name),
       visibility: visibilityOf(name),
     }))
   )
 
   /**
-   * What the engine was last told, by plane id rather than by name.
+   * Tell the renderer what it should be showing.
    *
-   * By id because a new run mints new ids: an entry keyed by name would make the
-   * next scene's planes look already-correct and leave them hidden.
+   * Every plane every time, because the cost of restating is a map lookup in the
+   * driver and the cost of being clever here is the policy holding a shadow copy
+   * of a scene it has no other reason to know about.
    */
-  let told = new Map<string, boolean>()
-  /*
-   * Null until the first reconciliation, rather than peeked at construction.
-   * Peeking evaluates the computed, which resolves the engine service — and the
-   * container refuses that while the registry graph is being flattened, which is
-   * exactly when a feature's factory body runs.
-   */
-  let lastEpoch: number | null = null
-
   const reconcile = () =>
     effect(() => {
-      const ids = dependencies.ids.value
-      // Read so a fresh scene restates everything: the engine has forgotten.
-      const epoch = dependencies.sceneEpoch.value
+      const driver = dependencies.driver()
+      if (!driver?.available.value) return
 
-      if (lastEpoch !== epoch) {
-        lastEpoch = epoch
-        told = new Map()
-      }
-
-      if (!ids) return
-
-      for (const { name, front, back } of PLANES) {
-        const hidden = !wanted(name)
-
-        // Both faces, always together: they are one plane.
-        for (const id of [ids[front], ids[back]]) {
-          if (!id) continue
-          if (told.get(id) === hidden) continue
-
-          told.set(id, hidden)
-          dependencies.setHidden(id, hidden)
-        }
-      }
+      for (const { name } of PLANES) driver.setVisible(name, wanted(name))
     })
 
   /**
    * An override belongs to the scene it was made in.
    *
    * So closing the project forgets it, and opening the next one starts on the
-   * automatic rule. The alternative — remembering across sessions — means opening
-   * a project to invisible planes somebody turned off last week, with nothing on
-   * screen to say why.
+   * automatic rule. The alternative — remembering across sessions — means
+   * opening a project to invisible planes somebody turned off last week, with
+   * nothing on screen to say why.
    *
-   * Its own effect, reading only the ids: clearing `overrides` from the
+   * Its own effect, reading only availability: clearing `overrides` from the
    * reconciling effect would be writing a signal that same effect reads.
    */
   const forget = () =>
     effect(() => {
-      if (dependencies.ids.value === null) overrides.value = new Map()
+      if (!available.value) overrides.value = new Map()
     })
 
   let stops: (() => void)[] = []
@@ -154,7 +120,7 @@ export function createDefaultPlanes(
   return {
     planes,
     sceneIsEmpty: computed(() => dependencies.sceneIsEmpty.value),
-    available: computed(() => dependencies.ids.value !== null),
+    available,
     overridden: computed(() => overrides.value.size > 0),
 
     set(name, visibility) {
@@ -174,14 +140,14 @@ export function createDefaultPlanes(
     },
 
     /**
-     * Begin talking to the engine.
+     * Begin talking to the renderer.
      *
-     * Separate from construction because both effects read services on their
-     * first run, and the container forbids that while the registry graph is
-     * being flattened — so the wiring defers this by a microtask. Explicit rather
-     * than a `queueMicrotask` hidden in here: the rule is about *when the
-     * container is ready*, which is the caller's fact, and a test that has no
-     * container should not have to wait for one.
+     * Separate from construction because both effects resolve the driver on
+     * their first run, and the container forbids a service read while the
+     * registry graph is being flattened — so the wiring defers this by a
+     * microtask. Explicit rather than a `queueMicrotask` hidden in here: the
+     * rule is about *when the container is ready*, which is the caller's fact,
+     * and a test that has no container should not have to wait for one.
      *
      * Idempotent, so a second call cannot double the subscriptions.
      */

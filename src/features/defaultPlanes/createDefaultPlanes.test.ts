@@ -1,16 +1,10 @@
-import { signal } from '@preact/signals'
+import { type ReadonlySignal, computed, signal } from '@preact/signals'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type {
+  DefaultPlaneDriver,
+  DefaultPlaneName,
+} from '@src/contracts/defaultPlanes'
 import { createDefaultPlanes } from '@src/features/defaultPlanes/createDefaultPlanes'
-
-const IDS: DefaultPlanes = {
-  xy: 'id-xy',
-  xz: 'id-xz',
-  yz: 'id-yz',
-  negXy: 'id-neg-xy',
-  negXz: 'id-neg-xz',
-  negYz: 'id-neg-yz',
-}
 
 let dispose: (() => void) | null = null
 
@@ -19,21 +13,34 @@ afterEach(() => {
   dispose = null
 })
 
-const setup = (
-  options: { empty?: boolean; ids?: DefaultPlanes | null } = {}
-) => {
-  const ids = signal<DefaultPlanes | null>(
-    options.ids === undefined ? IDS : options.ids
-  )
+/**
+ * A renderer that only records what it was asked for.
+ *
+ * Which is the point of the seam: none of these tests can say anything about
+ * object ids, front and back faces, or commands, because the thing under test
+ * has no access to any of that.
+ */
+const fakeDriver = (available: ReadonlySignal<boolean>) => {
+  const setVisible =
+    vi.fn<(plane: DefaultPlaneName, visible: boolean) => void>()
+
+  const driver: DefaultPlaneDriver = {
+    id: 'fake',
+    available,
+    setVisible,
+  }
+
+  return { driver, setVisible }
+}
+
+const setup = (options: { empty?: boolean; available?: boolean } = {}) => {
   const empty = signal(options.empty ?? true)
-  const sceneEpoch = signal(0)
-  const setHidden = vi.fn()
+  const available = signal(options.available ?? true)
+  const renderer = fakeDriver(computed(() => available.value))
 
   const planes = createDefaultPlanes({
-    ids,
+    driver: () => renderer.driver,
     sceneIsEmpty: empty,
-    setHidden,
-    sceneEpoch,
   })
   /*
    * Started here rather than on construction, which is the point of it being
@@ -44,36 +51,26 @@ const setup = (
   planes.start()
   dispose = planes.dispose
 
-  return { planes, ids, empty, sceneEpoch, setHidden }
+  return { planes, empty, available, setVisible: renderer.setVisible }
 }
 
-/** What the engine was told about one plane, last. */
-const lastFor = (setHidden: ReturnType<typeof vi.fn>, id: string) =>
-  [...setHidden.mock.calls].reverse().find((call) => call[0] === id)?.[1]
+/** What the renderer was asked for about one plane, last. */
+const lastFor = (
+  setVisible: ReturnType<typeof vi.fn>,
+  plane: DefaultPlaneName
+) => [...setVisible.mock.calls].reverse().find((call) => call[0] === plane)?.[1]
 
 describe('when the planes show themselves', () => {
   /*
    * The whole point: an empty project should look empty rather than broken, and
    * three translucent squares are what tell you which way up you are.
    */
-  it('shows the three principals while the scene is empty', () => {
+  it('shows the three planes while the scene is empty', () => {
     const app = setup({ empty: true })
 
-    expect(lastFor(app.setHidden, 'id-xy')).toBe(false)
-    expect(lastFor(app.setHidden, 'id-xz')).toBe(false)
-    expect(lastFor(app.setHidden, 'id-yz')).toBe(false)
-  })
-
-  /*
-   * A plane is two engine objects — the square and its back face, coincident with
-   * opposite normals — and they move together. Showing only the front means the
-   * plane disappears the moment you orbit past it.
-   */
-  it('shows both faces of a plane, because they are one plane', () => {
-    const app = setup({ empty: true })
-
-    expect(lastFor(app.setHidden, 'id-xy')).toBe(false)
-    expect(lastFor(app.setHidden, 'id-neg-xy')).toBe(false)
+    expect(lastFor(app.setVisible, 'xy')).toBe(true)
+    expect(lastFor(app.setVisible, 'xz')).toBe(true)
+    expect(lastFor(app.setVisible, 'yz')).toBe(true)
   })
 
   it('hides them the moment there is geometry', () => {
@@ -81,21 +78,34 @@ describe('when the planes show themselves', () => {
 
     app.empty.value = false
 
-    expect(lastFor(app.setHidden, 'id-xy')).toBe(true)
+    expect(lastFor(app.setVisible, 'xy')).toBe(false)
   })
 
   it('brings them back when the geometry goes away', () => {
     const app = setup({ empty: false })
     app.empty.value = true
 
-    expect(lastFor(app.setHidden, 'id-xy')).toBe(false)
+    expect(lastFor(app.setVisible, 'xy')).toBe(true)
   })
 
-  it('says nothing to an engine that has no planes yet', () => {
-    const app = setup({ ids: null })
+  it('says nothing to a renderer that has no planes yet', () => {
+    const app = setup({ available: false })
 
-    expect(app.setHidden).not.toHaveBeenCalled()
+    expect(app.setVisible).not.toHaveBeenCalled()
     expect(app.planes.available.value).toBe(false)
+  })
+
+  /* Nobody to talk to is a state, not a crash. */
+  it('holds its opinions with no renderer at all', () => {
+    const planes = createDefaultPlanes({
+      driver: () => null,
+      sceneIsEmpty: signal(true),
+    })
+    planes.start()
+    dispose = planes.dispose
+
+    expect(planes.available.value).toBe(false)
+    expect(() => planes.set('xy', 'shown')).not.toThrow()
   })
 })
 
@@ -107,8 +117,8 @@ describe('when somebody asks for a plane', () => {
     app.empty.value = false
 
     // Turned on deliberately, so it stops following the scene.
-    expect(lastFor(app.setHidden, 'id-xy')).toBe(false)
-    expect(lastFor(app.setHidden, 'id-xz')).toBe(true)
+    expect(lastFor(app.setVisible, 'xy')).toBe(true)
+    expect(lastFor(app.setVisible, 'xz')).toBe(false)
   })
 
   it('keeps it hidden while the scene is empty', () => {
@@ -116,16 +126,7 @@ describe('when somebody asks for a plane', () => {
 
     app.planes.set('xy', 'hidden')
 
-    expect(lastFor(app.setHidden, 'id-xy')).toBe(true)
-  })
-
-  it('hides both faces when a plane is turned off', () => {
-    const app = setup({ empty: true })
-
-    app.planes.set('xy', 'hidden')
-
-    expect(lastFor(app.setHidden, 'id-xy')).toBe(true)
-    expect(lastFor(app.setHidden, 'id-neg-xy')).toBe(true)
+    expect(lastFor(app.setVisible, 'xy')).toBe(false)
   })
 
   it('follows the scene again once it is put back on automatic', () => {
@@ -134,7 +135,7 @@ describe('when somebody asks for a plane', () => {
 
     app.planes.set('xy', 'auto')
 
-    expect(lastFor(app.setHidden, 'id-xy')).toBe(true)
+    expect(lastFor(app.setVisible, 'xy')).toBe(false)
     expect(app.planes.overridden.value).toBe(false)
   })
 
@@ -146,8 +147,8 @@ describe('when somebody asks for a plane', () => {
     app.planes.resetOverrides()
 
     expect(app.planes.overridden.value).toBe(false)
-    expect(lastFor(app.setHidden, 'id-xy')).toBe(true)
-    expect(lastFor(app.setHidden, 'id-yz')).toBe(true)
+    expect(lastFor(app.setVisible, 'xy')).toBe(false)
+    expect(lastFor(app.setVisible, 'yz')).toBe(false)
   })
 
   /*
@@ -159,60 +160,48 @@ describe('when somebody asks for a plane', () => {
     const app = setup({ empty: true })
     app.planes.set('xy', 'hidden')
 
-    app.ids.value = null
+    app.available.value = false
 
     expect(app.planes.overridden.value).toBe(false)
   })
 })
 
-describe('talking to the engine', () => {
-  /* One command per change, not one per render. */
-  it('says nothing when nothing has changed', () => {
+describe('talking to the renderer', () => {
+  /*
+   * The policy restates rather than diffs, and that is the deal the contract
+   * makes: working out that nothing changed needs to know what the renderer was
+   * told, and this does not.
+   */
+  it('states its whole intent, leaving the driver to skip what it has', () => {
     const app = setup({ empty: true })
-    const before = app.setHidden.mock.calls.length
+    app.setVisible.mockClear()
 
     app.planes.set('xy', 'shown')
 
-    // Already showing under the automatic rule, so there is nothing to send.
-    expect(app.setHidden.mock.calls.length).toBe(before)
+    expect(app.setVisible).toHaveBeenCalledTimes(3)
   })
 
-  /*
-   * A fresh scene has forgotten everything, so every plane is restated — skipping
-   * them as already-correct is how planes end up invisible after a reconnect.
-   */
-  it('restates every plane when the engine starts a new scene', () => {
-    const app = setup({ empty: true })
-    app.setHidden.mockClear()
+  it('states everything again when a renderer arrives', () => {
+    const app = setup({ empty: true, available: false })
 
-    app.sceneEpoch.value += 1
+    app.available.value = true
 
-    expect(app.setHidden).toHaveBeenCalledTimes(6)
-  })
-
-  /* A new run mints new ids, so what the old ones were told means nothing. */
-  it('states the planes again when a run makes new ones', () => {
-    const app = setup({ empty: true })
-    app.setHidden.mockClear()
-
-    app.ids.value = { ...IDS, xy: 'id-xy-2' }
-
-    expect(app.setHidden).toHaveBeenCalledWith('id-xy-2', false)
+    expect(app.setVisible).toHaveBeenCalledTimes(3)
   })
 
   it('stops talking once disposed', () => {
     const app = setup({ empty: true })
     app.planes.dispose()
-    app.setHidden.mockClear()
+    app.setVisible.mockClear()
 
     app.empty.value = false
 
-    expect(app.setHidden).not.toHaveBeenCalled()
+    expect(app.setVisible).not.toHaveBeenCalled()
   })
 })
 
 describe('what a list would draw', () => {
-  /* Three rows for six objects: a back face is not a plane of its own. */
+  /* Three rows for six engine objects: a back face is not a plane of its own. */
   it('offers one row per plane', () => {
     const app = setup()
 
@@ -239,7 +228,7 @@ describe('what a list would draw', () => {
   })
 
   it('shows nothing as visible before anything has run', () => {
-    const app = setup({ ids: null, empty: true })
+    const app = setup({ available: false, empty: true })
 
     expect(app.planes.planes.value.every((plane) => !plane.visible)).toBe(true)
   })

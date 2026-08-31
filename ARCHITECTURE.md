@@ -1287,24 +1287,37 @@ actions, driven by a pair of debounced events into a nested `hidePlanes`/
 `showPlanes` state machine, with `// This defer is bullshit but playwright wants
 it` in the source. Two records of one truth, kept in step by remembering to.
 
-**A plane is one thing made of two objects.** kcl-lib creates `Xy` and `NegXy`
-with the same origin and negated axes — the same square, normal flipped — so the
-back face is not another plane. It is what you see and click when you orbit
-behind, and `startSketchOn(-XY)` is what a pick from that side should write. They
-are shown and hidden together: three rows, six objects. Toggling a back face on
-its own changes nothing anybody can see, and leaving it hidden makes the plane
-vanish as you orbit past it.
-
 **Visibility is a tri-state**, and the third state is what makes it work.
 `auto` follows the scene; touching a plane takes it off `auto` and it stays put
 until it is put back. So turning XY on before an extrude does not have it vanish
 when the extrude lands. Overrides belong to the scene they were made in and are
 forgotten when the project closes.
 
-Two details are about the engine forgetting rather than about planes. What the
-engine was told is tracked by plane *id*, because a new run mints new ids and a
-name-keyed record would make the next scene's planes look already-correct. And a
-`sceneEpoch` bump clears that record so every plane is restated.
+That is the whole policy, and it is deliberately all `features/defaultPlanes`
+holds. Everything about how a plane is *arranged* sits behind
+`defaultPlaneDriverService`, the fourth seam beside the camera driver, the picker
+and the projection — because the current arrangement is one engine's opinion and
+is expected to be reworked.
+
+**A plane is one thing made of two objects — on this engine.** kcl-lib creates
+`Xy` and `NegXy` with the same origin and negated axes: the same square, normal
+flipped. The back face is not another plane. It is what you see and click when
+you orbit behind, and `startSketchOn(-XY)` is what a pick from that side should
+write. So they are shown and hidden together — three rows, six objects — and
+`createEnginePlaneDriver` is the only file that knows it. A renderer with one
+object per plane implements `setVisible` with half the work.
+
+Two more details live in that driver, and both are about the engine forgetting
+rather than about planes. What it was told is tracked by object *id*, because a
+new run mints new ids and a name-keyed record would make the next scene's planes
+look already-correct. And a `sceneEpoch` bump clears that record so every plane
+is restated.
+
+**The policy restates; the driver deduplicates.** Every change sends all three
+planes' intent down the seam, and working out that there is nothing to send is
+the driver's job. The alternative — a policy that diffs — needs to know what the
+renderer already has, which is the second copy of the truth this whole design
+exists to avoid.
 
 ### Is there anything in the scene?
 

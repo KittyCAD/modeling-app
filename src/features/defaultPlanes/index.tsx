@@ -6,8 +6,10 @@ import {
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
 import { commandsValueSpec } from '@src/contracts/commands'
-import { defaultPlanesService } from '@src/contracts/defaultPlanes'
-import { engineConnectionService } from '@src/contracts/engine'
+import {
+  defaultPlaneDriverService,
+  defaultPlanesService,
+} from '@src/contracts/defaultPlanes'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import { kclSceneService } from '@src/contracts/kclScene'
 import {
@@ -41,10 +43,14 @@ export default defineRegistryItemFactory((ctx) => {
   // Lazy, never in the factory body: resolving a service while the graph is
   // being flattened is not allowed.
   const scene = () => ctx.services.optional(kclSceneService)
-  const engine = () => ctx.services.optional(engineConnectionService)
 
   const planes = createDefaultPlanes({
-    ids: computed(() => scene()?.defaultPlanes.value ?? null),
+    /*
+     * Optional, and the reason this feature has no idea what a plane is made of.
+     * Whatever renders contributes one; without a renderer there is a model of
+     * which planes should be showing and nobody to show them.
+     */
+    driver: () => ctx.services.optional(defaultPlaneDriverService) ?? null,
 
     /**
      * Whether anything is on screen.
@@ -65,25 +71,14 @@ export default defineRegistryItemFactory((ctx) => {
         hiddenArtifactIds(operations)
       )
     }),
-
-    /*
-     * Fired rather than sent: the answer is a confirmation nobody reads, and
-     * awaiting six of them per run would put the planes behind a round trip they
-     * do not need.
-     */
-    setHidden: (id, hidden) => {
-      engine()?.fireCommand({ type: 'object_visible', object_id: id, hidden })
-    },
-
-    sceneEpoch: computed(() => engine()?.sceneEpoch.value ?? 0),
   })
 
   /**
    * Deferred by a microtask, as everything with an effect here is.
    *
-   * Both effects read services on their first run — the engine, to tell it about
-   * a plane — and the container refuses a service read while the graph is being
-   * flattened. This is that rule, obeyed at the place that knows about it.
+   * Both effects resolve the driver on their first run, and the container
+   * refuses a service read while the graph is being flattened. This is that
+   * rule, obeyed at the place that knows about it.
    */
   let disposed = false
   queueMicrotask(() => {
