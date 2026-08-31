@@ -6,7 +6,6 @@ import type { ProposedFileChange } from '@src/features/zookeeper/deriveEdit'
 import { bufferOrigin } from '@src/lib/buffers/annotations'
 import type { DivergenceLedger } from '@src/lib/collab/divergence'
 import { type ConflictReason, rebaseEdits } from '@src/lib/collab/rebase'
-import type { AppliedChange } from '@src/lib/collab/revert'
 
 /**
  * The bit of the session this needs.
@@ -55,14 +54,6 @@ export interface ApplyOutcome {
   applied: readonly string[]
   conflicts: readonly PathConflict[]
   deferred: readonly DeferredChange[]
-  /**
-   * Entries for the revert log, in the order they were applied.
-   *
-   * Returned rather than pushed into a list this owns, so the caller decides
-   * where history lives — and so this function has no state of its own beyond the
-   * ledger it was handed.
-   */
-  history: readonly AppliedChange[]
 }
 
 /**
@@ -96,7 +87,6 @@ export function applyChanges(input: {
   const applied: string[] = []
   const conflicts: PathConflict[] = []
   const deferred: DeferredChange[] = []
-  const history: AppliedChange[] = []
 
   for (const change of ordered(changes, target)) {
     if (change.kind !== 'modify') {
@@ -130,8 +120,6 @@ export function applyChanges(input: {
       })
       continue
     }
-
-    const docBefore = buffer.state.peek().doc
 
     buffer.dispatch({
       changes: outcome.edits.map(({ from, to, insert }) => ({
@@ -174,17 +162,9 @@ export function applyChanges(input: {
     )
 
     applied.push(change.path)
-    history.push({
-      changes: ChangeSet.of(
-        outcome.edits.map(({ from, to, insert }) => ({ from, to, insert })),
-        docBefore.length
-      ),
-      docBefore,
-      contributionId,
-    })
   }
 
-  return { applied, conflicts, deferred, history }
+  return { applied, conflicts, deferred }
 }
 
 /**

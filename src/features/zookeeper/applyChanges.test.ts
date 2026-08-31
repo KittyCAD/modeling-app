@@ -12,6 +12,7 @@ import {
 } from '@src/features/zookeeper/applyChanges'
 import { deriveChanges } from '@src/features/zookeeper/deriveEdit'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
+import { createChangeHistory } from '@src/lib/collab/changeHistory'
 import { createDivergenceLedger } from '@src/lib/collab/divergence'
 import { inverseForContribution } from '@src/lib/collab/revert'
 
@@ -353,12 +354,20 @@ describe('applyChanges', () => {
    * The end of the loop: what was applied can be undone as one contribution,
    * even across two files, without touching what the user did in between.
    */
-  it('produces history that reverts the whole contribution', () => {
+  /**
+   * The end of the loop, with nothing hand-assembled: the history comes from
+   * watching the buffer, so the writer's edit and the user's typing are recorded
+   * by the same observer, and reverting the contribution leaves the typing alone.
+   */
+  it('can be reverted as one contribution, using the observed history', () => {
     const buffer = bufferWith('width = 10\n')
     const ledger = createDivergenceLedger()
     ledger.begin(PATH, 'width = 10\n'.length)
 
-    const outcome = applyChanges({
+    const changeHistory = createChangeHistory()
+    changeHistory.follow(PATH, buffer)
+
+    applyChanges({
       changes: [
         {
           kind: 'modify',
@@ -381,21 +390,18 @@ describe('applyChanges', () => {
 
     expect(textOf(buffer)).toBe('width = 10\ndepth = 2\n')
 
-    // The user then types, after the writer's edit.
-    const applied = [...outcome.history]
-    const docBefore = buffer.state.peek().doc
+    // The user types afterwards. The same observer records it, untagged.
     buffer.dispatch({ changes: { from: 0, insert: '// mine\n' } })
-    applied.push({
-      changes: ChangeSet.of(
-        [{ from: 0, to: 0, insert: '// mine\n' }],
-        docBefore.length
-      ),
-      docBefore,
-      contributionId: null,
-    })
+
+    const entries = changeHistory.entries(PATH)
+    expect(entries).toHaveLength(2)
+    expect(entries.map((entry) => entry.contributionId)).toEqual([
+      CONTRIBUTION,
+      null,
+    ])
 
     const inverse = inverseForContribution({
-      applied,
+      applied: entries,
       contributionId: CONTRIBUTION,
     })
     expect(inverse.changes).not.toBeNull()
