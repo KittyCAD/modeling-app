@@ -26,6 +26,15 @@ export interface SketchPointer {
    * mark one place and place the point in another.
    */
   readonly snap: ReadonlySignal<SnappingCandidate | null>
+  /**
+   * What the pointer is over, worked out once.
+   *
+   * Held here rather than recomputed by each consumer, because there are now
+   * three: the drawing colours it, the badges reveal what constrains it, and the
+   * hit test that produced it is the same in every case. Two of them would be two
+   * answers whenever the graph changed between reads.
+   */
+  readonly hovered: ReadonlySignal<ApiObjectId | null>
 }
 
 /** How far the pointer may travel between press and release and still be a click. */
@@ -64,6 +73,7 @@ export function createSketchInteraction(
 } {
   const at = signal<PlanePoint | null>(null)
   const snap = signal<SnappingCandidate | null>(null)
+  const hovered = signal<ApiObjectId | null>(null)
 
   /**
    * What the pointer would snap to, in the plane's own units.
@@ -171,10 +181,11 @@ export function createSketchInteraction(
    * for; the hit test already prefers points where both are in reach, so an end
    * is still an end.
    */
-  const grabbableAt = (
+  /** What is under the pointer, whatever it is. */
+  const pickIn = (
     where: PlanePoint | null,
     viewport: { width: number; height: number }
-  ) => {
+  ): ApiObjectId | null => {
     const session = dependencies.session()
     const projection = dependencies.projection()
     const graph = dependencies.graph()
@@ -191,7 +202,16 @@ export function createSketchInteraction(
       where,
       SKETCH_HOVER_DISTANCE_PX / scale
     )
-    if (!hit) return null
+    return hit?.id ?? null
+  }
+
+  const grabbableAt = (
+    where: PlanePoint | null,
+    viewport: { width: number; height: number }
+  ) => {
+    const graph = dependencies.graph()
+    const hit = graph ? pickIn(where, viewport) : null
+    if (hit === null || !graph) return null
 
     /*
      * Refused rather than grabbed and then ignored.
@@ -200,7 +220,7 @@ export function createSketchInteraction(
      * claiming the press for a drag that will do nothing would swallow an orbit
      * with it.
      */
-    return isDraggable(graph, hit.id) ? hit.id : null
+    return isDraggable(graph, hit) ? hit : null
   }
 
   /**
@@ -232,6 +252,7 @@ export function createSketchInteraction(
     pointer: {
       at: computed(() => at.value),
       snap: computed(() => snap.value),
+      hovered: computed(() => hovered.value),
     },
 
     attachTool(element: HTMLElement) {
@@ -248,9 +269,11 @@ export function createSketchInteraction(
           return
         }
         const where = planePointFor(element, event)
+        const viewport = viewportOf(element)
         at.value = where
-        const candidate = snapFor(where, event, viewportOf(element))
+        const candidate = snapFor(where, event, viewport)
         snap.value = candidate
+        hovered.value = pickIn(where, viewport)
 
         /*
          * And drag the draft to it.
@@ -267,6 +290,7 @@ export function createSketchInteraction(
       const onPointerLeave = () => {
         at.value = null
         snap.value = null
+        hovered.value = null
       }
 
       const onPointerDown = (event: PointerEvent) => {
@@ -393,6 +417,7 @@ export function createSketchInteraction(
         element.removeEventListener('pointerup', onPointerUp)
         at.value = null
         snap.value = null
+        hovered.value = null
       }
     },
 

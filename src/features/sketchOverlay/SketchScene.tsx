@@ -11,7 +11,6 @@ import type { drawSketch } from '@src/features/sketchOverlay/sketchSegments'
 import { draftSegmentIds } from '@src/lib/sketch/draft'
 import { drawingOf } from '@src/lib/sketch/drawing'
 import { ORIGIN_ID, originVertex, previewShapes } from '@src/lib/sketch/preview'
-import { SKETCH_HOVER_DISTANCE_PX, pickInSketch } from '@src/lib/sketch/hitTest'
 import './sketchOverlay.css'
 
 /**
@@ -138,22 +137,14 @@ export function SketchScene({ pointer }: { pointer: SketchPointer }) {
     const drawing = drawingOf(graph, open.sketchId)
 
     /*
-     * The hover is worked out here rather than passed in, because it depends on
-     * the same drawing that is about to be built — computing it anywhere else
-     * would mean building the drawing twice, or marking a segment that is not the
-     * one under the pointer.
+     * The hover comes from the interaction, which is where the pointer is.
+     *
+     * It used to be worked out here, from the drawing about to be built. That was
+     * one hit test too many once the badges needed the same answer: two of them
+     * are two answers whenever the graph changes between reads.
      */
     const where = pointer.at.value
-    const scale = where
-      ? projection.scaleOn(plane, where, {
-          width: host.current?.clientWidth ?? 0,
-          height: host.current?.clientHeight ?? 0,
-        })
-      : 0
-    const hovered =
-      where && scale > 0
-        ? pickInSketch(drawing, where, SKETCH_HOVER_DISTANCE_PX / scale)
-        : null
+    const hovered = pointer.hovered.value
 
     /*
      * The shape-to-be, for the tools whose first click is not yet a shape.
@@ -185,7 +176,7 @@ export function SketchScene({ pointer }: { pointer: SketchPointer }) {
           // Drawn grey, like any other uncommitted geometry.
           ...preview.map((shape) => shape.id),
         ]),
-        hoveredId: hovered?.id ?? null,
+        hoveredId: hovered,
         /*
          * The origin is dropped here rather than filtered upstream: it is a real
          * selection and the session is right to hold it, but it is not in the

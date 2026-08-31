@@ -5,7 +5,7 @@ import type {
   ApiObjectKind,
   SceneGraph,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { badgesOf } from '@src/lib/sketch/badges'
+import { badgesOf, constraintsForSegment } from '@src/lib/sketch/badges'
 
 const at = (id: number, kind: ApiObjectKind): ApiObject => ({
   id,
@@ -204,5 +204,101 @@ describe('where a constraint is drawn', () => {
 
   it('says nothing for an id that is not a sketch', () => {
     expect(badgesOf(graphWith([]), 0)).toEqual([])
+  })
+})
+
+describe('which constraints belong to a segment', () => {
+  /*
+   * This is what makes hovering a segment show *its* constraints rather than all
+   * of them: a constraint is attached when it says something about that segment.
+   */
+  it('finds a constraint that names the line', () => {
+    const graph = graphWith([
+      { type: 'Horizontal', line: 2 },
+      { type: 'Parallel', lines: [2, 9] },
+    ])
+
+    expect(constraintsForSegment(graph, 2)).toEqual([3, 4])
+  })
+
+  it('finds nothing for a segment nothing constrains', () => {
+    const graph = graphWith([{ type: 'Horizontal', line: 9 }])
+
+    expect(constraintsForSegment(graph, 2)).toEqual([])
+  })
+
+  it('counts a symmetric axis, which is a line the constraint is about', () => {
+    const graph = graphWith([{ type: 'Symmetric', input: [0, 1], axis: 2 }])
+
+    expect(constraintsForSegment(graph, 2)).toEqual([3])
+  })
+
+  /*
+   * A profile's corner is several points at one place and its constraints are
+   * spread across them, so hovering the corner has to find all of them or it
+   * finds almost none.
+   */
+  it('follows a point’s coincident cluster', () => {
+    const objects: ApiObject[] = [
+      point(0, 0, 0),
+      point(1, 10, 0),
+      line(2, 0, 1),
+      point(3, 10, 0),
+      at(4, {
+        type: 'Constraint',
+        constraint: { type: 'Coincident', segments: [1, 3] },
+      } as never),
+      at(5, {
+        type: 'Constraint',
+        constraint: {
+          type: 'Fixed',
+          points: [
+            {
+              point: 3,
+              position: {
+                x: { value: 10, units: 'Mm' },
+                y: { value: 0, units: 'Mm' },
+              },
+            },
+          ],
+        },
+      } as never),
+    ]
+    objects[SKETCH_ID] = at(SKETCH_ID, {
+      type: 'Sketch',
+      args: { on: { default: 'XY' } },
+      plane: 99,
+      segments: [0, 1, 2, 3],
+      constraints: [4, 5],
+    } as never)
+
+    const graph = { objects } as unknown as SceneGraph
+
+    // The fixed constraint is on point 3, and point 1 is coincident with it.
+    expect(constraintsForSegment(graph, 1)).toEqual([4, 5])
+  })
+
+  /*
+   * A parallel says nothing about a point; it says something about the lines the
+   * point happens to end. Attaching it to the point too would put every
+   * constraint in a profile on every corner of it.
+   */
+  it('does not attach a line constraint to the line’s points', () => {
+    const graph = graphWith([{ type: 'Parallel', lines: [2, 9] }])
+
+    expect(constraintsForSegment(graph, 0)).toEqual([])
+  })
+
+  it('leaves dimensions out, since they are drawn as values', () => {
+    const graph = graphWith([
+      {
+        type: 'Distance',
+        segments: [0, 1],
+        distance: { value: 10, units: 'Mm' },
+        source: { expr: '10', is_literal: true },
+      },
+    ])
+
+    expect(constraintsForSegment(graph, 0)).toEqual([])
   })
 })

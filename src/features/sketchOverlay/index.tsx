@@ -21,6 +21,7 @@ import {
   SKETCHING_MODE,
   SKETCHING_SCOPE,
 } from '@src/features/sceneToolbar/modes'
+import { createBadgeReveal } from '@src/features/sketchOverlay/createBadgeReveal'
 import { createSketchInteraction } from '@src/features/sketchOverlay/createSketchInteraction'
 import { SketchScene } from '@src/features/sketchOverlay/SketchScene'
 import { SketchAnnotations } from '@src/features/sketchOverlay/SketchAnnotations'
@@ -51,6 +52,15 @@ export default defineRegistryItemFactory((ctx) => {
     graph: () =>
       ctx.services.optional(kclFrontendService)?.sceneGraph.value ?? null,
   })
+
+  /**
+   * Which segment's constraints are showing.
+   *
+   * Held here rather than in the component so it survives a re-render and can be
+   * disposed with the feature: it owns timers, and a timer that outlives the
+   * thing that set it fires into nothing.
+   */
+  const reveal = createBadgeReveal()
 
   /** True once there is a sketch open with a plane to draw on. */
   const drawable = computed(() => sessions()?.open.value?.plane != null)
@@ -158,6 +168,7 @@ export default defineRegistryItemFactory((ctx) => {
     model: { pointer: interaction.pointer },
     item: defineRuntimeRegistryItem({
       id: 'sketchOverlay',
+      dispose: () => reveal.dispose(),
       provides: [
         provide(sceneItemsValueSpec, {
           id: 'sketch.overlay',
@@ -182,7 +193,9 @@ export default defineRegistryItemFactory((ctx) => {
           zone: 'fill',
           order: 1,
           visible: drawable,
-          render: () => <SketchAnnotations />,
+          render: () => (
+            <SketchAnnotations pointer={interaction.pointer} reveal={reveal} />
+          ),
         }),
 
         /**

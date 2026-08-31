@@ -1,14 +1,22 @@
-import { useComputed, useSignal } from '@preact/signals'
+import { useComputed, useSignal, useSignalEffect } from '@preact/signals'
 import { Icon } from '@kittycad/ui-kit'
 import { useEffect, useRef } from 'preact/hooks'
 import { useService } from '@src/app/context'
 import { kclFrontendService } from '@src/contracts/kclFrontend'
 import { sceneProjectionService } from '@src/contracts/sceneProjection'
+import { settingsService } from '@src/contracts/settings'
 import { sketchSessionService } from '@src/contracts/sketchSession'
+import { showConstraintsSetting } from '@src/features/sketchMode/settings'
+import type { SketchPointer } from '@src/features/sketchOverlay/createSketchInteraction'
+import type { BadgeReveal } from '@src/features/sketchOverlay/createBadgeReveal'
 import { planeToWorld } from '@src/lib/scene/projection'
+import type {
+  ApiObjectId,
+  SceneGraph,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import type { PlaneFrame, PlanePoint } from '@src/lib/scene/projection'
 import { SKETCH_SELECTION_COLOR } from '@src/lib/sketch/appearance'
-import { badgesOf } from '@src/lib/sketch/badges'
+import { badgesOf, constraintsForSegment } from '@src/lib/sketch/badges'
 import { dimensionsOf } from '@src/lib/sketch/dimensions'
 import { editableMeasure, formatMeasure } from '@src/lib/kcl/units'
 import './sketchOverlay.css'
@@ -25,11 +33,31 @@ import './sketchOverlay.css'
  *
  * The container takes no pointer events and each annotation takes its own, so
  * clicking a badge selects a constraint while clicking beside one still orbits.
+ *
+ * Badges are **hidden until asked for**, which is the existing app's policy and
+ * the right one: a sketch with thirty constraints in it is a sketch you cannot
+ * see, because the badges cover the geometry they are about. Two ways to ask:
+ *
+ *  - hover a segment, and *its* constraints appear in a row beside the cursor —
+ *    beside, not on top, so the segment stays visible while you read them;
+ *  - turn "Show all constraints" on, and every badge sits at its own anchor.
+ *
+ * A revealed row outlives the hover by two seconds, because reaching a badge
+ * means leaving the segment that revealed it. Dimensions are always drawn: a
+ * value is the thing itself rather than an annotation of it, and there is no
+ * reading of a dimensioned sketch in which the number should be hidden.
  */
-export function SketchAnnotations() {
+export function SketchAnnotations({
+  pointer,
+  reveal,
+}: {
+  pointer: SketchPointer
+  reveal: BadgeReveal
+}) {
   const sessions = useService(sketchSessionService)
   const frontend = useService(kclFrontendService)
   const projection = useService(sceneProjectionService)
+  const settings = useService(settingsService)
 
   const host = useRef<HTMLDivElement>(null)
 
@@ -60,6 +88,39 @@ export function SketchAnnotations() {
   }, [viewport])
 
   /**
+   * Tell the reveal what the pointer is over.
+   *
+   * Only segments that *have* constraints are offered: hovering a bare line
+   * should not reveal an empty row, and it should still start the clock on
+   * whatever is already showing — which is what passing null does.
+   */
+  useSignalEffect(() => {
+    const open = sessions.open.value
+    const graph = frontend.sceneGraph.value
+    const hovered = pointer.hovered.value
+    const at = pointer.at.value
+
+    if (!open || !graph || hovered === null || !at) {
+      reveal.hover(null, null)
+      return
+    }
+
+    const attached = constraintsForSegment(graph, hovered)
+    reveal.hover(attached.length > 0 ? hovered : null, at)
+  })
+
+  /**
+   * A drag takes them all away.
+   *
+   * Geometry moving under a row of badges pinned to where the pointer *was* is
+   * the one arrangement that reads as a bug rather than as a hint. The existing
+   * app dismisses them on drag start for the same reason.
+   */
+  useSignalEffect(() => {
+    if (sessions.draft.value.kind === 'dragging') reveal.dismiss()
+  })
+
+  /**
    * Everything to draw, already placed in element pixels.
    *
    * One computed for both kinds, because both depend on the same three things —
@@ -84,14 +145,68 @@ export function SketchAnnotations() {
       projection.project(planeToWorld(plane as PlaneFrame, at), size)
 
     const selected = new Set(sessions.selection.value)
+    const hovered = pointer.hovered.value
+    const showAll = settings.value(showConstraintsSetting).value
+
+    /*
+     * Anchored, when everything is shown — and also for the one or two badges
+     * that are selected or hovered while it is not, because those are being
+     * looked at deliberately and should not vanish with the pointer.
+     */
+    const anchored = badgesOf(graph, open.sketchId).flatMap((badge) => {
+      if (!showAll && !selected.has(badge.id) && hovered !== badge.id) return []
+
+      const screen = place(badge.at)
+      return screen
+        ? [
+            {
+              ...badge,
+              key: `anchored:${badge.id}`,
+              screen: {
+                x: screen.x + ANCHOR_OFFSET_PX,
+                y: screen.y + ANCHOR_OFFSET_PX,
+              },
+              selected: selected.has(badge.id),
+              segmentId: null as ApiObjectId | null,
+            },
+          ]
+        : []
+    })
+
+    /*
+     * Revealed by hovering a segment: a row beside where the pointer was, one
+     * badge per constraint on that segment. Laid out from the pinned point rather
+     * than from the segment, so the row is where the hand already is.
+     */
+    const shown = new Set(anchored.map((badge) => badge.id))
+    const revealed = showAll
+      ? []
+      : reveal.revealed.value.flatMap((entry) => {
+          const base = place(entry.at)
+          if (!base) return []
+
+          const titles = badgeTitles(graph, open.sketchId, entry.segmentId)
+
+          return titles.flatMap((badge, index) => {
+            if (shown.has(badge.id)) return []
+
+            return [
+              {
+                ...badge,
+                key: `revealed:${entry.segmentId}:${badge.id}`,
+                screen: {
+                  x: base.x + ROW_OFFSET_PX.x + index * ROW_PITCH_PX,
+                  y: base.y + ROW_OFFSET_PX.y,
+                },
+                selected: selected.has(badge.id),
+                segmentId: entry.segmentId,
+              },
+            ]
+          })
+        })
 
     return {
-      badges: badgesOf(graph, open.sketchId).flatMap((badge) => {
-        const screen = place(badge.at)
-        return screen
-          ? [{ ...badge, screen, selected: selected.has(badge.id) }]
-          : []
-      }),
+      badges: [...anchored, ...revealed],
       dimensions: dimensionsOf(graph, open.sketchId).flatMap((dimension) => {
         // A dimension with no label position has nowhere to be drawn. It still
         // constrains the sketch; it just cannot be shown until something places
@@ -118,19 +233,31 @@ export function SketchAnnotations() {
       {annotations.value.badges.map((badge, index) => (
         <button
           type="button"
-          key={badge.id}
+          key={badge.key}
           class="zds-sketch-badge"
           data-selected={badge.selected ? 'true' : undefined}
           style={{
             /*
              * Fanned out by index when several land on the same spot, which is
              * ordinary: a corner of a rectangle carries a coincidence and often a
-             * perpendicular too.
+             * perpendicular too. A revealed *row* is already spread out, so this
+             * only ever fires on the anchored ones.
              */
             transform: `translate(calc(${badge.screen.x}px - 50%), calc(${badge.screen.y}px - 50%)) translateX(${offsetFor(annotations.value.badges, index)}px)`,
           }}
           title={badge.title}
           aria-label={badge.title}
+          /*
+           * Holding the pointer on a badge holds the row it is in. Without this
+           * the two seconds would run out while somebody was reading it, and the
+           * thing they were about to click would go.
+           */
+          onPointerEnter={() =>
+            badge.segmentId !== null && reveal.keep(badge.segmentId)
+          }
+          onPointerLeave={() =>
+            badge.segmentId !== null && reveal.release(badge.segmentId)
+          }
           onClick={(event) =>
             sessions.select(badge.id, { add: event.shiftKey })
           }
@@ -155,6 +282,33 @@ export function SketchAnnotations() {
 
 /** How far along to nudge a badge that shares a position with earlier ones. */
 const BADGE_PITCH_PX = 20
+
+/**
+ * Where an anchored badge sits relative to the thing it is about.
+ *
+ * Up and to the left, as the existing app places them: off the geometry, and out
+ * of the way of a dimension label, which goes on the other side.
+ */
+const ANCHOR_OFFSET_PX = -15
+
+/** Where a revealed row starts relative to the pointer, and how it is spaced. */
+const ROW_OFFSET_PX = { x: 14, y: -14 }
+const ROW_PITCH_PX = 22
+
+/**
+ * The badges for one segment's constraints, in the graph's own order.
+ *
+ * Read through `badgesOf` rather than rebuilt, so a revealed badge and an
+ * anchored one are the same badge with the same icon and the same name.
+ */
+function badgeTitles(
+  graph: SceneGraph,
+  sketchId: ApiObjectId,
+  segmentId: ApiObjectId
+) {
+  const attached = new Set(constraintsForSegment(graph, segmentId))
+  return badgesOf(graph, sketchId).filter((badge) => attached.has(badge.id))
+}
 
 function offsetFor(
   badges: readonly { screen: { x: number; y: number } }[],
