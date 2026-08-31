@@ -18,8 +18,28 @@
   overflow: hidden;
 }
 
+/*
+ * The screen area, and its own stacking context.
+ *
+ * `z-index` here is what keeps the chassis above the content, and its absence
+ * was a real bug: `position: relative` with `z-index: auto` does *not* create a
+ * stacking context, so everything positioned inside — the scene toolbar, the
+ * outline, the gizmo, all at `--zds-z-rail` — competed directly with the top bar
+ * and the status bar in the shell's own stacking context. Two things at the same
+ * level are decided by document order, and the viewport comes second, so the
+ * scene's furniture painted over the strips. A menu opening from the top bar
+ * then had no way out: its `--zds-z-popover` is inside the top bar's context,
+ * and the whole context was losing.
+ *
+ * Claiming `--zds-z-content` confines the viewport to the bottom of the ladder
+ * the tokens already describe — content, then rails, then overlays — and every
+ * z-index inside it becomes a statement about the viewport rather than about the
+ * app. Nothing is clipped that was not clipped before: `overflow: hidden` was
+ * already keeping the scene's own popovers inside this box.
+ */
 .zds-shell__main {
   position: relative;
+  z-index: var(--zds-z-content);
   display: flex;
   min-block-size: 0;
   min-inline-size: 0;
