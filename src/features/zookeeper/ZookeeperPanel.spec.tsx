@@ -73,6 +73,7 @@ function mount(options: {
           activate: (id) => options.onActivate?.(id),
           conversation: (id) => conversations.get(id),
           holderOf: () => computed(() => null),
+          presence: computed(() => new Map()),
           stored: computed(() => options.stored ?? []),
           resume: () => null,
           forget: () => {},

@@ -21,6 +21,7 @@ import {
   baselineCapability,
   readOnlyCapability,
 } from '@src/features/editorCapabilities/baseline'
+import { attributionCapability } from '@src/features/editorCapabilities/attribution'
 import { focusRequestCapability } from '@src/features/editorCapabilities/focusRequest'
 import { createExecutionAdapterCapability } from '@src/features/editorCapabilities/executionAdapter'
 import {
@@ -97,6 +98,7 @@ export default defineRegistryItemFactory((ctx) => {
 
         provide(editorCapabilitiesValueSpec, keymapScope),
         provide(editorCapabilitiesValueSpec, focusRequestCapability),
+        provide(editorCapabilitiesValueSpec, attributionCapability),
         provide(editorCapabilitiesValueSpec, selectionReveal),
         provide(editorCapabilitiesValueSpec, readOnlyCapability),
         provide(editorCapabilitiesValueSpec, baselineCapability),

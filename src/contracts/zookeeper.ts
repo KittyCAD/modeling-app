@@ -5,6 +5,7 @@ import type {
   MlCopilotServerMessage,
 } from '@kittycad/lib'
 import type { TextEdit } from '@src/contracts/modelingOperations'
+import type { PresenceEntry } from '@src/lib/collab/presence'
 import type { ConflictReason } from '@src/lib/collab/rebase'
 
 /**
@@ -123,6 +124,13 @@ export interface ZookeeperService {
   conversation(id: ConversationId): Conversation | undefined
   /** Which conversation, if any, currently holds the write claim on a path. */
   holderOf(path: string): ReadonlySignal<string | null>
+  /**
+   * Who wrote to which file recently.
+   *
+   * Only what has landed: the service says nothing about which file it is *about*
+   * to touch, so presence before the first edit of a turn would be a guess.
+   */
+  readonly presence: ReadonlySignal<ReadonlyMap<string, PresenceEntry>>
 
   /**
    * Conversations stored for this project, newest first.

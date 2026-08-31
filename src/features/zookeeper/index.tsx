@@ -11,11 +11,13 @@ import { fileSystemService } from '@src/contracts/fileSystem'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import { layoutAreasValueSpec, layoutService } from '@src/contracts/layout'
+import { statusBarItemsValueSpec } from '@src/contracts/shell'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { ZOOKEEPER_AREA_ID, zookeeperService } from '@src/contracts/zookeeper'
 import {
   ZookeeperHeaderActions,
   ZookeeperPanel,
+  ZookeeperPresenceField,
 } from '@src/features/zookeeper/ZookeeperPanel'
 import { createZookeeperService } from '@src/features/zookeeper/createZookeeperService'
 
@@ -65,6 +67,27 @@ export default defineRegistryItemFactory((ctx) => {
     return built
   }
 
+  /**
+   * The most recent turn of the active conversation that changed anything.
+   *
+   * The *active* one rather than the most recent across all of them: with two
+   * conversations open, "revert the last turn" has to mean the one you are
+   * looking at, or the command does something the panel does not explain.
+   */
+  const lastRevertibleTurn = () => {
+    const service = zookeeper()
+    const id = service.active.value
+    if (id === null) return null
+
+    const conversation = service.conversations.value.get(id)
+    if (conversation === undefined) return null
+
+    const turn = [...conversation.transcript.value]
+      .reverse()
+      .find((each) => each.paths.length > 0)
+    return turn === undefined ? null : { conversation, turnId: turn.id }
+  }
+
   const openPanelAndConversation = () => {
     // Opening a conversation with the panel shut would leave somebody waiting on
     // something they cannot see.
@@ -90,6 +113,7 @@ export default defineRegistryItemFactory((ctx) => {
           activate: (id) => zookeeper().activate(id),
           conversation: (id) => zookeeper().conversation(id),
           holderOf: (path) => zookeeper().holderOf(path),
+          presence: computed(() => zookeeper().presence.value),
           stored: computed(() => zookeeper().stored.value),
           resume: (id) => zookeeper().resume(id),
           forget: (id) => zookeeper().forget(id),
@@ -120,6 +144,35 @@ export default defineRegistryItemFactory((ctx) => {
           icon: 'elephant',
           enabled: computed(() => zookeeper().available.value),
           run: openPanelAndConversation,
+        }),
+
+        /*
+         * Revert as a command, not a keystroke.
+         *
+         * Cmd+Z is per-buffer and a turn can span files, so binding this to it
+         * would need an extension in front of `historyKeymap` — a keymap
+         * precedence change affecting every buffer. The palette and the
+         * transcript's own button are already strictly better than undoing a
+         * multi-file turn one pane at a time.
+         */
+        provide(commandsValueSpec, {
+          id: 'zookeeper.revertLastTurn',
+          title: 'Revert Zookeeper’s last turn',
+          category: 'Zookeeper',
+          icon: 'arrowRotateLeft',
+          enabled: computed(() => lastRevertibleTurn() !== null),
+          run: () => {
+            const target = lastRevertibleTurn()
+            if (target === null) return
+            target.conversation.revert(target.turnId)
+          },
+        }),
+
+        provide(statusBarItemsValueSpec, {
+          id: 'zookeeper.presence',
+          zone: 'end',
+          order: -20,
+          render: () => <ZookeeperPresenceField />,
         }),
 
         provide(keybindingsValueSpec, {

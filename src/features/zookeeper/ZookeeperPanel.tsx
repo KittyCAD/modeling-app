@@ -1,9 +1,39 @@
 import { useComputed, useSignal } from '@preact/signals'
-import { Button, EmptyState, Spinner } from '@kittycad/ui-kit'
+import { Button, EmptyState, Icon, Spinner } from '@kittycad/ui-kit'
 import { useService } from '@src/app/context'
 import type { Conversation, Turn } from '@src/contracts/zookeeper'
 import { zookeeperService } from '@src/contracts/zookeeper'
 import './zookeeper.css'
+
+/**
+ * Where Zookeeper is, in the status bar.
+ *
+ * Only shown when it has actually written somewhere recently, so it says
+ * something true rather than something reassuring: the protocol reveals no file
+ * until an edit lands, and scraping filenames out of streamed prose is what
+ * `main` does.
+ */
+export function ZookeeperPresenceField() {
+  const zookeeper = useService(zookeeperService)
+
+  const latest = useComputed(() => {
+    let newest: { path: string; at: number } | null = null
+    for (const [path, entry] of zookeeper.presence.value) {
+      if (newest === null || entry.at > newest.at)
+        newest = { path, at: entry.at }
+    }
+    return newest
+  })
+
+  if (latest.value === null) return null
+
+  return (
+    <span class="zds-zoo__presence" title="Zookeeper edited this file just now">
+      <Icon name="elephant" />
+      {latest.value.path}
+    </span>
+  )
+}
 
 /**
  * The panel's header button.

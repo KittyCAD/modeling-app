@@ -16,6 +16,7 @@ import { createZookeeperConnection } from '@src/features/zookeeper/createZookeep
 import { createTranscriptStore } from '@src/features/zookeeper/transcriptStore'
 import { createChangeHistory } from '@src/lib/collab/changeHistory'
 import { createWriteClaims } from '@src/lib/collab/claims'
+import { createPresence } from '@src/lib/collab/presence'
 
 export interface ZookeeperServiceDependencies {
   auth: AuthService
@@ -53,6 +54,7 @@ export function createZookeeperService(
 
   const changeHistory = createChangeHistory()
   const claims = createWriteClaims()
+  const presence = createPresence()
 
   const conversations = signal<ReadonlyMap<ConversationId, Conversation>>(
     new Map()
@@ -189,6 +191,7 @@ export function createZookeeperService(
       },
       changeHistory,
       claims,
+      presence,
       captureProject: async () => {
         const session = sessions.current.peek()
         if (session === undefined || session === null) return new Map()
@@ -320,5 +323,7 @@ export function createZookeeperService(
     holderOf(path): ReadonlySignal<string | null> {
       return computed(() => claims.held.value.get(path) ?? null)
     },
+
+    presence: presence.here,
   }
 }

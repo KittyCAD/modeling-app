@@ -18,6 +18,7 @@ import {
   toolResultFailed,
 } from '@src/features/zookeeper/deriveEdit'
 import type { ChangeHistory } from '@src/lib/collab/changeHistory'
+import type { Presence } from '@src/lib/collab/presence'
 import type { WriteClaims } from '@src/lib/collab/claims'
 import { createDivergenceLedger } from '@src/lib/collab/divergence'
 import { followLocalChanges } from '@src/lib/collab/followLocalChanges'
@@ -33,6 +34,14 @@ export interface ConversationDependencies {
   changeHistory: ChangeHistory
   /** Required whenever a second conversation can run. See `claims.ts`. */
   claims?: WriteClaims
+  /**
+   * Where the other collaborators are, shared across conversations.
+   *
+   * Followed here rather than by the service because this is what knows which
+   * paths a conversation has touched — and presence is only ever about paths
+   * somebody actually wrote to.
+   */
+  presence?: Presence
   /**
    * The project as it stands, by project-relative path.
    *
@@ -105,6 +114,7 @@ export function createConversation(
     target,
     changeHistory,
     claims,
+    presence,
     captureProject,
     connection,
     initialTurns,
@@ -162,6 +172,7 @@ export function createConversation(
       })
     )
     changeHistory.follow(path, buffer)
+    presence?.follow(path, buffer)
   }
 
   const untrack = (path: string) => {
