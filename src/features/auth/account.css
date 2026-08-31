@@ -1,0 +1,56 @@
+/*
+ * The account diagnostic.
+ *
+ * A label/value table rather than a form, because nothing in it is editable —
+ * every row is something the app determined and is now being asked to show its
+ * working on. Values are mono for the same reason the status bar is: they are
+ * readings, and several are identifiers meant to be compared by eye.
+ */
+
+.zds-account {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-2);
+}
+
+.zds-account__row {
+  display: grid;
+  grid-template-columns: 10rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--zds-space-4);
+}
+
+.zds-account__label {
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-secondary);
+}
+
+.zds-account__value {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.zds-account__hint {
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-disabled);
+}
+
+.zds-account__empty {
+  margin: 0;
+  font-size: var(--zds-font-size-small);
+  color: var(--zds-text-secondary);
+  max-inline-size: 48ch;
+}
+
+@media (max-width: 640px) {
+  .zds-account__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}

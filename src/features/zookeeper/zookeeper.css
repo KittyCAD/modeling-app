@@ -391,3 +391,18 @@
   display: flex;
   padding: var(--zds-space-3) var(--zds-space-3) 0;
 }
+
+/*
+ * The refusal's code, under its prose.
+ *
+ * Mono and quiet: it is an identifier to be quoted in a support thread or
+ * compared against a list, not a sentence. On its own line because the message
+ * above it is a paragraph and this is a footnote to it.
+ */
+.zds-zoo__note-code {
+  display: block;
+  margin-block-start: var(--zds-space-1);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-disabled);
+}

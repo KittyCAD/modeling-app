@@ -140,6 +140,7 @@ function fakeConversation(options: {
           status: 'connected' as const,
           error: null,
           superseded: false,
+          deniedCode: null,
         }
     ),
     send: async (prompt) => options.onSend?.(prompt),
@@ -479,7 +480,12 @@ describe('ZookeeperPanel', () => {
   it('refuses to send while the socket is still coming up', () => {
     const view = mount({
       conversation: fakeConversation({
-        connection: { status: 'connecting', error: null, superseded: false },
+        connection: {
+          status: 'connecting',
+          error: null,
+          superseded: false,
+          deniedCode: null,
+        },
       }),
     })
 
@@ -494,6 +500,7 @@ describe('ZookeeperPanel', () => {
           status: 'failed',
           error: 'The connection closed.',
           superseded: false,
+          deniedCode: null,
         },
       }),
     })
@@ -510,6 +517,7 @@ describe('ZookeeperPanel', () => {
           status: 'failed',
           error: 'This conversation was opened somewhere else.',
           superseded: true,
+          deniedCode: null,
         },
       }),
     })

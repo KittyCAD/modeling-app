@@ -383,6 +383,7 @@ export function createZookeeperService(
         status: connection.state.value.status,
         error: connection.state.value.error,
         superseded: connection.state.value.superseded,
+        deniedCode: connection.state.value.deniedCode,
       })),
       ...(options.initialTurns === undefined
         ? {}

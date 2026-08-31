@@ -355,6 +355,21 @@ function ConversationView({ conversation }: { conversation: Conversation }) {
             {link.superseded
               ? ' This conversation is open somewhere else, so reconnecting will not help.'
               : ''}
+            {/*
+             * The service's own code, when it refused.
+             *
+             * Shown because the sentence above is the service's and every
+             * billing refusal is worded like a credit shortage — so somebody
+             * with a plan they believe covers this has no way to tell which
+             * situation they are actually in. The code names it, and Settings →
+             * Account says which identity and org it was decided against.
+             */}
+            {link.deniedCode ? (
+              <span class="zds-zoo__note-code">
+                {link.deniedCode} · see Settings → Account for the identity and
+                org this was decided against
+              </span>
+            ) : null}
           </p>
         ) : null}
 

@@ -95,10 +95,20 @@ export function AppMenu() {
 export function MenuIdentity({
   name,
   detail,
+  /**
+   * A second, quieter line: the org, when there is one.
+   *
+   * Separate from `detail` rather than folded into it, because the two answer
+   * different questions — which account this is, and whose plan it bills to —
+   * and the second is the one somebody checks when the app says they have no
+   * credits.
+   */
+  meta,
   imageUrl,
 }: {
   name: string
   detail?: string
+  meta?: string
   imageUrl?: string
 }) {
   return (
@@ -115,6 +125,7 @@ export function MenuIdentity({
         {detail ? (
           <span class="zds-menu-identity__detail zds-value">{detail}</span>
         ) : null}
+        {meta ? <span class="zds-menu-identity__meta">{meta}</span> : null}
       </span>
     </div>
   )

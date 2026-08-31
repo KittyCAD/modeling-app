@@ -13,8 +13,10 @@ import {
 import { authService, signInFlowsValueSpec } from '@src/contracts/auth'
 import { commandsValueSpec } from '@src/contracts/commands'
 import { runtimeService } from '@src/contracts/runtime'
+import { settingsSectionsValueSpec } from '@src/contracts/settings'
 import { screensValueSpec } from '@src/contracts/shell'
 import { MenuIdentity } from '@src/features/appMenu/AppMenu'
+import { AccountPanel } from '@src/features/auth/AccountPanel'
 import { SignInScreen } from '@src/features/auth/SignInScreen'
 import { createAuthService } from '@src/features/auth/createAuthService'
 import { createDeviceFlow } from '@src/features/auth/flows/deviceFlow'
@@ -78,6 +80,12 @@ function IdentityCard() {
     <MenuIdentity
       name={user.value.name}
       detail={user.value.email}
+      /*
+       * The org, here rather than only in Settings, because this is where
+       * somebody looks first — and because "which plan is this billing to" is a
+       * property of the identity the menu is already showing.
+       */
+      meta={user.value.org ? `Org · ${user.value.org.name}` : undefined}
       imageUrl={user.value.imageUrl}
     />
   )
@@ -117,6 +125,24 @@ export default defineRegistryItemFactory((ctx) => {
         provide(signInFlowsValueSpec, createDeviceFlow(isDesktop)),
         provide(signInFlowsValueSpec, createWebRedirectFlow(isWeb)),
         provide(signInFlowsValueSpec, pasteTokenFlow),
+
+        /*
+         * The account, as a diagnostic, in Settings.
+         *
+         * Contributed by auth because it is a statement about identity, and it
+         * reads the credits service optionally rather than the other way round:
+         * a balance is one fact about an account, not the thing that owns it.
+         */
+        provide(settingsSectionsValueSpec, {
+          id: 'account',
+          title: 'Account',
+          description:
+            'Which identity, org and environment this session is using. Useful when the service refuses a request for billing reasons.',
+          icon: 'person',
+          order: 5,
+          levels: ['user'],
+          render: () => <AccountPanel />,
+        }),
 
         // Identity: a card and a sign-out, at the top of the menu.
         provide(appMenuSectionsValueSpec, {

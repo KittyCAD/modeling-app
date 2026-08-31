@@ -35,6 +35,16 @@ export interface ZookeeperConnectionState {
   error: string | null
   /** True when the conversation was taken over elsewhere. Do not reconnect. */
   superseded: boolean
+  /**
+   * The service's own code for a refusal, when it refused.
+   *
+   * Kept alongside the prose because the prose is the *only* thing the service
+   * sends that a person can read, and it is not enough to act on: every
+   * `MlCopilotAccessDeniedCode` is a distinct billing situation with a distinct
+   * fix, and they all render as a sentence about credits. Recorded so a panel
+   * can name which one, rather than leaving somebody to guess from wording.
+   */
+  deniedCode: string | null
   /** Assigned by the service; needed to resume this conversation later. */
   conversationId: string | null
 }
@@ -98,6 +108,7 @@ export function createZookeeperConnection(
     stage: null,
     error: null,
     superseded: false,
+    deniedCode: null,
     conversationId: null,
   })
 
@@ -146,7 +157,10 @@ export function createZookeeperConnection(
     }
   }
 
-  function fail(message: string, options: { superseded?: boolean } = {}) {
+  function fail(
+    message: string,
+    options: { superseded?: boolean; deniedCode?: string } = {}
+  ) {
     if (state.peek().status === 'failed') return
 
     patch({
@@ -154,6 +168,9 @@ export function createZookeeperConnection(
       stage: null,
       error: message,
       ...(options.superseded === true ? { superseded: true } : {}),
+      ...(options.deniedCode === undefined
+        ? {}
+        : { deniedCode: options.deniedCode }),
     })
 
     rejectConnect?.(new Error(message))
@@ -252,7 +269,9 @@ export function createZookeeperConnection(
 
     if ('access_denied' in message) {
       publish(message)
-      fail(message.access_denied.detail)
+      fail(message.access_denied.detail, {
+        deniedCode: message.access_denied.code,
+      })
       return
     }
 
@@ -282,6 +301,8 @@ export function createZookeeperConnection(
       stage: 'websocket',
       error: null,
       superseded: false,
+      // A new attempt is not the previous refusal.
+      deniedCode: null,
     })
 
     const target = new URL(url)

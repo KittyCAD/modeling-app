@@ -50,6 +50,17 @@
   white-space: nowrap;
 }
 
+/* The org, below the address: quieter still, and in mono because it names a
+   billing subject rather than a person. */
+.zds-menu-identity__meta {
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-disabled);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /*
  * The avatar trigger.
  *

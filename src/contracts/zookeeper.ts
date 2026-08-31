@@ -123,6 +123,16 @@ export interface ConversationConnection {
   error: string | null
   /** True when the conversation was taken over elsewhere. Reconnecting will not help. */
   superseded: boolean
+  /**
+   * The service's code for a refusal, when it refused.
+   *
+   * The prose in `error` is the only human-readable thing the service sends and
+   * it is not enough to act on: several distinct billing situations all arrive
+   * worded as a sentence about credits. Surfacing the code is what lets somebody
+   * tell "this account has no payment method" from "pay as you go is switched
+   * off" without reading the network tab.
+   */
+  deniedCode: string | null
 }
 
 export interface Conversation {

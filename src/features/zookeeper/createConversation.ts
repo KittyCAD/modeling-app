@@ -578,6 +578,7 @@ export function createConversation(
         status: 'connected' as const,
         error: null,
         superseded: false,
+        deniedCode: null,
       })),
     status: computed(() => {
       const latest = transcript.value.at(-1)
