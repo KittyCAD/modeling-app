@@ -37,7 +37,7 @@ function mount(options: {
   /** More than one, for the tab strip. The first is active. */
   conversations?: Conversation[]
   open?: () => void
-  onActivate?: (id: string) => void
+  onActivate?: (id: string | null) => void
   onClose?: (id: string) => void
   /** Render the header button instead of the panel body. */
   header?: boolean
@@ -210,32 +210,38 @@ describe('getting back to an earlier conversation', () => {
     },
   ]
 
-  /** The whole argument for writing transcripts to disk. */
-  it('offers earlier conversations while one is already open', () => {
+  /**
+   * The whole argument for writing transcripts to disk, and the reason home is a
+   * tab: reaching an earlier conversation must not mean closing the live ones.
+   */
+  it('lists earlier conversations from home, with one open', () => {
     const view = mount({ conversation: fakeConversation({}), stored })
 
-    const toggle = view.querySelector('.zds-zoo__storedToggle')
-    expect(toggle?.textContent).toContain('Earlier conversations (1)')
+    // Not on screen while the conversation is: home is a separate view.
+    expect(view.textContent).not.toContain('the first thing I asked')
 
+    const home = view.querySelector('[role="tab"]') as HTMLElement
+    expect(home.textContent).toBe('Home')
     void act(() => {
-      ;(toggle as HTMLButtonElement).click()
+      home.click()
     })
 
     expect(view.textContent).toContain('the first thing I asked')
   })
 
-  /** With no conversation open the list is the only thing to do, so show it. */
-  it('shows them outright when nothing is open', () => {
+  /** With nothing open, home is the whole panel and the list is right there. */
+  it('lists them straight away when nothing is open', () => {
     const view = mount({ conversation: null, stored })
 
-    expect(view.querySelector('.zds-zoo__storedToggle')).toBeNull()
     expect(view.textContent).toContain('the first thing I asked')
   })
 
-  it('offers nothing when there are no earlier conversations', () => {
-    const view = mount({ conversation: fakeConversation({}), stored: [] })
+  /** Home stays useful with no history: it is still where a conversation starts. */
+  it('offers to start one from home even with no earlier conversations', () => {
+    const view = mount({ conversation: null, stored: [] })
 
-    expect(view.querySelector('.zds-zoo__storedToggle')).toBeNull()
+    expect(view.textContent).toContain('Start a conversation')
+    expect(view.textContent).not.toContain('Earlier conversations')
   })
 })
 
@@ -609,15 +615,30 @@ describe('ZookeeperPanel', () => {
     expect(view.textContent).toContain('another conversation is editing it')
   })
 
-  it('shows no tab strip for a single conversation', () => {
-    const view = mount({ conversation: fakeConversation({}) })
+  /** Home is the whole panel until a conversation exists; a lone tab says nothing. */
+  it('shows no tab strip before there is a conversation', () => {
+    const view = mount({ conversation: null })
 
     expect(view.querySelector('[role="tablist"]')).toBeNull()
   })
 
+  /** One conversation is still two tabs, because Home is one of them. */
+  it('shows Home beside a single conversation', () => {
+    const view = mount({ conversation: fakeConversation({}) })
+
+    const tabs = [...view.querySelectorAll('[role="tab"]')]
+    expect(tabs.map((each) => each.textContent)).toEqual([
+      'Home',
+      expect.stringContaining('Zookeeper (1)'),
+    ])
+    // The conversation is what you are looking at, not Home.
+    expect(tabs[0].getAttribute('aria-selected')).toBe('false')
+    expect(tabs[1].getAttribute('aria-selected')).toBe('true')
+  })
+
   /**
-   * The strip appears when "Zookeeper" stops being one thing, which is also when
-   * the waiting message starts naming them — so the labels match it.
+   * The labels match the waiting message, which names conversations the same
+   * way once "Zookeeper" stops being one thing.
    */
   it('shows a tab per conversation once there are two', () => {
     const view = mount({
@@ -628,11 +649,12 @@ describe('ZookeeperPanel', () => {
     })
 
     const tabs = [...view.querySelectorAll('[role="tab"]')]
-    expect(tabs).toHaveLength(2)
-    expect(tabs[0].textContent).toContain('Zookeeper (1)')
-    expect(tabs[1].textContent).toContain('Zookeeper (2)')
-    expect(tabs[0].getAttribute('aria-selected')).toBe('true')
-    expect(tabs[1].getAttribute('aria-selected')).toBe('false')
+    expect(tabs).toHaveLength(3)
+    expect(tabs[0].textContent).toBe('Home')
+    expect(tabs[1].textContent).toContain('Zookeeper (1)')
+    expect(tabs[2].textContent).toContain('Zookeeper (2)')
+    expect(tabs[1].getAttribute('aria-selected')).toBe('true')
+    expect(tabs[2].getAttribute('aria-selected')).toBe('false')
   })
 
   it('switches conversation when a tab is clicked', () => {
@@ -647,10 +669,24 @@ describe('ZookeeperPanel', () => {
 
     const tabs = [...view.querySelectorAll('[role="tab"]')]
     void act(() => {
-      ;(tabs[1] as HTMLElement).click()
+      ;(tabs[2] as HTMLElement).click()
     })
 
     expect(onActivate).toHaveBeenCalledWith('b')
+  })
+
+  it('goes to home when the Home tab is clicked', () => {
+    const onActivate = vi.fn()
+    const view = mount({ conversation: fakeConversation({}), onActivate })
+
+    const tabs = [...view.querySelectorAll('[role="tab"]')]
+    void act(() => {
+      ;(tabs[0] as HTMLElement).click()
+    })
+
+    expect(onActivate).toHaveBeenCalledWith(null)
+    // And the composer is gone, because home is not a conversation.
+    expect(view.querySelector('textarea')).toBeNull()
   })
 
   it('closes the conversation whose close button was pressed', () => {

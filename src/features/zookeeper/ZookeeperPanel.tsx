@@ -98,9 +98,39 @@ export function ZookeeperPanel() {
     )
   }
 
-  if (active.value === null) {
-    return (
-      <div class="zds-zoo">
+  return (
+    <div class="zds-zoo">
+      <ConversationTabs />
+      {active.value === null ? (
+        <HomeView />
+      ) : (
+        /*
+          Keyed by conversation, so switching tabs builds a new view rather than
+          re-using the old one's state. Without it the draft prompt survives the
+          switch — a half-written message addressed to one collaborator, sitting
+          in another's composer, one Enter away from going to the wrong one.
+        */
+        <ConversationView key={active.value.id} conversation={active.value} />
+      )}
+    </div>
+  )
+}
+
+/**
+ * Where conversations start, and where earlier ones are listed.
+ *
+ * A destination rather than an empty state. It used to be only the latter — the
+ * panel with nothing open — which meant getting back to an earlier conversation
+ * required closing every live one first, and a conversation you can only reach
+ * by dismantling your session is not much better than an audit trail.
+ */
+function HomeView() {
+  const zookeeper = useService(zookeeperService)
+  const conversations = useComputed(() => zookeeper.conversations.value.size)
+
+  return (
+    <div class="zds-zoo__home">
+      {conversations.value === 0 ? (
         <EmptyState
           icon="elephant"
           eyebrow="Zookeeper"
@@ -114,29 +144,22 @@ export function ZookeeperPanel() {
             />
           }
         />
-        <StoredConversations />
-      </div>
-    )
-  }
-
-  return (
-    <div class="zds-zoo">
-      <ConversationTabs />
-      {/*
-        Keyed by conversation, so switching tabs builds a new view rather than
-        re-using the old one's state. Without it the draft prompt survives the
-        switch — a half-written message addressed to one collaborator, sitting in
-        another's composer, one Enter away from going to the wrong one.
-      */}
-      <ConversationView key={active.value.id} conversation={active.value} />
-      {/*
-        Reachable while a conversation is open, not only from the empty state.
-        Earlier conversations used to appear only on a fresh panel, which made
-        getting back to one a matter of closing everything first — and the whole
-        argument for writing transcripts to disk is that a conversation you
-        cannot get back to is only an audit trail.
-      */}
-      <StoredConversations collapsed />
+      ) : (
+        /*
+          No empty state once conversations exist — they are one tab away, and
+          "No conversation open" would be a lie told next to a tab strip full of
+          them.
+        */
+        <div class="zds-zoo__homeActions">
+          <Button
+            label="Start a conversation"
+            variant="primary"
+            size="small"
+            onClick={() => zookeeper.open()}
+          />
+        </div>
+      )}
+      <StoredConversations />
     </div>
   )
 }
@@ -153,32 +176,11 @@ export function ZookeeperPanel() {
  * list says so rather than offering a button that would quietly do something
  * weaker than it claims.
  */
-function StoredConversations({ collapsed = false }: { collapsed?: boolean }) {
+function StoredConversations() {
   const zookeeper = useService(zookeeperService)
   const stored = useComputed(() => zookeeper.stored.value)
-  const open = useSignal(false)
 
   if (stored.value.length === 0) return null
-
-  /*
-   * Behind a disclosure once a conversation is open, and shown outright when
-   * there is none. In the empty state the list is the only thing to do; beside a
-   * live transcript it is a way back, and a way back should not take up the room
-   * the conversation needs.
-   */
-  if (collapsed && !open.value) {
-    return (
-      <button
-        type="button"
-        class="zds-zoo__storedToggle"
-        onClick={() => {
-          open.value = true
-        }}
-      >
-        {`Earlier conversations (${stored.value.length})`}
-      </button>
-    )
-  }
 
   return (
     <section class="zds-zoo__stored">
@@ -220,21 +222,39 @@ function StoredConversations({ collapsed = false }: { collapsed?: boolean }) {
 }
 
 /**
- * Which collaborator you are talking to.
+ * Which collaborator you are talking to, and the way back to home.
  *
- * Hidden with one conversation, because a tab strip over a single tab is noise.
- * It appears the moment a second exists, which is also the moment "Zookeeper"
- * stops being a single thing and the label has to say which one.
+ * Home is a tab rather than a control tucked under the transcript, because it is
+ * a peer of the conversations rather than an accessory to one — it is where a
+ * conversation is started and where earlier ones are found. That also makes the
+ * strip worth showing at one conversation, which it was not when it only held
+ * conversations and a single tab described nothing.
  */
 function ConversationTabs() {
   const zookeeper = useService(zookeeperService)
   const entries = useComputed(() => [...zookeeper.conversations.value.values()])
   const active = useComputed(() => zookeeper.active.value)
 
-  if (entries.value.length < 2) return null
+  /*
+   * Nothing to switch between until a conversation exists — home is the whole
+   * panel at that point, and a strip holding one tab labelled "Home" would be
+   * chrome describing itself.
+   */
+  if (entries.value.length === 0) return null
 
   return (
     <div class="zds-zoo__tabs" role="tablist" aria-label="Conversations">
+      <div class="zds-zoo__tab">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={active.value === null}
+          class="zds-zoo__tabButton"
+          onClick={() => zookeeper.activate(null)}
+        >
+          Home
+        </button>
+      </div>
       {entries.value.map((conversation, index) => (
         <div class="zds-zoo__tab" key={conversation.id}>
           <button

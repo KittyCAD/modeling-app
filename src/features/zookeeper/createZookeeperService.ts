@@ -490,7 +490,9 @@ export function createZookeeperService(
     close,
 
     activate(id) {
-      if (!conversations.peek().has(id)) return
+      // Null is the home view, which is always reachable. An unknown id is not
+      // a destination, and silently landing on home instead would hide the bug.
+      if (id !== null && !conversations.peek().has(id)) return
       active.value = id
     },
 

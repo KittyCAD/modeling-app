@@ -182,7 +182,15 @@ export interface ZookeeperService {
    */
   open(): ConversationId | null
   close(id: ConversationId): void
-  activate(id: ConversationId): void
+  /**
+   * Show one conversation, or `null` for the panel's home view.
+   *
+   * Null is a real destination, not an absence: home is where earlier
+   * conversations are listed and new ones are started, and it has to be
+   * reachable while conversations are open rather than only before the first
+   * one exists.
+   */
+  activate(id: ConversationId | null): void
   conversation(id: ConversationId): Conversation | undefined
   /** Which conversation, if any, currently holds the write claim on a path. */
   holderOf(path: string): ReadonlySignal<string | null>
