@@ -64,6 +64,21 @@ test-group = "after-engine"
 # Generate the docs tests after the engine tests.
 filter = "test(docs::gen_std_tests)"
 test-group = "after-engine"
+# These generators execute embedded KCL examples and can therefore see the
+# same transient engine disconnects as the main engine-backed test group.
+retries = { backoff = "exponential", count = 2, delay = "1s", max-delay = "2s", jitter = true }
+
+[[profile.default.overrides]]
+# This report test executes a real non-overlapping subtract through the engine.
+filter = "package(kcl-python-bindings) and test(exec_outcome_report_renders_csg_no_overlap_warning)"
+test-group = "uses-engine"
+threads-required = 2
+
+[[profile.ci.overrides]]
+filter = "package(kcl-python-bindings) and test(exec_outcome_report_renders_csg_no_overlap_warning)"
+test-group = "uses-engine"
+threads-required = 2
+retries = { backoff = "exponential", count = 2, delay = "1s", max-delay = "2s", jitter = true }
 
 [[profile.default.overrides]]
 filter = 'test(kcl_samples)'
