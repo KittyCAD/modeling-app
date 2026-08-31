@@ -148,6 +148,40 @@ export function MenuPanel({
   )
 }
 
+/** Gap kept between a panel edge and the window edge. */
+const PANEL_MARGIN = 8
+
+/**
+ * How far to nudge a panel to keep it on screen.
+ *
+ * Pure, and exported, because it is the whole of the positioning decision and
+ * the DOM measurement around it is not worth a test. Positive shifts right,
+ * negative shifts left, zero leaves it where the CSS put it.
+ *
+ * When the panel is wider than the window both edges overflow at once; the
+ * start edge wins, because a panel pinned to the start is readable from its
+ * beginning while one pinned to the end is not.
+ */
+export function menuPanelShift({
+  left,
+  right,
+  viewportWidth,
+  margin = PANEL_MARGIN,
+}: {
+  left: number
+  right: number
+  viewportWidth: number
+  margin?: number
+}): number {
+  const overflowStart = margin - left
+  if (overflowStart > 0) return Math.round(overflowStart)
+
+  const overflowEnd = right - (viewportWidth - margin)
+  if (overflowEnd > 0) return -Math.round(overflowEnd)
+
+  return 0
+}
+
 /**
  * A menu anchored to a trigger.
  *
@@ -172,6 +206,7 @@ export function Menu({
   const highlighted = useSignal(-1)
   const container = useRef<HTMLDivElement>(null)
   const triggerElement = useRef<HTMLElement | null>(null)
+  const panel = useRef<HTMLDivElement>(null)
 
   // Plain props belong in the render body. Memoising this with `useComputed`
   // would pin the first `sections` array because there is no signal read for a
@@ -184,6 +219,41 @@ export function Menu({
     // Focus goes back to the trigger, so a keyboard user is not stranded.
     triggerElement.current?.focus()
   }
+
+  /*
+   * Keep the panel on screen.
+   *
+   * The panel is absolutely positioned against the trigger, so CSS alone cannot
+   * know where that trigger sits in the viewport: `align="end"` opens leftwards
+   * from the trigger's right edge, which runs off the left of the window as soon
+   * as the trigger is nearer the left than the panel is wide. That is not
+   * hypothetical for a status bar, where a field's position depends on how many
+   * other fields happen to be showing.
+   *
+   * Measured and corrected rather than flipped: flipping the alignment would
+   * make the same panel open in different directions from one moment to the
+   * next. Shifting it keeps the anchor stable and only ever moves it as far as
+   * it has to.
+   */
+  useEffect(() => {
+    const element = panel.current
+    if (!open.value || !element) return
+
+    // Cleared first: the measurement has to be of the panel where CSS put it,
+    // not of a panel already carrying the previous open's correction.
+    element.style.removeProperty('--zds-menu-shift')
+
+    const box = element.getBoundingClientRect()
+    const shift = menuPanelShift({
+      left: box.left,
+      right: box.right,
+      viewportWidth: window.innerWidth,
+    })
+
+    if (shift !== 0) {
+      element.style.setProperty('--zds-menu-shift', `${shift}px`)
+    }
+  })
 
   useEffect(() => {
     if (!open.value) return
@@ -259,6 +329,7 @@ export function Menu({
         <MenuPanel
           sections={sections}
           label={label}
+          panelRef={panel}
           highlighted={highlighted.value}
           onHighlight={(index) => {
             highlighted.value = index

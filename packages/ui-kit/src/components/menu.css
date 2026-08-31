@@ -15,12 +15,19 @@
   inset-block-start: calc(100% + var(--zds-space-1));
   z-index: var(--zds-z-popover);
   min-inline-size: 220px;
-  max-inline-size: 320px;
   padding: var(--zds-space-1);
   border: var(--zds-size-hairline) solid var(--zds-border-default);
   border-radius: var(--zds-radius-content-lg);
   background: var(--zds-surface-overlay);
   box-shadow: var(--zds-shadow-overlay);
+  /*
+   * The nudge that keeps the panel on screen, set by the component after
+   * measuring. Zero by default, so a panel that fits is positioned purely by
+   * the rules above.
+   */
+  translate: var(--zds-menu-shift, 0) 0;
+  /* Never wider than the window, whatever the content. */
+  max-inline-size: min(320px, calc(100vw - 16px));
 }
 
 .zds-menu[data-align="end"] .zds-menu__panel {
