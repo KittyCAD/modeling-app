@@ -20,6 +20,7 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import { resolveLatestSolidInput } from '@src/lang/modifyAst/selectionInputs'
 import {
   getEdgeBodyKey,
   modifyAstWithTagsForSelection,
@@ -2674,7 +2675,10 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
       }
     )
     if (err(vars)) return vars
-    const resolvedSolidsExpr = createVariableExpressionsArray(vars.exprs)
+    const resolvedSolidsExpr = resolveLatestSolidInput(
+      createVariableExpressionsArray(vars.exprs),
+      modifiedAst
+    )
     if (!resolvedSolidsExpr) {
       return new Error(
         'Could not resolve selected primitive edge bodies in code.'
