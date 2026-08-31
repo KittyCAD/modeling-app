@@ -23,7 +23,7 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
   const { auth } = useApp()
   const platform = usePlatform()
   const location = useLocation()
-  const filePath = useAbsoluteFilePath()
+  const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()

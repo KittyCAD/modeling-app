@@ -18,7 +18,6 @@ import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standard
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { kclCommands } from '@src/lib/kclCommands'
-import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
@@ -70,7 +69,7 @@ export const ModelingPageProvider = ({
   const settingsActor = settings.actor
   const projectIORef = project?.projectIORefSignal
   const file = project?.executingFileEntry.value
-  const filePath = useAbsoluteFilePath()
+  const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
 
   useEffect(() => {
     const {
@@ -162,11 +161,9 @@ export const ModelingPageProvider = ({
   // Due to the route provider, i've moved this to the ModelingPageProvider instead of CommandBarProvider
   // This will register the commands to route to Telemetry, Home, and Settings.
   useEffect(() => {
-    if (file?.path === undefined) {
+    if (filePath === undefined) {
       return
     }
-
-    const filePath = PATHS.FILE + '/' + encodeURIComponent(file?.path)
 
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
@@ -192,9 +189,7 @@ export const ModelingPageProvider = ({
         },
       })
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [location])
+  }, [commands, filePath, location, navigate])
 
   const cb = modelingMenuCallbackMostActions({
     authActor: auth.actor,
