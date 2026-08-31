@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest'
 import {
   backgroundColorFor,
   parseHexColor,
   systemColorFor,
 } from '@src/features/engineScene/engineColors'
+import { describe, expect, it } from 'vitest'
 
 describe('engine colours', () => {
   it('sends channels as 0–1, not 0–255', () => {

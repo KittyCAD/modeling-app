@@ -1,13 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { encode as msgpackEncode } from '@msgpack/msgpack'
 import { createEngineCamera } from '@src/features/engineScene/createEngineCamera'
-import type { CameraFrame } from '@src/lib/scene/projection'
 import {
-  OVERHEAD,
   cameraResponse,
   createFakeConnection,
+  OVERHEAD,
   settle,
 } from '@src/features/engineScene/fakeConnection'
+import type { CameraFrame } from '@src/lib/scene/projection'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('createEngineCamera', () => {
   let fake: ReturnType<typeof createFakeConnection>

@@ -1,14 +1,14 @@
 import { computed, signal } from '@preact/signals'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type {
   EngineConnection,
   EngineConnectionState,
   SceneCommand,
 } from '@src/contracts/engine'
 import type { CameraGesture, ScenePoint } from '@src/contracts/scene'
-import type { CameraFrame } from '@src/lib/scene/projection'
 import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
 import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
+import type { CameraFrame } from '@src/lib/scene/projection'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 /**
  * A camera the driver can animate from, or none at all.

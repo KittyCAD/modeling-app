@@ -1,5 +1,5 @@
-import { computed, signal } from '@preact/signals'
 import { encode as msgpackEncode } from '@msgpack/msgpack'
+import { computed, signal } from '@preact/signals'
 import type {
   EngineConnection,
   EngineConnectionState,

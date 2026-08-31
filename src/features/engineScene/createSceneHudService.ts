@@ -1,7 +1,7 @@
 import {
+  computed,
   type ReadonlySignal,
   type Signal,
-  computed,
   signal,
 } from '@preact/signals'
 import type { SceneHudService } from '@src/contracts/sceneHud'

@@ -1,3 +1,5 @@
+import { signal } from '@preact/signals'
+import type { CameraFrame, Vector3 } from '@src/lib/scene/projection'
 /**
  * The wasm-bindgen surface of bevy-zoo's embed build.
  *
@@ -58,6 +60,21 @@ export interface BevyModule {
   ) => void
   camera_zoom_to_fit: () => void
   camera_set_projection: (projection: string) => void
+  set_camera_callback: (callback: (payload: string) => void) => void
+}
+
+/**
+ * Where bevy-zoo's camera is, in Zoo's frame — Z-up, millimetres.
+ *
+ * `up` is the camera's *actual* up vector, not world up, which is what lets a
+ * basis built from it carry the roll a trackball orbit produces.
+ */
+export interface BevyCameraReport {
+  position: [number, number, number]
+  target: [number, number, number]
+  up: [number, number, number]
+  fovY: number
+  orthographic: boolean
 }
 
 /** What bevy-zoo reports about the solve it is running. */
@@ -90,6 +107,21 @@ export interface BevyJobState {
  * specifier stays a variable and carries `@vite-ignore`: nothing may try to
  * resolve it at build time, because `npm run build` does not build the renderer.
  */
+/**
+ * Where the Bevy camera is, or null before it has said.
+ *
+ * Module-level because the projection service is built when the feature is
+ * registered, long before a canvas exists for the renderer to start in.
+ */
+export const bevyCamera = signal<CameraFrame | null>(null)
+
+/** Bumps on every reported change, for whoever redraws rather than reads. */
+export const bevyCameraEpoch = signal(0)
+
+function toVector([x, y, z]: [number, number, number]): Vector3 {
+  return { x, y, z }
+}
+
 const MODULE_URL = '/vendor/bevy/bevy_zoo.js'
 
 /** Fetched by URL rather than imported, which is what `public/` is for. */
@@ -166,6 +198,29 @@ async function start(options: StartOptions): Promise<BevyModule> {
       }
     })
   }
+
+  /*
+   * Always registered, not optional.
+   *
+   * Anything drawn over the scene needs to know where the camera is, and the
+   * projection service is built before the surface mounts — so the loader owns the
+   * signal rather than having the surface thread a callback through.
+   */
+  module.set_camera_callback((payload) => {
+    try {
+      const report = JSON.parse(payload) as BevyCameraReport
+      bevyCamera.value = {
+        position: toVector(report.position),
+        target: toVector(report.target),
+        up: toVector(report.up),
+        fovY: report.fovY,
+        orthographic: report.orthographic,
+      }
+      bevyCameraEpoch.value += 1
+    } catch {
+      // A report we cannot read is not worth taking the renderer down for.
+    }
+  })
 
   module.start(options.canvas, options.token, options.host)
   announceStarted(module)

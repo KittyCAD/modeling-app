@@ -8,9 +8,11 @@ import {
 } from '@kittycad/registry'
 import { computed, effect } from '@preact/signals'
 import { cameraDriverService, sceneItemsValueSpec } from '@src/contracts/scene'
+import { sceneProjectionService } from '@src/contracts/sceneProjection'
 import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { BevySurface } from '@src/features/bevyScene/BevySurface'
 import { createBevyCameraDriver } from '@src/features/bevyScene/createBevyCameraDriver'
+import { createBevyProjection } from '@src/features/bevyScene/createBevyProjection'
 import { whenBevyStarted } from '@src/features/bevyScene/loadBevy'
 import {
   bevySceneSettings,
@@ -45,10 +47,19 @@ export default defineRegistryItemFactory((ctx) => {
    */
   const driver = createBevyCameraDriver({ module: whenBevyStarted() })
 
+  /**
+   * Where that camera is, for whatever draws over the scene.
+   *
+   * The read side of the same seam. Without it the view gizmo follows the
+   * *engine's* camera, which never moves while this renderer is drawing, so it
+   * sits still and looks broken.
+   */
+  const projection = createBevyProjection()
+
   const cameraPlugin = createPlugin({
     id: BEVY_CAMERA,
     title: 'bevy-zoo camera',
-    description: 'Moves the local Bevy camera.',
+    description: 'Moves the local Bevy camera, and says where it is.',
     // The engine's camera is the one installed at startup, and the default
     // renderer is the engine. Enabling both would make every consumer of
     // `cameraDriverService` throw.
@@ -56,7 +67,10 @@ export default defineRegistryItemFactory((ctx) => {
     items: [
       defineRuntimeRegistryItem({
         id: 'bevyScene.camera.driver',
-        providesServices: [provideService(cameraDriverService, driver)],
+        providesServices: [
+          provideService(cameraDriverService, driver),
+          provideService(sceneProjectionService, projection),
+        ],
       }),
     ],
   })

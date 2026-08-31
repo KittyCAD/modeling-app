@@ -1,6 +1,6 @@
-import { computed, effect, signal } from '@preact/signals'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type { ReadonlySignal } from '@preact/signals'
+import { computed, effect, signal } from '@preact/signals'
 import type { EngineConnection } from '@src/contracts/engine'
 import type { CameraFrame, Vector3 } from '@src/lib/scene/projection'
 

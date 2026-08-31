@@ -1,16 +1,6 @@
-import { type ReadonlySignal, computed, effect } from '@preact/signals'
+import { computed, effect, type ReadonlySignal } from '@preact/signals'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { EngineConnection } from '@src/contracts/engine'
-import type { CameraFrame } from '@src/lib/scene/projection'
-import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
-import { toStreamWindow } from '@src/features/engineScene/streamWindow'
-import {
-  type Viewpoint,
-  ease,
-  tweenViewpoint,
-} from '@src/lib/scene/cameraTween'
-import { dolly, orbit, pan, trackball } from '@src/lib/scene/cameraMotion'
-import { halfViewHeight } from '@src/lib/scene/projection'
 import type {
   CameraDriver,
   CameraGesture,
@@ -18,6 +8,16 @@ import type {
   ScenePoint,
   StandardView,
 } from '@src/contracts/scene'
+import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
+import { toStreamWindow } from '@src/features/engineScene/streamWindow'
+import { dolly, orbit, pan, trackball } from '@src/lib/scene/cameraMotion'
+import {
+  ease,
+  tweenViewpoint,
+  type Viewpoint,
+} from '@src/lib/scene/cameraTween'
+import type { CameraFrame } from '@src/lib/scene/projection'
+import { halfViewHeight } from '@src/lib/scene/projection'
 
 /**
  * How often a drag reports while the pointer is moving.

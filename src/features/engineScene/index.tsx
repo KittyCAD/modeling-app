@@ -208,12 +208,19 @@ export default defineRegistryItemFactory((ctx) => {
   const cameraPlugin = createPlugin({
     id: 'engineScene.camera',
     title: 'Zoo engine camera',
-    description: 'Moves the streamed engine camera.',
+    description: 'Moves the streamed engine camera, and says where it is.',
     enabledByDefault: true,
     items: [
       defineRuntimeRegistryItem({
         id: 'engineScene.camera.driver',
-        providesServices: [provideService(cameraDriverService, cameraDriver)],
+        providesServices: [
+          provideService(cameraDriverService, cameraDriver),
+          // In the same slot as the driver, because the two are a pair: whoever
+          // moves the camera is the only one who can say where it now is, and an
+          // overlay following one renderer while another draws is worse than an
+          // overlay that knows it has nothing to follow.
+          provideService(sceneProjectionService, projection),
+        ],
       }),
     ],
   })
@@ -232,7 +239,6 @@ export default defineRegistryItemFactory((ctx) => {
         provideService(defaultPlaneDriverService, planeDriver),
         provideService(sceneHudService, hud),
         provideService(scenePickerService, picker),
-        provideService(sceneProjectionService, projection),
       ],
       provides: [
         ...sceneSettings.map((setting) => provide(settingsValueSpec, setting)),
@@ -253,7 +259,7 @@ export default defineRegistryItemFactory((ctx) => {
           id: 'scene.viewGizmo',
           zone: 'end',
           order: 0,
-          render: () => <ViewGizmo camera={camera} />,
+          render: () => <ViewGizmo />,
         }),
 
         provide(sceneItemsValueSpec, {

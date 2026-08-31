@@ -1,5 +1,5 @@
-import { type ReadonlySignal, computed } from '@preact/signals'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
+import { computed, type ReadonlySignal } from '@preact/signals'
 import type { EngineConnection } from '@src/contracts/engine'
 import type { ScenePoint } from '@src/contracts/scene'
 import type { ScenePicker } from '@src/contracts/selection'

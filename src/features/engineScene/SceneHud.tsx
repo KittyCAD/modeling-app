@@ -1,4 +1,5 @@
 import { Button, Icon } from '@kittycad/ui-kit'
+import { signal } from '@preact/signals'
 import { useOptionalService, useService, useValueSpec } from '@src/app/context'
 import { layoutService } from '@src/contracts/layout'
 import type { SceneHudSection, SceneHudService } from '@src/contracts/sceneHud'
@@ -7,7 +8,6 @@ import {
   sceneHudService,
 } from '@src/contracts/sceneHud'
 import { inlineResizeHandlers } from '@src/features/layout/inlineResize'
-import { signal } from '@preact/signals'
 import './sceneHud.css'
 
 /**

@@ -7,6 +7,8 @@ import {
 import { signal } from '@preact/signals'
 import type { CameraDriver } from '@src/contracts/scene'
 import { cameraDriverService } from '@src/contracts/scene'
+import type { SceneProjection } from '@src/contracts/sceneProjection'
+import { sceneProjectionService } from '@src/contracts/sceneProjection'
 import type { SettingsService } from '@src/contracts/settings'
 import { settingsService } from '@src/contracts/settings'
 import bevySceneFeature from '@src/features/bevyScene'
@@ -23,6 +25,7 @@ import { describe, expect, it } from 'vitest'
 const ENGINE_CAMERA = 'engineScene.camera'
 
 const engineDriver = { id: 'engine' } as unknown as CameraDriver
+const engineProjection = { id: 'engine' } as unknown as SceneProjection
 
 function harness(renderer: 'engine' | 'bevy', hydrated = true) {
   const choice = signal(renderer)
@@ -44,7 +47,10 @@ function harness(renderer: 'engine' | 'bevy', hydrated = true) {
       items: [
         defineRegistryItem({
           id: 'engineScene.camera.driver',
-          providesServices: [provideService(cameraDriverService, engineDriver)],
+          providesServices: [
+            provideService(cameraDriverService, engineDriver),
+            provideService(sceneProjectionService, engineProjection),
+          ],
           provides: [],
         }),
       ],
@@ -111,6 +117,24 @@ describe('the renderer arbiter', () => {
     await settle()
     expect(() => registry.get(cameraDriverService)).not.toThrow()
     expect(registry.get(cameraDriverService).id).toBe('engine')
+  })
+
+  /**
+   * The read side moves with the write side.
+   *
+   * This is what makes the view gizmo follow: it asks the projection where the
+   * camera is, and a projection belonging to a renderer that is not drawing never
+   * moves — so the cube sits still while the model turns.
+   */
+  it('hands the projection over with the camera', async () => {
+    const { registry, choice } = harness('engine')
+    await settle()
+    expect(registry.get(sceneProjectionService).id).toBe('engine')
+
+    choice.value = 'bevy'
+    await settle()
+    expect(registry.get(cameraDriverService).id).toBe('bevy')
+    expect(registry.get(sceneProjectionService).id).toBe('bevy')
   })
 
   /**

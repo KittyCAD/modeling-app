@@ -1,4 +1,10 @@
+import type { ReadonlySignal } from '@preact/signals'
 import { effect } from '@preact/signals'
+import type { CameraDriver, ScenePoint } from '@src/contracts/scene'
+import { DprDetector } from '@src/lib/dprDetector'
+import { orientationForName } from '@src/lib/scene/gizmoOrientation'
+import type { CameraFrame } from '@src/lib/scene/projection'
+import { viewBasis } from '@src/lib/scene/projection'
 import {
   AmbientLight,
   BufferGeometry,
@@ -15,8 +21,8 @@ import {
   PerspectiveCamera,
   Quaternion,
   Raycaster,
-  SRGBColorSpace,
   Scene,
+  SRGBColorSpace,
   type Texture,
   TextureLoader,
   Vector2,
@@ -24,11 +30,6 @@ import {
   WebGLRenderer,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import type { CameraDriver, ScenePoint } from '@src/contracts/scene'
-import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
-import { DprDetector } from '@src/lib/dprDetector'
-import { orientationForName } from '@src/lib/scene/gizmoOrientation'
-import { viewBasis } from '@src/lib/scene/projection'
 
 import gizmoModelUrl from '/clientSideSceneAssets/gizmo_cube/gizmo_cube.glb?url'
 import labelsDarkUrl from '/clientSideSceneAssets/gizmo_cube/labels_dark.png?url'
@@ -97,7 +98,17 @@ const createCamera = (isPerspective: boolean) => {
 }
 
 export interface GizmoRendererDependencies {
-  camera: EngineCamera
+  /**
+   * Where the camera is, and a counter that bumps when it moves.
+   *
+   * Structural rather than the engine's camera object, because the cube turns
+   * with whichever renderer is drawing. `SceneProjection` satisfies this, and so
+   * does `EngineCamera`.
+   */
+  camera: {
+    readonly frame: ReadonlySignal<CameraFrame | null>
+    readonly epoch: ReadonlySignal<number>
+  }
   driver: () => CameraDriver | undefined
   /** The scene surface's size, for turning a gizmo drag into a camera drag. */
   viewport: () => { width: number; height: number }

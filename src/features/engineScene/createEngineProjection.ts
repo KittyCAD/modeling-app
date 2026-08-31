@@ -1,5 +1,5 @@
-import { computed } from '@preact/signals'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
+import { computed } from '@preact/signals'
 import type { EngineConnection } from '@src/contracts/engine'
 import type { ScenePoint } from '@src/contracts/scene'
 import type { SceneProjection } from '@src/contracts/sceneProjection'
@@ -7,11 +7,11 @@ import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
 import {
   type PlaneFrame,
   type PlanePoint,
-  type Vector3,
-  type ViewportSize,
   pixelsPerUnit,
   projectPoint,
   unprojectToPlane,
+  type Vector3,
+  type ViewportSize,
   viewDirection,
 } from '@src/lib/scene/projection'
 

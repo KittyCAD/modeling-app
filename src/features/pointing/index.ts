@@ -11,6 +11,7 @@ import { sceneInteractionsValueSpec } from '@src/contracts/scene'
 import { scenePickerService } from '@src/contracts/selection'
 import { sketchSessionService } from '@src/contracts/sketchSession'
 import { createPointing } from '@src/features/pointing/createPointing'
+import { coalesceToFrame } from '@src/lib/coalesceToFrame'
 
 /**
  * What the pointer is over, and what it has to do with the file.
@@ -62,7 +63,17 @@ export default defineRegistryItemFactory((ctx) => {
           id: 'pointing',
           order: 300,
           attach: (element: HTMLElement) => {
-            const onPointerMove = (event: PointerEvent) => {
+            /**
+             * One question per frame, and one in the air at a time.
+             *
+             * Every hover is a round trip on the same socket the whole app
+             * talks over, so an unbounded stream of them is a real cost — the
+             * existing app puts `highlight_set_entity` on the *unreliable*
+             * channel precisely because it is too noisy for the reliable one.
+             * Coalescing to a frame bounds the rate at the source; the picker's
+             * single-flight bounds it again at the wire.
+             */
+            const pointer = coalesceToFrame<PointerEvent>((event) => {
               /*
                * Not while a button is down. That is a camera drag or a
                * selection in progress, and asking what is under the pointer
@@ -104,14 +115,19 @@ export default defineRegistryItemFactory((ctx) => {
                   // A hover that failed is not a hover. The connection reports
                   // its own problems; this one is not worth a line of console.
                 })
-            }
+            })
 
-            const onPointerLeave = () => pointing.clear('scene')
+            const onPointerMove = (event: PointerEvent) => pointer.offer(event)
+            const onPointerLeave = () => {
+              pointer.cancel()
+              pointing.clear('scene')
+            }
 
             element.addEventListener('pointermove', onPointerMove)
             element.addEventListener('pointerleave', onPointerLeave)
 
             return () => {
+              pointer.cancel()
               element.removeEventListener('pointermove', onPointerMove)
               element.removeEventListener('pointerleave', onPointerLeave)
             }

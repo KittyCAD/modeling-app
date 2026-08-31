@@ -5,15 +5,15 @@ import {
   Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals'
+import { AppProvider } from '@src/app/context'
 import type { LayoutService } from '@src/contracts/layout'
 import { layoutService } from '@src/contracts/layout'
-import { AppProvider } from '@src/app/context'
 import {
   sceneHudSectionsValueSpec,
   sceneHudService,
 } from '@src/contracts/sceneHud'
-import { SceneHud } from '@src/features/engineScene/SceneHud'
 import { createSceneHudService } from '@src/features/engineScene/createSceneHudService'
+import { SceneHud } from '@src/features/engineScene/SceneHud'
 import { render } from 'preact'
 import { act } from 'preact/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'

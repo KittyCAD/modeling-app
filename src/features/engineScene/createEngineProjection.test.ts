@@ -1,5 +1,4 @@
 import { encode as msgpackEncode } from '@msgpack/msgpack'
-import { beforeEach, describe, expect, it } from 'vitest'
 import { createEngineCamera } from '@src/features/engineScene/createEngineCamera'
 import { createEngineProjection } from '@src/features/engineScene/createEngineProjection'
 import {
@@ -7,6 +6,7 @@ import {
   settle,
 } from '@src/features/engineScene/fakeConnection'
 import type { PlaneFrame } from '@src/lib/scene/projection'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 const xy: PlaneFrame = {
   origin: { x: 0, y: 0, z: 0 },

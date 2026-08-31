@@ -2,7 +2,6 @@ import { useService } from '@src/app/context'
 import { settingsService } from '@src/contracts/settings'
 import { AxisGizmo } from '@src/features/engineScene/AxisGizmo'
 import { CubeGizmo } from '@src/features/engineScene/CubeGizmo'
-import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
 import { gizmoTypeSetting } from '@src/features/engineScene/settings'
 
 /**
@@ -17,12 +16,12 @@ import { gizmoTypeSetting } from '@src/features/engineScene/settings'
  * textures, so rendering both and hiding one would charge everybody for the one
  * they did not choose.
  */
-export function ViewGizmo({ camera }: { camera: EngineCamera }) {
+export function ViewGizmo() {
   const settings = useService(settingsService)
 
   return settings.value(gizmoTypeSetting).value === 'axis' ? (
     <AxisGizmo />
   ) : (
-    <CubeGizmo camera={camera} />
+    <CubeGizmo />
   )
 }

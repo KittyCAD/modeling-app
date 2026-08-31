@@ -1,4 +1,4 @@
-import { type ReadonlySignal, computed, effect } from '@preact/signals'
+import { computed, effect, type ReadonlySignal } from '@preact/signals'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type {
   DefaultPlaneDriver,

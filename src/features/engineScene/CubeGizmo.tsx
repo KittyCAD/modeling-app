@@ -1,11 +1,11 @@
 import { useSignalEffect } from '@preact/signals'
-import { useEffect, useRef } from 'preact/hooks'
 import { useService } from '@src/app/context'
 import { engineConnectionService } from '@src/contracts/engine'
 import { cameraDriverService } from '@src/contracts/scene'
+import { sceneProjectionService } from '@src/contracts/sceneProjection'
 import { themeService } from '@src/contracts/theme'
-import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
 import type { GizmoRenderer } from '@src/features/engineScene/gizmoRenderer'
+import { useEffect, useRef } from 'preact/hooks'
 import './viewGizmo.css'
 
 /**
@@ -16,9 +16,11 @@ import './viewGizmo.css'
  * for something whose content is a WebGL scene — re-creating it on a render would
  * mean reloading a model and four textures.
  */
-export function CubeGizmo({ camera }: { camera: EngineCamera }) {
+export function CubeGizmo() {
   const themes = useService(themeService)
   const engine = useService(engineConnectionService)
+  /** Whichever renderer is drawing; the cube turns with it. */
+  const camera = useService(sceneProjectionService)
   const drivers = useService(cameraDriverService)
 
   const canvas = useRef<HTMLCanvasElement>(null)

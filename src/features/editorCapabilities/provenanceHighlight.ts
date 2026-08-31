@@ -6,6 +6,7 @@ import type { EditorCapability } from '@src/contracts/buffers'
 import type { PointingService } from '@src/contracts/pointing'
 import type { ProvenanceRole, RangeMark } from '@src/lib/kcl/provenance'
 import { bufferOrigin } from '@src/lib/buffers/annotations'
+import { coalesceToFrame } from '@src/lib/coalesceToFrame'
 import { isTopLevel } from '@src/lib/kcl/artifacts'
 
 /** Replaces whatever was decorated. Marks are never added to. */
@@ -145,26 +146,44 @@ export function createProvenanceHighlightCapability(dependencies: {
    * capability whose extension differs between calls asks every buffer to
    * reconfigure, and there is a test asserting typing never does that.
    */
+  /**
+   * Where the pointer was, resolved once a frame.
+   *
+   * `posAtCoords` hit-tests the document against live coordinates, which forces
+   * the browser to flush layout. Called straight from `mousemove` it runs
+   * several times a frame, and layout thrash in the editor is felt as *typing*
+   * being slow — the keystroke and the hit test compete for the same
+   * synchronous layout. A hover has no use for sub-frame precision; it cannot
+   * be drawn more often than that either.
+   */
+  const pointer = coalesceToFrame<{ x: number; y: number; view: EditorView }>(
+    (at) => {
+      if (!at.view.dom.isConnected) return
+
+      const service = dependencies.pointing()
+      if (!service) return
+
+      const offset = at.view.posAtCoords({ x: at.x, y: at.y })
+      if (offset === null) {
+        service.clear('code')
+        return
+      }
+
+      /*
+       * Deduplicated inside the service, so this costs a comparison when the
+       * pointer has not left the expression it was already on. Doing it here
+       * instead would mean every surface that can point had to remember to.
+       */
+      service.point({ at: { kind: 'offset', offset }, from: 'code' })
+    }
+  )
+
   const extension: Extension = [
     marksField,
     provenanceTheme,
     EditorView.domEventHandlers({
       mousemove(event, view) {
-        const service = dependencies.pointing()
-        if (!service) return
-
-        const offset = view.posAtCoords({ x: event.clientX, y: event.clientY })
-        if (offset === null) {
-          service.clear('code')
-          return
-        }
-
-        /*
-         * Deduplicated inside the service, so this fires as often as the mouse
-         * moves and costs a comparison. Doing it here instead would mean every
-         * surface that can point had to remember to.
-         */
-        service.point({ at: { kind: 'offset', offset }, from: 'code' })
+        pointer.offer({ x: event.clientX, y: event.clientY, view })
       },
 
       /*
@@ -172,6 +191,7 @@ export function createProvenanceHighlightCapability(dependencies: {
        * hover the scene is still showing.
        */
       mouseleave() {
+        pointer.cancel()
         dependencies.pointing()?.clear('code')
       },
     }),
@@ -196,10 +216,13 @@ export function createProvenanceHighlightCapability(dependencies: {
         buffer.dispatch({
           effects: setMarks.of(found?.ranges ?? []),
           /*
-           * Not an edit. No text changes, so persistence ignores it and the
-           * history never sees it — a hover must not be undoable.
+           * The editor's own machinery, not an edit and not a semantic one
+           * either. No text changes, so persistence and the LSP ignore it — but
+           * `semantic` is what a formatting pass or an agent's write is called,
+           * and presence and the change log read that word. A hover must not
+           * look like somebody editing the file.
            */
-          annotations: bufferOrigin.of('semantic'),
+          annotations: bufferOrigin.of('capability'),
         })
       }),
   }
