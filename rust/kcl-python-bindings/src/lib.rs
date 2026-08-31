@@ -446,9 +446,27 @@ async fn execute_and_snapshot_views_impl(
 
 async fn execute_and_measure_impl(
     input: KclInput,
-    request: PhysicalPropertiesRequest,
+    mut request: PhysicalPropertiesRequest,
 ) -> PyResult<PhysicalPropertiesResponse> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, None).await?;
+    let ExecutedKcl {
+        ctx, state, env_ref, ..
+    } = run_kcl(input, false, None).await?;
+    let entity_ids = match state.physical_property_entity_ids(env_ref) {
+        Ok(entity_ids) => entity_ids,
+        Err(err) => {
+            ctx.close().await;
+            return Err(to_py_exception(err));
+        }
+    };
+    if let Some(entity_ids) = entity_ids {
+        if entity_ids.is_empty() && !request.is_empty() {
+            ctx.close().await;
+            return Err(PyException::new_err(
+                "KCL execution produced no visible solid bodies to measure",
+            ));
+        }
+        request.set_entity_ids(&entity_ids);
+    }
     let result = measure_model_properties(&ctx, request).await;
     ctx.close().await;
     result
