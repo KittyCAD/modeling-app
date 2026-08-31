@@ -122,7 +122,13 @@ export function ZookeeperPanel() {
   return (
     <div class="zds-zoo">
       <ConversationTabs />
-      <ConversationView conversation={active.value} />
+      {/*
+        Keyed by conversation, so switching tabs builds a new view rather than
+        re-using the old one's state. Without it the draft prompt survives the
+        switch — a half-written message addressed to one collaborator, sitting in
+        another's composer, one Enter away from going to the wrong one.
+      */}
+      <ConversationView key={active.value.id} conversation={active.value} />
     </div>
   )
 }
@@ -231,25 +237,34 @@ function ConversationTabs() {
 
 /** A dot on a tab, so a conversation working in the background is visible. */
 function StatusMark({ conversation }: { conversation: Conversation }) {
-  const status = useComputed(() => conversation.status.value)
-  if (status.value === 'idle') return null
+  // Read straight, as in `ConversationView`: a computed over a prop is the trap
+  // that broke tab switching, and it is not worth having one instance of it left.
+  const status = conversation.status.value
+  if (status === 'idle') return null
   return (
-    <span
-      class="zds-zoo__tabMark"
-      data-status={status.value}
-      aria-label={status.value}
-    />
+    <span class="zds-zoo__tabMark" data-status={status} aria-label={status} />
   )
 }
 
+/**
+ * One conversation's transcript and composer.
+ *
+ * **Signals are read straight, not through `useComputed`.** A `useComputed` is
+ * invalidated by the signals it depends on, never by its component re-rendering
+ * — so one closing over a *prop* keeps serving the value it cached for the
+ * previous prop. That is exactly what broke switching tabs: the new conversation
+ * arrived, the old one's transcript had not changed, and the computed happily
+ * returned the old turns while the composer sent to the new conversation. Read
+ * during render, the subscription is rebuilt each time and follows the prop.
+ */
 function ConversationView({ conversation }: { conversation: Conversation }) {
   const draft = useSignal('')
-  const turns = useComputed(() => conversation.transcript.value)
-  const status = useComputed(() => conversation.status.value)
-  const link = useComputed(() => conversation.connection.value)
+  const turns = conversation.transcript.value
+  const status = conversation.status.value
+  const link = conversation.connection.value
   // Nothing can be sent until the socket is up, and saying so beats a prompt
   // that silently goes nowhere.
-  const sendable = useComputed(() => link.value.status === 'connected')
+  const sendable = link.status === 'connected'
 
   const submit = () => {
     const prompt = draft.value.trim()
@@ -261,13 +276,13 @@ function ConversationView({ conversation }: { conversation: Conversation }) {
   return (
     <div class="zds-zoo__body">
       <div class="zds-zoo__transcript">
-        {turns.value.length === 0 ? (
+        {turns.length === 0 ? (
           <p class="zds-zoo__hint">
             Describe the change you want. Zookeeper edits the files with you,
             and every edit it makes can be undone on its own.
           </p>
         ) : (
-          turns.value.map((turn) => (
+          turns.map((turn) => (
             <TurnView
               key={turn.id}
               turn={turn}
@@ -278,23 +293,23 @@ function ConversationView({ conversation }: { conversation: Conversation }) {
       </div>
 
       <div class="zds-zoo__composer">
-        {link.value.status === 'connecting' ? (
+        {link.status === 'connecting' ? (
           <div class="zds-zoo__working">
             <Spinner size="small" label="Connecting to Zookeeper" />
             <span>Connecting…</span>
           </div>
         ) : null}
 
-        {link.value.status === 'failed' || link.value.status === 'offline' ? (
+        {link.status === 'failed' || link.status === 'offline' ? (
           <p class="zds-zoo__note zds-zoo__note--conflict">
-            {link.value.error ?? 'Not connected.'}
-            {link.value.superseded
+            {link.error ?? 'Not connected.'}
+            {link.superseded
               ? ' This conversation is open somewhere else, so reconnecting will not help.'
               : ''}
           </p>
         ) : null}
 
-        {status.value === 'streaming' ? (
+        {status === 'streaming' ? (
           <div class="zds-zoo__working">
             <Spinner size="small" label="Zookeeper is working" />
             <span>Working…</span>
@@ -312,7 +327,7 @@ function ConversationView({ conversation }: { conversation: Conversation }) {
           rows={3}
           placeholder="Make the bracket 4mm thicker…"
           value={draft.value}
-          disabled={status.value === 'streaming' || !sendable.value}
+          disabled={status === 'streaming' || !sendable}
           onInput={(event) => {
             draft.value = event.currentTarget.value
           }}
@@ -329,7 +344,7 @@ function ConversationView({ conversation }: { conversation: Conversation }) {
             label="Send"
             variant="primary"
             size="small"
-            disabled={status.value === 'streaming' || !sendable.value}
+            disabled={status === 'streaming' || !sendable}
             onClick={submit}
           />
         </div>
@@ -440,7 +455,7 @@ function TurnView({ turn, onRevert }: { turn: Turn; onRevert: () => void }) {
   const zookeeper = useService(zookeeperService)
   // Exact revert survives a reload now, but not a file edited outside the app or
   // a turn older than the log's horizon — so this is asked rather than assumed.
-  const revertible = useComputed(() => zookeeper.canRevert(turn.id).value)
+  const revertible = zookeeper.canRevert(turn.id).value
 
   return (
     <article class="zds-zoo__turn" data-status={turn.status}>
@@ -490,7 +505,7 @@ function TurnView({ turn, onRevert }: { turn: Turn; onRevert: () => void }) {
             greyed-out button invites a hover to explain itself, and there is
             nothing useful to say beyond "not any more".
           */}
-          {revertible.value ? (
+          {revertible ? (
             <Button
               label="Revert this turn"
               size="small"

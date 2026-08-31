@@ -54,8 +54,14 @@ function mount(options: {
   if (options.conversation) {
     conversations.set(options.conversation.id, options.conversation)
   }
-  const activeId =
+  /*
+   * A signal, because activating a tab is the thing under test. The stub moves
+   * it the way the real service does, so a test can click a tab rather than
+   * reach past the UI to set it.
+   */
+  const activeId = signal<string | null>(
     options.conversation?.id ?? options.conversations?.[0]?.id ?? null
+  )
 
   const registry = new Registry()
   registry.configure([
@@ -64,7 +70,7 @@ function mount(options: {
       providesServices: [
         provideService(zookeeperService, {
           conversations: computed(() => conversations),
-          active: computed(() => activeId),
+          active: computed(() => activeId.value),
           available: computed(() => reason.value === null),
           unavailableReason: computed(() => reason.value),
           open: () => {
@@ -72,7 +78,10 @@ function mount(options: {
             return null
           },
           close: (id) => options.onClose?.(id),
-          activate: (id) => options.onActivate?.(id),
+          activate: (id) => {
+            activeId.value = id
+            options.onActivate?.(id)
+          },
           conversation: (id) => conversations.get(id),
           holderOf: () => computed(() => null),
           presence: computed(() => new Map()),
@@ -157,6 +166,90 @@ afterEach(() => {
     host.remove()
     host = null
   }
+})
+
+describe('switching conversations', () => {
+  const two = () => [
+    fakeConversation({
+      id: 'c1',
+      turns: [turn({ id: 't1', prompt: 'thicken the bracket' })],
+    }),
+    fakeConversation({
+      id: 'c2',
+      turns: [turn({ id: 't2', prompt: 'add a fillet' })],
+    }),
+  ]
+
+  const clickTab = (view: HTMLElement, label: string) => {
+    const tab = [...view.querySelectorAll('.zds-zoo__tabButton')].find((each) =>
+      each.textContent?.includes(label)
+    )
+    expect(tab).toBeDefined()
+    void act(() => {
+      ;(tab as HTMLButtonElement).click()
+    })
+  }
+
+  /**
+   * The bug this covers: `useComputed` over a *prop* is invalidated by its signal
+   * dependencies, not by the component re-rendering. Switching tabs handed
+   * `ConversationView` a new conversation, but its computed was still subscribed
+   * to the old one's transcript — which had not changed — so it kept serving the
+   * cached value and the pane showed the wrong conversation.
+   */
+  it('shows the transcript of the conversation that was clicked', () => {
+    const view = mount({ conversations: two() })
+
+    expect(view.textContent).toContain('thicken the bracket')
+    expect(view.textContent).not.toContain('add a fillet')
+
+    clickTab(view, 'Zookeeper (2)')
+
+    expect(view.textContent).toContain('add a fillet')
+    expect(view.textContent).not.toContain('thicken the bracket')
+  })
+
+  it('goes back to the first one when it is clicked again', () => {
+    const view = mount({ conversations: two() })
+
+    clickTab(view, 'Zookeeper (2)')
+    clickTab(view, 'Zookeeper (1)')
+
+    expect(view.textContent).toContain('thicken the bracket')
+    expect(view.textContent).not.toContain('add a fillet')
+  })
+
+  it('marks the clicked tab as the selected one', () => {
+    const view = mount({ conversations: two() })
+
+    clickTab(view, 'Zookeeper (2)')
+
+    const selected = [...view.querySelectorAll('.zds-zoo__tabButton')].filter(
+      (each) => each.getAttribute('aria-selected') === 'true'
+    )
+    expect(selected).toHaveLength(1)
+    expect(selected[0].textContent).toContain('Zookeeper (2)')
+  })
+
+  /**
+   * A half-written prompt belongs to the conversation it was written for. Left
+   * in place it would be sent to a different collaborator than the one it was
+   * addressed to, which is the kind of mistake that is invisible until it lands.
+   */
+  it('does not carry a half-typed prompt to the other conversation', () => {
+    const view = mount({ conversations: two() })
+
+    const input = view.querySelector('textarea') as HTMLTextAreaElement
+    input.value = 'half a thought'
+    void act(() => {
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+    })
+
+    clickTab(view, 'Zookeeper (2)')
+
+    const after = view.querySelector('textarea') as HTMLTextAreaElement
+    expect(after.value).toBe('')
+  })
 })
 
 describe('the reasoning disclosure', () => {

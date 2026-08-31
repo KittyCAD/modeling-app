@@ -45,8 +45,6 @@ export interface ZookeeperServiceDependencies {
   url: string | undefined
 }
 
-let counter = 0
-
 /**
  * Every conversation with the CAD agent.
  *
@@ -277,12 +275,33 @@ export function createZookeeperService(
     // Checked above; this narrows rather than asking a second time.
     if (url === undefined) return null
 
-    let candidate = options.id
-    if (candidate === undefined) {
-      counter += 1
-      candidate = `zookeeper-${counter}`
+    /*
+     * A uuid, not a counter.
+     *
+     * The counter this replaced lived in module scope, so it reset to zero on
+     * every page load while transcripts on disk did not — making `zookeeper-1`
+     * both the id of last session's first conversation and the id this session
+     * would hand out first. The collision was not cosmetic: `resume` finds the
+     * id already open and activates the *new empty* conversation instead of
+     * loading the stored turns, and the next turn boundary writes that empty
+     * conversation over the transcript on disk.
+     *
+     * Nothing renders this id — tabs are numbered by position — so it is free
+     * to be opaque. Stored conversations keep whatever id they were written
+     * with, so nothing has to be migrated.
+     */
+    const id = options.id ?? `zookeeper-${crypto.randomUUID()}`
+
+    /*
+     * Never clobber an open conversation. With uuids this cannot happen by
+     * accident, but `start` is also reached with a caller-supplied id from
+     * `resume`, and silently replacing a live conversation would drop its
+     * socket and its turns on the floor.
+     */
+    if (conversations.peek().has(id)) {
+      active.value = id
+      return id
     }
-    const id = candidate
 
     const connection = createZookeeperConnection({
       url,

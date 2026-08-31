@@ -1,5 +1,5 @@
 import { computed, signal } from '@preact/signals'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { AuthService } from '@src/contracts/auth'
 import type {
   ProjectSession,
@@ -43,6 +43,12 @@ function setup(
     token?: string | null
     session?: ProjectSession | null
     files?: Record<string, string>
+    /**
+     * A freshly imported factory, for a test that needs its module state reset.
+     * The conversation-id counter lives in module scope, so only a re-import
+     * reproduces what a page load does to it.
+     */
+    factory?: typeof createZookeeperService
   } = {}
 ) {
   const token = signal<string | null>(
@@ -76,7 +82,7 @@ function setup(
     fileSystem,
     changeHistory,
     projectHistory,
-    service: createZookeeperService({
+    service: (options.factory ?? createZookeeperService)({
       auth,
       sessions,
       fileSystem,
@@ -365,6 +371,77 @@ describe('createZookeeperService', () => {
     expect(service.active.value).toBe('old')
   })
 
+  /**
+   * The id a *previous session* actually wrote. Every other test here uses a
+   * made-up id like `old`, which is exactly why none of them could catch this:
+   * the counter behind `zookeeper-N` is module state that resets on every page
+   * load, so the first new conversation of a session is always `zookeeper-1` —
+   * the same id last session's first conversation was stored under.
+   *
+   * Colliding is not cosmetic. The stored conversation becomes unreachable
+   * (`resume` finds the id already open and just activates the empty new one),
+   * and the next turn boundary writes the empty conversation over the
+   * transcript on disk.
+   */
+  it('does not mint an id a stored conversation already used', async () => {
+    const stored = [
+      JSON.stringify({
+        v: 1,
+        kind: 'meta',
+        id: 'zookeeper-1',
+        remoteId: 'remote-9',
+        createdAt: 500,
+      }),
+      JSON.stringify({
+        v: 1,
+        kind: 'turn',
+        turn: {
+          id: 't1',
+          prompt: 'add a fillet',
+          response: 'Done.',
+          at: 500,
+          status: 'complete',
+          paths: [],
+          conflicts: [],
+          waiting: [],
+          reasoning: [],
+        },
+      }),
+    ].join('\n')
+
+    /*
+     * A re-import, so the module-scope counter starts at zero the way it does on
+     * a page load. Without this the counter has already been advanced by earlier
+     * tests in this file and the collision cannot happen — which is precisely
+     * how the bug survived a suite that covers `resume` four other ways.
+     */
+    vi.resetModules()
+    const fresh = await import('@src/features/zookeeper/createZookeeperService')
+
+    const { service } = setup({
+      factory: fresh.createZookeeperService,
+      files: {
+        '/projects/bracket/.zoo/conversations/zookeeper-1.jsonl': `${stored}\n`,
+      },
+    })
+    await settle()
+    expect(service.stored.value.map((each) => each.id)).toEqual(['zookeeper-1'])
+
+    // A fresh conversation, as "Start a conversation" makes one.
+    const opened = service.open()
+    await settle()
+
+    expect(opened).not.toBe('zookeeper-1')
+
+    // And the stored one is still reachable, with its turns.
+    const resumed = service.resume('zookeeper-1')
+    expect(resumed).toBe('zookeeper-1')
+    expect(service.conversation('zookeeper-1')?.transcript.value).toHaveLength(
+      1
+    )
+    expect(service.conversations.value.size).toBe(2)
+  })
+
   it('activates a conversation already open rather than opening it twice', async () => {
     const { service } = setup()
     const id = service.open()
@@ -373,6 +450,58 @@ describe('createZookeeperService', () => {
 
     expect(service.resume(id)).toBe(id)
     expect(service.conversations.value.size).toBe(1)
+  })
+
+  /**
+   * Frank's report: a resumed conversation accepted a prompt but never showed
+   * it. Asserted end to end here — the turn has to land in the same conversation
+   * object the panel is rendering, and its id must not collide with one of the
+   * turns that came back from disk.
+   */
+  it('accepts a new turn in a resumed conversation', async () => {
+    const stored = [
+      JSON.stringify({
+        v: 1,
+        kind: 'meta',
+        id: 'old',
+        remoteId: 'remote-9',
+        createdAt: 500,
+      }),
+      JSON.stringify({
+        v: 1,
+        kind: 'turn',
+        turn: {
+          id: 't1',
+          prompt: 'add a fillet',
+          response: 'Done.',
+          at: 500,
+          status: 'complete',
+          paths: [],
+          conflicts: [],
+          waiting: [],
+          reasoning: [],
+        },
+      }),
+    ].join('\n')
+
+    const { service } = setup({
+      files: {
+        '/projects/bracket/.zoo/conversations/old.jsonl': `${stored}\n`,
+      },
+    })
+    await settle()
+
+    service.resume('old')
+    const conversation = service.conversation('old')
+    expect(conversation).toBeDefined()
+
+    await conversation?.send('and now chamfer it')
+
+    const turns = conversation?.transcript.value ?? []
+    expect(turns).toHaveLength(2)
+    expect(turns[1].prompt).toBe('and now chamfer it')
+    // Distinct ids, or the pane renders the new turn over the restored one.
+    expect(new Set(turns.map((each) => each.id)).size).toBe(2)
   })
 
   it('declines to resume one it has never heard of', async () => {
