@@ -6,7 +6,13 @@
  * TypeScript to follow.
  */
 export interface BevyModule {
-  /** wasm-bindgen's initialiser. Must resolve before anything else is called. */
+  /**
+   * wasm-bindgen's initialiser. Must resolve before anything else is called.
+   *
+   * Always given the `.wasm` URL explicitly. Left to itself it resolves
+   * `new URL('bevy_zoo_bg.wasm', import.meta.url)`, which would look for the
+   * binary next to the glue — and the two deliberately do not live together.
+   */
   default: (moduleOrPath?: unknown) => Promise<unknown>
   /** Take over the canvas matching a CSS selector and start rendering. */
   start: (canvas: string, token?: string | null, host?: string | null) => void
@@ -29,7 +35,26 @@ export interface BevyJobState {
   }
 }
 
-const MODULE_URL = '/bevy/bevy_zoo.js'
+/**
+ * The glue is a module, so it must NOT be under `public/`.
+ *
+ * Vite rejects any import of a public path outright — "this file is in /public
+ * and will be copied as-is during build without going through the plugin
+ * transforms, and therefore should not be imported from source code. It can only
+ * be referenced via HTML tags." Under `vendor/` it is an ordinary root-relative
+ * module and Vite transforms it like any other.
+ *
+ * This mirrors kcl-wasm-lib, whose glue is imported from
+ * `rust/kcl-wasm-lib/pkg` while only `kcl_wasm_lib_bg.wasm` sits in `public/`.
+ *
+ * Both paths are written by `scripts/build-bevy.sh` and are gitignored, so the
+ * specifier stays a variable and carries `@vite-ignore`: nothing may try to
+ * resolve it at build time, because `npm run build` does not build the renderer.
+ */
+const MODULE_URL = '/vendor/bevy/bevy_zoo.js'
+
+/** Fetched by URL rather than imported, which is what `public/` is for. */
+const WASM_URL = '/bevy/bevy_zoo_bg.wasm'
 
 /**
  * Started once per page load, and never stopped.
@@ -72,7 +97,7 @@ async function start(options: StartOptions): Promise<BevyModule> {
    * try to resolve and bundle it, and fail.
    */
   const module = (await import(/* @vite-ignore */ MODULE_URL)) as BevyModule
-  await module.default()
+  await module.default(WASM_URL)
 
   if (options.onState) {
     const onState = options.onState

@@ -38,7 +38,21 @@ if [ ! -x "$BEVY_ZOO_DIR/scripts/build-embed.sh" ]; then
   exit 1
 fi
 
-"$BEVY_ZOO_DIR/scripts/build-embed.sh" "$ROOT/public/bevy"
+"$BEVY_ZOO_DIR/scripts/build-embed.sh" "$ROOT/vendor/bevy-build"
+
+# The two artifacts go to different homes, for the same reason kcl-wasm-lib's do:
+# its glue is imported from rust/kcl-wasm-lib/pkg, and only kcl_wasm_lib_bg.wasm
+# sits in public/.
+#
+# Vite refuses to let source code import anything under public/ - "it can only be
+# referenced via HTML tags" - so the wasm-bindgen glue cannot live there. Under
+# vendor/ it is an ordinary root-relative module that Vite transforms like any
+# other. The .wasm is never imported, only fetched by URL, which is what public/
+# is for.
+mkdir -p "$ROOT/vendor/bevy" "$ROOT/public/bevy"
+cp "$ROOT/vendor/bevy-build/bevy_zoo.js" "$ROOT/vendor/bevy/bevy_zoo.js"
+cp "$ROOT/vendor/bevy-build/bevy_zoo_bg.wasm" "$ROOT/public/bevy/bevy_zoo_bg.wasm"
+rm -rf "$ROOT/vendor/bevy-build"
 
 # Bevy resolves its asset paths against the page, so `shaders/edge_line.wgsl` is
 # fetched from `/assets/...`. Vite serves public/ at the root, which makes
@@ -48,8 +62,8 @@ mkdir -p "$ROOT/public/assets"
 cp -R "$BEVY_ZOO_DIR/assets/." "$ROOT/public/assets/"
 
 echo "Renderer installed:"
-echo "  $ROOT/public/bevy/bevy_zoo.js"
-echo "  $ROOT/public/bevy/bevy_zoo_bg.wasm"
-echo "  $ROOT/public/assets/  (Bevy asset root)"
+echo "  $ROOT/vendor/bevy/bevy_zoo.js       (imported as a module)"
+echo "  $ROOT/public/bevy/bevy_zoo_bg.wasm  (fetched by URL)"
+echo "  $ROOT/public/assets/                (Bevy asset root)"
 echo
 echo "Choose it in Settings -> Modeling -> Renderer, then reload."
