@@ -1273,6 +1273,88 @@ Offsets are compared against the last *executed* program, so a sketch written a
 moment ago becomes a place to be one run later. That is why writing one is
 followed by a run rather than by a mode change.
 
+### Drawing in a sketch
+
+The idea everything else follows from: **the rubber band is a real segment**. The
+first click does not remember a position, it writes a zero-length line into the
+sketch and keeps hold of its end point; every pointer move asks the solver to
+move that point and draws whatever comes back. So the line being dragged out is
+already constrained, already snapped, and already the thing you will get — there
+is no second geometry model that can disagree with the solver. `draft.ts` is that
+state machine, as a discriminated union rather than a machine library: the states
+are real and worth naming, the transitions are a `switch`.
+
+Not every shape can be written from one click, which is what the phases are for:
+
+| State | What exists | What a move does |
+| --- | --- | --- |
+| `pending` | nothing yet | nothing — the preview is drawn from the clicks |
+| `drawing` | a segment | moves one *point* of it |
+| `shaping` | a segment | respecifies it *whole* |
+| `chaining` | the last segment | creates the next one |
+| `dragging` | existing geometry | moves it, planned against the last solve |
+
+A circle needs `pending` because a circle of no radius has no rim point for the
+solver to hold an opinion about. An arc needs `shaping` because its centre and its
+sweep direction are derived from all three points at once, which no point-move can
+express. A rectangle needs `shaping` over four targets, because it is four lines
+and eight constraints — a rectangle *is* four lines described as a rectangle, and
+without the description the first drag would prove it.
+
+`pending` is also the one exception to "everything on screen is the solver's
+answer": between the two clicks of a circle there is nothing in the sketch, so
+there is nothing the solver could be asked. The preview is kept as far from the
+real geometry as possible — a negative sentinel id, which the flat-array graph can
+never contain, so anything that looks it up finds nothing and a preview is
+unpickable and undraggable for free.
+
+### Constraints are a declarative model, not ten tools
+
+A constraint tool is a list of *modes*; a mode is a list of *slots*; a slot is a
+list of kinds it accepts. So "can this be applied to what is selected?" is a pure
+function, which is what lets a button be disabled *before* the click rather than
+the click failing. Ported from the existing app's `constraintToolModel.ts`, which
+is the same shape `MODELING_TOOLS` has.
+
+Two things in the data are easy to miss. `repeatableLastSlot` is how a tool takes
+any number of the same thing — parallel across five lines is one constraint naming
+five, not four naming pairs. And a mode's slot order *is* the selection order,
+which is why the selection is a list rather than a set: a midpoint of a point and
+a line is a different request from a midpoint of a line and a point.
+
+Dimensions are the same objects with a value, and the value is a KCL
+*expression* — `2 * width` as readily as `40`, which is what makes a sketch
+parametric rather than a set of numbers.
+
+Both are drawn as **DOM over the scene**, not as sprites: a badge is a `<button>`
+with a title and a focus ring, a dimension is a value you double-click and type
+over. The existing app makes them sprites and then rebuilds click handling,
+tooltips, focus and row layout by hand in screen space. What the DOM cannot do is
+know where they go, which is the projection's job — so the component is a
+positioning loop and nothing else. It is not decoration: a constraint that is not
+drawn cannot be selected, and one that cannot be selected cannot be deleted.
+
+### Dragging is three ideas, not one
+
+Grabbing an end means "put this end there", so the cursor position is what is
+asked for. Grabbing the *middle* means "move this line", so every point of it
+moves by the same vector. And a body also gets a **drag anchor** — kcl-lib's own
+mechanism, a hidden fixed point the segment must pass through — because
+translating a constrained segment's points is a request the constraints are free
+to refuse outright, while an anchor asks the solver to slide it along whatever
+freedom is left.
+
+Coincident points move together, transitively: a profile's corner is several
+points at one place, and moving only the one under the cursor asks the solver to
+break the coincidence, which it can satisfy by moving the *other* segment — so the
+corner appears to tear.
+
+The drag vector is measured from where the last *accepted* solve left the pointer,
+not from where the drag began. kcl-lib reports a refused solve in the outcome
+rather than by rejecting, so `SketchOutcome.problem` exists to tell them apart —
+without it, a refusal would leave the pointer and the geometry offset by the
+refused distance for the rest of the drag.
+
 ### Tools are derived, and their absences are deliberate
 
 `MODELING_TOOLS` is one list of specs, and the operations, their commands, their
