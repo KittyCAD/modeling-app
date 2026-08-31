@@ -30,8 +30,8 @@ use crate::execution::RefactorMetadata;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
-use crate::lsp::IntoDiagnostic;
-use crate::lsp::ToLspRange;
+use crate::lsp_types::IntoDiagnostic;
+use crate::lsp_types::ToLspRange;
 use crate::modules::ModulePath;
 use crate::modules::ModuleSource;
 

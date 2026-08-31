@@ -10,6 +10,7 @@ use toml_edit::value;
 /// Deps that need to be updated in lock-step.
 const KCL_API_DEPS: [&str; 1] = ["kcl-error"];
 const KCL_LIB_DEPS: [&str; 4] = ["kcl-api", "kcl-derive-docs", "kcl-error", "kcl-syntax"];
+const KCL_LANGUAGE_SERVER_DEPS: [&str; 1] = ["kcl-lib"];
 const KCL_TEST_SERVER_DEPS: [&str; 1] = ["kcl-lib"];
 
 fn main() -> Result<()> {
@@ -52,6 +53,9 @@ fn run_on_manifest(manifest_path: std::path::PathBuf, args: &Args) -> Result<()>
             }
             "kcl-lib" => {
                 update_dependency_versions(&crate_name, &KCL_LIB_DEPS, &mut doc, next_version);
+            }
+            "kcl-language-server" => {
+                update_dependency_versions(&crate_name, &KCL_LANGUAGE_SERVER_DEPS, &mut doc, next_version);
             }
             "kcl-test-server" => {
                 update_dependency_versions(&crate_name, &KCL_TEST_SERVER_DEPS, &mut doc, next_version);
@@ -287,6 +291,36 @@ kcl-error = { version = "0.1", path = "../kcl-error" }
         );
         assert_eq!(
             cargo_dot_toml["dependencies"]["kcl-error"]["version"]
+                .as_value()
+                .and_then(Value::as_str),
+            Some("=0.2.129")
+        );
+    }
+
+    #[test]
+    fn test_update_kcl_language_server_dependency_version() {
+        const LANGUAGE_SERVER_EXAMPLE: &str = r#"
+[package]
+name = "kcl-language-server"
+version = "0.2.128"
+
+[dependencies]
+kcl-lib = { version = "=0.2.128", path = "../kcl-lib" }
+        "#;
+
+        let mut cargo_dot_toml = LANGUAGE_SERVER_EXAMPLE.parse::<DocumentMut>().unwrap();
+        let next_version = update_semver(Some(SemverBump::Patch), &mut cargo_dot_toml)
+            .unwrap()
+            .unwrap();
+        update_dependency_versions(
+            "kcl-language-server",
+            &KCL_LANGUAGE_SERVER_DEPS,
+            &mut cargo_dot_toml,
+            &next_version,
+        );
+
+        assert_eq!(
+            cargo_dot_toml["dependencies"]["kcl-lib"]["version"]
                 .as_value()
                 .and_then(Value::as_str),
             Some("=0.2.129")

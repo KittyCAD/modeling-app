@@ -1,25 +1,25 @@
-//! The servers that power the text editor.
-
-pub mod backend;
-pub mod copilot;
-pub mod kcl;
-#[cfg(any(test, feature = "lsp-test-util"))]
-pub mod test_util;
-#[cfg(test)]
-mod tests;
-pub mod util;
+//! Conversions between KCL source data and Language Server Protocol types.
 
 use tower_lsp::lsp_types::Diagnostic;
 use tower_lsp::lsp_types::DiagnosticSeverity;
 use tower_lsp::lsp_types::DiagnosticTag;
 use tower_lsp::lsp_types::Position;
 use tower_lsp::lsp_types::Range;
-pub use util::IntoDiagnostic;
 
 use crate::CompilationIssue;
 use crate::errors::Severity;
 use crate::errors::Suggestion;
 use crate::errors::Tag;
+
+/// Convert an object into LSP diagnostics for a source document.
+pub trait IntoDiagnostic {
+    /// Convert the object to diagnostics. `uri` is the document under which
+    /// the diagnostics are published.
+    fn to_lsp_diagnostics(&self, text: &str, uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic>;
+
+    /// Get the severity of the diagnostic.
+    fn severity(&self) -> DiagnosticSeverity;
+}
 
 impl IntoDiagnostic for CompilationIssue {
     fn to_lsp_diagnostics(&self, code: &str, _uri: &tower_lsp::lsp_types::Url) -> Vec<Diagnostic> {
