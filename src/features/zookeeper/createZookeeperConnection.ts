@@ -57,7 +57,7 @@ export interface ZookeeperConnection extends ZookeeperTransport {
 }
 
 export interface ZookeeperConnectionDependencies {
-  /** Base websocket URL, from `VITE_ZOOKEEPER_WEBSOCKET_URL`. */
+  /** Full websocket URL, from `zookeeperServiceUrl`. */
   url: string
   /**
    * Read the token at connect time, never captured once.

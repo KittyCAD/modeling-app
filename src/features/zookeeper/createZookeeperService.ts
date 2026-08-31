@@ -36,7 +36,12 @@ export interface ZookeeperServiceDependencies {
   changeHistory: ChangeHistory
   /** The project's undo stack, so a turn appears in it beside everything else. */
   projectHistory: ProjectActionHistory
-  /** Websocket base URL. Absent in a build with no service configured. */
+  /**
+   * The service's websocket URL, normally derived from the API host.
+   *
+   * Absent only when the host it was derived from is unusable, which the panel
+   * reports rather than retrying.
+   */
   url: string | undefined
 }
 

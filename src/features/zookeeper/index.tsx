@@ -24,6 +24,7 @@ import {
   ZookeeperPresenceField,
 } from '@src/features/zookeeper/ZookeeperPanel'
 import { createZookeeperService } from '@src/features/zookeeper/createZookeeperService'
+import { zookeeperServiceUrl } from '@src/features/zookeeper/serviceUrl'
 
 /**
  * The CAD agent, as a collaborator in the project session.
@@ -66,11 +67,16 @@ export default defineRegistryItemFactory((ctx) => {
       changeHistory: changeHistory(),
       projectHistory: projectHistory(),
       /*
-       * Absent in a build with no service configured, which is a supported state
-       * rather than a misconfiguration: the panel says so once instead of failing
-       * to connect over and over.
+       * Derived from the API host, so a build that was configured for nothing in
+       * particular still reaches the service. Undefined only when the host is
+       * unusable, which the panel reports once rather than retrying forever.
        */
-      url: import.meta.env?.VITE_ZOOKEEPER_WEBSOCKET_URL as string | undefined,
+      url: zookeeperServiceUrl({
+        override: import.meta.env?.VITE_ZOOKEEPER_WEBSOCKET_URL as
+          | string
+          | undefined,
+        apiBaseUrl: import.meta.env?.VITE_KC_API_BASE_URL as string | undefined,
+      }),
     })
     return built
   }

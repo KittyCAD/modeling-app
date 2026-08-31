@@ -132,10 +132,15 @@ describe('zookeeper feature', () => {
    * Reading the service is what builds it, so this is also the assertion that
    * building it late — after flattening — works at all.
    *
-   * The *reason* it is unavailable here is that no service URL is configured in
-   * a test build, which is a supported state rather than a misconfiguration.
-   * Which reason wins over which is the service's own business and is tested in
-   * `createZookeeperService.test.ts`, where the URL can be injected.
+   * The reason it gives is about the missing *project*, not a missing service
+   * URL: the URL is derived from the API host, so a build that configured
+   * nothing still has one. Asserted here rather than only in
+   * `serviceUrl.test.ts` because the wiring is the part that regressed — the
+   * feature read the override variable directly, and every developer without it
+   * met a panel claiming the build had no Zookeeper in it.
+   *
+   * Which reason wins over which is the service's own business, tested in
+   * `createZookeeperService.test.ts` where the URL can be injected.
    */
   it('builds the service lazily and reports why it is unavailable', () => {
     const { registry } = harness()
@@ -143,7 +148,8 @@ describe('zookeeper feature', () => {
     const zookeeper = registry.get(zookeeperService)
 
     expect(zookeeper.available.value).toBe(false)
-    expect(zookeeper.unavailableReason.value).toMatch(/no zookeeper service/i)
+    expect(zookeeper.unavailableReason.value).toMatch(/open a project/i)
+    expect(zookeeper.unavailableReason.value).not.toMatch(/no zookeeper/i)
   })
 
   it('refuses to open a conversation while unavailable', () => {
