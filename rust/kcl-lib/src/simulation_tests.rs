@@ -379,8 +379,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     .flatten(),
             );
 
-            // Filter out Z0005 (old sketch syntax) from test snapshots
-            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            // Filter out Z0005 (old sketch syntax) from test snapshots.
             lint_findings.retain(|finding| finding.finding.code != "Z0005");
 
             let (outcome, module_state, responses) =
