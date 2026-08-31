@@ -102,6 +102,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "hole" => Some(include_str!("../std/hole.kcl")),
         "gear" => Some(include_str!("../std/gear.kcl")),
         "view" => Some(include_str!("../std/view.kcl")),
+        "operation" => Some(include_str!("../std/operation.kcl")),
         _ => None,
     }
 }
