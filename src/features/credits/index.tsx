@@ -35,35 +35,60 @@ import { createCreditsService } from '@src/features/credits/createCreditsService
  * off removes the contribution, and the readout simply has nothing spending.
  */
 export default defineRegistryItemFactory((ctx) => {
-  const auth = ctx.services.get(authService)
+  /*
+   * Lazy, and never resolved in this body: the graph is still being flattened
+   * here, and resolving a service now is the first of the container's two rules.
+   */
+  const auth = () => ctx.services.get(authService)
+  const runtime = () => ctx.services.get(runtimeService)
 
   /*
-   * Which pool to read. Null until the profile lands, and it must be read
-   * lazily: membership is resolved by the sign-in verify pass, well after this
-   * factory runs.
+   * Which pool to read. Null until the profile lands, and read lazily for two
+   * reasons: membership is resolved by the sign-in verify pass long after this
+   * factory runs, and reaching `authService` any earlier is what the container
+   * forbids.
    */
-  const org = computed(() => auth.user.value?.org?.id ?? null)
+  const org = computed(() => auth().user.value?.org?.id ?? null)
 
-  const credits = createCreditsService({
-    api: createCreditsApi({
-      token: () => auth.token.value,
-      org: () => org.value,
-    }),
-    token: auth.token,
-    org,
-    sources: computed(() => ctx.valueSpecs.get(creditConsumersValueSpec)),
-    // Tests drive `refresh` themselves rather than waiting on a timer.
-    pollIntervalMs: ctx.services.get(runtimeService).info.value.isTest
-      ? 0
-      : undefined,
-  })
+  let built: ReturnType<typeof createCreditsService> | null = null
+
+  /**
+   * The real service, built on first use.
+   *
+   * It needs two other services, so it cannot be constructed here — and it also
+   * starts an effect that reads the token, which must not run during flattening.
+   * Everything exposed below defers to this through a `computed` or a method
+   * call, both of which run long afterwards.
+   */
+  const credits = () => {
+    built ??= createCreditsService({
+      api: createCreditsApi({
+        token: () => auth().token.value,
+        org: () => org.value,
+      }),
+      token: computed(() => auth().token.value),
+      org,
+      sources: computed(() => ctx.valueSpecs.get(creditConsumersValueSpec)),
+      // Tests drive `refresh` themselves rather than waiting on a timer.
+      pollIntervalMs: runtime().info.value.isTest ? 0 : undefined,
+    })
+    return built
+  }
 
   return {
-    model: credits,
     item: defineRuntimeRegistryItem({
       id: 'credits',
-      dispose: () => credits.dispose(),
-      providesServices: [provideService(creditsService, credits)],
+      dispose: () => built?.dispose(),
+      providesServices: [
+        provideService(creditsService, {
+          balance: computed(() => credits().balance.value),
+          state: computed(() => credits().state.value),
+          error: computed(() => credits().error.value),
+          consumers: computed(() => credits().consumers.value),
+          spending: computed(() => credits().spending.value),
+          refresh: () => credits().refresh(),
+        }),
+      ],
       provides: [
         /*
          * Global, and deliberately not gated on a project. The balance is an
@@ -95,7 +120,7 @@ export default defineRegistryItemFactory((ctx) => {
           title: 'Refresh credit balance',
           category: 'Account',
           icon: 'refresh',
-          run: () => credits.refresh(),
+          run: () => credits().refresh(),
         }),
       ],
     }),

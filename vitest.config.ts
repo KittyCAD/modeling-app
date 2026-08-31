@@ -1,10 +1,28 @@
+import { lezer } from '@lezer/generator/rollup'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  /*
+   * The KCL grammar is compiled, not imported. `kcl.grammar` is Lezer source,
+   * so anything reaching the editor package needs the same plugin the app build
+   * uses — without it the grammar is parsed as JavaScript and fails.
+   */
+  plugins: [lezer()],
   resolve: {
     alias: [
       { find: '@kittycad/registry', replacement: '/packages/registry/src' },
       { find: '@kittycad/ui-kit', replacement: '/packages/ui-kit/src' },
+      /*
+       * The same alias both vite configs carry. The package's `exports` points
+       * at a `dist/` that is never built in this repo — the app only ever
+       * resolves it through this alias — so without it here any test that
+       * transitively imports the editor fails to resolve rather than failing an
+       * assertion.
+       */
+      {
+        find: '@kittycad/codemirror-lang-kcl',
+        replacement: '/packages/codemirror-lang-kcl/src',
+      },
       // Generated kcl-lib bindings. Every other `@rust` import in the app is
       // type-only and so never had to resolve at runtime; the stdlib shapes are
       // the first that do.

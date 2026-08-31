@@ -48,6 +48,10 @@
     "packages/ui-components",
     "./*.grammar",
     "vite.config.ts",
+    // Build configs live in `tsconfig.node.json`: they import bundler plugins
+    // whose types are only reachable under that config's resolution, and
+    // `@lezer/generator/rollup` is one of them.
+    "vitest.config.ts",
     "forge.config.ts",
     ".vscode-test",
     "rust/kcl-lib/expected-bindings/**",
