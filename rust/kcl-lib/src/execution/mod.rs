@@ -5021,6 +5021,57 @@ startSketchOn(XY)
         }
     }
 
+    /// Mock execution applies the KCL 3.0 semantics -- early return and
+    /// if-arm scoping -- since it records the entry point's kclVersion via
+    /// `inner_run` rather than `run_concurrent`.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_applies_v3_semantics() {
+        use futures::FutureExt;
+
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let fresh_memory = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+x = f()
+outer = 1
+y = if true {
+  outer = 2
+  outer + 10
+} else {
+  0
+}
+"#,
+        )
+        .unwrap();
+
+        // Close the context and clear the cache even if an assertion panics,
+        // then let the panic continue.
+        let test_result = std::panic::AssertUnwindSafe(async {
+            let (exec_state, env) = ctx.run_mock_returning_state(&program, &fresh_memory).await.unwrap();
+            let var = |name: &str| mem_get_json(exec_state.stack(), env, name).as_f64().unwrap();
+            assert_eq!(var("x"), 1.0, "early return produces the function's value");
+            assert_eq!(var("y"), 12.0, "the branch sees its own shadowing binding");
+            assert_eq!(var("outer"), 1.0, "the outer binding is unchanged after the if");
+        })
+        .catch_unwind()
+        .await;
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        if let Err(panic) = test_result {
+            std::panic::resume_unwind(panic);
+        }
+    }
+
     /// All fillet algorithm versions sent to the engine during the run,
     /// across the root module and every imported module. The version emitted
     /// is the observable for which kclVersion governed the filleting code;
