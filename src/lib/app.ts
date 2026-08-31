@@ -61,6 +61,7 @@ import {
   provideCommand,
 } from '@src/registry/contracts/commands'
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
+import { debugService } from '@src/registry/contracts/debug'
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
@@ -761,6 +762,16 @@ export class App implements AppSubsystems {
           ),
           provideService(systemIOService, {
             actor: this.systemIOActor,
+          }),
+          provideService(debugService, {
+            clear: (key, value) => {
+              if (Reflect.get(this.debug, key) === value) {
+                Reflect.deleteProperty(this.debug, key)
+              }
+            },
+            set: (key, value) => {
+              Reflect.set(this.debug, key, value)
+            },
           }),
         ],
       }),

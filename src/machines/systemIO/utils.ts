@@ -181,22 +181,41 @@ export type RequestedProjectFile = {
 }
 
 export const waitForIdleState = async ({
+  abortSignal,
   systemIOActor,
 }: {
+  abortSignal?: AbortSignal
   systemIOActor: SystemIOActor
 }) => {
   // Check if already idle before setting up subscription
-  if (systemIOActor.getSnapshot().matches(SystemIOMachineStates.idle)) {
+  if (
+    abortSignal?.aborted ||
+    systemIOActor.getSnapshot().matches(SystemIOMachineStates.idle)
+  ) {
     return Promise.resolve()
   }
 
   const waitForIdlePromise = new Promise((resolve) => {
-    const subscription = systemIOActor.subscribe((state) => {
+    let subscription: ReturnType<SystemIOActor['subscribe']> | undefined
+    let finished = false
+    const finish = () => {
+      if (finished) {
+        return
+      }
+      finished = true
+      subscription?.unsubscribe()
+      abortSignal?.removeEventListener('abort', finish)
+      resolve(undefined)
+    }
+    abortSignal?.addEventListener('abort', finish, { once: true })
+    subscription = systemIOActor.subscribe((state) => {
       if (state.matches(SystemIOMachineStates.idle)) {
-        subscription.unsubscribe()
-        resolve(undefined)
+        finish()
       }
     })
+    if (finished) {
+      subscription.unsubscribe()
+    }
   })
   return waitForIdlePromise
 }
