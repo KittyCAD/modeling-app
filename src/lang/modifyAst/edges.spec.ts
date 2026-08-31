@@ -2020,11 +2020,14 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(end = [-20, 0], tag = $seg02)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
+baseExtrude = extrude(sketch001, length = -15)
+seg01OppositeEdge = getOppositeEdge(seg01)
+seg02OppositeEdge = getOppositeEdge(seg02)
+extrude001 = baseExtrude
   |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])
-  |> fillet(radius = 5, tags = [getOppositeEdge(seg02)])
+  |> fillet(radius = 5, tags = [seg02OppositeEdge])
 fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
-chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
+chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
           const edgeTreatmentSnippet = `${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])`
           const expectedCode = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -2033,10 +2036,13 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
   |> line(end = [-20, 0], tag = $seg02)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
-  |> fillet(radius = 5, tags = [getOppositeEdge(seg02)])
+baseExtrude = extrude(sketch001, length = -15)
+seg01OppositeEdge = getOppositeEdge(seg01)
+seg02OppositeEdge = getOppositeEdge(seg02)
+extrude001 = baseExtrude
+  |> fillet(radius = 5, tags = [seg02OppositeEdge])
 fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
-chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
+chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
 
           await runDeleteEdgeTreatmentTest(
             code,
@@ -2054,11 +2060,14 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
   |> line(end = [-20, 0], tag = $seg02)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
+baseExtrude = extrude(sketch001, length = -15)
+seg01OppositeEdge = getOppositeEdge(seg01)
+seg02OppositeEdge = getOppositeEdge(seg02)
+extrude001 = baseExtrude
   |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])
-  |> fillet( radius = 5, tags = [getOppositeEdge(seg02)] )
+  |> fillet( radius = 5, tags = [seg02OppositeEdge] )
 fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])
-chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
+chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
           const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 6, tags = [seg02])`
           const expectedCode = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -2067,10 +2076,13 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
   |> line(end = [-20, 0], tag = $seg02)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = -15)
+baseExtrude = extrude(sketch001, length = -15)
+seg01OppositeEdge = getOppositeEdge(seg01)
+seg02OppositeEdge = getOppositeEdge(seg02)
+extrude001 = baseExtrude
   |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])
-  |> fillet(radius = 5, tags = [getOppositeEdge(seg02)])
-chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
+  |> fillet(radius = 5, tags = [seg02OppositeEdge])
+chamfer001 = chamfer(extrude001, length = 5, tags = [seg01OppositeEdge])`
 
           await runDeleteEdgeTreatmentTest(
             code,

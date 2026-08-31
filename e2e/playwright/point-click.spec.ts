@@ -1298,19 +1298,22 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tag
 }
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = -12)
+baseExtrude = extrude(region001, length = -12)
+line1OppositeEdge = getOppositeEdge(region001.tags.line1)
+line2OppositeEdge = getOppositeEdge(region001.tags.line2)
+extrude001 = baseExtrude
   |> fillet(radius = 5, tags = [region001.tags.line1]) // fillet01
   |> fillet(radius = 5, tags = [region001.tags.line2]) // fillet02
-fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line1)])
-fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])`
+fillet03 = fillet(extrude001, radius = 5, tags = [line1OppositeEdge])
+fillet(extrude001, radius = 5, tags = [line2OppositeEdge])`
     const firstPipedFilletDeclaration =
       'fillet(radius = 5, tags = [region001.tags.line1])'
     const secondPipedFilletDeclaration =
       'fillet(radius = 5, tags = [region001.tags.line2])'
     const standaloneAssignedFilletDeclaration =
-      'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line1)])'
+      'fillet03 = fillet(extrude001, radius = 5, tags = [line1OppositeEdge])'
     const standaloneUnassignedFilletDeclaration =
-      'fillet(extrude001, radius = 5, tags = [getOppositeEdge(region001.tags.line2)])'
+      'fillet(extrude001, radius = 5, tags = [line2OppositeEdge])'
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1787,19 +1790,22 @@ sketch001 = sketch(on = XY) {
 }
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
-extrude001 = extrude(region001, length = -12)
+baseExtrude = extrude(region001, length = -12)
+line1OppositeEdge = getOppositeEdge(region001.tags.line1)
+line2OppositeEdge = getOppositeEdge(region001.tags.line2)
+extrude001 = baseExtrude
   |> chamfer(length = 5, tags = [region001.tags.line1]) // chamfer01
   |> chamfer(length = 5, tags = [region001.tags.line2]) // chamfer02
-chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line1)])
-chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])`
+chamfer03 = chamfer(extrude001, length = 5, tags = [line1OppositeEdge])
+chamfer(extrude001, length = 5, tags = [line2OppositeEdge])`
     const firstPipedChamferDeclaration =
       'chamfer(length = 5, tags = [region001.tags.line1])'
     const secondPipedChamferDeclaration =
       'chamfer(length = 5, tags = [region001.tags.line2])'
     const standaloneAssignedChamferDeclaration =
-      'chamfer03 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line1)])'
+      'chamfer03 = chamfer(extrude001, length = 5, tags = [line1OppositeEdge])'
     const standaloneUnassignedChamferDeclaration =
-      'chamfer(extrude001, length = 5, tags = [getOppositeEdge(region001.tags.line2)])'
+      'chamfer(extrude001, length = 5, tags = [line2OppositeEdge])'
 
     // Setup
     await test.step(`Initial test setup`, async () => {

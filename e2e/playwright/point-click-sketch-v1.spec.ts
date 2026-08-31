@@ -1328,18 +1328,21 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
   |> line(end = [0, -12])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
-extrude001 = extrude(sketch001, length = -12)
+baseExtrude = extrude(sketch001, length = -12)
+seg01OppositeEdge = getOppositeEdge(seg01)
+seg02OppositeEdge = getOppositeEdge(seg02)
+extrude001 = baseExtrude
   |> fillet(radius = 5, tags = [seg01]) // fillet01
   |> fillet(radius = 5, tags = [seg02]) // fillet02
-fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
-fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
+fillet03 = fillet(extrude001, radius = 5, tags = [seg01OppositeEdge])
+fillet(extrude001, radius = 5, tags = [seg02OppositeEdge])
 `
     const firstPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
     const secondPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg02])'
     const standaloneAssignedFilletDeclaration =
-      'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])'
+      'fillet03 = fillet(extrude001, radius = 5, tags = [seg01OppositeEdge])'
     const standaloneUnassignedFilletDeclaration =
-      'fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])'
+      'fillet(extrude001, radius = 5, tags = [seg02OppositeEdge])'
 
     // Setup
     await test.step(`Initial test setup`, async () => {
