@@ -35,13 +35,26 @@ export interface AuthUser {
   email: string
   imageUrl?: string
   /**
-   * The org this account belongs to, or null for a personal account.
+   * The org this account belongs to, or null.
    *
-   * Null is the common case and not an error. It is fetched alongside the
-   * profile because the endpoint 404s for non-members, which is an answer rather
-   * than a failure — so a personal account must not look like a broken sign-in.
+   * Null does not mean "not a member" on its own — read `orgError` too.
    */
   org: AuthOrg | null
+  /**
+   * Why the org is unknown, when it is.
+   *
+   * Null in both the cases that are answers: there is an org, or the endpoint
+   * said 404, which for `/user/org` means "not a member". Non-null only when the
+   * request failed for some other reason, and then the org is genuinely
+   * undetermined.
+   *
+   * The distinction exists because collapsing it was a real bug: the lookup
+   * caught every error and returned null, so the account panel told somebody
+   * they were not in an org while their admin dashboard said they were. "I could
+   * not tell" and "you are not a member" are different sentences and only one of
+   * them was ever true.
+   */
+  orgError: string | null
 }
 
 export interface AuthService {

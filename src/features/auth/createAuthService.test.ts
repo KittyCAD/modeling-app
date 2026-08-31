@@ -8,6 +8,7 @@ const user: AuthUser = {
   name: 'Ada Lovelace',
   email: 'ada@example.dev',
   org: null,
+  orgError: null,
 }
 
 /** Settle the constructor's restore pass. */

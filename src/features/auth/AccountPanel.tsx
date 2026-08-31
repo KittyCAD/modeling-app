@@ -65,6 +65,7 @@ export function AccountPanel() {
 
   const user = useComputed(() => auth.user.value)
   const org = useComputed(() => auth.user.value?.org ?? null)
+  const orgError = useComputed(() => auth.user.value?.orgError ?? null)
   const balance = useComputed(() => credits?.balance.value ?? null)
   const creditsError = useComputed(() => credits?.error.value ?? null)
 
@@ -100,16 +101,29 @@ export function AccountPanel() {
             hint={`id ${org.value.id}`}
           />
         </>
+      ) : orgError.value !== null ? (
+        /*
+         * The case this panel got wrong first time round: the lookup failed and
+         * the app said "not a member", which is a different claim and was not
+         * true. A failed request leaves the question open, and the honest answer
+         * is the error — which is also the only thing that makes it fixable.
+         */
+        <Row
+          label="Org"
+          value="unknown"
+          hint={`could not be read — ${orgError.value}`}
+        />
       ) : (
         /*
-         * Said outright rather than by omitting the rows. "No org" is the
-         * answer somebody is looking for when they believed otherwise, and a
-         * missing row reads as a UI that failed to load.
+         * Said outright rather than by omitting the rows, and only reachable
+         * when the endpoint actually answered 404. "No org" is what somebody is
+         * looking for when they believed otherwise, and a missing row reads as a
+         * UI that failed to load.
          */
         <Row
           label="Org"
           value="none"
-          hint="this account is not a member of an org"
+          hint="the org endpoint answered 404: this account is not a member"
         />
       )}
 
