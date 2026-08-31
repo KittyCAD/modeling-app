@@ -1334,6 +1334,51 @@ know where they go, which is the projection's job — so the component is a
 positioning loop and nothing else. It is not decoration: a constraint that is not
 drawn cannot be selected, and one that cannot be selected cannot be deleted.
 
+Badges are **hidden until asked for**, because a sketch with thirty constraints in
+it is a sketch you cannot see. Hovering a segment reveals the constraints that say
+something about *that* segment — a point brings its whole coincident cluster,
+since a corner's constraints are spread across the points that meet there — in a
+row *beside* the cursor, so what is being annotated stays visible while the
+annotation is read. The row is pinned where the pointer was rather than following
+it: a row that slides along is a row you chase instead of one you move onto.
+
+Which creates the problem the linger solves. Reaching a badge means leaving the
+segment that revealed it, so a reveal outlives its hover by two seconds, and the
+clock is cancelled while the pointer is on the segment *or* on one of the badges
+it revealed. Several segments can be showing at once, each on its own clock, so a
+row does not vanish because the pointer crossed something else on the way to it.
+A drag dismisses them all — geometry moving under a row pinned to where the
+pointer was reads as a bug rather than as a hint. "Show all constraints" turns the
+whole policy off for reading a sketch rather than drawing one.
+
+### Selecting by box has two readings
+
+Drag left to right and you get what is wholly inside; drag right to left and you
+get everything the box touches. Which one you meant is read off the direction your
+hand went rather than from a modifier, which is a CAD convention older than any of
+these apps — and the border says which, solid or dashed, so you can tell without
+looking away.
+
+The arithmetic is where the care goes. Containment of a *line* is both ends
+inside, but containment of an *arc* is both ends plus wherever it crosses a
+compass point, because the ends alone would call a half circle contained by a box
+its bulge sticks out of. Touching a rim means solving the circle against each of
+the box's four edges and keeping only crossings that land within the arc's own
+sweep: an arc is not its circle, and a box beside the missing part of one touches
+nothing. A box floating *inside* a circle touches nothing either.
+
+The box is dragged in the sketch plane, where it is axis-aligned, and drawn as a
+screen rectangle between its two projected corners. Those agree exactly when the
+plane is square to the camera, which is where sketching happens; the existing app
+makes the same trade.
+
+Its place in the pointer order is the subtle part. The press is recorded but not
+claimed — a press that never moves is a click on nothing, which belongs behind the
+camera, and a modified left drag is a camera gesture in several control schemes.
+Only past the click threshold is the move claimed, and from then the box answers
+nothing else: no hover, so badge rows do not flash up along the way, and no snap,
+because a box does not snap.
+
 ### Dragging is three ideas, not one
 
 Grabbing an end means "put this end there", so the cursor position is what is

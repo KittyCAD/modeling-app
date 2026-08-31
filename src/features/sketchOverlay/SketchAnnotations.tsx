@@ -98,7 +98,12 @@ export function SketchAnnotations({
     const open = sessions.open.value
     const graph = frontend.sceneGraph.value
     const hovered = pointer.hovered.value
-    const at = pointer.at.value
+    /*
+     * Peeked, not read: this should run when what is *under* the pointer changes,
+     * not on every move. Subscribing to the position would mean a walk of the
+     * whole graph per pointer event, and the answer would be the same one.
+     */
+    const at = pointer.at.peek()
 
     if (!open || !graph || hovered === null || !at) {
       reveal.hover(null, null)
