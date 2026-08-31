@@ -154,7 +154,11 @@ const setup = (
   })
 
   const calls: string[] = []
-  const camera = { faceOn: vi.fn() } as unknown as CameraDriver
+  const camera = {
+    faceOn: vi.fn(),
+    claimCamera: vi.fn(),
+    releaseCamera: vi.fn(),
+  } as unknown as CameraDriver
   const frontend = {
     sync: vi.fn(async () => {
       calls.push('sync')
@@ -703,6 +707,53 @@ describe('turning to face the plane', () => {
     // overlay — but there is no plane to point a camera at.
     expect(app.session.open.value).not.toBeNull()
     expect(app.camera.faceOn).not.toHaveBeenCalled()
+  })
+})
+
+describe('owning the camera', () => {
+  it('takes the camera on the way in and hands it back on the way out', async () => {
+    const app = setup()
+
+    await app.session.enter()
+
+    /*
+     * Claimed for the whole session, not just while a tool is equipped.
+     *
+     * The sketch is drawn over the video from wherever the camera is, so an
+     * unclaimed camera means the drawing arrives one engine report behind the
+     * pointer — which reads as the app being slow however fast the solve was.
+     */
+    expect(app.camera.claimCamera).toHaveBeenCalledTimes(1)
+    expect(app.camera.releaseCamera).not.toHaveBeenCalled()
+
+    await app.session.exit()
+
+    expect(app.camera.releaseCamera).toHaveBeenCalledTimes(1)
+  })
+
+  it('takes it even when the view is left where it was', async () => {
+    const app = setup({ faceOnEntry: false })
+
+    await app.session.enter()
+
+    // Two different questions: whether to square up to the plane is a
+    // preference, whether the overlay keeps up with the pointer is not.
+    expect(app.camera.faceOn).not.toHaveBeenCalled()
+    expect(app.camera.claimCamera).toHaveBeenCalledTimes(1)
+  })
+
+  it('hands it back when the sketch is forgotten rather than left', async () => {
+    const closed = signal(false)
+    const app = setup({ bufferGone: closed })
+    await app.session.enter()
+
+    closed.value = true
+    await vi.waitFor(() => expect(app.session.open.value).toBeNull())
+
+    // The buffer went away underneath an open session. Nothing can be written
+    // back, but a camera the app is still steering would leave orbiting broken
+    // in a scene with no sketch in it.
+    expect(app.camera.releaseCamera).toHaveBeenCalled()
   })
 })
 

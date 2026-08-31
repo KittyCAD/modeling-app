@@ -154,7 +154,7 @@
  * true at once and mean different things.
  */
 .zds-feature-tree__row:has(.zds-feature-tree__visibility[data-hidden="true"])
-  .zds-feature-tree__label {
+.zds-feature-tree__label {
   color: var(--zds-text-tertiary);
   font-style: italic;
 }

@@ -16,11 +16,29 @@ import { createEngineCameraDriver } from '@src/features/engineScene/createEngine
  * The distinction matters: with no reported camera there is nothing to
  * interpolate, so a view change states its destination instead.
  */
-function fakeCamera(frame: CameraFrame | null = null): EngineCamera {
+function fakeCamera(
+  frame: CameraFrame | null = null,
+  options: { owned?: boolean } = {}
+): EngineCamera & { steer: ReturnType<typeof vi.fn> } {
   const value = signal(frame)
+  const owned = signal(options.owned ?? false)
+
+  const steer = vi.fn((move: (current: CameraFrame) => CameraFrame) => {
+    const current = value.peek()
+    if (current) value.value = move(current)
+  })
+
   return {
     frame: computed(() => value.value),
     epoch: computed(() => 0),
+    owned: computed(() => owned.value),
+    claim: () => {
+      owned.value = true
+    },
+    release: () => {
+      owned.value = false
+    },
+    steer,
     dispose: () => {},
   }
 }
@@ -473,6 +491,161 @@ describe('animating a view change', () => {
     expect(fake.sent.map((command) => command.type)).toEqual([
       'default_camera_look_at',
       'zoom_to_fit',
+    ])
+  })
+})
+
+describe('driving a claimed camera', () => {
+  /** A camera 100mm above the origin, looking down. */
+  const overhead: CameraFrame = {
+    position: { x: 0, y: 0, z: 100 },
+    target: { x: 0, y: 0, z: 0 },
+    up: { x: 0, y: 1, z: 0 },
+    fovY: 45,
+    orthographic: false,
+  }
+
+  const setup = () => {
+    const fake = createFakeConnection()
+    const camera = fakeCamera(overhead)
+    const driver = createEngineCameraDriver(() => fake.connection, {
+      camera,
+      reducedMotion: () => true,
+    })
+    return { fake, camera, driver }
+  }
+
+  const drag = (
+    driver: ReturnType<typeof createEngineCameraDriver>,
+    kind: CameraGesture['kind'],
+    from: ScenePoint,
+    to: ScenePoint
+  ) => {
+    driver.gesture({ kind, phase: 'start', at: from })
+    driver.gesture({ kind, phase: 'move', at: to })
+    driver.gesture({ kind, phase: 'end', at: to })
+  }
+
+  it('asks for the camera, and gives it back', () => {
+    const { camera, driver } = setup()
+
+    driver.claimCamera()
+    expect(camera.owned.value).toBe(true)
+
+    driver.releaseCamera()
+    expect(camera.owned.value).toBe(false)
+  })
+
+  it('orbits with arithmetic instead of a drag command', () => {
+    const { fake, camera, driver } = setup()
+    driver.claimCamera()
+
+    drag(driver, 'rotate', at(100, 100), at(130, 100))
+
+    // No camera_drag_* at all: while the app owns the camera a drag is a change
+    // to the frame, and the engine hears about the result rather than the drag.
+    expect(fake.sent).toHaveLength(0)
+    expect(camera.steer).toHaveBeenCalledTimes(1)
+    // Turned about the vertical, keeping its distance.
+    const moved = camera.frame.value as CameraFrame
+    expect(
+      Math.hypot(moved.position.x, moved.position.y, moved.position.z)
+    ).toBeCloseTo(100)
+    expect(moved.position.z).toBeLessThan(100)
+  })
+
+  it('moves by how far the pointer went, not by where it is', () => {
+    const { camera, driver } = setup()
+    driver.claimCamera()
+
+    // Two moves of ten pixels each, and then one of twenty from a fresh press:
+    // the same total, so the same camera.
+    drag(driver, 'rotate', at(0, 0), at(10, 0))
+    driver.gesture({ kind: 'rotate', phase: 'start', at: at(0, 0) })
+    driver.gesture({ kind: 'rotate', phase: 'move', at: at(10, 0) })
+    const twice = camera.frame.value as CameraFrame
+
+    const second = setup()
+    second.driver.claimCamera()
+    drag(second.driver, 'rotate', at(0, 0), at(20, 0))
+    const once = second.camera.frame.value as CameraFrame
+
+    expect(twice.position.x).toBeCloseTo(once.position.x)
+    expect(twice.position.y).toBeCloseTo(once.position.y)
+  })
+
+  it('pans the model exactly as far as the pointer', () => {
+    const { camera, driver } = setup()
+    driver.claimCamera()
+
+    // A quarter of the 250px element, on a camera whose view is 2 * 100 *
+    // tan(22.5°) tall.
+    drag(driver, 'pan', at(0, 0), at(0, 62.5))
+
+    const height = 2 * 100 * Math.tan((22.5 * Math.PI) / 180)
+    const moved = camera.frame.value as CameraFrame
+    // Dragging down brings the model down, which moves the camera up.
+    expect(moved.target.y).toBeCloseTo(height / 4)
+    // And the camera keeps its distance: a pan is not a zoom.
+    expect(moved.position.z).toBe(100)
+  })
+
+  it('zooms the frame rather than asking the engine to', () => {
+    const { fake, camera, driver } = setup()
+    driver.claimCamera()
+
+    driver.zoom({ magnitude: 1, at: at(250, 125) })
+
+    expect(fake.sent).toHaveLength(0)
+    // Positive zooms in, so the camera comes closer.
+    expect((camera.frame.value as CameraFrame).position.z).toBeLessThan(100)
+  })
+
+  it('steers a view change instead of sending one', () => {
+    const { fake, camera, driver } = setup()
+    driver.claimCamera()
+
+    driver.faceOn({
+      origin: { x: 0, y: 0, z: 0 },
+      xAxis: { x: 1, y: 0, z: 0 },
+      yAxis: { x: 0, y: 0, z: 1 },
+      zAxis: { x: 0, y: -1, z: 0 },
+    })
+
+    /*
+     * A look-at here would move the video and leave every overlay behind, since
+     * the app is the authority and ignores the echo — so the frame has to be the
+     * thing that changes.
+     */
+    expect(fake.sent).toHaveLength(0)
+    expect((camera.frame.value as CameraFrame).position).toEqual({
+      x: 0,
+      y: -100,
+      z: 0,
+    })
+  })
+
+  it('carries a projection change onto the frame it owns', () => {
+    const { camera, driver } = setup()
+    driver.claimCamera()
+
+    driver.setProjection('orthographic')
+
+    // The echo is ignored while the camera is ours, so without this the sketch
+    // would be drawn in perspective over an orthographic render.
+    expect((camera.frame.value as CameraFrame).orthographic).toBe(true)
+  })
+
+  it('leaves the engine in charge when it has not claimed anything', () => {
+    const { fake, camera, driver } = setup()
+
+    drag(driver, 'rotate', at(100, 100), at(130, 100))
+
+    expect(camera.steer).not.toHaveBeenCalled()
+    expect(fake.sent.map((cmd) => cmd.type)).toEqual([
+      'camera_drag_start',
+      'camera_drag_move',
+      'camera_drag_end',
     ])
   })
 })

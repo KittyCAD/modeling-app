@@ -378,6 +378,7 @@ export function createSketchSession(
    * the last write left, which is the honest outcome of closing a file.
    */
   const forget = () => {
+    camera()?.releaseCamera()
     latestMove = null
     draft.value = { kind: 'idle' }
     tool.value = null
@@ -495,6 +496,17 @@ export function createSketchSession(
          * allowed, so this is a starting position rather than a lock, and
          * `sketch.faceOn` is how somebody gets back to it.
          */
+        /*
+         * Take the camera for the duration.
+         *
+         * The overlay is drawn from wherever the camera is, so while it comes back
+         * from the engine one report at a time the sketch lags the pointer — which
+         * reads as the app being slow however fast the solve was. Claimed here
+         * means an orbit moves the drawing immediately and the video catches up,
+         * which is the trade the existing app makes on entering a sketch too.
+         */
+        camera()?.claimCamera()
+
         if (placed.plane && faceOnEntry()) camera()?.faceOn(placed.plane)
       } catch (caught) {
         fail(kclErrorMessage(caught, 'That sketch could not be opened.'))
@@ -512,6 +524,9 @@ export function createSketchSession(
       // a way of finishing the line you were in the middle of.
       void discardDraft()
       tool.value = null
+      // Back to following the engine: outside a sketch there is nothing drawn
+      // over the video that a round trip would hold up.
+      camera()?.releaseCamera()
 
       // Behind whatever is still in flight, so the file the frontend writes back
       // is the one with every segment in it.

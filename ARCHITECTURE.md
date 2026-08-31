@@ -436,6 +436,51 @@ the table. The existing app keeps the display name as the value and converts at
 the file boundary, which needs two mapping functions and a comment about where the
 underscores went.
 
+### Who owns the camera
+
+By default nothing here does. `createEngineCamera` *listens*: every camera drag,
+zoom, fit and named view answers with the settings the camera ended up at, so the
+app can know where the camera is without moving it. That is what keeps orbiting
+available inside a sketch, and what lets a view change interpolate from wherever
+the user happened to leave it.
+
+Listening is not enough while something is drawn *over* the video. A sketch
+overlay is placed from the camera, so a camera that arrives one round trip late
+draws the rubber band one round trip behind the pointer — which reads as the app
+being slow, however fast the solve was. So `claimCamera()` exists on the driver,
+and the sketch session calls it on the way in and `releaseCamera()` on the way
+out.
+
+While claimed, the arithmetic moves onto the client:
+
+| | Engine owns it | App owns it |
+| --- | --- | --- |
+| A drag becomes | `camera_drag_*`, and the answer is the new frame | `orbit`/`trackball`/`pan`/`dolly` on the frame, now |
+| The engine hears | the drag | `default_camera_look_at`, throttled to 15 Hz |
+| Echoes are | the source of truth | ignored, because they are our own pushes |
+| What lags | the overlay | the video |
+
+`src/lib/scene/cameraMotion.ts` is the arithmetic, pure and unit-tested, ported
+from the existing app's controls so a claimed orbit feels like an unclaimed one.
+Three consequences that had to be handled rather than discovered:
+
+- **Releasing flushes.** A release usually lands between pushes, so the pending
+  frame is sent before the camera is handed back — otherwise the app asks the
+  engine where its camera is while it is still a fifteenth of a second behind,
+  and the answer arrives as the view jumping back.
+- **Release re-asks.** `default_camera_get_settings` on the way out, rather than
+  assuming the engine is where we left it: a dropped command would otherwise
+  leave the app following a position only it believes in.
+- **Projection has to be pushed twice.** The echo of a projection change is
+  ignored while the camera is claimed, so `setProjection` also writes it onto the
+  frame — without that, switching projection mid-sketch draws the sketch in
+  perspective over an orthographic render.
+
+Ownership is deliberately not reference-counted. Exactly one thing at a time has
+a reason to want the camera, and a count would hide the bug where two of them
+disagree about who let go. A renderer whose camera is already in this process
+honours the claim by doing nothing.
+
 `sceneInteractionsValueSpec` lives in `contracts/scene.ts` for the same reason —
 input over the surface the scene is drawn on is not a fact about video. Only
 `streamParamsValueSpec` stayed in `contracts/engineScene.ts`, because query

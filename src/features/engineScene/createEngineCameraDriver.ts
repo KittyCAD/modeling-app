@@ -1,6 +1,7 @@
 import { type ReadonlySignal, computed, effect } from '@preact/signals'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { EngineConnection } from '@src/contracts/engine'
+import type { CameraFrame } from '@src/lib/scene/projection'
 import type { EngineCamera } from '@src/features/engineScene/createEngineCamera'
 import { toStreamWindow } from '@src/features/engineScene/streamWindow'
 import {
@@ -8,6 +9,8 @@ import {
   ease,
   tweenViewpoint,
 } from '@src/lib/scene/cameraTween'
+import { dolly, orbit, pan, trackball } from '@src/lib/scene/cameraMotion'
+import { halfViewHeight } from '@src/lib/scene/projection'
 import type {
   CameraDriver,
   CameraGesture,
@@ -134,15 +137,72 @@ export function createEngineCameraDriver(
     })
   }
 
+  /** Where the last local gesture had the pointer, for the next delta. */
+  let lastLocal: { x: number; y: number } | null = null
+
   /**
-   * Swing the camera from where it is to where it was asked to be.
-   *
-   * At the same 15 Hz everything else is sent at, and for the same reason: each
-   * step costs a re-render and a re-stream, so a smoother tween would only build
-   * a queue that runs behind itself. Six or seven frames is what the stream can
-   * show of a third of a second, which is why the duration is short — a long
-   * animation at this cadence reads as stuttering rather than as motion.
+   * How much of a wheel notch is a zoom. Tuned against the engine's own feel.
    */
+  const ZOOM_SENSITIVITY = 0.15
+
+  /** How much of a vertical drag-zoom pixel is a zoom. */
+  const DRAG_ZOOM_SENSITIVITY = 0.01
+
+  /**
+   * Move the camera ourselves, from a gesture.
+   *
+   * Deltas rather than positions, because the arithmetic is about how far the
+   * pointer went — while the engine's own drag protocol is about where it *is*,
+   * which is why the two paths cannot share a handler.
+   */
+  const steerLocally = (gesture: CameraGesture) => {
+    if (gesture.phase === 'start') {
+      lastLocal = { x: gesture.at.x, y: gesture.at.y }
+      return
+    }
+
+    if (gesture.phase === 'end') {
+      lastLocal = null
+      return
+    }
+
+    const previous = lastLocal
+    lastLocal = { x: gesture.at.x, y: gesture.at.y }
+    if (!previous) return
+
+    const deltaX = gesture.at.x - previous.x
+    const deltaY = gesture.at.y - previous.y
+
+    dependencies.camera.steer((frame) => {
+      switch (gesture.kind) {
+        case 'rotate':
+          return orbit(frame, deltaX, deltaY)
+        case 'rotatetrackball':
+          return trackball(frame, deltaX, deltaY)
+        case 'pan': {
+          /*
+           * How big a pixel is where the target is, so the model moves exactly as
+           * far as the pointer. The viewport is the *element's*, which is what the
+           * gesture measured against.
+           */
+          const height = gesture.at.viewport.height
+          const distance = Math.hypot(
+            frame.position.x - frame.target.x,
+            frame.position.y - frame.target.y,
+            frame.position.z - frame.target.z
+          )
+          const unitsPerPixel =
+            height > 0 ? (halfViewHeight(frame, distance) * 2) / height : 0
+
+          return pan(frame, deltaX, deltaY, unitsPerPixel)
+        }
+        case 'zoom':
+          // The engine's drag-zoom is vertical, and so is this.
+          return dolly(frame, 1 + deltaY * DRAG_ZOOM_SENSITIVITY)
+      }
+    })
+  }
+
   /**
    * Put the camera at a distance from a target, along a direction.
    *
@@ -179,19 +239,50 @@ export function createEngineCameraDriver(
     }
 
     if (!from) {
-      sendLookAt(to)
+      settle(to)
       sendZoomToFit()
       return
     }
 
     if (dependencies.reducedMotion()) {
-      sendLookAt(to)
+      settle(to)
       return
     }
 
     tweenTo({ position: from.position, target: from.target, up: from.up }, to)
   }
 
+  /**
+   * Arrive at a viewpoint, by whichever route the camera belongs to.
+   *
+   * A claimed camera has to be *moved*, not merely told: sending the engine a
+   * look-at while the app is the authority would move the video and leave every
+   * overlay behind, until the next gesture snapped them back together.
+   */
+  const settle = (to: Viewpoint) => {
+    if (dependencies.camera.owned.peek()) {
+      dependencies.camera.steer(() => ({
+        ...(dependencies.camera.frame.peek() as CameraFrame),
+        position: to.position,
+        target: to.target,
+        up: to.up,
+        orientation: undefined,
+      }))
+      return
+    }
+
+    sendLookAt(to)
+  }
+
+  /**
+   * Swing the camera from where it is to where it was asked to be.
+   *
+   * At the same 15 Hz everything else is sent at, and for the same reason: each
+   * step costs a re-render and a re-stream, so a smoother tween would only build
+   * a queue that runs behind itself. Six or seven frames is what the stream can
+   * show of a third of a second, which is why the duration is short — a long
+   * animation at this cadence reads as stuttering rather than as motion.
+   */
   const tweenTo = (from: Viewpoint, to: Viewpoint) => {
     cancelTween()
     const startedAt = performance.now()
@@ -203,11 +294,11 @@ export function createEngineCameraDriver(
         cancelTween()
         // Sent exactly, rather than as the last interpolated step: the point of
         // the move is the destination, and arriving near it is not arriving.
-        sendLookAt(to)
+        settle(to)
         return
       }
 
-      sendLookAt(tweenViewpoint(from, to, ease(progress)))
+      settle(tweenViewpoint(from, to, ease(progress)))
     }, MOVE_INTERVAL_MS)
   }
 
@@ -315,6 +406,21 @@ export function createEngineCameraDriver(
       // The user is more recent than the animation.
       cancelTween()
 
+      /*
+       * A claimed camera moves here, not on the engine.
+       *
+       * While the app owns the camera — which is what happens when a sketch is
+       * open — a drag is arithmetic rather than a message: the frame changes now,
+       * everything drawn from it follows this frame, and the engine is told at
+       * the same 15 Hz a drag would have used. The overlay therefore answers the
+       * pointer and the video is the thing that lags, which is the trade the
+       * existing app makes for the same reason.
+       */
+      if (dependencies.camera.owned.peek()) {
+        steerLocally(gesture)
+        return
+      }
+
       if (gesture.phase === 'move') {
         pending = gesture
         // Explicitly unbounded for the first move of a drag rather than relying
@@ -343,6 +449,14 @@ export function createEngineCameraDriver(
     zoom(request: CameraZoomRequest) {
       if (!ready.peek()) return
       cancelTween()
+
+      if (dependencies.camera.owned.peek()) {
+        // Positive zooms in, so it shortens the distance.
+        dependencies.camera.steer((frame) =>
+          dolly(frame, 1 - request.magnitude * ZOOM_SENSITIVITY)
+        )
+        return
+      }
       getConnection().fireCommand({
         type: 'default_camera_zoom',
         magnitude: request.magnitude,
@@ -404,10 +518,34 @@ export function createEngineCameraDriver(
       sendZoomToFit()
     },
 
+    claimCamera() {
+      cancelTween()
+      dependencies.camera.claim()
+    },
+
+    releaseCamera() {
+      cancelTween()
+      lastLocal = null
+      dependencies.camera.release()
+    },
+
     setProjection(next) {
       projection = next
       if (!ready.peek()) return
       sendProjection(next)
+
+      /*
+       * And onto the frame, when the frame is ours.
+       *
+       * A claimed camera ignores the engine's echoes, so this is the only way the
+       * change reaches whatever is drawn over the video — without it, switching
+       * projection during a sketch would draw the sketch in perspective over an
+       * orthographic render.
+       */
+      dependencies.camera.steer((frame) => ({
+        ...frame,
+        orthographic: next === 'orthographic',
+      }))
     },
 
     dispose: () => {

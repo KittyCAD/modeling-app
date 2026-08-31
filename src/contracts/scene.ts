@@ -149,6 +149,28 @@ export interface CameraDriver {
   lookFrom(direction: Vector3, up?: Vector3): void
   /** Frame everything there is. */
   zoomToFit(): void
+
+  /**
+   * Move the camera here rather than wherever it usually lives.
+   *
+   * Asked for by whoever is drawing *over* the scene and needs the view to answer
+   * the pointer rather than to arrive a moment later. Sketching is the case: a
+   * rubber band drawn from a camera that is one round trip behind reads as the
+   * app being slow, however fast the solve was.
+   *
+   * A request rather than a fact, because whether it means anything depends on
+   * the renderer. The streamed engine stops round-tripping the camera, moves it
+   * locally and reports afterwards — so the overlay is exact and the *video* is
+   * what lags. A renderer in this process is already local and honours this by
+   * doing nothing.
+   *
+   * Reference-counted is deliberately *not* offered: exactly one thing at a time
+   * has a reason to want this, and a count would hide the bug where two of them
+   * disagree about who let go.
+   */
+  claimCamera(): void
+  /** Give it back. */
+  releaseCamera(): void
 }
 
 /**

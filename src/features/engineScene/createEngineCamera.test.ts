@@ -1,6 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { encode as msgpackEncode } from '@msgpack/msgpack'
 import { createEngineCamera } from '@src/features/engineScene/createEngineCamera'
+import type { CameraFrame } from '@src/lib/scene/projection'
 import {
   OVERHEAD,
   cameraResponse,
@@ -98,5 +99,157 @@ describe('createEngineCamera', () => {
     fake.deliver(cameraResponse('camera_drag_move', OVERHEAD))
 
     expect(camera.epoch.value).toBe(before)
+  })
+})
+
+describe('owning the camera', () => {
+  let fake: ReturnType<typeof createFakeConnection>
+
+  beforeEach(() => {
+    fake = createFakeConnection()
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  /** Built with fake timers running, so the seeding round trip still lands. */
+  const claimed = async () => {
+    const camera = createEngineCamera(() => fake.connection)
+    await vi.advanceTimersByTimeAsync(0)
+    camera.claim()
+    return camera
+  }
+
+  const moveRight = (frame: CameraFrame): CameraFrame => ({
+    ...frame,
+    position: { ...frame.position, x: frame.position.x + 10 },
+  })
+
+  it('will not be claimed before there is anything to take', async () => {
+    fake.status.value = 'connecting'
+    const camera = createEngineCamera(() => fake.connection)
+    await vi.advanceTimersByTimeAsync(0)
+
+    camera.claim()
+
+    // Claiming a camera nobody has heard from would start everything from a
+    // guess, and the guess would show up as a jump on the first echo.
+    expect(camera.owned.value).toBe(false)
+    camera.dispose()
+  })
+
+  it('moves the frame at once and tells the engine at the drag rate', async () => {
+    const camera = await claimed()
+    const before = camera.epoch.value
+
+    camera.steer(moveRight)
+    camera.steer(moveRight)
+
+    // The frame is the app's now, so the overlay drawn from it is already right.
+    expect(camera.frame.value?.position.x).toBe(20)
+    expect(camera.epoch.value).toBe(before + 2)
+    expect(
+      fake.sent.filter((cmd) => cmd.type === 'default_camera_look_at')
+    ).toHaveLength(0)
+
+    await vi.advanceTimersByTimeAsync(1000 / 15)
+
+    // One command for the pair, carrying where the camera ended up rather than
+    // where it passed through.
+    expect(
+      fake.sent.filter((cmd) => cmd.type === 'default_camera_look_at')
+    ).toEqual([
+      {
+        type: 'default_camera_look_at',
+        center: { x: 0, y: 0, z: 0 },
+        vantage: { x: 20, y: 0, z: 100 },
+        up: { x: 0, y: 1, z: 0 },
+      },
+    ])
+    camera.dispose()
+  })
+
+  it('ignores the engine while the camera is ours', async () => {
+    const camera = await claimed()
+    camera.steer(moveRight)
+    const epoch = camera.epoch.value
+
+    // Our own push, coming back. Applying it would feed a 15 Hz round trip into
+    // the value the pointer is driving, and the camera would stutter between the
+    // two.
+    fake.deliver(
+      cameraResponse('default_camera_look_at', {
+        ...OVERHEAD,
+        pos: { x: 10, y: 0, z: 100 },
+      })
+    )
+    fake.deliver(
+      cameraResponse('camera_drag_move', {
+        ...OVERHEAD,
+        pos: { x: 999, y: 0, z: 100 },
+      })
+    )
+
+    expect(camera.frame.value?.position.x).toBe(10)
+    expect(camera.epoch.value).toBe(epoch)
+    camera.dispose()
+  })
+
+  it('sends the last position on the way out rather than dropping it', async () => {
+    const camera = await claimed()
+    camera.steer(moveRight)
+
+    // Released between pushes, which is the common case: the last thing somebody
+    // does before leaving a sketch is move the view.
+    camera.release()
+
+    expect(
+      fake.sent.filter((cmd) => cmd.type === 'default_camera_look_at')
+    ).toHaveLength(1)
+    camera.dispose()
+  })
+
+  it('asks the engine where it is once the camera is handed back', async () => {
+    const camera = await claimed()
+    camera.steer(moveRight)
+    fake.sent.length = 0
+
+    camera.release()
+    await vi.advanceTimersByTimeAsync(0)
+
+    expect(camera.owned.value).toBe(false)
+    expect(fake.sent).toContainEqual({ type: 'default_camera_get_settings' })
+    // And what it answers is adopted, rather than the app carrying on from a
+    // position only it believes in.
+    expect(camera.frame.value?.position).toEqual({ x: 0, y: 0, z: 100 })
+    camera.dispose()
+  })
+
+  it('does not move a camera it does not own', async () => {
+    const camera = createEngineCamera(() => fake.connection)
+    await vi.advanceTimersByTimeAsync(0)
+    const before = camera.frame.value
+
+    camera.steer(moveRight)
+    await vi.advanceTimersByTimeAsync(1000 / 15)
+
+    expect(camera.frame.value).toBe(before)
+    expect(
+      fake.sent.filter((cmd) => cmd.type === 'default_camera_look_at')
+    ).toHaveLength(0)
+    camera.dispose()
+  })
+
+  it('sends nothing more once disposed mid-gesture', async () => {
+    const camera = await claimed()
+    camera.steer(moveRight)
+    camera.dispose()
+    fake.sent.length = 0
+
+    await vi.advanceTimersByTimeAsync(1000 / 15)
+
+    expect(fake.sent).toHaveLength(0)
   })
 })

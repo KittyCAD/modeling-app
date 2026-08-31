@@ -97,8 +97,47 @@ export interface EngineCamera {
   readonly frame: ReadonlySignal<CameraFrame | null>
   /** Bumps whenever the view changed, for whoever redraws rather than reads. */
   readonly epoch: ReadonlySignal<number>
+  /**
+   * Whether the app is moving the camera rather than following it.
+   *
+   * Read by the driver, which has to send something different in each case: a
+   * drag becomes a camera command when the engine owns the camera, and local
+   * arithmetic when we do.
+   */
+  readonly owned: ReadonlySignal<boolean>
+  /**
+   * Take the camera.
+   *
+   * Adopts wherever the engine last reported and stops listening, so nothing
+   * moves at the moment of the claim. From here the app is the authority and the
+   * engine is told afterwards — which is what makes an overlay answer the pointer
+   * immediately, and why the *video* is the thing that lags while a sketch is
+   * open.
+   */
+  claim: () => void
+  /** Hand it back, and start following the engine again. */
+  release: () => void
+  /**
+   * Move the camera, while it is ours.
+   *
+   * A function of the current frame rather than a new frame, so a caller cannot
+   * move a camera it has a stale copy of — every gesture composes on whatever the
+   * last one produced. Ignored when the camera is not claimed: a renderer that
+   * owns its own camera is not something to be steered from here.
+   */
+  steer: (move: (frame: CameraFrame) => CameraFrame) => void
   dispose: () => void
 }
+
+/**
+ * How often a claimed camera tells the engine where it is.
+ *
+ * The same 15 Hz as a drag, and for the same reason: each report costs the engine
+ * a re-render and a re-stream, so sending every local change would build a queue
+ * that runs behind itself. The existing app throttles this exact command to the
+ * same rate.
+ */
+const PUSH_INTERVAL_MS = 1000 / 15
 
 export function createEngineCamera(
   /** Lazy: resolving a service while the registry graph is built is not allowed. */
@@ -106,11 +145,40 @@ export function createEngineCamera(
 ): EngineCamera {
   const frame = signal<CameraFrame | null>(null)
   const epoch = signal(0)
+  const owned = signal(false)
 
   const record = (next: CameraFrame | null) => {
     if (!next) return
+    /*
+     * Ignored while the camera is ours.
+     *
+     * Our own pushes come back as echoes, so applying them would feed a
+     * fifteen-Hz round trip into the value the pointer is driving — the camera
+     * would stutter between where it has been moved to and where the engine last
+     * confirmed it was.
+     */
+    if (owned.peek()) return
+
     frame.value = next
     epoch.value += 1
+  }
+
+  /** The last local frame the engine has not been told about yet. */
+  let unsent: CameraFrame | null = null
+  let pushTimer: number | undefined
+
+  const push = () => {
+    pushTimer = undefined
+    const next = unsent
+    unsent = null
+    if (!next) return
+
+    getConnection().fireCommand({
+      type: 'default_camera_look_at',
+      center: next.target,
+      vantage: next.position,
+      up: next.up,
+    })
   }
 
   let stopListening: (() => void) | null = null
@@ -159,9 +227,70 @@ export function createEngineCamera(
   return {
     frame: computed(() => frame.value),
     epoch: computed(() => epoch.value),
+    owned: computed(() => owned.value),
+
+    claim() {
+      // Nothing to take authority over yet. Claiming a camera we have never
+      // heard of would start everything from a guess.
+      if (frame.peek() === null) return
+      owned.value = true
+    },
+
+    release() {
+      owned.value = false
+
+      /*
+       * Send whatever the throttle was still holding.
+       *
+       * A release lands between pushes more often than not — the last thing
+       * somebody does before leaving a sketch is move the view — and dropping
+       * that frame would ask the engine where its camera is while it is still a
+       * fifteenth of a second behind, which comes back as the view jumping to
+       * where it was rather than staying where it was left.
+       */
+      if (pushTimer !== undefined) window.clearTimeout(pushTimer)
+      push()
+
+      /*
+       * Ask where the engine is, rather than assuming it is where we left it.
+       *
+       * It should be — we pushed — but a dropped command or a scene restarted
+       * underneath us would otherwise leave the app following a camera position
+       * that only it believes in, and the next echo would arrive as a jump.
+       */
+      const connection = getConnection()
+      if (connection.state.peek().status !== 'connected') return
+      void connection
+        .sendCommand({ type: 'default_camera_get_settings' })
+        .then((bytes) =>
+          record(cameraFrom(modelingResponse(bytes)?.data?.settings))
+        )
+        .catch(() => {
+          // The next drag will say where the camera is.
+        })
+    },
+
+    steer(move) {
+      if (!owned.peek()) return
+      const current = frame.peek()
+      if (!current) return
+
+      const next = move(current)
+      frame.value = next
+      epoch.value += 1
+
+      // Told at the drag rate, on a trailing edge so the last position of a
+      // gesture is always the one the engine ends up at.
+      unsent = next
+      if (pushTimer === undefined) {
+        pushTimer = window.setTimeout(push, PUSH_INTERVAL_MS)
+      }
+    },
+
     dispose() {
       stopListening?.()
       stopSeeding()
+      if (pushTimer !== undefined) window.clearTimeout(pushTimer)
     },
   }
 }
