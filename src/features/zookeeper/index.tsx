@@ -1,12 +1,18 @@
 import {
+  defineRegistryItem,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals'
+import { createAppPlugin } from '@src/app/createAppPlugin'
 import { authService } from '@src/contracts/auth'
 import { commandsValueSpec } from '@src/contracts/commands'
+import {
+  type CreditConsumer,
+  creditConsumersValueSpec,
+} from '@src/contracts/credits'
 import { fileSystemService } from '@src/contracts/fileSystem'
 import { fsOperationQueueService } from '@src/contracts/fsOperations'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
@@ -26,6 +32,24 @@ import {
 import { createZookeeperService } from '@src/features/zookeeper/createZookeeperService'
 import { zookeeperServiceUrl } from '@src/features/zookeeper/serviceUrl'
 
+export const ZOOKEEPER_PLUGIN_ID = 'zookeeper'
+
+/**
+ * A project's name, from the path a conversation was stamped with.
+ *
+ * The last segment, because that is what the app calls a project everywhere else
+ * — the breadcrumbs, the home list — and a credits breakdown showing absolute
+ * paths would be the only place in the app that did.
+ */
+function projectNameOf(path: string | null): string | null {
+  if (path === null) return null
+  const name = path
+    .replace(/[\\/]+$/, '')
+    .split(/[\\/]/)
+    .pop()
+  return name === undefined || name === '' ? null : name
+}
+
 /**
  * The CAD agent, as a collaborator in the project session.
  *
@@ -35,8 +59,15 @@ import { zookeeperServiceUrl } from '@src/features/zookeeper/serviceUrl'
  * that knows the Zookeeper protocol; everything about *applying* a remote
  * writer's edits lives in `src/lib/collab/` and is meant to be shared with human
  * live-collab when it arrives.
+ *
+ * Everything is inside the plugin slot, including the service — so turning
+ * Zookeeper off removes it rather than leaving an inert copy behind. Nothing
+ * outside this directory reads `zookeeperService`, which is what makes that
+ * possible; the one thing that does cross the boundary is `ZOOKEEPER_AREA_ID`,
+ * named by the modelling layout preset, and a rail drops an area id that no
+ * longer resolves.
  */
-export default defineRegistryItemFactory((ctx) => {
+const zookeeperFeature = defineRegistryItemFactory((ctx) => {
   /*
    * Lazy, and never resolved in this body: the graph is still being flattened
    * here, and resolving a service now is the first of the container's two rules.
@@ -113,7 +144,12 @@ export default defineRegistryItemFactory((ctx) => {
 
   return {
     item: defineRuntimeRegistryItem({
-      id: 'zookeeper',
+      /*
+       * Not `zookeeper`: that is the plugin node's id, and the registry dedupes
+       * items by id while flattening — a collision silently skips the whole
+       * subtree, taking every service and contribution below it with it.
+       */
+      id: 'zookeeper.feature',
       providesServices: [
         provideService(zookeeperService, {
           conversations: computed(() => zookeeper().conversations.value),
@@ -193,6 +229,42 @@ export default defineRegistryItemFactory((ctx) => {
           render: () => <ZookeeperPresenceField />,
         }),
 
+        /*
+         * What Zookeeper is spending, for the account-level credits readout.
+         *
+         * Contributed rather than pushed, so that turning this plugin off takes
+         * the contribution with it and the readout simply has nothing spending.
+         * Credits knows nothing about conversations; this is the whole of what it
+         * is told.
+         *
+         * One consumer per *streaming turn*, not per conversation: a turn is the
+         * unit of spending, so an idle conversation with ten turns behind it is
+         * costing nothing and should not be listed as though it were.
+         */
+        provide(creditConsumersValueSpec, {
+          id: 'zookeeper.conversations',
+          consumers: computed<readonly CreditConsumer[]>(() => {
+            const open = [...zookeeper().conversations.value.values()]
+            return open.flatMap((conversation, index) => {
+              if (conversation.status.value !== 'streaming') return []
+              const turn = conversation.transcript.value.at(-1)
+              if (turn === undefined) return []
+              return [
+                {
+                  // Per turn, so a new turn reads as a new span rather than
+                  // inheriting the previous one's elapsed time.
+                  id: `${conversation.id}:${turn.id}`,
+                  kind: 'zookeeper.conversation' as const,
+                  // Numbered by position, the same way the panel's tabs are.
+                  label: `Conversation ${index + 1}`,
+                  project: projectNameOf(conversation.projectPath),
+                  startedAt: turn.at,
+                },
+              ]
+            })
+          }),
+        }),
+
         provide(keybindingsValueSpec, {
           keystrokes: ['Mod+3'],
           commandId: 'zookeeper.toggle',
@@ -201,3 +273,19 @@ export default defineRegistryItemFactory((ctx) => {
     }),
   }
 }, 'zookeeper')
+
+const zookeeperPlugin = createAppPlugin({
+  id: ZOOKEEPER_PLUGIN_ID,
+  title: 'Zookeeper',
+  description:
+    'The CAD agent, as a collaborator in your project: a panel, live-applied edits, and attributed turns you can revert.',
+  items: [zookeeperFeature],
+  // On by default: it is a headline capability of the app rather than an
+  // opt-in integration, and it costs nothing until a conversation is opened.
+  enabledByDefault: true,
+})
+
+export default defineRegistryItem({
+  id: 'zookeeper.plugin',
+  uses: [zookeeperPlugin],
+})

@@ -122,6 +122,7 @@ function fakeConversation(options: {
   onRevert?: (turnId: string) => void
   /** Supply one to change the turns after mounting. */
   transcript?: Signal<readonly Turn[]>
+  projectPath?: string | null
 }): Conversation {
   const transcript: Signal<readonly Turn[]> =
     options.transcript ?? signal(options.turns ?? [])
@@ -129,6 +130,7 @@ function fakeConversation(options: {
   return {
     id,
     author: `zookeeper:${id}`,
+    projectPath: options.projectPath ?? '/projects/demo',
     transcript: computed(() => transcript.value),
     status: computed(() => options.status ?? 'idle'),
     conflicts: computed(() => []),

@@ -37,6 +37,8 @@ export interface ConversationDependencies {
   id: string
   /** Opaque collaborator id. `zookeeper:<conversation id>` by convention. */
   author: string
+  /** The project open when this conversation was started. See `Conversation`. */
+  projectPath?: string | null
   transport: ZookeeperTransport
   target: ApplyTarget
   /** The single applied-change log, shared with every other writer. */
@@ -138,6 +140,7 @@ export function createConversation(
   const {
     id,
     author,
+    projectPath = null,
     transport,
     target,
     changeHistory,
@@ -566,6 +569,7 @@ export function createConversation(
   return {
     id,
     author,
+    projectPath,
     transcript: computed(() => transcript.value),
     conflicts: computed(() => conflicts.value),
     connection:

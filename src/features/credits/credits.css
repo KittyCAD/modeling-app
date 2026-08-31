@@ -1,0 +1,100 @@
+/*
+ * The credits readout.
+ *
+ * The trigger borrows `zds-status-button` from the shell so it sits in the strip
+ * like every other field. Everything here is the panel behind it, which is a
+ * small table rather than a menu: nothing in it is selectable, because a balance
+ * and a list of what is spending are things to read, not commands to run.
+ */
+
+.zds-credits__count {
+  color: var(--zds-text-disabled);
+}
+
+.zds-credits__balance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+  padding-block: var(--zds-space-1);
+  padding-inline: var(--zds-space-2);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  font-variant-numeric: tabular-nums;
+}
+
+.zds-credits__pool {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--zds-space-3);
+  color: var(--zds-text-secondary);
+}
+
+/*
+ * The reading's age, subordinate to the reading.
+ *
+ * Shown at all because the number is a snapshot and the panel would otherwise
+ * imply it was live — which matters most in the one case somebody opens this
+ * for, mid-turn, when it is provably behind.
+ */
+.zds-credits__asof {
+  margin: 0;
+  color: var(--zds-text-disabled);
+}
+
+.zds-credits__error {
+  margin: 0;
+  color: var(--zds-text-disabled);
+  max-inline-size: 22ch;
+}
+
+.zds-credits__consumers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-2);
+  padding-block: var(--zds-space-1);
+  padding-inline: var(--zds-space-2);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+}
+
+.zds-credits__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+}
+
+.zds-credits__project {
+  margin: 0;
+  color: var(--zds-text-disabled);
+  text-transform: uppercase;
+  letter-spacing: var(--zds-tracking-label);
+}
+
+.zds-credits__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--zds-space-2);
+  color: var(--zds-text-secondary);
+}
+
+.zds-credits__what {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-credits__elapsed {
+  color: var(--zds-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.zds-credits__idle {
+  margin: 0;
+  padding-block: var(--zds-space-1);
+  padding-inline: var(--zds-space-2);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+  color: var(--zds-text-disabled);
+}

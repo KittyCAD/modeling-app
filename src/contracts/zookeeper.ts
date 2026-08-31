@@ -129,6 +129,18 @@ export interface Conversation {
   readonly id: ConversationId
   /** The collaborator id every edit of this conversation is attributed to. */
   readonly author: string
+  /**
+   * The project this conversation was opened in, by path, or null if there was
+   * none.
+   *
+   * Recorded at open rather than read from the session, because the session's
+   * *current* project is the wrong answer for a conversation that has outlived
+   * the project it was started in — and one can: closing a project leaves its
+   * conversations connected and streaming. Anything attributing a conversation's
+   * work, credits included, needs where it started rather than where the app is
+   * looking now.
+   */
+  readonly projectPath: string | null
   readonly transcript: ReadonlySignal<readonly Turn[]>
   /**
    * What the pane shows.

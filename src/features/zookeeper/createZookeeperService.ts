@@ -313,6 +313,13 @@ export function createZookeeperService(
     const conversation = createConversation({
       id,
       author: `zookeeper:${id}`,
+      /*
+       * Stamped once, here, and never re-read. This is the only moment at which
+       * "the project this conversation belongs to" is unambiguous: everything
+       * downstream reads `sessions.current`, which answers for wherever the app
+       * is looking now rather than where this conversation started.
+       */
+      projectPath: sessions.current.peek()?.project.peek().path ?? null,
       transport: connection,
       target: {
         bufferForPath: (path) => sessions.current.peek()?.bufferForPath(path),
