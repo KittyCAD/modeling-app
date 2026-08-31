@@ -113,4 +113,104 @@ describe('the credits API', () => {
     await expect(client.balance()).rejects.toBeInstanceOf(CreditsApiError)
     expect(request).not.toHaveBeenCalled()
   })
+
+  it('reads the personal pool when there is no org', async () => {
+    const urls: string[] = []
+    const request = async (url: string) => {
+      urls.push(url)
+      return ok({})
+    }
+    const client = createCreditsApi({
+      token: () => 'tok-1',
+      baseUrl: 'https://api.test',
+      fetch: request as unknown as typeof fetch,
+    })
+
+    const balance = await client.balance()
+
+    expect(urls[0]).toBe('https://api.test/user/payment/balance')
+    expect(balance.scope).toBe('user')
+  })
+
+  /*
+   * The bug this fixes: an org member has no personal credits, so the user
+   * endpoint returns zero however much the org has — which reads as "you are out
+   * of credits" rather than "wrong pool".
+   */
+  it('reads the org pool when the caller is in an org', async () => {
+    const urls: string[] = []
+    const request = async (url: string) => {
+      urls.push(url)
+      return ok({})
+    }
+    const client = createCreditsApi({
+      token: () => 'tok-1',
+      org: () => 'org-1',
+      baseUrl: 'https://api.test',
+      fetch: request as unknown as typeof fetch,
+    })
+
+    const balance = await client.balance()
+
+    expect(urls[0]).toBe('https://api.test/org/payment/balance')
+    expect(balance.scope).toBe('org')
+  })
+
+  it('follows the org function rather than a captured value', async () => {
+    const urls: string[] = []
+    let org: string | null = null
+    const request = async (url: string) => {
+      urls.push(url)
+      return ok({})
+    }
+    const client = createCreditsApi({
+      token: () => 'tok-1',
+      org: () => org,
+      baseUrl: 'https://api.test',
+      fetch: request as unknown as typeof fetch,
+    })
+
+    await client.balance()
+    org = 'org-1'
+    await client.balance()
+
+    expect(urls[0]).toContain('/user/')
+    expect(urls[1]).toContain('/org/')
+  })
+
+  it('reports a contract-billed account as unlimited', async () => {
+    const request = vi.fn(async () =>
+      ok({
+        monthly_api_credits_remaining: 0,
+        stable_api_credits_remaining: 0,
+        subscription_details: { modeling_app: { price: { type: 'contract' } } },
+      })
+    )
+
+    const balance = await api(request as unknown as typeof fetch).balance()
+
+    expect(balance.unlimited).toBe(true)
+  })
+
+  /* An org on a metered plan is not unlimited: the price type is the signal. */
+  it('does not treat a metered plan as unlimited', async () => {
+    const request = vi.fn(async () =>
+      ok({
+        monthly_api_credits_remaining: 100,
+        subscription_details: { modeling_app: { price: { type: 'per_user' } } },
+      })
+    )
+
+    const balance = await api(request as unknown as typeof fetch).balance()
+
+    expect(balance.unlimited).toBe(false)
+  })
+
+  it('is not unlimited when the response says nothing about a subscription', async () => {
+    const request = vi.fn(async () => ok({}))
+
+    const balance = await api(request as unknown as typeof fetch).balance()
+
+    expect(balance.unlimited).toBe(false)
+  })
 })

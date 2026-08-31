@@ -37,9 +37,20 @@ import { createCreditsService } from '@src/features/credits/createCreditsService
 export default defineRegistryItemFactory((ctx) => {
   const auth = ctx.services.get(authService)
 
+  /*
+   * Which pool to read. Null until the profile lands, and it must be read
+   * lazily: membership is resolved by the sign-in verify pass, well after this
+   * factory runs.
+   */
+  const org = computed(() => auth.user.value?.org?.id ?? null)
+
   const credits = createCreditsService({
-    api: createCreditsApi({ token: () => auth.token.value }),
+    api: createCreditsApi({
+      token: () => auth.token.value,
+      org: () => org.value,
+    }),
     token: auth.token,
+    org,
     sources: computed(() => ctx.valueSpecs.get(creditConsumersValueSpec)),
     // Tests drive `refresh` themselves rather than waiting on a timer.
     pollIntervalMs: ctx.services.get(runtimeService).info.value.isTest

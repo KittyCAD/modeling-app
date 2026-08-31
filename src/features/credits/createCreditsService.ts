@@ -17,6 +17,15 @@ const DEFAULT_POLL_INTERVAL_MS = 60_000
 export interface CreditsServiceDependencies {
   api: CreditsApi
   token: ReadonlySignal<string | null>
+  /**
+   * The org whose pool is being read, or null for the personal one.
+   *
+   * Watched as well as passed to the api, because membership arrives *after*
+   * the first read: sign-in verifies the token, then fetches the profile. The
+   * first balance is therefore the personal pool, and without a re-read on this
+   * an org member would keep looking at it.
+   */
+  org?: ReadonlySignal<string | null>
   /** Every source that can spend, as contributed to the value spec. */
   sources: ReadonlySignal<readonly CreditConsumerSource[]>
   /** 0 disables polling. Tests pass 0 and drive `refresh` themselves. */
@@ -43,7 +52,7 @@ export interface CreditsServiceModel extends CreditsService {
 export function createCreditsService(
   dependencies: CreditsServiceDependencies
 ): CreditsServiceModel {
-  const { api, token, sources } = dependencies
+  const { api, token, org, sources } = dependencies
   const pollIntervalMs = dependencies.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS
 
   const balance = signal<CreditBalance | null>(null)
@@ -125,6 +134,24 @@ export function createCreditsService(
       void refresh()
     })
   )
+
+  /*
+   * Re-read when the pool changes. See the note on `org`: the first read happens
+   * before the profile lands, so this is what corrects it — and it also covers
+   * switching accounts, where the previous org's balance must not linger.
+   */
+  if (org !== undefined) {
+    let lastOrg = org.peek()
+    stops.push(
+      effect(() => {
+        const next = org.value
+        if (next === lastOrg) return
+        lastOrg = next
+        lastFetchAt = 0
+        void refresh()
+      })
+    )
+  }
 
   /*
    * Refresh when spending stops. Tracked as a transition rather than by reading

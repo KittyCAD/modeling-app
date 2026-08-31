@@ -23,6 +23,19 @@ export interface CreditBalance {
    * is actually applied, so a past value means pending, not overdue.
    */
   refreshAt: number | null
+  /**
+   * True when a contract owns billing, so there is no metered pool to count.
+   *
+   * The two remaining figures are meaningless in that case and will usually be
+   * zero — which is exactly why this flag has to exist. Without it an
+   * enterprise account reads as a confident "0 credits", which is worse than
+   * showing nothing: it is wrong in the direction that stops people working.
+   *
+   * The existing app expresses the same state as `balance === Infinity`.
+   */
+  unlimited: boolean
+  /** Which pool this came from: the member's own, or their org's. */
+  scope: 'user' | 'org'
   /** When this was read. The readout says "as of", because it cannot say "now". */
   fetchedAt: number
 }

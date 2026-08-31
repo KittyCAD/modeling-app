@@ -105,13 +105,16 @@ export function CreditsField() {
     return [...groups.entries()]
   })
 
+  const unlimited = useComputed(() => balance.value?.unlimited ?? false)
+
   const remaining = useComputed(() => {
     const current = balance.value
-    if (current === null) return null
+    if (current === null || current.unlimited) return null
     return current.monthlyRemaining + current.stableRemaining
   })
 
   const summary = useComputed(() => {
+    if (unlimited.value) return '∞'
     if (state.value === 'loading') return '…'
     if (remaining.value === null) return '—'
     return formatCredits(remaining.value)
@@ -119,6 +122,11 @@ export function CreditsField() {
 
   const title = useComputed(() => {
     if (error.value !== null) return error.value
+    if (unlimited.value) {
+      return balance.value?.scope === 'org'
+        ? 'Unlimited credits through your org'
+        : 'Unlimited credits'
+    }
     if (remaining.value === null) return 'Zoo credit balance'
     const count = consumers.value.length
     if (count === 0) return 'Zoo credit balance'
@@ -135,6 +143,23 @@ export function CreditsField() {
             <p class="zds-credits__error">{error.value}</p>
           ) : balance.value === null ? (
             <p class="zds-credits__error">Reading your balance…</p>
+          ) : unlimited.value ? (
+            /*
+             * No pools, because there are none to show: a contract owns billing
+             * and the two figures the API returns are zero. Listing them would
+             * be the misleading version of this state.
+             */
+            <>
+              <div class="zds-credits__pool">
+                <span>Unlimited</span>
+                <span>∞</span>
+              </div>
+              <p class="zds-credits__asof">
+                {balance.value.scope === 'org'
+                  ? 'billed to your org'
+                  : 'billed by contract'}
+              </p>
+            </>
           ) : (
             <>
               <div class="zds-credits__pool">

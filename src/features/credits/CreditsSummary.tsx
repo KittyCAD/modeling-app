@@ -22,9 +22,11 @@ export function CreditsSummary() {
   const error = useComputed(() => credits.error.value)
   const consumers = useComputed(() => credits.consumers.value)
 
+  const unlimited = useComputed(() => balance.value?.unlimited ?? false)
+
   const total = useComputed(() => {
     const current = balance.value
-    return current === null
+    return current === null || current.unlimited
       ? null
       : current.monthlyRemaining + current.stableRemaining
   })
@@ -41,7 +43,16 @@ export function CreditsSummary() {
         ) : null}
       </header>
 
-      {total.value === null ? (
+      {unlimited.value ? (
+        <>
+          <p class="zds-home__credits-total">Unlimited</p>
+          <p class="zds-home__credits-split">
+            {balance.value?.scope === 'org'
+              ? 'via your Zoo org'
+              : 'billed by contract'}
+          </p>
+        </>
+      ) : total.value === null ? (
         <p class="zds-home__credits-empty">
           {error.value ?? 'Reading your balance…'}
         </p>

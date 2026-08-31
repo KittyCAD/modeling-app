@@ -11,6 +11,8 @@ const aBalance = (over: Partial<CreditBalance> = {}): CreditBalance => ({
   monthlyRemaining: 900,
   stableRemaining: 100,
   refreshAt: null,
+  unlimited: false,
+  scope: 'user',
   fetchedAt: Date.now(),
   ...over,
 })
@@ -28,24 +30,27 @@ function harness(
   options: {
     balance?: () => Promise<CreditBalance>
     token?: string | null
+    org?: string | null
     sources?: CreditConsumerSource[]
   } = {}
 ) {
   const token = signal<string | null>(
     options.token === undefined ? 'tok-1' : options.token
   )
+  const org = signal<string | null>(options.org ?? null)
   const sources = signal<readonly CreditConsumerSource[]>(options.sources ?? [])
   const balance = vi.fn(options.balance ?? (async () => aBalance()))
 
   const service = createCreditsService({
     api: { balance },
     token,
+    org: computed(() => org.value),
     sources: computed(() => sources.value),
     // No timer: every test drives the reads it wants.
     pollIntervalMs: 0,
   })
 
-  return { service, token, sources, balance }
+  return { service, token, org, sources, balance }
 }
 
 /** The service rate limits to one read a second; tests that read twice skip it. */
@@ -202,5 +207,64 @@ describe('the credits service', () => {
     await service.refresh()
 
     expect(balance).toHaveBeenCalledTimes(1)
+  })
+
+  /*
+   * The ordering that makes this necessary: sign-in verifies the token, and the
+   * profile that says which org you are in lands after. So the first read is
+   * always the personal pool, and an org member would sit looking at it.
+   */
+  it('re-reads the pool when org membership arrives after the first read', async () => {
+    const { service, org, balance } = harness()
+    await vi.waitFor(() => expect(balance).toHaveBeenCalledTimes(1))
+
+    org.value = 'org-1'
+    await vi.waitFor(() => expect(balance).toHaveBeenCalledTimes(2))
+    service.dispose()
+  })
+
+  /* Membership is not the rate limit's business: it changes the answer. */
+  it('re-reads on an org change even inside the rate limit', async () => {
+    const { service, org, balance } = harness()
+    await vi.waitFor(() => expect(balance).toHaveBeenCalledTimes(1))
+
+    // No clock advance at all.
+    org.value = 'org-1'
+    await vi.waitFor(() => expect(balance).toHaveBeenCalledTimes(2))
+    service.dispose()
+  })
+
+  it('does not re-read when the org is unchanged', async () => {
+    const { service, org, balance } = harness({ org: 'org-1' })
+    await vi.waitFor(() => expect(balance).toHaveBeenCalledTimes(1))
+
+    org.value = 'org-1'
+    await Promise.resolve()
+
+    expect(balance).toHaveBeenCalledTimes(1)
+    service.dispose()
+  })
+
+  /*
+   * The state this whole thing exists for: a contract-billed account has zero in
+   * both pools, so anything summing them reports "0 credits" to somebody who has
+   * no limit at all.
+   */
+  it('carries an unlimited balance through without counting it', async () => {
+    const { service } = harness({
+      balance: async () =>
+        aBalance({
+          unlimited: true,
+          scope: 'org',
+          monthlyRemaining: 0,
+          stableRemaining: 0,
+        }),
+    })
+    await vi.waitFor(() => expect(service.balance.value).not.toBeNull())
+
+    expect(service.balance.value?.unlimited).toBe(true)
+    expect(service.balance.value?.scope).toBe('org')
+    expect(service.state.value).toBe('ready')
+    service.dispose()
   })
 })

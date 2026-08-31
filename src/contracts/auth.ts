@@ -14,12 +14,34 @@ export type AuthStatus =
   /** A token existed but could not be verified. */
   | 'error'
 
+/**
+ * The org an account belongs to.
+ *
+ * Separate from the user rather than flattened onto it, because an org is a
+ * billing and permissions subject in its own right: credits are drawn from its
+ * pool, not the member's.
+ */
+export interface AuthOrg {
+  id: string
+  name: string
+  /** The member's role in it, verbatim from the API. */
+  role: string
+}
+
 /** The parts of the account this app actually shows. */
 export interface AuthUser {
   id: string
   name: string
   email: string
   imageUrl?: string
+  /**
+   * The org this account belongs to, or null for a personal account.
+   *
+   * Null is the common case and not an error. It is fetched alongside the
+   * profile because the endpoint 404s for non-members, which is an answer rather
+   * than a failure — so a personal account must not look like a broken sign-in.
+   */
+  org: AuthOrg | null
 }
 
 export interface AuthService {

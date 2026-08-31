@@ -1,5 +1,5 @@
-import { Client, users } from '@kittycad/lib'
-import type { AuthUser } from '@src/contracts/auth'
+import { Client, orgs, users } from '@kittycad/lib'
+import type { AuthOrg, AuthUser } from '@src/contracts/auth'
 
 function apiBaseUrl(): string | undefined {
   return import.meta.env?.VITE_KC_API_BASE_URL as string | undefined
@@ -25,6 +25,16 @@ export async function fetchUser(token: string): Promise<AuthUser> {
 
   const response = await users.get_user_self({ client })
 
+  /*
+   * The org, if there is one, in the same pass.
+   *
+   * Swallowed on any failure, and 404 is the expected one: the endpoint returns
+   * it for a personal account, which is an answer rather than an error. A
+   * rejected sign-in over "you are not in an org" would be absurd, and org
+   * membership is not what the token is being verified for.
+   */
+  const org = await fetchOrg(client)
+
   const name =
     [response.first_name, response.last_name]
       .filter((part) => Boolean(part?.trim()))
@@ -39,5 +49,20 @@ export async function fetchUser(token: string): Promise<AuthUser> {
     name,
     email: response.email ?? '',
     imageUrl: response.image?.trim() ? response.image : undefined,
+    org,
+  }
+}
+
+async function fetchOrg(client: Client): Promise<AuthOrg | null> {
+  try {
+    const org = await orgs.get_user_org({ client })
+    if (!org?.id) return null
+    return {
+      id: org.id,
+      name: org.name?.trim() || org.domain?.trim() || 'Your org',
+      role: org.role ?? '',
+    }
+  } catch {
+    return null
   }
 }

@@ -12,6 +12,27 @@ interface CustomerBalanceResponse {
   monthly_api_credits_remaining?: number
   stable_api_credits_remaining?: number
   monthly_api_credits_refresh_at?: string | null
+  subscription_details?: {
+    modeling_app?: {
+      price?: { type?: string }
+    }
+  }
+}
+
+/**
+ * Whether a contract owns billing, in which case there is no pool to count.
+ *
+ * Inferred from the subscription's price type rather than from org membership:
+ * an org can perfectly well be on a metered per-user plan, so "is in an org" is
+ * the wrong question. `CustomerBalance` documents the same distinction from the
+ * other side — it says `monthly_api_credits_refresh_at` is null "while a
+ * contract owns billing".
+ *
+ * This is the branch's stand-in for what the existing app expresses as
+ * `balance === Infinity`.
+ */
+function isContractBilled(body: CustomerBalanceResponse): boolean {
+  return body.subscription_details?.modeling_app?.price?.type === 'contract'
 }
 
 export class CreditsApiError extends Error {
@@ -37,6 +58,13 @@ export interface CreditsApi {
  */
 export function createCreditsApi(options: {
   token: () => string | null
+  /**
+   * The org whose pool to read, or null for the personal one.
+   *
+   * A function for the same reason the token is: membership is resolved after
+   * sign-in, so a value captured at construction is null forever.
+   */
+  org?: () => string | null
   baseUrl?: string
   fetch?: typeof fetch
 }): CreditsApi {
@@ -57,7 +85,14 @@ export function createCreditsApi(options: {
         throw new CreditsApiError(401, 'Sign in to see your credit balance.')
       }
 
-      const response = await request(`${baseUrl}/user/payment/balance`, {
+      /*
+       * The org's pool when there is one, and this is the whole point of
+       * threading org membership through: a member of an org has no personal
+       * credits, so reading `/user/payment/balance` reports zero however much
+       * the org has. That reads as "you are out of credits".
+       */
+      const scope = options.org?.() == null ? 'user' : 'org'
+      const response = await request(`${baseUrl}/${scope}/payment/balance`, {
         headers: { Authorization: `Bearer ${token}` },
         credentials: 'include',
       })
@@ -83,6 +118,8 @@ export function createCreditsApi(options: {
         monthlyRemaining: body.monthly_api_credits_remaining ?? 0,
         stableRemaining: body.stable_api_credits_remaining ?? 0,
         refreshAt: Number.isNaN(refreshAt) ? null : refreshAt,
+        unlimited: isContractBilled(body),
+        scope,
         fetchedAt: Date.now(),
       }
     },
