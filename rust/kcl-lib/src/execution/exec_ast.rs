@@ -1215,7 +1215,7 @@ impl ExecutorContext {
                         break;
                     }
                     let value = value_cf.into_value();
-                    if exec_state.entry_point_is_v3() {
+                    if exec_state.use_kcl_v3_control_flow() {
                         // KCL 3.0: early return. The value unwinds as control
                         // flow to the nearest function-call boundary, which
                         // absorbs it; see call_finish.
