@@ -5,7 +5,9 @@ use serde::Deserialize;
 use serde::Serialize;
 
 /// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(Debug, Default, Ord, PartialOrd, Eq, PartialEq, Clone, Copy, Hash, Deserialize, Serialize, ts_rs::TS)]
+#[derive(
+    Debug, Default, Ord, PartialOrd, Eq, PartialEq, Clone, Copy, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema,
+)]
 #[ts(export)]
 pub struct ModuleId(u32);
 

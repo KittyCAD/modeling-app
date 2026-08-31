@@ -2,7 +2,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Tools",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "angle-gauge/main.kcl",
     "multipleFiles": false,
@@ -15,7 +16,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Medical"
+      "Medical & Assistive"
     ],
     "pathFromProjectDirectoryToFirstFile": "artificial-heart/main.kcl",
     "multipleFiles": true,
@@ -32,7 +33,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Computer Hardware"
+      "Electronics & Computing",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "axial-fan/main.kcl",
     "multipleFiles": true,
@@ -49,9 +51,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Automotive",
-      "Aerospace"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "ball-bearing/main.kcl",
     "multipleFiles": false,
@@ -64,7 +64,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "bench/main.kcl",
     "multipleFiles": false,
@@ -77,7 +78,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "Toys, Games, & Recreation"
     ],
     "pathFromProjectDirectoryToFirstFile": "bench-for-kids/main.kcl",
     "multipleFiles": false,
@@ -90,7 +92,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "bike-hub-washer/main.kcl",
     "multipleFiles": false,
@@ -103,7 +107,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "blend-tutorial/main.kcl",
     "multipleFiles": false,
@@ -116,7 +120,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Medical"
+      "Medical & Assistive"
     ],
     "pathFromProjectDirectoryToFirstFile": "bone-plate/main.kcl",
     "multipleFiles": false,
@@ -129,7 +133,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "bottle/main.kcl",
     "multipleFiles": false,
@@ -142,7 +146,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "box/main.kcl",
     "multipleFiles": false,
@@ -155,10 +160,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Automotive",
-      "Aerospace",
-      "Construction"
+      "Architecture & Construction",
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "bracket/main.kcl",
     "multipleFiles": false,
@@ -171,10 +175,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Automotive",
-      "Aerospace",
-      "Construction"
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "bracket-with-slot/main.kcl",
     "multipleFiles": false,
@@ -187,7 +189,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "c-shape-solid/main.kcl",
     "multipleFiles": false,
@@ -200,7 +202,22 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "camshaft/main.kcl",
+    "multipleFiles": false,
+    "title": "Camshaft",
+    "description": "A camshaft is a rotating shaft with cam lobes that open and close an engine’s intake and exhaust valves at precise times. The lobe shape and timing control valve lift and duration, directly affecting engine performance and efficiency.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "car-wheel-assembly/main.kcl",
     "multipleFiles": true,
@@ -218,7 +235,22 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Automotive & Transportation",
+      "Mechanical Components"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "cassette/main.kcl",
+    "multipleFiles": false,
+    "title": "Sprocket Cassette",
+    "description": "A sprocket cassette is a stack of sprockets on a splined hub for multiple gear ratios.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Home & Lifestyle",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "ceiling-fan/main.kcl",
     "multipleFiles": false,
@@ -231,7 +263,21 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Home & Lifestyle"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "clock/main.kcl",
+    "multipleFiles": false,
+    "title": "Clock",
+    "description": "A clock with roman numerals",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "coilover-assembly/main.kcl",
     "multipleFiles": true,
@@ -248,9 +294,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace",
-      "Computer Hardware"
+      "Electronics & Computing",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "cold-plate/main.kcl",
     "multipleFiles": false,
@@ -263,7 +308,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "color-cube/main.kcl",
     "multipleFiles": false,
@@ -276,7 +321,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "cone/main.kcl",
     "multipleFiles": false,
@@ -289,8 +335,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "counterdrilled-weldment/main.kcl",
     "multipleFiles": false,
@@ -303,8 +348,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "countersunk-plate/main.kcl",
     "multipleFiles": false,
@@ -317,7 +361,28 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Electronics & Computing",
+      "Mechanical Components"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "cpu-cooler/main.kcl",
+    "multipleFiles": true,
+    "title": "CPU Cooler",
+    "description": "A CPU cooler is a device designed to dissipate heat generated by the CPU of a computer. They consist of a brazed heat sink made from aluminum or copper alloys, and one or two axial fans to move airflow across the heat sink.",
+    "files": [
+      "fan-housing.kcl",
+      "fan.kcl",
+      "heat-sink.kcl",
+      "main.kcl",
+      "motor.kcl",
+      "mounting-wire.kcl",
+      "parameters.kcl",
+      "removable-sticker.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive & Transportation"
     ],
     "pathFromProjectDirectoryToFirstFile": "crash-box/main.kcl",
     "multipleFiles": false,
@@ -330,7 +395,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Architecture & Construction",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "curtain-wall-anchor-plate/main.kcl",
     "multipleFiles": false,
@@ -343,8 +409,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Medical"
+      "Mechanical Components",
+      "Robotics & Automation"
     ],
     "pathFromProjectDirectoryToFirstFile": "cycloidal-gear/main.kcl",
     "multipleFiles": false,
@@ -357,7 +423,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "cylinder/main.kcl",
     "multipleFiles": false,
@@ -370,7 +437,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "desk-edge-stopper/main.kcl",
     "multipleFiles": false,
@@ -383,7 +452,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "dining-table/main.kcl",
     "multipleFiles": false,
@@ -396,7 +465,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "dodecahedron/main.kcl",
     "multipleFiles": false,
@@ -409,7 +478,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "double-hook/main.kcl",
     "multipleFiles": false,
@@ -422,8 +493,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Computer Hardware",
-      "Maker"
+      "Electronics & Computing",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "enclosure/main.kcl",
     "multipleFiles": false,
@@ -436,7 +507,22 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Robotics & Automation",
+      "Industrial & Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "end-effector-gripper-fingers/main.kcl",
+    "multipleFiles": false,
+    "title": "End Effector Grippers",
+    "description": "End effector grippers are devices attached to a robot's arm that allow it to interact with its environment and perform tasks like picking up, moving, and manipulating objects. They are essential for robots to perform useful work. Grippers are one type of end effector, but end effectors can also be tools like welding torches or cameras",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "engine-valve/main.kcl",
     "multipleFiles": false,
@@ -449,7 +535,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "exhaust-manifold/main.kcl",
     "multipleFiles": false,
@@ -462,7 +549,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Computer Hardware"
+      "Electronics & Computing",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "field-monitor-stand/main.kcl",
     "multipleFiles": false,
@@ -475,7 +563,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Mechanical Components",
+      "Architecture & Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "flange/main.kcl",
     "multipleFiles": false,
@@ -488,8 +577,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Industrial & Manufacturing",
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "flat-bladed-impeller/main.kcl",
     "multipleFiles": false,
@@ -502,7 +592,36 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Electronics & Computing",
+      "3D Printable"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "focusrite-scarlett-mounting-bracket/main.kcl",
+    "multipleFiles": false,
+    "title": "Mounting bracket for the Focusrite Scarlett Solo audio interface",
+    "description": "This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Home & Lifestyle",
+      "Tools"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "food-service-spatula/main.kcl",
+    "multipleFiles": false,
+    "title": "Food Service Spatula",
+    "description": "Use these spatulas for mixing, flipping, and scraping.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Toys, Games, & Recreation",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "fun-stacker-toy/main.kcl",
     "multipleFiles": false,
@@ -515,7 +634,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Architecture & Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "gallows-bracket/main.kcl",
     "multipleFiles": false,
@@ -528,8 +647,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Aerospace",
-      "Manufacturing"
+      "Industrial & Manufacturing",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "gas-impeller/main.kcl",
     "multipleFiles": false,
@@ -542,7 +661,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing"
+      "Science & Education",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "gdt-tutorial/main.kcl",
     "multipleFiles": false,
@@ -555,7 +675,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Mechanical Components",
+      "Robotics & Automation"
     ],
     "pathFromProjectDirectoryToFirstFile": "gear-rack/main.kcl",
     "multipleFiles": false,
@@ -568,7 +689,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Art & Design"
     ],
     "pathFromProjectDirectoryToFirstFile": "gingerbread-man/main.kcl",
     "multipleFiles": false,
@@ -581,7 +702,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "Tools",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "gingerbread-man-cookie-cutter/main.kcl",
     "multipleFiles": false,
@@ -594,7 +717,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "golf-tee/main.kcl",
     "multipleFiles": false,
@@ -607,7 +732,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-baseplate/main.kcl",
     "multipleFiles": false,
@@ -620,7 +747,24 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "gridfinity-baseplate-magnets/main.kcl",
+    "multipleFiles": false,
+    "title": "Gridfinity Baseplate With Magnets",
+    "description": "A two-by-three Gridfinity baseplate profile, ready for magnetic bin retention.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-bins/main.kcl",
     "multipleFiles": false,
@@ -633,7 +777,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-bins-stacking-lip/main.kcl",
     "multipleFiles": false,
@@ -646,7 +792,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Tools",
+      "Architecture & Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "hammer/main.kcl",
     "multipleFiles": false,
@@ -659,8 +806,25 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Medical",
-      "Aerospace"
+      "Automotive & Transportation",
+      "Industrial & Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "hand-trolley/main.kcl",
+    "multipleFiles": true,
+    "title": "Hand Trolley",
+    "description": "A hand trolley, also known as a hand truck, is a small, wheeled cart with a weldment frame, used to move heavy or bulky items over short distances. It's essentially a simple lever system that makes lifting and moving objects much easier",
+    "files": [
+      "axle.kcl",
+      "main.kcl",
+      "parameters.kcl",
+      "weldment.kcl",
+      "wheel.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "helium-tank/main.kcl",
     "multipleFiles": false,
@@ -673,7 +837,20 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "herringbone-gear/main.kcl",
+    "multipleFiles": false,
+    "title": "Herringbone Gear",
+    "description": "A double-helical involute gear with opposing tooth angles and an 8 mm center bore.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "hex-nut/main.kcl",
     "multipleFiles": false,
@@ -686,7 +863,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "hex-nut-with-chamfer/main.kcl",
     "multipleFiles": false,
@@ -699,7 +876,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Architecture & Construction"
     ],
     "pathFromProjectDirectoryToFirstFile": "i-beam/main.kcl",
     "multipleFiles": false,
@@ -712,7 +889,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components",
+      "Science & Education"
     ],
     "pathFromProjectDirectoryToFirstFile": "inner-thread/main.kcl",
     "multipleFiles": false,
@@ -725,7 +903,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "lattice-cubic/main.kcl",
     "multipleFiles": false,
@@ -738,7 +917,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "3D Printable",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "lego/main.kcl",
     "multipleFiles": false,
@@ -751,8 +932,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker",
-      "Construction"
+      "Home & Lifestyle",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "linear-shelf-system/main.kcl",
     "multipleFiles": false,
@@ -765,8 +946,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Aerospace",
-      "Manufacturing"
+      "Industrial & Manufacturing",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "liquid-impeller/main.kcl",
     "multipleFiles": false,
@@ -779,7 +960,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "m4-hex-socket-countersunk-head-screw/main.kcl",
     "multipleFiles": false,
@@ -792,7 +973,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "m4-insert/main.kcl",
     "multipleFiles": false,
@@ -805,7 +987,21 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Architecture & Construction"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "manhole-cover/main.kcl",
+    "multipleFiles": false,
+    "title": "Vented Manhole Cover",
+    "description": "A cast-iron cover with traffic-safe ventilation slots and a side pick hole.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Home & Lifestyle",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "modular-shelf-grid/main.kcl",
     "multipleFiles": false,
@@ -818,8 +1014,22 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Automotive"
+      "Mechanical Components",
+      "Industrial & Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "mounting-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Mounting Plate",
+    "description": "A flat support plate with four mounting holes, a center opening, and rounded vertical corners.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Robotics & Automation",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "multi-axis-robot/main.kcl",
     "multipleFiles": true,
@@ -837,7 +1047,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Home & Lifestyle",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "parametric-shelf-unit/main.kcl",
     "multipleFiles": false,
@@ -850,8 +1061,25 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction",
-      "Manufacturing"
+      "Mechanical Components",
+      "Industrial & Manufacturing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "pillow-block-bearing/main.kcl",
+    "multipleFiles": true,
+    "title": "Pillow Block Bearing",
+    "description": "A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads.",
+    "files": [
+      "ball-bearing.kcl",
+      "block.kcl",
+      "main.kcl",
+      "parameters.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Architecture & Construction",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "pipe/main.kcl",
     "multipleFiles": false,
@@ -864,8 +1092,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Architecture & Construction",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "pipe-elbow-90deg/main.kcl",
     "multipleFiles": false,
@@ -878,8 +1106,29 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Architecture & Construction",
+      "Mechanical Components"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/main.kcl",
+    "multipleFiles": true,
+    "title": "Pipe and Flange Assembly",
+    "description": "A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.",
+    "files": [
+      "1120t74-pipe.kcl",
+      "68095k348-flange.kcl",
+      "91251a404-bolt.kcl",
+      "9472k188-gasket.kcl",
+      "95479a127-hex-nut.kcl",
+      "98017a257-washer.kcl",
+      "main.kcl",
+      "parameters.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Architecture & Construction",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "pipe-straight/main.kcl",
     "multipleFiles": false,
@@ -892,8 +1141,22 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Architecture & Construction",
+      "Mechanical Components"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "pipe-with-bend/main.kcl",
+    "multipleFiles": false,
+    "title": "Pipe with bend",
+    "description": "A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Mechanical Components",
+      "Automotive & Transportation"
     ],
     "pathFromProjectDirectoryToFirstFile": "planetary-gearset/main.kcl",
     "multipleFiles": false,
@@ -906,7 +1169,21 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Computer Hardware"
+      "Aerospace",
+      "Mechanical Components"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "propeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Propeller",
+    "description": "A propeller is a rotating set of blades on a hub that converts shaft power into thrust by accelerating air or water rearward",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Electronics & Computing"
     ],
     "pathFromProjectDirectoryToFirstFile": "rack-blanking-panel/main.kcl",
     "multipleFiles": false,
@@ -919,8 +1196,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Industrial & Manufacturing",
+      "Mechanical Components",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "radial-flow-centrifugal-impeller/main.kcl",
     "multipleFiles": false,
@@ -933,8 +1211,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction",
-      "Maker"
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "rectangle-table/main.kcl",
     "multipleFiles": false,
@@ -947,8 +1224,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction",
-      "Maker"
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "round-table/main.kcl",
     "multipleFiles": false,
@@ -961,7 +1237,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Tools",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "router-template-cross-bar/main.kcl",
     "multipleFiles": false,
@@ -974,7 +1251,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Tools",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "router-template-slate/main.kcl",
     "multipleFiles": false,
@@ -988,7 +1266,8 @@
     "file": "main.kcl",
     "categories": [
       "Aerospace",
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "saturn-v/main.kcl",
     "multipleFiles": false,
@@ -1001,7 +1280,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Home & Lifestyle",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "scrub-daddy-holder/main.kcl",
     "multipleFiles": false,
@@ -1014,7 +1294,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "shaft-grommet/main.kcl",
     "multipleFiles": false,
@@ -1027,8 +1307,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction",
-      "Manufacturing"
+      "Mechanical Components",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "sheet-metal-bracket/main.kcl",
     "multipleFiles": false,
@@ -1041,8 +1321,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Aerospace",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "single-impeller-blade/main.kcl",
     "multipleFiles": false,
@@ -1055,7 +1335,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Art & Design",
+      "3D Printable"
     ],
     "pathFromProjectDirectoryToFirstFile": "snowman/main.kcl",
     "multipleFiles": false,
@@ -1068,7 +1349,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "socket-head-cap-screw/main.kcl",
     "multipleFiles": false,
@@ -1081,7 +1362,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "sphere/main.kcl",
     "multipleFiles": false,
@@ -1094,7 +1376,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Architecture & Construction",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "spinning-highrise-tower/main.kcl",
     "multipleFiles": false,
@@ -1107,7 +1391,20 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Mechanical Components"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "split-washer-flat-version/main.kcl",
+    "multipleFiles": false,
+    "title": "Split Washer (Flat Version)",
+    "description": "A flat split washer is a small metal ring with a gap that helps keep a fastener from loosening under vibration.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "split-washer-spring-version/main.kcl",
     "multipleFiles": false,
@@ -1120,7 +1417,23 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Mechanical Components",
+      "Automotive & Transportation"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "sprocket/main.kcl",
+    "multipleFiles": false,
+    "title": "Sprocket",
+    "description": "A standard hub sprocket is a toothed wheel that engages with a roller chain.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-car/main.kcl",
     "multipleFiles": false,
@@ -1133,7 +1446,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-cybertruck/main.kcl",
     "multipleFiles": false,
@@ -1146,7 +1461,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-dump-truck/main.kcl",
     "multipleFiles": false,
@@ -1159,7 +1476,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-firetruck/main.kcl",
     "multipleFiles": false,
@@ -1172,7 +1491,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-mini-bus/main.kcl",
     "multipleFiles": false,
@@ -1185,7 +1506,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Toys, Games, & Recreation",
+      "Art & Design",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "stylized-pickup-truck/main.kcl",
     "multipleFiles": false,
@@ -1198,7 +1521,7 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Medical"
+      "Medical & Assistive"
     ],
     "pathFromProjectDirectoryToFirstFile": "surgical-drill-guide/main.kcl",
     "multipleFiles": false,
@@ -1211,7 +1534,66 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Industrial & Manufacturing",
+      "Mechanical Components",
+      "Parametric"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "t-slot-frame/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Rectangle Frame",
+    "description": "A box frame made up of T-slotted rails",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Industrial & Manufacturing",
+      "Mechanical Components"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "t-slot-rail/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Framing Rail",
+    "description": "A T-slotted framing rail, or T-slot extrusion, is a rectangular or square aluminum profile with a \"T\" shaped slot along one or more sides. These slots allow for easy attachment of various hardware components like brackets, connectors, and fasteners, making it a versatile and customizable framing system.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Industrial & Manufacturing",
+      "Mechanical Components",
+      "Parametric"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "t-slot-rectangle/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Rectangle Frame",
+    "description": "A rectangular frame made up of T-slotted rails",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Industrial & Manufacturing",
+      "Mechanical Components",
+      "Parametric"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "t-slot-shelf/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Rectangle Frame with Shelf",
+    "description": "A box frame with interior shelf made up of T-slotted rails",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Home & Lifestyle"
     ],
     "pathFromProjectDirectoryToFirstFile": "teapot/main.kcl",
     "multipleFiles": false,
@@ -1224,8 +1606,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Computer Hardware"
+      "Architecture & Construction",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "thermal-block-insert/main.kcl",
     "multipleFiles": false,
@@ -1238,7 +1620,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "torus/main.kcl",
     "multipleFiles": false,
@@ -1251,8 +1634,23 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive",
-      "Aerospace"
+      "Architecture & Construction",
+      "Science & Education"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "truss-structure/main.kcl",
+    "multipleFiles": false,
+    "title": "Truss Structure",
+    "description": "A truss structure is a framework composed of triangular units made from straight members connected at joints, often called nodes. Trusses are widely used in architecture, civil engineering, and construction for their ability to support large loads with minimal material.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Mechanical Components",
+      "Industrial & Manufacturing",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "tube-manifold/main.kcl",
     "multipleFiles": false,
@@ -1265,9 +1663,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Electronics",
-      "Connector",
-      "Consumer Hardware"
+      "Electronics & Computing",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "usb-c/main.kcl",
     "multipleFiles": false,
@@ -1280,7 +1677,9 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing"
+      "Architecture & Construction",
+      "Home & Lifestyle",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "utility-sink/main.kcl",
     "multipleFiles": false,
@@ -1293,8 +1692,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Manufacturing",
-      "Construction"
+      "Tools",
+      "Industrial & Manufacturing"
     ],
     "pathFromProjectDirectoryToFirstFile": "v-block/main.kcl",
     "multipleFiles": false,
@@ -1307,7 +1706,27 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Fasteners"
+      "Electronics & Computing"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "walkie-talkie/main.kcl",
+    "multipleFiles": true,
+    "title": "Walkie Talkie",
+    "description": "A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.",
+    "files": [
+      "antenna.kcl",
+      "body.kcl",
+      "button.kcl",
+      "case.kcl",
+      "knob.kcl",
+      "main.kcl",
+      "parameters.kcl",
+      "talk-button.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "washer/main.kcl",
     "multipleFiles": false,
@@ -1320,7 +1739,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Construction"
+      "Science & Education",
+      "Parametric"
     ],
     "pathFromProjectDirectoryToFirstFile": "wedge/main.kcl",
     "multipleFiles": false,
@@ -1333,7 +1753,8 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Automotive"
+      "Automotive & Transportation",
+      "Mechanical Components"
     ],
     "pathFromProjectDirectoryToFirstFile": "wheel-hub/main.kcl",
     "multipleFiles": false,
@@ -1346,7 +1767,34 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Maker"
+      "Industrial & Manufacturing",
+      "Mechanical Components"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "wind-turbine-blade-root-inserts/main.kcl",
+    "multipleFiles": false,
+    "title": "Wind Turbine Blade",
+    "description": "A 52 m hollow composite blade with sixteen root inserts for its pitch-bearing interface.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Aerospace"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "wing-spar/main.kcl",
+    "multipleFiles": false,
+    "title": "Wing Spar",
+    "description": "In a fixed-wing aircraft, the spar is often the main structural member of the wing, running spanwise at right angles (or thereabouts depending on wing sweep) to the fuselage. The spar carries flight loads and the weight of the wings while on the ground. Other structural and forming members such as ribs may be attached to the spars",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
+      "Art & Design"
     ],
     "pathFromProjectDirectoryToFirstFile": "zoo-logo/main.kcl",
     "multipleFiles": false,

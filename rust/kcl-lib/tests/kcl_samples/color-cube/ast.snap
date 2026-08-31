@@ -6147,7 +6147,7 @@ description: Result of parsing color-cube.kcl
         "preComments": [
           "// Color Cube",
           "// This is a color cube centered about the origin. It is used to help determine orientation in the scene.",
-          "// Categories: Maker",
+          "// Categories: Science & Education",
           "",
           "",
           "// Set units"
@@ -6184,6 +6184,34 @@ description: Result of parsing color-cube.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

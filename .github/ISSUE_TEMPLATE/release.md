@@ -71,7 +71,8 @@ Assign someone to each section of the manual checklist.
 * [ ] Send and queue two basic Zookeeper prompts
 * [ ] Confirm the result is viewable in an engine stream
 * [ ] Click **Restart to update** in the status bar
-* [ ] Confirm the app can update to the previous release
+* [ ] Complete the installation wizard steps
+* [ ] Confirm the app launches to the previous version
 
 ### macOS: ???
 
@@ -81,7 +82,7 @@ Assign someone to each section of the manual checklist.
 * [ ] Send and queue two basic Zookeeper prompts
 * [ ] Confirm the result is viewable in an engine stream
 * [ ] Click **Restart to update** in the status bar
-* [ ] Confirm the app can update to the previous release
+* [ ] Confirm the app launches to the previous version
 
 ### Linux: ???
 
@@ -91,7 +92,8 @@ Assign someone to each section of the manual checklist.
 * [ ] Send and queue two basic Zookeeper prompts
 * [ ] Confirm the result is viewable in an engine stream
 * [ ] Click **Restart to update** in the status bar
-* [ ] Confirm the app can update to the previous release
+* [ ] Close the app and run the newly downloaded file
+* [ ] Confirm the app launches to the previous version
 
 
 ## 4. Publish the release

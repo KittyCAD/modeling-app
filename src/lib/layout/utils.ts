@@ -5,6 +5,7 @@ import {
   defaultLayoutConfig,
   featureTreePaneConfig,
   isDefaultLayoutPaneID,
+  namedViewsPaneConfig,
 } from '@src/lib/layout/configs/default'
 import { parseLayoutInner } from '@src/lib/layout/parse'
 import type {
@@ -27,7 +28,7 @@ import { capitaliseFC, throttle } from '@src/lib/utils'
 import type React from 'react'
 
 /** Most recent layout system version */
-export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v3'
+export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v4'
 
 export const defaultLayout = defaultLayoutConfig
 
@@ -958,6 +959,36 @@ function getLayoutMigrations(): LayoutMigrationMap {
               layout.type === LayoutType.Simple &&
               layout.areaType === AreaType.FeatureTree,
             transformations: [() => structuredClone(featureTreePaneConfig)],
+          },
+        ],
+      },
+    ],
+    [
+      'v3',
+      {
+        newVersion: 'v4',
+        transformationSets: [
+          {
+            matcher: (layout) =>
+              layout.type === LayoutType.Panes &&
+              layout.children.some(
+                (child) => child.id === featureTreePaneConfig.id
+              ) &&
+              !layout.children.some(
+                (child) => child.id === namedViewsPaneConfig.id
+              ),
+            transformations: [
+              (layout: Layout): Layout =>
+                layout.type === LayoutType.Panes
+                  ? {
+                      ...layout,
+                      children: [
+                        ...layout.children,
+                        structuredClone(namedViewsPaneConfig),
+                      ],
+                    }
+                  : layout,
+            ],
           },
         ],
       },

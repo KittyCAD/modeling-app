@@ -6,9 +6,9 @@ These are principles we try to follow as a team working on this product. Anyone 
 
 2. Never directly import a method from the WASM module (although it is tempting!). Always pass in our WASM instance as a dependency instead. This anti-pattern was removed in #9415.
 
-3. Reduce the usage of circular dependencies in src/lib/app.ts.
+3. Never allow circular imports. Run `npm run circular-deps:diff` to verify none are introduced: it's run in CI too.
 
-4. Make functions and react components take references to singletons to enable unit testing instead of globally importing a singleton.
+4. Use the registry pattern (see `./src/registry`) to encapsulate capabilities in a composable manner. If what you are building requires services or state that is not available through the registry yet, consider breaking out a refactor branch ahead of your current work to make it so. We want to improve the code base as we build.
 
 5. Know and document the life cycle of the data you are working with
     - How does data get populated?

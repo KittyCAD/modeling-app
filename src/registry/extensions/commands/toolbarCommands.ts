@@ -5,7 +5,10 @@ import {
 } from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
-import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
+import {
+  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+} from '@src/lib/constants'
 import { selectSketchPlane } from '@src/lib/selections'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {
@@ -13,10 +16,12 @@ import type {
   modelingMachine,
 } from '@src/machines/modelingMachine'
 import type { SketchTool } from '@src/machines/modelingSharedTypes'
+import { constraintToolMetadata } from '@src/machines/sketchSolve/constraints/constraintMetadata'
 import {
   type EquipTool,
   isSketchBlockSelected,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import type { StateFrom } from 'xstate'
 
 const TOOLBAR_COMMAND_GROUP_ID = 'toolbar'
@@ -62,8 +67,6 @@ export const TOOLBAR_COMMAND_IDS = {
     horizontal: 'zds.toolbar.sketch.horizontal',
     fixed: 'zds.toolbar.sketch.fixed',
     dimension: 'zds.toolbar.sketch.dimension',
-    horizontalDistance: 'zds.toolbar.sketch.horizontalDistance',
-    verticalDistance: 'zds.toolbar.sketch.verticalDistance',
     construction: 'zds.toolbar.sketch.construction',
   },
 } as const
@@ -97,6 +100,13 @@ type SketchSolveToolCommand = {
   experimental?: boolean
 }
 
+type SketchSolveConstraintToolCommand = Pick<
+  SketchSolveToolCommand,
+  'id' | 'icon'
+> & {
+  tool: ConstraintToolName
+}
+
 type SketchSolveActionCommand = {
   id: string
   displayName: string
@@ -105,11 +115,7 @@ type SketchSolveActionCommand = {
   event: Extract<
     ModelingMachineEvent,
     {
-      type:
-        | 'Dimension'
-        | 'HorizontalDistance'
-        | 'VerticalDistance'
-        | 'construction'
+      type: 'Dimension' | 'construction'
     }
   >['type']
 }
@@ -159,6 +165,12 @@ function hasSketchExperimentalFeatures(input: unknown): boolean {
   return (
     getUserFeatures(input)?.has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false) ??
     false
+  )
+}
+
+function hasLegacySketchMode(input: unknown): boolean {
+  return (
+    getUserFeatures(input)?.has(LEGACY_SKETCH_MODE_FEATURE_FLAG, false) ?? false
   )
 }
 
@@ -230,6 +242,22 @@ function createSketchSolveToolCommand({
   })
 }
 
+function createSketchSolveConstraintToolCommand({
+  id,
+  icon,
+  tool,
+}: SketchSolveConstraintToolCommand): Command {
+  const metadata = constraintToolMetadata[tool]
+
+  return createSketchSolveToolCommand({
+    id,
+    displayName: metadata.title,
+    description: metadata.description,
+    icon,
+    tool,
+  })
+}
+
 function toggleSketchSolveTool(input: unknown, tool: EquipTool) {
   const state = getModelingState(input)
   if (!state?.matches('sketchSolveMode')) {
@@ -285,6 +313,14 @@ async function enterSketch(input: unknown) {
   )
 
   if ((kclManager.editorView.hasFocus && sketchPathId) || isSketchBlock) {
+    if (
+      kclManager.editorView.hasFocus &&
+      sketchPathId &&
+      !isSketchBlock &&
+      !hasLegacySketchMode(input)
+    ) {
+      return
+    }
     return sendModelingEvent(input, { type: 'Enter sketch' })
   }
 
@@ -509,76 +545,53 @@ export const toolbarCommands: readonly Command[] = [
     icon: 'rectangleAngled',
     tool: 'angledRectTool',
   }),
-  createSketchSolveToolCommand({
+  createSketchSolveConstraintToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.coincident,
-    displayName: 'Coincident',
-    description: 'Constrain points or curves to be coincident.',
     icon: 'coincident',
     tool: 'coincidentConstraintTool',
   }),
-  createSketchSolveToolCommand({
+  createSketchSolveConstraintToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.midpoint,
-    displayName: 'Midpoint',
-    description: 'Constrain a point to lie at the midpoint of a selected line.',
     icon: 'midpoint',
     tool: 'midpointConstraintTool',
   }),
-  createSketchSolveToolCommand({
+  createSketchSolveConstraintToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.tangent,
-    displayName: 'Tangent',
-    description:
-      'Constrain a selected line and arc, or two arcs, to be tangent at their shared contact.',
     icon: 'tangent',
     tool: 'tangentConstraintTool',
   }),
-  createSketchSolveToolCommand({
+  createSketchSolveConstraintToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.parallel,
-    displayName: 'Parallel',
-    description: 'Constrain lines or curves to be parallel.',
     icon: 'parallel',
     tool: 'parallelConstraintTool',
   }),
-  createSketchSolveToolCommand({
+  createSketchSolveConstraintToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.perpendicular,
-    displayName: 'Perpendicular',
-    description: 'Constrain lines or curves to be perpendicular.',
     icon: 'perpendicular',
     tool: 'perpendicularConstraintTool',
   }),
-  createSketchSolveToolCommand({
+  createSketchSolveConstraintToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.equal,
-    displayName: 'Equal',
-    description:
-      'Constrain lines to have equal length, or arcs and circles to have equal radius.',
     icon: 'equal',
     tool: 'equalLengthConstraintTool',
   }),
-  createSketchSolveToolCommand({
+  createSketchSolveConstraintToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.symmetric,
-    displayName: 'Symmetric',
-    description:
-      'Constrain two points, two arc-like segments, or two lines to be symmetric across a selected axis line.',
     icon: 'symmetric',
     tool: 'symmetricConstraintTool',
   }),
-  createSketchSolveToolCommand({
+  createSketchSolveConstraintToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.vertical,
-    displayName: 'Vertical',
-    description: 'Constrain lines to be vertical.',
     icon: 'vertical',
     tool: 'verticalConstraintTool',
   }),
-  createSketchSolveToolCommand({
+  createSketchSolveConstraintToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.horizontal,
-    displayName: 'Horizontal',
-    description: 'Constrain lines to be horizontal.',
     icon: 'horizontal',
     tool: 'horizontalConstraintTool',
   }),
-  createSketchSolveToolCommand({
+  createSketchSolveConstraintToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.fixed,
-    displayName: 'Fixed',
-    description: 'Lock selected points to their current x and y positions.',
     icon: 'fix',
     tool: 'fixedConstraintTool',
   }),
@@ -589,20 +602,6 @@ export const toolbarCommands: readonly Command[] = [
       'Constrain distance between points, length of lines, or radius of arcs.',
     icon: 'dimension',
     event: 'Dimension',
-  }),
-  createSketchSolveActionCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.horizontalDistance,
-    displayName: 'Horizontal Distance',
-    description: 'Constrain horizontal distance between two points.',
-    icon: 'horizontalDimension',
-    event: 'HorizontalDistance',
-  }),
-  createSketchSolveActionCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.verticalDistance,
-    displayName: 'Vertical Distance',
-    description: 'Constrain vertical distance between two points.',
-    icon: 'verticalDimension',
-    event: 'VerticalDistance',
   }),
   createSketchSolveActionCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.construction,

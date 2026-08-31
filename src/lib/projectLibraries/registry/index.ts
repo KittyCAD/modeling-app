@@ -2,17 +2,19 @@ import {
   defineRegistryItem,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
+  pluginsValueSpec,
   provide,
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
+import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
 import { writeProjectTitleToProjectToml } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import {
-  DIRECTORY_PROJECT_LIBRARY_TYPE,
   DEFAULT_PROJECT_LIBRARY_TITLE,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultProjectLibrarySettings,
   NEW_PROJECT_LIBRARY_TITLE,
   type ProjectLibrary,
@@ -29,9 +31,9 @@ import {
 import { projectLibraryRealizationFromProject } from '@src/lib/projectLibraries/realizations'
 import {
   invalidateProjectLibraryRealizations,
+  type ProjectLibraryRealizationsInvalidationSnapshot,
   readProjectLibraryRealizationInvalidationForLibrary,
   readProjectLibraryRealizationsInvalidation,
-  type ProjectLibraryRealizationsInvalidationSnapshot,
 } from '@src/lib/projectLibraries/registry/invalidation'
 import { DirectoryProjectLibrarySettingsDetails } from '@src/lib/projectLibraries/settings/ProjectLibrariesSettingInput'
 import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
@@ -619,6 +621,13 @@ function reportDirectoryProjectStatFailures({
 
 const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   const cloudSync = ctx.services.signal(cloudSyncService)
+  const plugins = ctx.valueSpecs.signal(pluginsValueSpec)
+  const isCloudSyncPluginActive = () => {
+    const plugin = plugins.value.find(
+      (candidate) => candidate.id === CLOUD_SYNC_PLUGIN_ID
+    )
+    return plugin ? ctx.services.get(plugin.service).active.value : false
+  }
   const getWasmPromise = () =>
     ctx.valueSpecs.get(wasmPromiseValueSpec) ??
     new ExpectedSystemIOError('Missing WASM promise registry value.')
@@ -714,11 +723,17 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           return
         }
 
-        const cloudSyncActions = project.remoteProjectId
+        // A cloud ID can outlive access to the plugin that manages it. Only an
+        // active cloudSync plugin owns relationship-aware local cleanup;
+        // otherwise this remains an ordinary directory-library delete.
+        const useCloudSyncDelete = Boolean(
+          project.remoteProjectId && isCloudSyncPluginActive()
+        )
+        const cloudSyncActions = useCloudSyncDelete
           ? cloudSync.value
           : undefined
         if (
-          project.remoteProjectId &&
+          useCloudSyncDelete &&
           cloudSyncActions?.status.value.enabled !== true
         ) {
           return Promise.reject(
@@ -726,7 +741,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           )
         }
 
-        if (project.remoteProjectId) {
+        if (useCloudSyncDelete && project.remoteProjectId) {
           await cloudSyncActions?.deleteLocalProjectRealizations(
             project.remoteProjectId,
             project.localProjectPath

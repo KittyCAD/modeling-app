@@ -1474,6 +1474,7 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
                         kcl_source: contents.to_string(),
                         error: err,
                         filename: file.to_string_lossy().to_string(),
+                        label: file.to_string_lossy().to_string(),
                     };
                     let report = miette::Report::new(report);
                     anyhow::anyhow!("{:?}", report)
@@ -1484,6 +1485,7 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
                             kcl_source: contents.to_string(),
                             error: crate::KclError::new_semantic(ce.clone().into()),
                             filename: file.to_string_lossy().to_string(),
+                            label: file.to_string_lossy().to_string(),
                         };
                         let report = miette::Report::new(report);
                         anyhow::bail!("{:?}", report);

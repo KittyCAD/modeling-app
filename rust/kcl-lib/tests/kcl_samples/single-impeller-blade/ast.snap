@@ -3199,7 +3199,7 @@ description: Result of parsing single-impeller-blade.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Automotive, Aerospace",
+            "value": "Categories: Aerospace; Mechanical Components",
             "style": "line"
           }
         },

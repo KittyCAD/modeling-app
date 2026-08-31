@@ -186,4 +186,6 @@ Remote hydration is only allowed to replace OPFS when the local project is clean
 
 This implementation is whole-project archive based. It can auto-reconcile independent file-level changes by comparing local and remote manifests to `baseManifest`, but it does not attempt same-file line or syntax merges because the base stores file fingerprints instead of file contents. A remote revision must therefore change on every successful project archive update; otherwise a remote change can be missed.
 
+Whole-project updates include `deleted_paths`, derived from acknowledged files removed by observed local filesystem mutations. The outbox preserves this intent while writes coalesce, and the upload filters out paths that were recreated before synchronization. This lets the API distinguish an intentional background deletion from an incomplete or stale replacement archive.
+
 When a cloud title changes, the title is written into `project.toml` only when that can be done without overwriting local edits. The local project directory name is treated as an implementation detail and may differ from the cloud title when uniqueness requires it.

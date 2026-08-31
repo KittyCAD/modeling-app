@@ -1324,12 +1324,10 @@ appearance(extrude001, color = "#00FF00")`
         ast,
         rustContextInThisFile
       )
-      const bodyArtifacts = artifactGraph
-        .values()
-        .filter((artifact) => artifact.type === bodyType)
-        .toArray()
-      const acrossArtifacts = artifactGraph
-        .values()
+      const bodyArtifacts = Array.from(artifactGraph.values()).filter(
+        (artifact) => artifact.type === bodyType
+      )
+      const acrossArtifacts = Array.from(artifactGraph.values())
         .filter((artifact) => artifact.type === acrossType)
         .filter((artifact) => {
           if (artifact.type !== 'plane') {
@@ -1348,7 +1346,6 @@ appearance(extrude001, color = "#00FF00")`
             variable.node.declaration.init.callee.name.name === 'offsetPlane'
           )
         })
-        .toArray()
 
       const bodies: Selections = {
         graphSelections: bodyIds.map((id) => {
@@ -1470,9 +1467,9 @@ extrude001 = extrude(profile001, length = 1)`
         ast,
         rustContextInThisFile
       )
-      const bodyArtifact = artifactGraph
-        .values()
-        .find((artifact) => artifact.type === 'sweep')
+      const bodyArtifact = Array.from(artifactGraph.values()).find(
+        (artifact) => artifact.type === 'sweep'
+      )
       if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
         throw new Error('Body artifact not found')
       }
@@ -1515,9 +1512,9 @@ extrude001 = extrude(profile001, length = 10)`
         ast,
         rustContextInThisFile
       )
-      const bodyArtifact = artifactGraph
-        .values()
-        .find((artifact) => artifact.type === 'sweep')
+      const bodyArtifact = Array.from(artifactGraph.values()).find(
+        (artifact) => artifact.type === 'sweep'
+      )
       if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
         throw new Error('Body artifact not found')
       }
@@ -1583,9 +1580,9 @@ shell001 = shell(extrude001, faces = rectangleSegmentA001, thickness = 1)`
         ast,
         rustContextInThisFile
       )
-      const bodyArtifact = artifactGraph
-        .values()
-        .find((artifact) => artifact.type === 'sweep')
+      const bodyArtifact = Array.from(artifactGraph.values()).find(
+        (artifact) => artifact.type === 'sweep'
+      )
       if (!bodyArtifact || !('codeRef' in bodyArtifact)) {
         throw new Error('Body artifact not found')
       }

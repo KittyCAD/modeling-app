@@ -519,6 +519,10 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       'use_sketch_solve_mode'
     ),
     defineBooleanAppOnlyField(
+      { category: 'modeling', field: 'showSketchGrid' },
+      'show_sketch_grid'
+    ),
+    defineBooleanAppOnlyField(
       { category: 'modeling', field: 'snapToGrid' },
       'snap_to_grid'
     ),
@@ -591,6 +595,10 @@ const PROJECT_APP_ONLY_SETTINGS_SECTIONS = [
     ),
   ]),
   defineAppOnlySection('modeling', [
+    defineBooleanAppOnlyField(
+      { category: 'modeling', field: 'showSketchGrid' },
+      'show_sketch_grid'
+    ),
     defineBooleanAppOnlyField(
       { category: 'modeling', field: 'snapToGrid' },
       'snap_to_grid'
