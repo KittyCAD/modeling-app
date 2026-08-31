@@ -12,6 +12,10 @@ import { fsOperationQueueService } from '@src/contracts/fsOperations'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import { layoutAreasValueSpec, layoutService } from '@src/contracts/layout'
 import { statusBarItemsValueSpec } from '@src/contracts/shell'
+import {
+  changeHistoryService,
+  projectHistoryService,
+} from '@src/contracts/projectHistory'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { ZOOKEEPER_AREA_ID, zookeeperService } from '@src/contracts/zookeeper'
 import {
@@ -40,6 +44,8 @@ export default defineRegistryItemFactory((ctx) => {
   const sessions = () => ctx.services.get(projectSessionService)
   const fileSystem = () => ctx.services.get(fileSystemService)
   const queue = () => ctx.services.get(fsOperationQueueService)
+  const changeHistory = () => ctx.services.get(changeHistoryService)
+  const projectHistory = () => ctx.services.get(projectHistoryService)
   const layout = () => ctx.services.get(layoutService)
 
   let built: ReturnType<typeof createZookeeperService> | null = null
@@ -57,6 +63,8 @@ export default defineRegistryItemFactory((ctx) => {
       sessions: sessions(),
       fileSystem: fileSystem(),
       queue: queue(),
+      changeHistory: changeHistory(),
+      projectHistory: projectHistory(),
       /*
        * Absent in a build with no service configured, which is a supported state
        * rather than a misconfiguration: the panel says so once instead of failing

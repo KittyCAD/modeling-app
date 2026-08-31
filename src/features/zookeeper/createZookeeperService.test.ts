@@ -6,7 +6,9 @@ import type {
   ProjectSessionService,
 } from '@src/contracts/projectSession'
 import { createFsOperationQueue } from '@src/features/fsOperations/createFsOperationQueue'
+import { createProjectActionHistory } from '@src/features/projectHistory/createProjectActionHistory'
 import { createZookeeperService } from '@src/features/zookeeper/createZookeeperService'
+import { createChangeHistory } from '@src/lib/collab/changeHistory'
 import { createFakeFileSystem } from '@src/test/fakeFileSystem'
 
 /** A socket that never opens, so nothing here waits on a network. */
@@ -60,15 +62,27 @@ function setup(
   // and a stub would make those writes silently do nothing.
   const fileSystem = createFakeFileSystem(options.files ?? {})
 
+  // The real pair, not stubs: the service records turns into them, and a stub
+  // would let a broken hand-off pass.
+  const changeHistory = createChangeHistory()
+  const projectHistory = createProjectActionHistory({
+    changeHistory,
+    bufferForPath: (path) => current.peek()?.bufferForPath(path),
+  })
+
   return {
     token,
     current,
     fileSystem,
+    changeHistory,
+    projectHistory,
     service: createZookeeperService({
       auth,
       sessions,
       fileSystem,
       queue: createFsOperationQueue(),
+      changeHistory,
+      projectHistory,
       url: 'url' in options ? options.url : URL_BASE,
     }),
   }

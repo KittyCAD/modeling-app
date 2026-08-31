@@ -19,6 +19,7 @@ import type {
 import { projectSessionService } from '@src/contracts/projectSession'
 import type { LayoutService } from '@src/contracts/layout'
 import { ZOOKEEPER_AREA_ID, zookeeperService } from '@src/contracts/zookeeper'
+import projectHistoryFeature from '@src/features/projectHistory'
 import zookeeperFeature from '@src/features/zookeeper'
 import { createFakeFileSystem } from '@src/test/fakeFileSystem'
 
@@ -60,6 +61,13 @@ function harness(
   const registry = new Registry()
   registry.configure([
     zookeeperFeature,
+    /*
+     * The real one, not a stub. The applied-change log and the project's undo
+     * stack are services this feature requires, and composing them here is what
+     * proves the two features fit together — a hand-rolled pair would pass while
+     * the app failed to start.
+     */
+    projectHistoryFeature,
     defineRegistryItem({
       id: 'test.stubs',
       providesServices: [

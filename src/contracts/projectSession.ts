@@ -192,7 +192,13 @@ export interface ProjectMutation {
   edits?: Readonly<Record<string, readonly TextEdit[]>>
   creates?: readonly { path: string; contents: string }[]
   deletes?: readonly string[]
-  /** Recorded on every transaction this dispatches, so the work is attributable. */
+  /**
+   * Recorded on every transaction this dispatches, so the work is attributable.
+   *
+   * Its `contributionId` is minted here when absent, so every dispatch of one
+   * mutation shares one — which is what makes the whole mutation undoable as a
+   * unit rather than a file at a time.
+   */
   origin?: BufferOriginValue
 }
 
@@ -205,6 +211,14 @@ export interface ProjectMutationResult {
    * when there is no restore-from-snapshot API.
    */
   before: ProjectSnapshot
+  /**
+   * The id every transaction carried, for recording a `ProjectAction`.
+   *
+   * Returned rather than recorded here: the session knows what it wrote, but the
+   * caller is the one that knows what to call it, and a lower layer reaching up
+   * to the history service to guess a label would be the wrong direction.
+   */
+  contributionId: string
   touched: readonly { bufferId: BufferId; path: string; version: number }[]
   created: readonly string[]
   deleted: readonly string[]

@@ -22,7 +22,7 @@ import type { Presence } from '@src/lib/collab/presence'
 import type { WriteClaims } from '@src/lib/collab/claims'
 import { createDivergenceLedger } from '@src/lib/collab/divergence'
 import { followLocalChanges } from '@src/lib/collab/followLocalChanges'
-import { inverseForContribution } from '@src/lib/collab/revert'
+import { revertContribution } from '@src/lib/collab/revertContribution'
 
 export interface ConversationDependencies {
   id: string
@@ -394,18 +394,17 @@ export function createConversation(
       const entry = transcript.peek().find((each) => each.id === turnId)
       if (entry === undefined) return
 
-      for (const path of entry.paths) {
-        const buffer = target.bufferForPath(path)
-        if (buffer === undefined) continue
-
-        const inverse = inverseForContribution({
-          applied: changeHistory.entries(path),
-          contributionId: turnId,
-        })
-        if (inverse.changes === null) continue
-
-        buffer.dispatch({ changes: inverse.changes })
-      }
+      /*
+       * The shared implementation, the same one the project's undo stack uses.
+       * `addToHistory` is left at its default: undoing the agent's turn is an
+       * edit the user made, and they should be able to take it back.
+       */
+      revertContribution({
+        contributionId: turnId,
+        paths: entry.paths,
+        changeHistory,
+        bufferForPath: (path) => target.bufferForPath(path),
+      })
 
       /*
        * The service's copy no longer matches ours, and it has no idea. Dropping

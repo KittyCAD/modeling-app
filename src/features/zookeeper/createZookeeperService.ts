@@ -2,6 +2,7 @@ import { type ReadonlySignal, computed, signal } from '@preact/signals'
 import type { AuthService } from '@src/contracts/auth'
 import type { FileSystem } from '@src/contracts/fileSystem'
 import type { FsOperationQueue } from '@src/contracts/fsOperations'
+import type { ProjectActionHistory } from '@src/contracts/projectHistory'
 import type { ProjectSessionService } from '@src/contracts/projectSession'
 import type {
   Conversation,
@@ -15,7 +16,7 @@ import { createConversation } from '@src/features/zookeeper/createConversation'
 import { createZookeeperConnection } from '@src/features/zookeeper/createZookeeperConnection'
 import { createChangeLogStore } from '@src/features/zookeeper/changeLogStore'
 import { createTranscriptStore } from '@src/features/zookeeper/transcriptStore'
-import { createChangeHistory } from '@src/lib/collab/changeHistory'
+import type { ChangeHistory } from '@src/lib/collab/changeHistory'
 import { createWriteClaims } from '@src/lib/collab/claims'
 import { createPresence } from '@src/lib/collab/presence'
 
@@ -25,6 +26,16 @@ export interface ZookeeperServiceDependencies {
   fileSystem: FileSystem
   /** Serialises transcript writes and records their provenance. */
   queue: FsOperationQueue
+  /**
+   * The applied-change log, shared with every other coordinated writer.
+   *
+   * Not created here: undoing a turn means projecting its inverse through what
+   * the modelling operations and the user did afterwards, so a log of only the
+   * agent's own edits could not do it.
+   */
+  changeHistory: ChangeHistory
+  /** The project's undo stack, so a turn appears in it beside everything else. */
+  projectHistory: ProjectActionHistory
   /** Websocket base URL. Absent in a build with no service configured. */
   url: string | undefined
 }
@@ -34,13 +45,12 @@ let counter = 0
 /**
  * Every conversation with the CAD agent.
  *
- * Two things are shared across all of them and neither could be per
- * conversation:
+ * Two things are shared and neither could be per conversation:
  *
- * - **One `changeHistory`.** Reverting one writer's work means projecting its
- *   inverse through everything that happened afterwards, including other
- *   writers' edits and the user's typing. A log per conversation would each hold
- *   a partial history and none of them could do it.
+ * - **The `changeHistory`**, which is now project-wide rather than owned here.
+ *   Reverting one writer's work means projecting its inverse through everything
+ *   that happened afterwards — other conversations, the modelling operations, the
+ *   user's typing — so a log holding only one writer's edits could not do it.
  * - **One `WriteClaims`.** Its whole job is arbitrating *between* conversations,
  *   so one per conversation would arbitrate nothing.
  *
@@ -51,9 +61,16 @@ let counter = 0
 export function createZookeeperService(
   dependencies: ZookeeperServiceDependencies
 ): ZookeeperService {
-  const { auth, sessions, fileSystem, queue, url } = dependencies
+  const {
+    auth,
+    sessions,
+    fileSystem,
+    queue,
+    changeHistory,
+    projectHistory,
+    url,
+  } = dependencies
 
-  const changeHistory = createChangeHistory()
   const claims = createWriteClaims()
   const presence = createPresence()
 
@@ -194,6 +211,33 @@ export function createZookeeperService(
     persistHistory()
   }
 
+  /**
+   * Put a finished turn on the project's undo stack.
+   *
+   * Separate from `persist`, which is also called when a conversation closes and
+   * when one connects — recording there would enter the same turn two or three
+   * times, and put a turn restored from disk at the top of the stack as though it
+   * had just happened. Only a turn boundary is a new action.
+   */
+  const recordTurn = (id: ConversationId) => {
+    const latest = conversations.peek().get(id)?.transcript.peek().at(-1)
+    if (latest === undefined || latest.paths.length === 0) return
+
+    /*
+     * Beside the modelling operations and anything else coordinated, so "undo the
+     * last thing that happened" does not have to know which kind of writer did it.
+     * The turn id is the action id because it is already the `contributionId` on
+     * every transaction the turn dispatched.
+     */
+    projectHistory.record({
+      id: latest.id,
+      label: `Zookeeper: ${latest.prompt}`,
+      at: latest.at,
+      author: `zookeeper:${id}`,
+      paths: latest.paths,
+    })
+  }
+
   const close = (id: ConversationId) => {
     const existing = conversations.peek().get(id)
     if (existing === undefined) return
@@ -273,7 +317,10 @@ export function createZookeeperService(
         : { initialTurns: options.initialTurns }),
       // Turn boundaries only. A transcript is written by rewriting the file,
       // which is cheap per turn and ruinous per streamed token.
-      onTurnSettled: () => persist(id),
+      onTurnSettled: () => {
+        persist(id)
+        recordTurn(id)
+      },
     })
 
     remoteIds.set(id, options.remoteId ?? null)

@@ -374,6 +374,14 @@ export function createProjectSession(
      */
     const before = captureSnapshot()
 
+    /*
+     * One id for the whole mutation, across every file it touches. Taken from the
+     * caller when it has one — the agent's turn id, say — so the mutation appears
+     * in history under the same name the caller already uses for it.
+     */
+    const contributionId =
+      mutation.origin?.contributionId ?? crypto.randomUUID()
+
     const touched: { bufferId: BufferId; path: string; version: number }[] = []
     const created: string[] = []
     const deleted: string[] = []
@@ -433,7 +441,10 @@ export function createProjectSession(
               insert,
             })),
             annotations: [
-              bufferOrigin.of(mutation.origin ?? { role: 'project' }),
+              bufferOrigin.of({
+                ...(mutation.origin ?? { role: 'project' }),
+                contributionId,
+              }),
               // One mutation is one undo step per buffer, not merged with
               // whatever was typed moments before it.
               isolateHistory.of('full'),
@@ -465,7 +476,7 @@ export function createProjectSession(
       }
     }
 
-    return { before, touched, created, deleted, failed }
+    return { before, contributionId, touched, created, deleted, failed }
   }
 
   const reconcileExternalChange = ({

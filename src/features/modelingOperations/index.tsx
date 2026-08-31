@@ -18,6 +18,7 @@ import {
 } from '@src/contracts/modelingOperations'
 import { modelingOperationsService } from '@src/contracts/modelingOperationsService'
 import { operationPresentationValueSpec } from '@src/contracts/operationPresentation'
+import { projectHistoryService } from '@src/contracts/projectHistory'
 import { projectSessionService } from '@src/contracts/projectSession'
 import { kclSceneService } from '@src/contracts/kclScene'
 import { selectionService } from '@src/contracts/selection'
@@ -81,6 +82,12 @@ export default defineRegistryItemFactory((ctx) => {
     operations,
     resolvers,
     session: () => ctx.services.get(projectSessionService).current.value,
+    /*
+     * Read at apply time, and optional: the runner still writes without it, so a
+     * host that has not installed the history feature loses coordinated undo
+     * rather than the ability to model.
+     */
+    history: () => ctx.services.optional(projectHistoryService) ?? null,
     /**
      * Parse to understand, not to rewrite.
      *

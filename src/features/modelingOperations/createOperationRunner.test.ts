@@ -9,6 +9,10 @@ import type {
   ModelingOperation,
 } from '@src/contracts/modelingOperations'
 import type { SelectedEntity, SelectionService } from '@src/contracts/selection'
+import type {
+  ProjectAction,
+  ProjectActionHistory,
+} from '@src/contracts/projectHistory'
 import type { ProjectSession } from '@src/contracts/projectSession'
 import { createFileBackedTextBuffer } from '@src/lib/buffers/createFileBackedTextBuffer'
 import type { OperationRunner } from '@src/features/modelingOperations/createOperationRunner'
@@ -135,6 +139,9 @@ function setup(
     sketchBlock?: boolean
   } = {}
 ) {
+  /** What an applied operation recorded, for the project's undo stack. */
+  const recorded: ProjectAction[] = []
+
   const source =
     options.source ?? 'profile001 = startProfile(XY, at = [0, 0])\n'
 
@@ -165,9 +172,13 @@ function setup(
             options.bindings ?? [{ name: 'profile001', via: 'startProfile' }]
           ),
     }),
+    history: () =>
+      ({
+        record: (action: ProjectAction) => recorded.push(action),
+      }) as unknown as ProjectActionHistory,
   })
 
-  return { runner, buffer }
+  return { runner, buffer, recorded }
 }
 
 describe('running a modelling operation', () => {
@@ -1110,5 +1121,58 @@ describe('answering in any order', () => {
     )
     // `length` is typed rather than chosen, so nothing about it went stale.
     expect(length?.answer).toMatchObject({ source: '12' })
+  })
+})
+
+/**
+ * Attribution, which was missing entirely until the project's undo stack needed
+ * it: every dispatch here published as `origin: 'user'`, because the annotation
+ * was simply never set. Harmless while nothing read it, and wrong for a feature
+ * whose whole point is knowing who wrote what.
+ */
+describe('attributing a modelling operation', () => {
+  it('publishes as semantic, not as the user typing', async () => {
+    const { runner, buffer } = setup()
+    const changes: { origin: string; contributionId?: string }[] = []
+    buffer.onChange((change) => {
+      if (!change.docChanged) return
+      changes.push({
+        origin: change.origin,
+        ...(change.contributionId === undefined
+          ? {}
+          : { contributionId: change.contributionId }),
+      })
+    })
+
+    await runner.start('modeling.extrude')
+    await runner.answer('profile001')
+    await runner.answer('10')
+
+    expect(changes).toHaveLength(1)
+    expect(changes[0].origin).toBe('semantic')
+    expect(changes[0].contributionId).toBeTypeOf('string')
+  })
+
+  it('records what it did, so it can be undone as one thing', async () => {
+    const { runner, recorded } = setup()
+
+    await runner.start('modeling.extrude')
+    await runner.answer('profile001')
+    await runner.answer('10')
+
+    expect(recorded).toHaveLength(1)
+    expect(recorded[0].paths).toEqual(['main.kcl'])
+    expect(recorded[0].label).toBe(extrudeOperation.title)
+    // The local user's own work, not a collaborator's.
+    expect(recorded[0].author).toBeNull()
+  })
+
+  it('records nothing when the operation never applies', async () => {
+    const { runner, recorded } = setup()
+
+    await runner.start('modeling.extrude')
+    runner.cancel()
+
+    expect(recorded).toEqual([])
   })
 })

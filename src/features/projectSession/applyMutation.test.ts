@@ -235,6 +235,50 @@ describe('applyMutation', () => {
     expect(seen).toEqual(['project'])
   })
 
+  /**
+   * One id across every file, which is what makes a mutation undoable as a unit:
+   * the change log picks its edits out by this, so two ids would be two actions
+   * and half an operation each.
+   */
+  it('gives every dispatch one contribution id', async () => {
+    await session.openFile('main.kcl')
+    await session.openFile('lid.kcl')
+
+    const seen: (string | undefined)[] = []
+    for (const path of ['main.kcl', 'lid.kcl']) {
+      session.bufferForPath(path)?.onChange((change) => {
+        if (change.docChanged) seen.push(change.contributionId)
+      })
+    }
+
+    const result = await session.applyMutation({
+      label: 'Renamed width',
+      edits: {
+        'main.kcl': [{ from: 0, to: 5, insert: 'depth' }],
+        'lid.kcl': [{ from: 0, to: 0, insert: '// note\n' }],
+      },
+    })
+
+    expect(result.contributionId).toBeTypeOf('string')
+    expect(seen).toEqual([result.contributionId, result.contributionId])
+  })
+
+  /**
+   * Taken from the caller when it has one, so an agent's turn appears in history
+   * under the id it already calls that turn.
+   */
+  it('keeps the caller’s contribution id', async () => {
+    await session.openFile('main.kcl')
+
+    const result = await session.applyMutation({
+      label: 'Set width to 24',
+      edits: { 'main.kcl': [{ from: 0, to: 10, insert: 'width = 24' }] },
+      origin: { role: 'semantic', contributionId: 'turn-7' },
+    })
+
+    expect(result.contributionId).toBe('turn-7')
+  })
+
   it('does nothing, successfully, for an empty mutation', async () => {
     const result = await session.applyMutation({ label: 'Nothing' })
 

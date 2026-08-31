@@ -11,11 +11,12 @@ import type {
   ResolvedInputs,
   TextEdit,
 } from '@src/contracts/modelingOperations'
+import type { ProjectActionHistory } from '@src/contracts/projectHistory'
 import type { ProjectSession } from '@src/contracts/projectSession'
 import type { DerivedInput } from '@src/lib/kclStdlib/shapes'
 import { derivedInputs, stdLibCommand } from '@src/lib/kclStdlib/shapes'
 import { mergeTextEdits } from '@src/features/modelingOperations/mergeEdits'
-import { requestFocus } from '@src/lib/buffers/annotations'
+import { bufferOrigin, requestFocus } from '@src/lib/buffers/annotations'
 
 /**
  * One argument of a running operation, and everything known about it.
@@ -115,6 +116,15 @@ export interface OperationRunnerDependencies {
     commandId: string,
     until: { bufferId: string; version: number }
   ) => void
+  /**
+   * Where an applied operation is recorded, so it can be undone as one thing.
+   *
+   * Optional for the same reason as `handoff`: a test without a project history
+   * still applies the edit, which is the part that matters. Where it is present,
+   * an operation spanning two files becomes one entry in the project's undo stack
+   * instead of two per-buffer undo steps in two panes.
+   */
+  history?: () => ProjectActionHistory | null
 }
 
 export interface OperationRunner {
@@ -545,6 +555,17 @@ export function createOperationRunner(
         ]),
       }
 
+      /*
+       * One id for the whole operation, across every file it writes.
+       *
+       * It rides each transaction as the annotation's `contributionId`, which is
+       * what lets the change log later pick this operation's edits out of
+       * everything that happened around them — including the user's typing
+       * between two of its dispatches.
+       */
+      const contributionId = crypto.randomUUID()
+      const writtenPaths: string[] = []
+
       for (const [path, edits] of Object.entries(changes)) {
         const buffer = target.session.bufferForPath(path)
         if (!buffer) {
@@ -572,15 +593,38 @@ export function createOperationRunner(
             insert: change.insert,
           })),
           ...(focus === null ? {} : { selection: { anchor: focus } }),
-          /*
-           * Asking for the cursor to be somewhere is asking for the user to be
-           * there, so the keyboard comes too. Half the gesture — a caret in a new
-           * sketch block that nothing types into — would leave the app looking
-           * like it had moved somebody who is still where they were.
-           */
-          ...(focus === null ? {} : { annotations: [requestFocus.of(true)] }),
+          annotations: [
+            /*
+             * `semantic`, the role `annotations.ts` documents for "a modelling
+             * action". Omitted entirely until now, which meant every operation
+             * published as `origin: 'user'` — harmless while nothing read it, and
+             * wrong the moment attribution or a coordinated undo does.
+             */
+            bufferOrigin.of({ role: 'semantic', contributionId }),
+            /*
+             * Asking for the cursor to be somewhere is asking for the user to be
+             * there, so the keyboard comes too. Half the gesture — a caret in a new
+             * sketch block that nothing types into — would leave the app looking
+             * like it had moved somebody who is still where they were.
+             */
+            ...(focus === null ? [] : [requestFocus.of(true)]),
+          ],
         })
+
+        writtenPaths.push(path)
       }
+
+      /*
+       * Recorded after the dispatches, because an operation that threw partway
+       * should offer to undo what landed rather than what it intended.
+       */
+      dependencies.history?.()?.record({
+        id: contributionId,
+        label: state.operation.title,
+        at: Date.now(),
+        author: null,
+        paths: writtenPaths,
+      })
 
       pending.value = null
 
