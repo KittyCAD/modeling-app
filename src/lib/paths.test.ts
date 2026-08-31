@@ -5,8 +5,6 @@ import {
   getFilePathRelativeToProject,
   getProjectRelativeFilePath,
   getRouterSearchFromRequestUrl,
-  isStepFile,
-  isStepFileExtension,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
   parseProjectRoute,
@@ -511,23 +509,4 @@ describe('testing fileNameHasExtension', () => {
     expect(fileNameHasExtension('bracket.')).toBe(false)
     expect(fileNameHasExtension('')).toBe(false)
   })
-})
-
-describe('STEP file extensions', () => {
-  it.each(['step', 'stp', 'STEP', 'StP'])(
-    'recognizes the %s extension',
-    (extension) => {
-      expect(isStepFileExtension(extension)).toBe(true)
-      expect(isStepFile(`part.${extension}`)).toBe(true)
-    }
-  )
-
-  it.each(['kcl', 'stl', 'step.bak', '', null])(
-    'rejects the %s extension or path',
-    (extension) => {
-      expect(
-        isStepFile(extension === null ? extension : `part.${extension}`)
-      ).toBe(false)
-    }
-  )
 })

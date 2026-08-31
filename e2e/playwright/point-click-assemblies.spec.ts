@@ -13,8 +13,8 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { BrowserContext, Page } from '@playwright/test'
+import { isStepFile } from '@src/lib/fileExtensions'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { isStepFile } from '@src/lib/paths'
 
 async function insertPartIntoAssembly(
   path: string,
