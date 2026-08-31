@@ -48,12 +48,12 @@ export function lengthUnitOf(suffix: NumericSuffix): UnitLength | null {
  * A length in millimetres.
  *
  * A unit that names no length — `None`, `Count`, an angle — leaves the value
- * alone. That is a guess, and the honest version of it: such a number has
- * already been resolved against the file's default length unit by whoever
- * produced it, and this has no way to ask what that was. It is right for the
- * common case of a file in millimetres and wrong by a constant factor for a file
- * that sets `defaultLengthUnit` to something else, which is the bug to look for
- * if a sketch draws at the wrong scale.
+ * alone, and that is now the right answer rather than a hopeful one. Every
+ * length kcl-lib reports has been resolved against the file's effective unit
+ * during execution, and the app tells it what that is: the declared
+ * `@settings(defaultLengthUnit)` if the file has one, else `base_unit` from the
+ * project's or the user's preference. So a number arriving here with no length
+ * unit is a number that is not a length.
  */
 export function millimetres(
   value: number,

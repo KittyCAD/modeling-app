@@ -13,6 +13,7 @@ import {
   highlightEdgesSetting,
   showScaleGridSetting,
 } from '@src/features/engineScene/settings'
+import { defaultLengthUnitSetting } from '@src/features/units/settings'
 
 /**
  * KCL's sketch frontend.
@@ -42,6 +43,7 @@ export default defineRegistryItemFactory((ctx) => {
         highlightEdges: resolved.read(highlightEdgesSetting),
         enableSsao: resolved.read(enableSsaoSetting),
         showScaleGrid: resolved.read(showScaleGridSetting),
+        baseUnit: resolved.read(defaultLengthUnitSetting),
       })
     },
   })

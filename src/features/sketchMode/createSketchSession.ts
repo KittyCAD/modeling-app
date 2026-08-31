@@ -68,6 +68,13 @@ export interface SketchSessionDependencies {
   camera: () => CameraDriver | undefined
   /** Whether opening a sketch should look straight at its plane. */
   faceOnEntry: () => boolean
+  /**
+   * The unit to write numbers in when the file declares none.
+   *
+   * The same value the executor is given, so a segment written here means what
+   * the geometry around it means.
+   */
+  defaultUnit: () => NumericSuffix
 }
 
 /**
@@ -103,6 +110,7 @@ export function createSketchSession(
     projection,
     camera,
     faceOnEntry,
+    defaultUnit,
   } = dependencies
 
   const open = signal<OpenSketch | null>(null)
@@ -245,13 +253,19 @@ export function createSketchSession(
    * The unit to write numbers in.
    *
    * The file's own, from its `@settings` annotation, so a sketch drawn in a file
-   * that works in inches is written in inches. Millimetres when the file says
-   * nothing — which is also what an unsuffixed number means, so the two agree.
+   * that works in inches is written in inches. When the file declares nothing it
+   * is the project's — or the user's — default, because that is what the file's
+   * unsuffixed numbers already mean: the same value is threaded into the executor
+   * as `base_unit`, so writing anything else here would make the sketch disagree
+   * with the geometry it was drawn on.
    */
   const units = (): NumericSuffix => {
     const ast = program()
-    if (!ast) return 'Mm'
-    return suffixForUnitName(defaultLengthUnitOf(ast as Program)) ?? 'Mm'
+    const declared = ast
+      ? suffixForUnitName(defaultLengthUnitOf(ast as Program))
+      : null
+
+    return declared ?? defaultUnit()
   }
 
   /** Actions run one at a time, in order, for the reason `queue` exists. */

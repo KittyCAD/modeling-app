@@ -14,6 +14,16 @@ export interface KclModelingSettings {
   highlightEdges: boolean
   enableSsao: boolean
   showScaleGrid: boolean
+  /**
+   * The unit an unsuffixed number means, in a file that declares none.
+   *
+   * The one setting here that changes the *geometry* rather than how it is drawn:
+   * a file with no `@settings` annotation is measured in whatever this says, so
+   * getting it wrong makes every dimension wrong by a constant factor and nothing
+   * on screen says why. Which is also why a new file in a project that is not in
+   * millimetres has the unit written into it — see `lib/kcl/metaSettings.ts`.
+   */
+  baseUnit: string
 }
 
 type Table = Record<string, unknown>
@@ -29,6 +39,7 @@ export function executorSettingsJson(
   const settings = table(configuration.settings)
   const modeling = table(settings.modeling)
 
+  modeling.base_unit = values.baseUnit
   modeling.highlight_edges = values.highlightEdges
   modeling.enable_ssao = values.enableSsao
   modeling.show_scale_grid = values.showScaleGrid

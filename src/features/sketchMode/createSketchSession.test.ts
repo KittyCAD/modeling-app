@@ -1,4 +1,5 @@
 import type { SceneGraph } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import { signal } from '@preact/signals'
 import { describe, expect, it, vi } from 'vitest'
 import { combineCapabilities } from '@src/contracts/buffers'
@@ -190,6 +191,8 @@ const setup = (
     artifacts?: ArtifactMap
     projection?: SceneProjection
     faceOnEntry?: boolean
+    /** The project's unit, for a file that declares none. */
+    defaultUnit?: NumericSuffix
     addSegment?: (calls: string[]) => Promise<unknown>
     /** Makes a preview solve take long enough for moves to pile up behind it. */
     slowEdit?: boolean
@@ -302,6 +305,7 @@ const setup = (
     projection: () => options.projection,
     camera: () => camera,
     faceOnEntry: () => options.faceOnEntry ?? true,
+    defaultUnit: () => options.defaultUnit ?? 'Mm',
   })
 
   return { session, buffer, frontend, calls, camera }
@@ -1190,6 +1194,82 @@ describe('selecting things in a sketch', () => {
     await app.session.exit()
 
     expect(app.session.selection.value).toEqual([])
+  })
+})
+
+describe('the unit numbers are written in', () => {
+  const settled = () => new Promise((resolve) => setTimeout(resolve, 20))
+
+  /*
+   * A sketch drawn in a file that works in inches is written in inches. `10mm`
+   * would be arithmetically correct and read as though the app had a different
+   * idea of the drawing than its author does.
+   */
+  it('uses the unit the file declares', async () => {
+    const app = setup({
+      program: {
+        body: [],
+        innerAttrs: [
+          {
+            name: { name: 'settings' },
+            properties: [
+              {
+                key: { name: 'defaultLengthUnit' },
+                value: { type: 'Name', name: { name: 'in' } },
+              },
+            ],
+          },
+        ],
+      },
+      defaultUnit: 'Mm',
+    })
+    await app.session.enter()
+    app.session.equip('point')
+
+    app.session.place({ x: 2, y: 3 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addSegment).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledWith(
+      0,
+      {
+        type: 'Point',
+        position: {
+          x: { type: 'Var', value: 2, units: 'Inch' },
+          y: { type: 'Var', value: 3, units: 'Inch' },
+        },
+      },
+      expect.anything()
+    )
+  })
+
+  /*
+   * The project's, not millimetres: the same value is threaded into the executor
+   * as `base_unit`, so the file's unsuffixed numbers already mean this — and
+   * writing anything else would make the sketch disagree with the geometry it
+   * was drawn on.
+   */
+  it('falls back to the project’s unit when the file declares none', async () => {
+    const app = setup({ defaultUnit: 'Cm' })
+    await app.session.enter()
+    app.session.equip('point')
+
+    app.session.place({ x: 2, y: 3 })
+    await vi.waitFor(() =>
+      expect(app.frontend.addSegment).toHaveBeenCalledTimes(1)
+    )
+
+    expect(app.frontend.addSegment).toHaveBeenCalledWith(
+      0,
+      expect.objectContaining({
+        position: {
+          x: { type: 'Var', value: 2, units: 'Cm' },
+          y: { type: 'Var', value: 3, units: 'Cm' },
+        },
+      }),
+      expect.anything()
+    )
   })
 })
 
