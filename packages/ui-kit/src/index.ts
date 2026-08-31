@@ -29,6 +29,7 @@ export {
   type EmptyStateProps,
 } from './components/emptyState'
 export { Icon, type IconProps } from './components/icon'
+export { Logo, type LogoProps } from './components/logo'
 export {
   Menu,
   type MenuItem,

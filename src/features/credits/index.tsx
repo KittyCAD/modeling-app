@@ -11,9 +11,11 @@ import {
   creditConsumersValueSpec,
   creditsService,
 } from '@src/contracts/credits'
+import { homeSidebarItemsValueSpec } from '@src/contracts/home'
 import { runtimeService } from '@src/contracts/runtime'
 import { statusBarItemsValueSpec } from '@src/contracts/shell'
 import { CreditsField } from '@src/features/credits/CreditsField'
+import { CreditsSummary } from '@src/features/credits/CreditsSummary'
 import { createCreditsApi } from '@src/features/credits/creditsApi'
 import { createCreditsService } from '@src/features/credits/createCreditsService'
 
@@ -64,6 +66,19 @@ export default defineRegistryItemFactory((ctx) => {
           order: -30,
           render: () => <CreditsField />,
         }),
+        /*
+         * And again on Home, with room to be read. Contributed rather than
+         * imported by the home screen, so Home stays ignorant of what a credit
+         * is — and so this disappears with the feature rather than leaving a
+         * hole in somebody else's layout.
+         */
+        provide(homeSidebarItemsValueSpec, {
+          id: 'credits.summary',
+          group: 'end',
+          order: 0,
+          render: () => <CreditsSummary />,
+        }),
+
         provide(commandsValueSpec, {
           id: 'credits.refresh',
           title: 'Refresh credit balance',

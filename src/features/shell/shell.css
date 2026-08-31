@@ -76,6 +76,16 @@
   justify-content: start;
 }
 
+/*
+ * The macOS traffic lights sit inside the window with `titleBarStyle:
+ * 'hiddenInset'`, over the top-left of the content. The start zone is padded
+ * clear of them rather than the strip being made taller, so the chassis keeps
+ * one top-bar height on every platform.
+ */
+.zds-topbar[data-traffic-lights] .zds-topbar__zone[data-zone="start"] {
+  padding-inline-start: 78px;
+}
+
 .zds-topbar__zone[data-zone="center"] {
   justify-content: center;
   /* The centre zone is the app's identity line; it must not be squeezed out by
@@ -150,18 +160,11 @@
   gap: var(--zds-space-2);
   padding-inline: var(--zds-space-1);
   min-inline-size: 0;
+  color: var(--zds-text-primary);
 }
 
-/*
- * The mark is a filled square with a notched corner: a datum feature symbol,
- * the same motif the focus stripe uses. One idea, used twice.
- */
-.zds-brand__mark {
-  inline-size: 14px;
-  block-size: 14px;
-  flex: none;
-  background: var(--zds-accent);
-  clip-path: polygon(0 0, 100% 0, 100% 65%, 65% 100%, 0 100%);
+.zds-brand:hover .zds-logo {
+  color: var(--zds-accent);
 }
 
 .zds-brand__name {

@@ -54,6 +54,7 @@ describe('Cloud library activation policy', () => {
           isDesktop: true,
           isWeb: false,
           isTest: true,
+          isMac: false,
           version: 'test',
         })),
       },

@@ -13,6 +13,9 @@ function detect(): RuntimeInfo {
     isDesktop,
     isWeb: !isDesktop,
     isTest: typeof navigator !== 'undefined' && navigator.webdriver === true,
+    // Only ever true on the desktop build: the browser has no traffic lights to
+    // leave room for, whatever it is running on.
+    isMac: isDesktop && window.electron?.platform === 'darwin',
     version: import.meta.env?.VITE_APP_VERSION ?? '0.0.0-dev',
   }
 }

@@ -766,6 +766,22 @@ function createWindow() {
     // before the renderer's stylesheet lands.
     backgroundColor: '#111316',
     show: false,
+    /*
+     * No title bar on macOS: the top bar *is* the title bar.
+     *
+     * The chassis already draws a strip across the top with the app's name in
+     * it, so a native bar above that is a second, emptier one — and it breaks
+     * the one thing the chassis is for, which is that the frame is continuous
+     * from edge to edge.
+     *
+     * Only on macOS, matching the existing app. `hiddenInset` keeps the traffic
+     * lights and insets them, which is why the top bar reserves room for them
+     * rather than the window hiding them; Windows and Linux keep their native
+     * frame, where a hidden one means reimplementing minimise, maximise and
+     * close for no gain.
+     */
+    frame: process.platform !== 'darwin',
+    titleBarStyle: 'hiddenInset',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

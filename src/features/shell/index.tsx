@@ -1,5 +1,5 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
-import { Button } from '@kittycad/ui-kit'
+import { Button, Logo } from '@kittycad/ui-kit'
 import { useService } from '@src/app/context'
 import { commandService } from '@src/contracts/commands'
 import { projectSessionService } from '@src/contracts/projectSession'
@@ -11,20 +11,27 @@ import {
 } from '@src/contracts/shell'
 import './shell.css'
 
+/**
+ * The app's identity, and the way home.
+ *
+ * The logotype spells "Zoo", so the button beside it says only what this
+ * particular Zoo application is. Both are one control: clicking either closes
+ * the project, which is what "go home" means when home is a state rather than a
+ * route.
+ */
 function Brand() {
   const session = useService(projectSessionService)
 
   return (
-    <div class="zds-brand">
-      <span class="zds-brand__mark" aria-hidden="true" />
-      <button
-        class="zds-brand__name"
-        type="button"
-        onClick={() => session.close()}
-      >
-        Design Studio
-      </button>
-    </div>
+    <button
+      class="zds-brand"
+      type="button"
+      onClick={() => session.close()}
+      title="Close the project and go home"
+    >
+      <Logo label="Zoo" />
+      <span class="zds-brand__name">Design Studio</span>
+    </button>
   )
 }
 

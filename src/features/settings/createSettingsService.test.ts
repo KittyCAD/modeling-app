@@ -149,6 +149,7 @@ const fakeRuntime = (target: 'desktop' | 'web'): RuntimeService => ({
     isDesktop: target === 'desktop',
     isWeb: target === 'web',
     isTest: true,
+    isMac: false,
     version: 'test',
   })),
 })

@@ -1,0 +1,19 @@
+/*
+ * The logotype.
+ *
+ * Sized by block-size alone, with the inline size following from the artwork's
+ * own aspect, so the two variants can be swapped at one call site without the
+ * caller recomputing a width.
+ */
+
+.zds-logo {
+  display: block;
+  block-size: var(--zds-logo-size, 14px);
+  inline-size: auto;
+  color: var(--zds-text-primary);
+}
+
+.zds-logo--mark {
+  /* The crop is nearly square, so the same block-size reads smaller. */
+  block-size: var(--zds-logo-size, 15px);
+}

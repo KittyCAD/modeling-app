@@ -255,3 +255,183 @@
 .zds-library-add .zds-field {
   inline-size: 200px;
 }
+
+/* Left column ------------------------------------------------------- */
+
+/*
+ * Home as two columns: what you can do, and what you have.
+ *
+ * The sidebar is fixed-width and the project list takes the rest, because the
+ * list is the thing that benefits from every pixel — a credit balance does not
+ * get more legible at 400px than at 220px.
+ */
+.zds-home__inner--columns {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: var(--zds-space-8);
+  align-items: start;
+}
+
+.zds-home__body {
+  min-inline-size: 0;
+}
+
+.zds-home__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-6);
+  min-inline-size: 0;
+  /*
+   * Sticky rather than scrolling with the list: the column is short and the
+   * project grid is not, and standing information that scrolls away is not
+   * standing information.
+   */
+  position: sticky;
+  inset-block-start: var(--zds-space-2);
+}
+
+/* Pushes standing information to the bottom of a tall column. */
+.zds-home__sidebar-rest {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-6);
+  margin-block-start: auto;
+}
+
+.zds-home__sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zds-home__sidebar-item {
+  display: flex;
+  min-inline-size: 0;
+}
+
+.zds-home__sidebar-item > * {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/* Announcements ----------------------------------------------------- */
+
+.zds-home__news {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-2);
+}
+
+/*
+ * A card, but a quiet one. News is worth reading and is not worth interrupting
+ * for, so it gets a panel and a hairline rather than the accent colour.
+ */
+.zds-home__announcement {
+  padding: var(--zds-space-3);
+  background: var(--zds-surface-panel);
+  border: 1px solid var(--zds-seam);
+  border-radius: var(--zds-radius-content);
+}
+
+.zds-home__announcement-title {
+  margin: 0;
+  font-size: var(--zds-font-size-small);
+  font-weight: var(--zds-font-weight-semibold);
+  color: var(--zds-text-primary);
+}
+
+.zds-home__announcement-body {
+  margin-block: var(--zds-space-1) 0;
+  font-size: var(--zds-font-size-mini);
+  color: var(--zds-text-secondary);
+}
+
+/* Credits ----------------------------------------------------------- */
+
+.zds-home__credits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+}
+
+.zds-home__credits-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--zds-space-2);
+}
+
+.zds-home__credits-live {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zds-space-1);
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-tertiary);
+}
+
+/*
+ * The number, at display size. It is the answer to the question somebody came
+ * to this column with, so it is allowed to be the largest thing in it.
+ */
+.zds-home__credits-total {
+  margin: 0;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-title);
+  font-variant-numeric: tabular-nums;
+  color: var(--zds-text-primary);
+}
+
+.zds-home__credits-split,
+.zds-home__credits-empty {
+  margin: 0;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-micro);
+  color: var(--zds-text-disabled);
+}
+
+.zds-home__credits-consumers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zds-space-1);
+  margin-block-start: var(--zds-space-2);
+  padding: 0;
+  list-style: none;
+  font-family: var(--zds-font-mono);
+  font-size: var(--zds-font-size-mini);
+}
+
+.zds-home__credits-consumers li {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.zds-home__credits-project {
+  color: var(--zds-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zds-home__credits-label {
+  color: var(--zds-text-disabled);
+}
+
+@media (max-width: 900px) {
+  /* One column: the sidebar goes above the list rather than squeezing it. */
+  .zds-home__inner--columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .zds-home__sidebar {
+    position: static;
+  }
+
+  .zds-home__sidebar-rest {
+    margin-block-start: 0;
+  }
+}

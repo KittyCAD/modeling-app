@@ -53,6 +53,7 @@ function harness(target: RuntimeTarget, hydrated = true) {
           isDesktop: target === 'desktop',
           isWeb: target === 'web',
           isTest: true,
+          isMac: false,
           version: 'test',
         })),
       }),

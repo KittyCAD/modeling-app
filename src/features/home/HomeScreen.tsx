@@ -4,6 +4,7 @@ import { Button, EmptyState } from '@kittycad/ui-kit'
 import { useService } from '@src/app/context'
 import { projectLibrariesService } from '@src/contracts/projectLibraries'
 import { projectSessionService } from '@src/contracts/projectSession'
+import { HomeSidebar } from '@src/features/home/HomeSidebar'
 import { AddLibraryControl, LibraryList } from '@src/features/home/LibraryList'
 import { LibraryProjects } from '@src/features/home/LibraryProjects'
 import { type HomeView, resolveHomeLibrary } from '@src/features/home/homeView'
@@ -63,43 +64,47 @@ export function HomeScreen({ view }: HomeScreenProps) {
 
   return (
     <div class="zds-home zds-scroll">
-      <div class="zds-home__inner">
-        {openError.value ? (
-          <p class="zds-home__error" role="alert">
-            {openError.value}
-          </p>
-        ) : null}
+      <div class="zds-home__inner zds-home__inner--columns">
+        <HomeSidebar />
 
-        {selected.value ? (
-          <LibraryProjects
-            library={selected.value}
-            // Always offered, so managing libraries stays reachable even for
-            // someone who only has one.
-            onShowLibraries={() => {
-              view.value = { kind: 'index' }
-            }}
-          />
-        ) : (
-          <div class="zds-home__section">
-            <header class="zds-home__header">
-              <div class="zds-home__titles">
-                <p class="zds-label">Libraries</p>
-                <h1 class="zds-display">Where your projects live</h1>
-              </div>
-              <div class="zds-home__actions">
-                <AddLibraryControl />
-              </div>
-            </header>
+        <div class="zds-home__body">
+          {openError.value ? (
+            <p class="zds-home__error" role="alert">
+              {openError.value}
+            </p>
+          ) : null}
 
-            <hr class="zds-rule zds-home__rule" />
-
-            <LibraryList
-              onSelect={(library) => {
-                view.value = { kind: 'library', libraryId: library.id }
+          {selected.value ? (
+            <LibraryProjects
+              library={selected.value}
+              // Always offered, so managing libraries stays reachable even for
+              // someone who only has one.
+              onShowLibraries={() => {
+                view.value = { kind: 'index' }
               }}
             />
-          </div>
-        )}
+          ) : (
+            <div class="zds-home__section">
+              <header class="zds-home__header">
+                <div class="zds-home__titles">
+                  <p class="zds-label">Libraries</p>
+                  <h1 class="zds-display">Where your projects live</h1>
+                </div>
+                <div class="zds-home__actions">
+                  <AddLibraryControl />
+                </div>
+              </header>
+
+              <hr class="zds-rule zds-home__rule" />
+
+              <LibraryList
+                onSelect={(library) => {
+                  view.value = { kind: 'library', libraryId: library.id }
+                }}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
