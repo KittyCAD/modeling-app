@@ -591,8 +591,7 @@ impl crate::lsp::backend::Backend for Backend {
             self.update_semantic_tokens(&tokens, &params).await;
 
             let mut discovered_findings: Vec<_> = ast.lint_all().into_iter().flatten().collect();
-            // Filter out Z0005 (old sketch syntax) from LSP diagnostics
-            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            // Filter out Z0005 (old sketch syntax) from LSP diagnostics.
             discovered_findings.retain(|finding| finding.finding.code != "Z0005");
             self.add_to_diagnostics(&params, &discovered_findings, false).await;
         }
