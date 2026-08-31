@@ -1,6 +1,7 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals'
 import type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
+import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { OperationsByModule } from '@rust/kcl-lib/bindings/OperationsByModule'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
@@ -55,6 +56,19 @@ export interface KclSceneService {
    * not whichever buffer happens to be visible in an editor.
    */
   readonly operations: ReadonlySignal<OperationsByModule>
+  /**
+   * The default planes the last run created on the engine, by name.
+   *
+   * kcl-lib makes all six at the start of every execution — hidden, coloured,
+   * 100mm square — and hands back their engine ids. Null before anything has
+   * run, which is also the honest answer to "should the planes be showing":
+   * there are none to show.
+   *
+   * Published here rather than kept as the `hasScene` boolean it used to be
+   * collapsed into, because the ids are the only way to address a plane on the
+   * engine — nothing else in the app can name one.
+   */
+  readonly defaultPlanes: ReadonlySignal<DefaultPlanes | null>
 }
 
 export const kclSceneContract = defineContract({

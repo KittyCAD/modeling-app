@@ -9,6 +9,8 @@ import { engineConnectionService } from '@src/contracts/engine'
 import { motionService } from '@src/contracts/motion'
 import { streamParamsValueSpec } from '@src/contracts/engineScene'
 import { commandsValueSpec } from '@src/contracts/commands'
+import { defaultPlaneDriverService } from '@src/contracts/defaultPlanes'
+import { kclSceneService } from '@src/contracts/kclScene'
 import { keybindingsValueSpec } from '@src/contracts/keybindings'
 import { cameraDriverService, sceneItemsValueSpec } from '@src/contracts/scene'
 import { sceneHudService } from '@src/contracts/sceneHud'
@@ -19,6 +21,7 @@ import { settingsService, settingsValueSpec } from '@src/contracts/settings'
 import { themeService } from '@src/contracts/theme'
 import { createEngineCameraDriver } from '@src/features/engineScene/createEngineCameraDriver'
 import { createEngineCamera } from '@src/features/engineScene/createEngineCamera'
+import { createEnginePlaneDriver } from '@src/features/engineScene/createEnginePlaneDriver'
 import { createEngineProjection } from '@src/features/engineScene/createEngineProjection'
 import { ViewGizmo } from '@src/features/engineScene/ViewGizmo'
 import { createEngineScenePicker } from '@src/features/engineScene/createEngineScenePicker'
@@ -117,8 +120,36 @@ export default defineRegistryItemFactory((ctx) => {
    */
   const projection = createEngineProjection(engine, camera)
 
+  /**
+   * The default planes, as this engine has them.
+   *
+   * The fourth of the family, and the one that carries the most opinion: six
+   * objects minted by every kcl run, paired front to back, addressed by uuid and
+   * forgotten on reconnect. The feature that decides *when* a plane should show
+   * knows none of that, which is what lets the arrangement be reworked.
+   *
+   * It reads the executor because on this engine that is where planes come from
+   * — kcl-lib makes them as a side effect of running a file. Optional, because
+   * an app with a scene and no executor is a legitimate thing to boot.
+   */
+  const planeDriver = createEnginePlaneDriver({
+    ids: computed(
+      () => ctx.services.optional(kclSceneService)?.defaultPlanes.value ?? null
+    ),
+    sceneEpoch: computed(() => engine().sceneEpoch.value),
+    /*
+     * Fired rather than sent: the answer is a confirmation nobody reads, and
+     * awaiting six of them per run would put the planes behind a round trip they
+     * do not need.
+     */
+    setHidden: (id, hidden) => {
+      engine().fireCommand({ type: 'object_visible', object_id: id, hidden })
+    },
+  })
+
   let stopApplying = () => {}
   queueMicrotask(() => {
+    planeDriver.start()
     const connection = engine()
     const connected = computed(
       () => connection.state.value.status === 'connected'
@@ -165,11 +196,13 @@ export default defineRegistryItemFactory((ctx) => {
       id: 'engineScene',
       dispose: () => {
         stopApplying()
+        planeDriver.dispose()
         cameraDriver.dispose()
         camera.dispose()
       },
       providesServices: [
         provideService(cameraDriverService, cameraDriver),
+        provideService(defaultPlaneDriverService, planeDriver),
         provideService(sceneHudService, hud),
         provideService(scenePickerService, picker),
         provideService(sceneProjectionService, projection),

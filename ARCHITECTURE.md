@@ -1274,6 +1274,69 @@ shrunk to one command becomes a plain button, because a caret asking a question
 with one answer is a worse button. Both live in `resolveToolbar`, so the
 component holds no policy and the awkward cases are unit tests.
 
+### The default planes are a policy, not a flag
+
+Six planes are created on the engine at the start of every run — kcl-lib makes
+them, hidden, and hands back their ids in the execution outcome. Whether they
+*show* is the app's decision, and it is expressed as one derived signal plus one
+effect that reconciles the engine to it. Nothing mirrors the engine's state.
+
+That shape is a direct answer to the existing app, where the same behaviour is a
+`defaultPlaneVisibility` flag in machine context mutated from five separate
+actions, driven by a pair of debounced events into a nested `hidePlanes`/
+`showPlanes` state machine, with `// This defer is bullshit but playwright wants
+it` in the source. Two records of one truth, kept in step by remembering to.
+
+**Visibility is a tri-state**, and the third state is what makes it work.
+`auto` follows the scene; touching a plane takes it off `auto` and it stays put
+until it is put back. So turning XY on before an extrude does not have it vanish
+when the extrude lands. Overrides belong to the scene they were made in and are
+forgotten when the project closes.
+
+That is the whole policy, and it is deliberately all `features/defaultPlanes`
+holds. Everything about how a plane is *arranged* sits behind
+`defaultPlaneDriverService`, the fourth seam beside the camera driver, the picker
+and the projection — because the current arrangement is one engine's opinion and
+is expected to be reworked.
+
+**A plane is one thing made of two objects — on this engine.** kcl-lib creates
+`Xy` and `NegXy` with the same origin and negated axes: the same square, normal
+flipped. The back face is not another plane. It is what you see and click when
+you orbit behind, and `startSketchOn(-XY)` is what a pick from that side should
+write. So they are shown and hidden together — three rows, six objects — and
+`createEnginePlaneDriver` is the only file that knows it. A renderer with one
+object per plane implements `setVisible` with half the work.
+
+Two more details live in that driver, and both are about the engine forgetting
+rather than about planes. What it was told is tracked by object *id*, because a
+new run mints new ids and a name-keyed record would make the next scene's planes
+look already-correct. And a `sceneEpoch` bump clears that record so every plane
+is restated.
+
+**The policy restates; the driver deduplicates.** Every change sends all three
+planes' intent down the seam, and working out that there is nothing to send is
+the driver's job. The alternative — a policy that diffs — needs to know what the
+renderer already has, which is the second copy of the truth this whole design
+exists to avoid.
+
+### Is there anything in the scene?
+
+The question the planes rest on, and it cannot be asked of the renderer: the
+engine is in another process, reports no inventory, and a bounds query would
+answer after the fact. It does not need to be. The artifact graph is not an
+estimate of what was drawn — it is the model the draw commands were generated
+*from*, by the same execution, in the same pass.
+
+So "empty" is a definition, in `lib/kcl/sceneContents.ts`: no artifact of a kind
+that draws, that has not been consumed by a later operation, and that is not
+hidden. The existing app uses `artifactGraph.size > 0`, which counts named views
+and bare planes — neither of which puts marks on screen — and ignores `hide()`
+entirely, so a file whose only solid is hidden renders an empty scene and is
+called populated.
+
+Hiding spreads downwards, because that is the direction the KCL says: `hide(body)`
+names the sweep, and its walls, caps and edges go with it.
+
 ### The executing buffer's outline is a scene HUD
 
 The start edge contains one **outline HUD**, and that HUD has its own contributed
