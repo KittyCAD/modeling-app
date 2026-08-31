@@ -13,7 +13,12 @@ import {
 } from '@src/lang/modifyAst/faces'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import { getEdgeCutMeta } from '@src/lang/queryAst'
-import { type PlaneArtifact, getAllOperations, recast } from '@src/lang/wasm'
+import {
+  type PlaneArtifact,
+  getAllOperations,
+  pathToNodeFromRustNodePath,
+  recast,
+} from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { bracket } from '@src/lib/exampleKcl'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -106,6 +111,25 @@ extrude001 = extrude(profile001, length = 10)`
   const cylinderWithEndTag = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 10)
 extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)`
+  const sketchSolveBoxWithEndTag = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -3.78mm, var 3.61mm], end = [var 4.41mm, var 3.61mm])
+  line2 = line(start = [var 4.41mm, var 3.61mm], end = [var 4.41mm, var -4.17mm])
+  line3 = line(start = [var 4.41mm, var -4.17mm], end = [var -3.78mm, var -4.17mm])
+  line4 = line(start = [var -3.78mm, var -4.17mm], end = [var -3.78mm, var 3.61mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 2mm, tagEnd = $capEnd001)`
 
   const box = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
@@ -290,6 +314,61 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       expect(newCode).toContain(
         `shell001 = shell(extrude001, faces = capEnd001, thickness = 2)`
       )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should preserve the solid input when editing a shell with a downstream hole', async () => {
+      const code = `${sketchSolveBoxWithEndTag}
+shell001 = shell(extrude001, faces = region001.tags.line1, thickness = 0.2mm)
+hole001 = hole::hole(
+  extrude001,
+  face = capEnd001,
+  cutAt = [0, 0],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 1.4mm, diameter = 1mm),
+  holeType = hole::simple(),
+)`
+      const { artifactGraph, ast, operations } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const shellOperation = getAllOperations(operations).find(
+        (operation) =>
+          operation.type === 'StdLibCall' && operation.name === 'shell'
+      )
+      if (
+        !shellOperation ||
+        shellOperation.type !== 'StdLibCall' ||
+        !shellOperation.unlabeledArg ||
+        !shellOperation.labeledArgs?.faces
+      ) {
+        throw new Error('Shell operation not found')
+      }
+      const selections = retrieveFaceSelectionsFromOpArgs(
+        shellOperation.unlabeledArg,
+        shellOperation.labeledArgs.faces,
+        artifactGraph
+      )
+      if (err(selections)) throw selections
+
+      const thickness = (await stringToKclExpression(
+        '0.3mm',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addShell({
+        ast,
+        artifactGraph,
+        faces: selections.faces,
+        thickness,
+        nodeToEdit: pathToNodeFromRustNodePath(shellOperation.nodePath),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toMatch(/shell001 = shell\(\s*extrude001,/)
+      expect(newCode).toContain('thickness = 0.3mm')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 

@@ -7,6 +7,7 @@ import {
   addFillet,
   deleteEdgeTreatment,
   groupSelectionsByBodyAndAddTags,
+  retrieveEdgeSelectionsFromOpArgs,
 } from '@src/lang/modifyAst/edges'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
@@ -14,6 +15,8 @@ import {
   type Artifact,
   type PathToNode,
   assertParse,
+  getAllOperations,
+  pathToNodeFromRustNodePath,
   recast,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -81,6 +84,41 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> close()
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]), radius = 1)`
+  const twoChainedFillets = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  coincident([line1.start, ORIGIN])
+}
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5mm, tagEnd = $capEnd001)
+fillet001 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [region001.tags.line3, extrude001.faces.capEnd001]),
+  radius = 1mm,
+)
+fillet002 = fillet(
+  fillet001,
+  tags = getCommonEdge(faces = [region001.tags.line1, extrude001.faces.capEnd001]),
+  radius = 1mm,
+)`
+  const holeOnOriginalExtrude = `hole001 = hole::hole(
+  extrude001,
+  face = capEnd001,
+  cutAt = [5, 5],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 2mm, diameter = 1mm),
+  holeType = hole::simple(),
+)`
   const extrudedTriangleWithChamfer = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 5, tag = $seg01)
@@ -734,6 +772,74 @@ ${extrudedTriangle}`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
+
+    async function editFilletInCode(code: string, filletIndex: number) {
+      const { artifactGraph, ast, operations } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const filletOperation = getAllOperations(operations).filter(
+        (operation) =>
+          operation.type === 'StdLibCall' && operation.name === 'fillet'
+      )[filletIndex]
+      if (
+        !filletOperation ||
+        filletOperation.type !== 'StdLibCall' ||
+        !filletOperation.labeledArgs?.tags
+      ) {
+        throw new Error(`Fillet operation ${filletIndex + 1} not found`)
+      }
+      const selection = retrieveEdgeSelectionsFromOpArgs(
+        filletOperation.labeledArgs.tags,
+        artifactGraph
+      )
+      const radius = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        nodeToEdit: pathToNodeFromRustNodePath(filletOperation.nodePath),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      return result
+    }
+
+    it('should preserve the previous fillet when editing a chained fillet', async () => {
+      const result = await editFilletInCode(twoChainedFillets, 1)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+
+      expect(newCode).toMatch(/fillet002 = fillet\(\s*fillet001,/)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it.each([
+      { filletIndex: 0, filletName: 'fillet001', expectedInput: 'extrude001' },
+      { filletIndex: 1, filletName: 'fillet002', expectedInput: 'fillet001' },
+    ])(
+      'should preserve $filletName input when editing with a downstream hole',
+      async ({ filletIndex, filletName, expectedInput }) => {
+        const result = await editFilletInCode(
+          `${twoChainedFillets}\n${holeOnOriginalExtrude}`,
+          filletIndex
+        )
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+
+        expect(newCode).toMatch(
+          new RegExp(`${filletName} = fillet\\(\\s*${expectedInput},`)
+        )
+        expect(newCode.match(/extrude001\.faces\.capEnd001/g)).toHaveLength(2)
+        expect(newCode).not.toContain('hole001.faces.capEnd001')
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      }
+    )
 
     it('should edit a piped fillet call on sweepEdge', async () => {
       const code = `sketch001 = startSketchOn(XY)

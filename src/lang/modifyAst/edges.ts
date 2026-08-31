@@ -191,6 +191,13 @@ export function addFillet({
         ...versionArgs,
       ]
     )
+    const preserveSelectionResult = preserveEdgeSelectionArgsOnEdit(
+      call,
+      modifiedAst,
+      mNodeToEdit,
+      wasmInstance
+    )
+    if (err(preserveSelectionResult)) return preserveSelectionResult
 
     const pathToNode = setCallInAst({
       ast: modifiedAst,
@@ -318,6 +325,13 @@ export function addChamfer({
         ...versionArgs,
       ]
     )
+    const preserveSelectionResult = preserveEdgeSelectionArgsOnEdit(
+      call,
+      modifiedAst,
+      mNodeToEdit,
+      wasmInstance
+    )
+    if (err(preserveSelectionResult)) return preserveSelectionResult
 
     const pathToNode = setCallInAst({
       ast: modifiedAst,
@@ -560,6 +574,38 @@ export function getPrimitiveEdgeSelections(
 }
 
 // Utility functions
+
+const edgeSelectionArgNames = new Set(['tags', 'edges', 'edgeRefs'])
+
+function preserveEdgeSelectionArgsOnEdit(
+  call: Node<CallExpressionKw>,
+  ast: Node<Program>,
+  nodeToEdit: PathToNode | undefined,
+  wasmInstance: ModuleType
+): Error | undefined {
+  if (!nodeToEdit) return
+
+  const existingCall = getNodeFromPath<CallExpressionKw>(
+    ast,
+    nodeToEdit,
+    wasmInstance,
+    'CallExpressionKw'
+  )
+  if (err(existingCall)) return existingCall
+  if (!existingCall.node.unlabeled) return
+
+  const existingSelectionArgs = existingCall.node.arguments.filter((arg) =>
+    edgeSelectionArgNames.has(arg.label?.name ?? '')
+  )
+  if (existingSelectionArgs.length === 0) return
+
+  call.arguments = [
+    ...structuredClone(existingSelectionArgs),
+    ...call.arguments.filter(
+      (arg) => !edgeSelectionArgNames.has(arg.label?.name ?? '')
+    ),
+  ]
+}
 
 /**
  * Groups selections by body and adds tags to the AST.
