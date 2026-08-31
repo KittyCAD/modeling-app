@@ -132,6 +132,93 @@ export default defineRegistryItemFactory((ctx) => {
     })
   })
 
+  /**
+   * A different project is a different scene.
+   *
+   * The engine's scene is additive and kcl-lib caches what it has drawn, so
+   * neither notices a project switch by itself: opening a second project
+   * executes its file into a scene that still holds the first one's geometry,
+   * and kcl-lib's cache still believes what it put there. What you see is two
+   * models at once, and the older one cannot be got rid of by editing the newer.
+   *
+   * `bustCacheAndResetScene` is the pair of those two, and it has to be the pair
+   * — clearing the engine alone would leave the cache confident about objects
+   * that no longer exist, which surfaces later as commands failing for no
+   * visible reason. It clears, invalidates, and runs an empty program so the
+   * default planes come back.
+   *
+   * Deliberately *not* a disconnect. Reconnecting costs a WebRTC negotiation and
+   * several seconds, and somebody who went home is quite likely on their way
+   * into another project; throwing the session away to achieve what one command
+   * achieves would be paying for the same scene twice.
+   */
+  let stopWatchingProject: (() => void) | null = null
+  queueMicrotask(() => {
+    if (disposed) return
+
+    let previousPath: string | null = null
+    stopWatchingProject = effect(() => {
+      const path = sessions().current.value?.project.value.path ?? null
+      const changed = previousPath !== null && previousPath !== path
+      previousPath = path
+
+      // Only a *change* between two projects. The first project to open has
+      // nothing behind it, and closing one is followed by opening another often
+      // enough that resetting on the way out would do the work twice.
+      if (!changed || path === null) return
+      if (engine().state.peek().status !== 'connected') return
+
+      void resetScene()
+    })
+  })
+
+  /**
+   * The scene preferences the executor is given.
+   *
+   * Read at the moment of the call rather than captured, so a preference changed
+   * between two runs reaches the second one.
+   */
+  const sceneSettingsNow = () => {
+    const resolved = settings()
+    return {
+      highlightEdges: resolved.read(highlightEdgesSetting),
+      enableSsao: resolved.read(enableSsaoSetting),
+      showScaleGrid: resolved.read(showScaleGridSetting),
+    }
+  }
+
+  /**
+   * A reset in flight, which every execution waits behind.
+   *
+   * The reset runs an empty program to clear the scene, and it goes straight to
+   * the context rather than through the coordinator — so without this it could
+   * land *after* the new project's file had drawn, and wipe it. One promise the
+   * executor awaits is enough to order them, and it needs no queue of its own.
+   */
+  let resetting: Promise<void> = Promise.resolve()
+
+  /** Clear the engine's scene and kcl-lib's idea of it, if there is one. */
+  const resetScene = () => {
+    const current = owner
+    if (!current) return resetting
+
+    resetting = resetting
+      .catch(() => {})
+      .then(async () => {
+        try {
+          const { context, defaultSettings } = await current.get()
+          await context.bustCacheAndResetScene(
+            executorSettingsJson(defaultSettings, sceneSettingsNow())
+          )
+        } catch (caught) {
+          // A scene that went away before it could be cleared is already clear.
+          console.warn('kclExecution: could not reset the scene', caught)
+        }
+      })
+
+    return resetting
+  }
+
   const executor: Executor = {
     id: 'kcl.execution',
     order: 0,
@@ -140,6 +227,9 @@ export default defineRegistryItemFactory((ctx) => {
       engine().state.peek().status === 'connected',
 
     async run(request) {
+      // Behind any scene reset, so a project switch cannot clear the file it
+      // just opened.
+      await resetting
       const { context, wasm, defaultSettings } = await contextOwner().get()
       if (request.signal.aborted) {
         return { requestId: request.requestId, diagnostics: [] }
@@ -190,15 +280,10 @@ export default defineRegistryItemFactory((ctx) => {
       try {
         // Read per run, not per context: the settings that reach the executor
         // are whatever they are at the moment the program is executed.
-        const resolved = settings()
         const delta = (await context.execute(
           JSON.stringify(ast),
           request.path ?? undefined,
-          executorSettingsJson(defaultSettings, {
-            highlightEdges: resolved.read(highlightEdgesSetting),
-            enableSsao: resolved.read(enableSsaoSetting),
-            showScaleGrid: resolved.read(showScaleGridSetting),
-          })
+          executorSettingsJson(defaultSettings, sceneSettingsNow())
         )) as KclSceneGraphDelta
 
         const outcome = delta?.exec_outcome ?? {}
@@ -244,6 +329,7 @@ export default defineRegistryItemFactory((ctx) => {
       dispose: () => {
         disposed = true
         stopWatching?.()
+        stopWatchingProject?.()
         owner?.reset()
         contextReady.value = false
       },
