@@ -5550,7 +5550,7 @@ z = y
 
     #[tokio::test(flavor = "multi_thread")]
     async fn if_arm_bindings_leak_without_v3() {
-        // Pins the pre-3.0-preview behavior: arm bodies share the enclosing
+        // Pins the pre-KCL-3.0 behavior: arm bodies share the enclosing
         // environment, so arm bindings are visible after the if.
         for header in ["", "@settings(kclVersion = 2.0)\n"] {
             let code = format!(
@@ -5586,7 +5586,7 @@ x = if true {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn if_arm_shadowing_still_errors_without_v3() {
-        // Pins the pre-3.0-preview behavior: the arm shares the enclosing
+        // Pins the pre-KCL-3.0 behavior: the arm shares the enclosing
         // environment, so redeclaring an outer name is an error.
         for header in ["", "@settings(kclVersion = 2.0)\n"] {
             let code = format!(
@@ -5741,7 +5741,7 @@ assert(1, isEqualTo = 2, error = "code after exit ran")
     #[tokio::test(flavor = "multi_thread")]
     async fn if_arm_scoping_gated_on_entry_point_not_module() {
         // A 2.0 entry point keeps leaking arms everywhere, even inside an
-        // imported 3.0-preview module.
+        // imported KCL 3.0 module.
         let dep = r#"@settings(kclVersion = "3.0-preview")
 ignored = if true {
   leaked = 1
@@ -5758,7 +5758,7 @@ x = leakCheck
         let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
         assert_eq!(variable_f64(&result, "x"), 1.0);
 
-        // A 3.0-preview entry point applies arm scoping everywhere,
+        // A KCL 3.0 entry point applies arm scoping everywhere,
         // including inside an imported 2.0 module.
         let dep = r#"@settings(kclVersion = 2.0)
 ignored = if true {

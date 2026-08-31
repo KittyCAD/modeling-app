@@ -6812,7 +6812,7 @@ impl Node<IfExpression> {
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
         // Check the `if` branch. Conditions are evaluated in the enclosing
-        // scope; only arm bodies get their own scope (under 3.0-preview).
+        // scope; only arm bodies get their own scope (under KCL 3.0).
         let cond_value = ctx
             .execute_expr(
                 &self.cond,
@@ -6849,7 +6849,7 @@ impl Node<IfExpression> {
     }
 }
 
-/// Begin an if-arm scope. Under a 3.0-preview entry point, each
+/// Begin an if-arm scope. Under a KCL 3.0 entry point, each
 /// if/else-if/else arm body gets its own scope: bindings made inside the arm
 /// are visible from their declaration to the arm's closing brace, never
 /// outside it, and may shadow bindings from enclosing scopes. Under older
@@ -6866,7 +6866,7 @@ pub(super) fn if_arm_scope_begin(exec_state: &mut ExecState) -> Result<bool, Kcl
 }
 
 /// Execute one if/else-if/else arm body in its own scope (under a
-/// 3.0-preview entry point). Values escaping the arm -- including closures
+/// KCL 3.0 entry point). Values escaping the arm -- including closures
 /// declared in it -- stay valid after the pop because environments that may
 /// still be referenced are preserved, exactly as for function returns.
 async fn exec_if_arm(

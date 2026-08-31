@@ -459,7 +459,7 @@ enum Kont {
     IfArmDone {
         node: Arc<Node<IfExpression>>,
         /// True when the arm body runs in its own scope environment (a
-        /// 3.0-preview entry point), which must be popped on completion and
+        /// KCL 3.0 entry point), which must be popped on completion and
         /// on unwind.
         env_pushed: bool,
     },
@@ -946,7 +946,7 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) -> Result<(), KclError> {
             exec_state.mod_local.pipe_value = saved_pipe_value;
         }
         Kont::IfArmDone { env_pushed, .. } => {
-            // Pop the arm's scope environment (3.0-preview) when unwinding
+            // Pop the arm's scope environment (KCL 3.0) when unwinding
             // out of the arm via error, exit(), or return.
             if env_pushed {
                 exec_state.mut_stack().pop_env()?;

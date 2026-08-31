@@ -6064,7 +6064,7 @@ if true {
     fn test_rename_outer_variable_skips_if_branch_shadow() {
         // Renaming an outer variable must not touch uses that a branch-local
         // shadowing declaration captures. This matches if-arm scoping under
-        // kclVersion 3.0-preview: the shadow declaration's own init still
+        // KCL 3.0: the shadow declaration's own init still
         // refers to the outer binding (use before the local is bound), so it
         // is renamed; uses after the shadow within that branch are local and
         // stay; the other branch and code after the if use the outer binding
