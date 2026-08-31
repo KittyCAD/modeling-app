@@ -65,6 +65,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   getHomeProjectEntriesForLibrary,
+  type ProjectLibraryTypeContribution,
   projectLibraryRealizationsService,
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
@@ -80,6 +81,7 @@ import {
   ProjectCardList,
   type ProjectLibraryDragController,
   type ProjectLibraryDropTargetProps,
+  ProjectLibraryHomeSummarySlot,
   ProjectLibraryPreviewRow,
 } from '@src/routes/HomeProjectCards'
 import {
@@ -582,6 +584,15 @@ const Home = () => {
           }
           library={selectedProjectLibrary}
           showLibraryBackLink={Boolean(routeSelectedProjectLibrary)}
+          libraryHomeSummary={
+            selectedProjectLibrary ? (
+              <ProjectLibraryHomeSummarySlot
+                library={selectedProjectLibrary}
+                projects={scopedHomeProjectEntries}
+                projectLibraryTypes={projectLibraryTypes}
+              />
+            ) : undefined
+          }
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
@@ -776,6 +787,7 @@ const Home = () => {
             showCloudSyncUi={hasCloudSyncFeature}
             onMoveToLibrary={moveProjectToLibrary}
             projectLibraryDrag={projectLibraryDrag}
+            projectLibraryTypes={projectLibraryTypes}
             className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
           />
         )}
@@ -820,6 +832,7 @@ interface ProjectLibraryOverviewProps extends HTMLProps<HTMLDivElement> {
   showCloudSyncUi: boolean
   onMoveToLibrary: (project: HomeProjectEntry) => void
   projectLibraryDrag?: ProjectLibraryDragController
+  projectLibraryTypes: ReadonlyMap<string, ProjectLibraryTypeContribution>
 }
 
 function shouldShowLoadingMoreProjects(
@@ -843,17 +856,29 @@ function ProjectLibraryOverview({
   showCloudSyncUi,
   onMoveToLibrary,
   projectLibraryDrag,
+  projectLibraryTypes,
   ...rest
 }: ProjectLibraryOverviewProps) {
   const state = useSystemIOState()
   const libraryRows = libraries
-    .map((library) => ({
-      library,
-      projects: getHomeProjectEntriesForLibrary(
-        query.length > 0 ? searchResults : projects,
+    .map((library) => {
+      const libraryProjects = getHomeProjectEntriesForLibrary(
+        projects,
         library.id
-      ).toSorted(getSortFunction(sort)),
-    }))
+      ).toSorted(getSortFunction(sort))
+      const displayedProjects =
+        query.length > 0
+          ? getHomeProjectEntriesForLibrary(searchResults, library.id).toSorted(
+              getSortFunction(sort)
+            )
+          : libraryProjects
+
+      return {
+        library,
+        libraryProjects,
+        projects: displayedProjects,
+      }
+    })
     .filter(({ projects }) => query.length === 0 || projects.length > 0)
   const loadingMore = shouldShowLoadingMoreProjects(state) ? (
     <div className="py-4">
@@ -873,17 +898,19 @@ function ProjectLibraryOverview({
         <>
           {libraryRows.length > 0 ? (
             <div className="flex flex-col gap-8">
-              {libraryRows.map(({ library, projects }) => (
+              {libraryRows.map(({ library, libraryProjects, projects }) => (
                 <ProjectLibraryPreviewRow
                   key={library.id}
                   library={library}
                   projects={projects}
+                  libraryProjects={libraryProjects}
                   query={query}
                   projectStatuses={projectStatuses}
                   projectActions={projectActions}
                   showCloudSyncUi={showCloudSyncUi}
                   onMoveToLibrary={onMoveToLibrary}
                   projectLibraryDrag={projectLibraryDrag}
+                  projectLibraryTypes={projectLibraryTypes}
                 />
               ))}
             </div>

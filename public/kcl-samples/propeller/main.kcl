@@ -1,6 +1,6 @@
 // Propeller
 // A propeller is a rotating set of blades on a hub that converts shaft power into thrust by accelerating air or water rearward
-// Categories: Aerospace
+// Categories: Aerospace; Mechanical Components
 
 @settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
 

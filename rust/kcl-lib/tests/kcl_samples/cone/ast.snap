@@ -2134,7 +2134,7 @@ description: Result of parsing cone.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Science & Education; Parametric",
             "style": "line"
           }
         },

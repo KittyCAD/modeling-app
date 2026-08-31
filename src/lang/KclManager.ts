@@ -1050,6 +1050,16 @@ export class KclManager extends File {
           return
         }
 
+        // Zookeeper history needs to record the active-file edit against the
+        // editor's pre-write text, so don't let the watcher preemptively reload
+        // it or report its intermediate editor state as an unsaved local edit.
+        if (
+          this.zookeeperManagerMachineBulkManipulatingFileSystem ||
+          this.zookeeperHistoryRecordingInProgress
+        ) {
+          return
+        }
+
         if (this.hasUnsavedLocalChanges()) {
           console.warn(
             'External file change detected while local edits are unsaved. Skipping automatic reload to avoid overwriting the editor buffer.'
@@ -1057,15 +1067,6 @@ export class KclManager extends File {
           toast.error(
             'File changed on disk while this editor has unsaved changes. Reload was skipped to protect your work.'
           )
-          return
-        }
-
-        // Zookeeper history needs to record the active-file edit against the
-        // editor's pre-write text, so don't let the watcher preemptively reload it.
-        if (
-          this.zookeeperManagerMachineBulkManipulatingFileSystem ||
-          this.zookeeperHistoryRecordingInProgress
-        ) {
           return
         }
 

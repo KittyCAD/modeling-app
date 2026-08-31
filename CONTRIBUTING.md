@@ -318,6 +318,14 @@ diff --ignore-blank-lines -w /tmp/urls.txt ./scripts/known/urls.txt
 
 - `npm run circular-deps:diff`
 
+## Making issues
+
+We receive a lot of issues while we're building this app. Please follow these principles when creating issues, in order to help our team work as efficiently as possible:
+
+1. Look for duplicate issues. If you have edit access, feel free to edit an existing issue as needed. If not, please add a comment with your additional context instead of creating a new issue.
+2. If a new issue is needed, please start with a succinct one-sentence description of the request, specifying whether the request is a missing feature, bug, maintenance task, or a fun new idea along the way.
+3. For bugs, please provide reproduction steps whenever possible, as well as context around device, platform and your state. Sharing KCL is often very helpful for bugs.
+
 ## Proposing changes
 
 Before you submit a contribution PR to this repo, please ensure that:

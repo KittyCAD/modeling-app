@@ -401,6 +401,32 @@ export const getEXTWithPeriod = (filePath: string) => {
   return extension
 }
 
+export const getVersionedCreoExtensionWithPeriod = (filePath: string) => {
+  const lastSeparatorIndex = Math.max(
+    filePath.lastIndexOf('/'),
+    filePath.lastIndexOf('\\')
+  )
+  const fileName = filePath.slice(lastSeparatorIndex + 1)
+  const normalizedFileName = fileName.toLowerCase()
+  const marker = '.prt.'
+  const markerIndex = normalizedFileName.lastIndexOf(marker)
+  if (markerIndex <= 0) {
+    return null
+  }
+
+  const version = normalizedFileName.slice(markerIndex + marker.length)
+  if (version.length === 0 || version[0] < '1' || version[0] > '9') {
+    return null
+  }
+  for (const digit of version) {
+    if (digit < '0' || digit > '9') {
+      return null
+    }
+  }
+
+  return fileName.slice(markerIndex)
+}
+
 export const getParentAbsolutePath = (absolutePath: string) => {
   const split = desktopSafePathSplit(absolutePath)
   split.pop()
@@ -409,20 +435,41 @@ export const getParentAbsolutePath = (absolutePath: string) => {
 }
 
 /**
- * Helper function to detect if an extension is an import extension
+ * Match a raw extension or complete file path against supported extensions.
  */
+const isExtensionOrPathInList = (
+  extensionOrPath: string,
+  extensions: string[]
+) => {
+  const normalized = extensionOrPath.toLowerCase()
+  if (extensions.includes(normalized)) {
+    return true
+  }
+
+  const extension = getEXTNoPeriod(normalized)
+  if (extension && extensions.includes(extension)) {
+    return true
+  }
+
+  if (!extensions.includes('prt')) {
+    return false
+  }
+
+  return getVersionedCreoExtensionWithPeriod(normalized) !== null
+}
+
 export const isExtensionAnImportExtension = (
   extension: string,
   importExtensions: string[]
 ) => {
-  return importExtensions.includes(extension.toLowerCase())
+  return isExtensionOrPathInList(extension, importExtensions)
 }
 
 export const isExtensionARelevantExtension = (
   extension: string,
   relevantExtensions: string[]
 ) => {
-  return relevantExtensions.includes(extension.toLowerCase())
+  return isExtensionOrPathInList(extension, relevantExtensions)
 }
 
 /**

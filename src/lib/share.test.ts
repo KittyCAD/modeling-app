@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-
 import type { ProjectResponse } from '@kittycad/lib'
 import type { Project } from '@src/lib/project'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 function makeRemoteProject(
   overrides: Partial<ProjectResponse> = {}
@@ -67,6 +66,26 @@ const mockState = vi.hoisted(() => ({
 
     return new TextEncoder().encode(`raw:${path}`)
   }),
+  fsWriteFile: vi.fn(async (_path: string, _data: Uint8Array) => {}),
+  collectLocalProjectFilesForCloudSync: vi.fn(async () => [
+    {
+      relativePath: '.gitignore',
+      data: new TextEncoder().encode('thumbnail.png\n'),
+    },
+    {
+      relativePath: 'main.kcl',
+      data: new TextEncoder().encode('saved code'),
+    },
+    {
+      relativePath: 'project.toml',
+      data: new TextEncoder().encode('title = "bracket"\n'),
+    },
+  ]),
+}))
+
+vi.mock('@src/lib/cloudSync/localManifest', () => ({
+  collectLocalProjectFilesForCloudSync:
+    mockState.collectLocalProjectFilesForCloudSync,
 }))
 
 vi.mock('@src/env', async () => {
@@ -115,6 +134,7 @@ vi.mock('@src/lib/fs-zds', () => ({
       return lastDot >= 0 ? path.slice(lastDot) : ''
     },
     readFile: mockState.fsReadFile,
+    writeFile: mockState.fsWriteFile,
   },
 }))
 
@@ -203,6 +223,19 @@ describe('publishCurrentProject', () => {
         category_ids: ['category-a', 'category-b'],
       })
     )
+    expect(createProjectFiles.map((file) => file.name)).toContain('.gitignore')
+    const mainFile = createProjectFiles.find((file) => file.name === 'main.kcl')
+    await expect(mainFile?.data.text()).resolves.toBe(
+      'part001 = startSketchOn(XY)'
+    )
+    expect(mockState.fsWriteFile).toHaveBeenCalledOnce()
+    const persistedProjectToml = mockState.fsWriteFile.mock.calls[0]?.[1]
+    expect(new TextDecoder().decode(persistedProjectToml)).toContain(
+      'title = "bracket"'
+    )
+    expect(new TextDecoder().decode(persistedProjectToml)).toContain(
+      'project_id = "project-created"'
+    )
     expect(mockState.publishProject).toHaveBeenCalledWith({
       client: {
         mocked: true,
@@ -215,6 +248,34 @@ describe('publishCurrentProject', () => {
       'Project submitted for review.',
       { duration: 5000 }
     )
+  })
+
+  it('shows a useful error when a category is rejected', async () => {
+    mockState.createProject.mockResolvedValueOnce(
+      new Error(
+        'category `retired-category` is not active or does not exist'
+      ) as never
+    )
+
+    const published = await publishCurrentProject({
+      token: 'token-123',
+      project: makeProject(),
+      currentFilePath: '/projects/bracket/main.kcl',
+      currentFileContents: 'part001 = startSketchOn(XY)',
+      wasmInstance: {} as never,
+      submission: {
+        title: 'Bracket',
+        description: 'A mounting bracket.',
+        categoryIds: ['retired-category'],
+      },
+    })
+
+    expect(published).toBe(false)
+    expect(mockState.toastError).toHaveBeenCalledWith(
+      'One or more selected categories are no longer available. Choose an active category and try again.',
+      { duration: 5000 }
+    )
+    expect(mockState.publishProject).not.toHaveBeenCalled()
   })
 })
 

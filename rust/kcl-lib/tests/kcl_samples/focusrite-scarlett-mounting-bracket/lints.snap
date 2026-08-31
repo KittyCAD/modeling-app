@@ -13,8 +13,8 @@ description: Lints focusrite-scarlett-mounting-bracket.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      1622,
-      2050,
+      1654,
+      2082,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints focusrite-scarlett-mounting-bracket.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      2923,
-      3189,
+      2955,
+      3221,
       0
     ],
     "overridden": false,
@@ -47,8 +47,8 @@ description: Lints focusrite-scarlett-mounting-bracket.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      4122,
-      4383,
+      4154,
+      4415,
       0
     ],
     "overridden": false,

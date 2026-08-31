@@ -33976,7 +33976,7 @@ description: Result of parsing clock.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Home & Lifestyle",
             "style": "line"
           }
         },
