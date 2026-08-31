@@ -634,9 +634,7 @@ export function buildToolbarConfig(
           links: [
             {
               label: 'KCL docs',
-              url: withSiteBaseURL(
-                '/docs/kcl-std/functions/std-sketch-startSketchOn'
-              ),
+              url: withSiteBaseURL('/docs/kcl-lang/sketches'),
             },
           ],
         },
@@ -1920,9 +1918,7 @@ export function buildToolbarConfig(
           links: [
             {
               label: 'KCL docs',
-              url: withSiteBaseURL(
-                '/docs/kcl-std/functions/std-sketch-polygon'
-              ),
+              url: withSiteBaseURL('/docs/kcl-lang/sketches'),
             },
           ],
         },
