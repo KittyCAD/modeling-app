@@ -57,6 +57,15 @@ export type DraftState =
    * simple.
    */
   | { kind: 'chaining'; fromPointId: ApiObjectId }
+  /**
+   * A committed point being dragged.
+   *
+   * In the same union as the draft states rather than beside them, because they
+   * are the same machinery pointed at a different point — a preview solve per
+   * move, a commit on release — and because they are mutually exclusive: you
+   * cannot be rubber-banding a new line and dragging an old corner at once.
+   */
+  | { kind: 'dragging'; pointId: ApiObjectId }
 
 /** What the tool wants the frontend to do. */
 export type DraftAction =
@@ -174,6 +183,10 @@ export function place(
       // Nothing to commit: the pointer has not moved since the last click, so
       // no segment exists to be finished.
       return { state, actions: [] }
+
+    case 'dragging':
+      // A drag ends on release, not on a click.
+      return { state, actions: [] }
   }
 }
 
@@ -215,6 +228,37 @@ export function moveTo(
           },
         ],
       }
+
+    case 'dragging':
+      return {
+        state,
+        actions: [
+          { kind: 'move', pointId: state.pointId, to: at, commit: false },
+        ],
+      }
+  }
+}
+
+/** Take hold of a point that is already in the sketch. */
+export const beginDrag = (pointId: ApiObjectId): DraftState => ({
+  kind: 'dragging',
+  pointId,
+})
+
+/**
+ * Let go, committing where it ended up.
+ *
+ * The position comes from the caller rather than being remembered, because the
+ * release is the authority on where the point went: the last preview may have
+ * been superseded, and a pointer can move between the last move event and the
+ * release.
+ */
+export function endDrag(state: DraftState, at: PlanePoint): DraftStep {
+  if (state.kind !== 'dragging') return { state, actions: [] }
+
+  return {
+    state: { kind: 'idle' },
+    actions: [{ kind: 'move', pointId: state.pointId, to: at, commit: true }],
   }
 }
 
@@ -225,6 +269,10 @@ export function moveTo(
  * because there is nothing in the file that should not be there.
  */
 export function abandon(state: DraftState): DraftStep {
+  // A drag has nothing to throw away: the point it moved was already in the
+  // sketch, and where it is now is where the last preview left it.
+  if (state.kind === 'dragging') return { state: { kind: 'idle' }, actions: [] }
+
   if (state.kind === 'drawing') {
     return {
       state: { kind: 'idle' },

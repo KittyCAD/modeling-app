@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import {
   LINE_SEGMENT_LABEL,
   abandon,
+  beginDrag,
+  endDrag,
   draftSegmentIds,
   expr,
   isMidDraft,
@@ -156,5 +158,44 @@ describe('how numbers are written', () => {
       value: 0.33,
       units: 'Inch',
     })
+  })
+})
+
+describe('dragging a committed point', () => {
+  const dragging = { kind: 'dragging' as const, pointId: 4 }
+
+  it('previews the move as the pointer goes, like a rubber band', () => {
+    expect(moveTo(dragging, { x: 7, y: 8 }, context).actions).toEqual([
+      { kind: 'move', pointId: 4, to: { x: 7, y: 8 }, commit: false },
+    ])
+  })
+
+  it('commits where it was released, and stops', () => {
+    const step = endDrag(dragging, { x: 9, y: 9 })
+
+    expect(step.actions).toEqual([
+      { kind: 'move', pointId: 4, to: { x: 9, y: 9 }, commit: true },
+    ])
+    expect(step.state).toEqual({ kind: 'idle' })
+  })
+
+  it('ignores a click, because a drag ends on release', () => {
+    expect(place(dragging, { x: 1, y: 1 }, context).actions).toEqual([])
+  })
+
+  /*
+   * Nothing to throw away: the point was already in the sketch, and where it is
+   * now is where the last preview left it.
+   */
+  it('has nothing to discard when abandoned', () => {
+    expect(abandon(dragging)).toEqual({ state: { kind: 'idle' }, actions: [] })
+  })
+
+  it('names no draft segments, so nothing is drawn as provisional', () => {
+    expect(draftSegmentIds(dragging)).toEqual([])
+  })
+
+  it('ends nothing when no drag is in progress', () => {
+    expect(endDrag(idle, { x: 1, y: 1 }).actions).toEqual([])
   })
 })

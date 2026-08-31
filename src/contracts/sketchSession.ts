@@ -105,6 +105,16 @@ export interface SketchSessionService {
   moveTo(at: PlanePoint): void
   /** Stop a chain of segments without leaving the tool. */
   finishChain(): void
+  /**
+   * Take hold of a point that is already in the sketch.
+   *
+   * The same machinery the rubber band uses, pointed at existing geometry: a
+   * preview solve per move, and a commit on release. So dragging a corner is
+   * constrained as it moves rather than snapping into place when let go.
+   */
+  beginDrag(pointId: ApiObjectId): void
+  /** Let go, committing where it ended up. */
+  endDrag(at: PlanePoint): void
   /** Abandon what the tool was part way through, keeping it equipped. */
   cancelTool(): void
 }

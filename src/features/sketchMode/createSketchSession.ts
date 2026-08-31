@@ -34,7 +34,9 @@ import {
   type DraftAction,
   type DraftState,
   abandon,
+  beginDrag as beginDragState,
   begun,
+  endDrag as endDragState,
   moveTo as moveDraft,
   place as placeDraft,
   pointAt,
@@ -338,9 +340,13 @@ export function createSketchSession(
       while (latestMove) {
         const action = latestMove
         latestMove = null
-        // Dropped if the draft ended while this waited its turn: editing a
-        // deleted point is an error, and an abandoned draft is a normal thing.
-        if (draft.peek().kind !== 'drawing') break
+        /*
+         * Dropped if whatever was being moved has ended while this waited its
+         * turn: editing a deleted point is an error, and an abandoned draft is a
+         * normal thing.
+         */
+        const kind = draft.peek().kind
+        if (kind !== 'drawing' && kind !== 'dragging') break
         await perform(action)
       }
     } catch (caught) {
@@ -546,6 +552,21 @@ export function createSketchSession(
 
     finishChain() {
       void discardDraft()
+    },
+
+    beginDrag(pointId) {
+      if (!open.peek()) return
+      // A drag takes precedence over whatever a tool was part way through: you
+      // cannot be rubber-banding a new line and moving an old corner at once.
+      void discardDraft()
+      draft.value = beginDragState(pointId)
+    },
+
+    endDrag(at: PlanePoint) {
+      const step = endDragState(draft.peek(), at)
+      draft.value = step.state
+      latestMove = null
+      run(step.actions)
     },
 
     cancelTool() {

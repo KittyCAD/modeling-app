@@ -42,13 +42,23 @@ function setup(
   const place = vi.fn()
   const moveTo = vi.fn()
   const finishChain = vi.fn()
+  const beginDrag = vi.fn((id: number) => {
+    draft.value = { kind: 'dragging', pointId: id }
+  })
+  const endDrag = vi.fn(() => {
+    draft.value = { kind: 'idle' }
+  })
+  const draft = signal<{ kind: string; pointId?: number }>({ kind: 'idle' })
 
   const session = {
     open,
     tool,
+    draft,
     place,
     moveTo,
     finishChain,
+    beginDrag,
+    endDrag,
   } as unknown as SketchSessionService
 
   // The identity projection: an element pixel is a plane millimetre, which
@@ -90,6 +100,9 @@ function setup(
     place,
     moveTo,
     finishChain,
+    beginDrag,
+    endDrag,
+    draft,
     dispose: () => {
       dispose()
       disposePick()
@@ -227,87 +240,89 @@ describe('clicks that are not drawing', () => {
   })
 })
 
-describe('snapping', () => {
-  /** A line from (20,20) to (40,20), and the two ends as points. */
-  const graph = {
-    objects: [
-      {
-        id: 0,
-        kind: {
-          type: 'Segment',
-          segment: {
-            type: 'Point',
-            position: {
-              x: { value: 20, units: 'Mm' },
-              y: { value: 20, units: 'Mm' },
-            },
-            ctor: null,
-            owner: null,
-            freedom: 'Free',
-            constraints: [],
+/** A line from (20,20) to (40,20), and the two ends as points. */
+const sketchGraph = {
+  objects: [
+    {
+      id: 0,
+      kind: {
+        type: 'Segment',
+        segment: {
+          type: 'Point',
+          position: {
+            x: { value: 20, units: 'Mm' },
+            y: { value: 20, units: 'Mm' },
           },
-        },
-        label: 'p0',
-        comments: '',
-        artifact_id: 'a0',
-        source: { type: 'Simple', range: [0, 0, 0], node_path: null },
-      },
-      {
-        id: 1,
-        kind: {
-          type: 'Segment',
-          segment: {
-            type: 'Point',
-            position: {
-              x: { value: 40, units: 'Mm' },
-              y: { value: 20, units: 'Mm' },
-            },
-            ctor: null,
-            owner: null,
-            freedom: 'Free',
-            constraints: [],
-          },
-        },
-        label: 'p1',
-        comments: '',
-        artifact_id: 'a1',
-        source: { type: 'Simple', range: [0, 0, 0], node_path: null },
-      },
-      {
-        id: 2,
-        kind: {
-          type: 'Segment',
-          segment: {
-            type: 'Line',
-            start: 0,
-            end: 1,
-            ctor: { type: 'Line' },
-            ctor_applicable: true,
-            construction: false,
-          },
-        },
-        label: 'l1',
-        comments: '',
-        artifact_id: 'a2',
-        source: { type: 'Simple', range: [0, 0, 0], node_path: null },
-      },
-      {
-        id: 3,
-        kind: {
-          type: 'Sketch',
-          args: { on: { default: 'XY' } },
-          plane: 9,
-          segments: [2],
+          ctor: null,
+          owner: null,
+          freedom: 'Free',
           constraints: [],
         },
-        label: 's',
-        comments: '',
-        artifact_id: 'a3',
-        source: { type: 'Simple', range: [0, 0, 0], node_path: null },
       },
-    ],
-    sketch_mode: 3,
-  } as unknown as SceneGraph
+      label: 'p0',
+      comments: '',
+      artifact_id: 'a0',
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+    },
+    {
+      id: 1,
+      kind: {
+        type: 'Segment',
+        segment: {
+          type: 'Point',
+          position: {
+            x: { value: 40, units: 'Mm' },
+            y: { value: 20, units: 'Mm' },
+          },
+          ctor: null,
+          owner: null,
+          freedom: 'Free',
+          constraints: [],
+        },
+      },
+      label: 'p1',
+      comments: '',
+      artifact_id: 'a1',
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+    },
+    {
+      id: 2,
+      kind: {
+        type: 'Segment',
+        segment: {
+          type: 'Line',
+          start: 0,
+          end: 1,
+          ctor: { type: 'Line' },
+          ctor_applicable: true,
+          construction: false,
+        },
+      },
+      label: 'l1',
+      comments: '',
+      artifact_id: 'a2',
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+    },
+    {
+      id: 3,
+      kind: {
+        type: 'Sketch',
+        args: { on: { default: 'XY' } },
+        plane: 9,
+        segments: [2],
+        constraints: [],
+      },
+      label: 's',
+      comments: '',
+      artifact_id: 'a3',
+      source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+    },
+  ],
+  sketch_mode: 3,
+} as unknown as SceneGraph
+
+describe('snapping', () => {
+  const graph = sketchGraph
 
   const drawing = () =>
     setup({
@@ -407,5 +422,100 @@ describe('the rubber band', () => {
 
     expect(app.finishChain).toHaveBeenCalledTimes(1)
     expect(app.place).not.toHaveBeenCalled()
+  })
+})
+
+describe('dragging a point', () => {
+  /** The line fixture again, with its two ends as grabbable points. */
+  const dragSetup = () =>
+    setup({
+      graph: sketchGraph,
+      open: { sketchId: 3, name: 's', plane, planeProblem: null },
+    })
+
+  /*
+   * The press has to be claimed ahead of the camera, or grabbing a corner also
+   * spins the model — which is why this cannot live with the handler that sits
+   * behind the camera and swallows clicks.
+   */
+  it('grabs the point under the pointer, with no tool equipped', () => {
+    const app = dragSetup()
+    const press = pointer('pointerdown', 20, 20)
+    const claimed = vi.spyOn(press, 'stopImmediatePropagation')
+
+    app.element.dispatchEvent(press)
+
+    expect(app.beginDrag).toHaveBeenCalledWith(0)
+    expect(claimed).toHaveBeenCalled()
+    expect(press.defaultPrevented).toBe(true)
+  })
+
+  it('leaves the press to the camera when there is no point there', () => {
+    const app = dragSetup()
+    const press = pointer('pointerdown', 150, 90)
+    const claimed = vi.spyOn(press, 'stopImmediatePropagation')
+
+    app.element.dispatchEvent(press)
+
+    expect(app.beginDrag).not.toHaveBeenCalled()
+    expect(claimed).not.toHaveBeenCalled()
+  })
+
+  it('moves the point as the pointer moves', () => {
+    const app = dragSetup()
+    app.element.dispatchEvent(pointer('pointerdown', 20, 20))
+
+    app.element.dispatchEvent(pointer('pointermove', 30, 25))
+
+    // Snapped onto the line it is five millimetres from, which is the point of
+    // solving as you drag rather than when you let go.
+    expect(app.moveTo).toHaveBeenCalledWith({ x: 30, y: 20 })
+  })
+
+  /*
+   * The point being moved is in the sketch like any other, so without excluding
+   * it the drag snaps to where it started and refuses to move.
+   */
+  it('does not snap the dragged point to itself', () => {
+    const app = dragSetup()
+    app.element.dispatchEvent(pointer('pointerdown', 20, 20))
+
+    app.element.dispatchEvent(pointer('pointermove', 22, 60))
+
+    expect(app.moveTo).toHaveBeenCalledWith({ x: 22, y: 60 })
+  })
+
+  it('commits where it was released, not where the last preview was', () => {
+    const app = dragSetup()
+    app.element.dispatchEvent(pointer('pointerdown', 20, 20))
+    app.element.dispatchEvent(pointer('pointermove', 30, 25))
+
+    app.element.dispatchEvent(pointer('pointerup', 60, 70))
+
+    // The pointer can move between the last move event and the release.
+    expect(app.endDrag).toHaveBeenCalledWith({ x: 60, y: 70 })
+    expect(app.place).not.toHaveBeenCalled()
+  })
+
+  it('snaps the released position like a click does', () => {
+    const app = dragSetup()
+    app.element.dispatchEvent(pointer('pointerdown', 20, 20))
+
+    // Two millimetres from the line's other end, inside the reach.
+    app.element.dispatchEvent(pointer('pointerup', 42, 20))
+
+    expect(app.endDrag).toHaveBeenCalledWith({ x: 40, y: 20 })
+  })
+
+  it('draws rather than drags when a tool is equipped', () => {
+    const app = setup({
+      graph: sketchGraph,
+      open: { sketchId: 3, name: 's', plane, planeProblem: null },
+      tool: 'line',
+    })
+
+    app.element.dispatchEvent(pointer('pointerdown', 20, 20))
+
+    expect(app.beginDrag).not.toHaveBeenCalled()
   })
 })

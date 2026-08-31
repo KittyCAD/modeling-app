@@ -4,7 +4,7 @@ import type { SketchSessionService } from '@src/contracts/sketchSession'
 import type { SceneGraph } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { PlanePoint } from '@src/lib/scene/projection'
 import { drawingOf } from '@src/lib/sketch/drawing'
-import { SKETCH_HOVER_DISTANCE_PX } from '@src/lib/sketch/hitTest'
+import { SKETCH_HOVER_DISTANCE_PX, pickInSketch } from '@src/lib/sketch/hitTest'
 import {
   type SnappingCandidate,
   allowSnapping,
@@ -90,10 +90,27 @@ export function createSketchInteraction(
     // nothing to snap within.
     if (scale <= 0) return null
 
+    /*
+     * Never to itself.
+     *
+     * The point being moved is in the sketch like any other, so without this it
+     * snaps to where it started and refuses to be dragged at all — the existing
+     * app excludes the draft point for exactly this reason. The same is true of a
+     * draft's own end while it is being rubber-banded.
+     */
+    const moving = session?.draft.value
+    const exclude =
+      moving?.kind === 'dragging'
+        ? new Set([moving.pointId])
+        : moving?.kind === 'drawing'
+          ? new Set([moving.pointId])
+          : undefined
+
     return bestSnappingCandidate(
       drawingOf(graph, open.sketchId),
       where,
-      SKETCH_HOVER_DISTANCE_PX / scale
+      SKETCH_HOVER_DISTANCE_PX / scale,
+      exclude ? { exclude } : {}
     )
   }
 
@@ -130,6 +147,39 @@ export function createSketchInteraction(
   /** True while a sketch is open, tool or no tool. */
   const inSketch = () => dependencies.session()?.open.value != null
 
+  /**
+   * The point under the pointer, if the pointer is on one.
+   *
+   * The same ten pixels of reach the snapping uses, because it is the same
+   * question asked for a different purpose — and two different reaches would mean
+   * a point you could snap to but not grab.
+   */
+  const vertexAt = (
+    where: PlanePoint | null,
+    viewport: { width: number; height: number }
+  ) => {
+    const session = dependencies.session()
+    const projection = dependencies.projection()
+    const graph = dependencies.graph()
+    const open = session?.open.value
+    const plane = open?.plane
+
+    if (!where || !plane || !graph || !projection) return null
+
+    const scale = projection.scaleOn(plane, where, viewport)
+    if (scale <= 0) return null
+
+    const hit = pickInSketch(
+      drawingOf(graph, open.sketchId),
+      where,
+      SKETCH_HOVER_DISTANCE_PX / scale
+    )
+    return hit?.kind === 'vertex' ? hit.id : null
+  }
+
+  /** True while a point is being moved. */
+  const dragging = () => dependencies.session()?.draft.value.kind === 'dragging'
+
   return {
     pointer: {
       at: computed(() => at.value),
@@ -159,7 +209,7 @@ export function createSketchInteraction(
          * to end where the click will land — a preview that follows the cursor
          * past a snap target is a preview that lies about the next click.
          */
-        if (where && drawing()) {
+        if (where && (drawing() || dragging())) {
           dependencies.session()?.moveTo(snappedPosition(candidate, where))
         }
       }
@@ -170,25 +220,56 @@ export function createSketchInteraction(
       }
 
       const onPointerDown = (event: PointerEvent) => {
-        if (!drawing() || event.button !== 0) return
+        if (event.button !== 0) return
+
+        const where = planePointFor(element, event)
+        const viewport = viewportOf(element)
 
         /*
-         * Claimed here rather than on the click, because the camera starts its
-         * drag on pointerdown: letting this one through would begin an orbit
-         * that the click then finished.
+         * A point under the pointer is grabbed, tool or no tool.
+         *
+         * This has to happen here, ahead of the camera, for the same reason
+         * drawing does: the camera begins an orbit on the press, so a grab
+         * decided any later would be a grab that also spun the model. It is why
+         * moving geometry cannot live with the *other* pointer handler, the one
+         * that sits behind the camera and swallows clicks.
          */
+        const grabbed = drawing() ? null : vertexAt(where, viewport)
+        if (!drawing() && grabbed === null) return
+
         event.stopImmediatePropagation()
         event.preventDefault()
         pressedAt = { x: event.clientX, y: event.clientY }
-        const where = planePointFor(element, event)
         at.value = where
-        snap.value = snapFor(where, event, viewportOf(element))
+        snap.value = snapFor(where, event, viewport)
+
+        if (grabbed !== null) dependencies.session()?.beginDrag(grabbed)
       }
 
       const onPointerUp = (event: PointerEvent) => {
         const pressed = pressedAt
         pressedAt = null
-        if (!drawing() || !pressed || event.button !== 0) return
+        if (event.button !== 0) return
+
+        /*
+         * A drag ends where it ended, and is not also a click.
+         *
+         * Committed from the release rather than from the last preview, because
+         * the pointer can move between the two — and because a superseded preview
+         * may never have reached the position the user let go at.
+         */
+        if (dragging()) {
+          event.stopImmediatePropagation()
+          const where = planePointFor(element, event)
+          const landed = snappedPosition(
+            snapFor(where, event, viewportOf(element)),
+            where ?? { x: 0, y: 0 }
+          )
+          if (where) dependencies.session()?.endDrag(landed)
+          return
+        }
+
+        if (!drawing() || !pressed) return
 
         event.stopImmediatePropagation()
 
