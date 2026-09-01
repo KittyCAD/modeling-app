@@ -47,26 +47,45 @@ export function createNavigationContributions(app: App) {
   /** URL-seeded placeholder. See the note above. */
   const libraryId = signal<string | undefined>(undefined)
 
+  /**
+   * These two functions are the only place the overlay's *path nesting* is
+   * baked in, and they are the only place that changes when overlays move to
+   * query parameters — which is the intended direction. `AppOverlay` itself is
+   * an axis with no opinion about serialisation, so the model does not move
+   * with it. That migration deliberately changes URLs, so it cannot ride inside
+   * a slice whose safety argument is that the URLs did not.
+   *
+   * An onboarding step is itself a path (`desktop/conclusion`), so its
+   * separators stay structural while everything else is encoded. Encoding the
+   * whole thing would turn today's URLs into `desktop%2Fconclusion`.
+   */
+  const encodeStep = (step: string) =>
+    encodeURIComponent(step).replace(/%2F/g, '/')
+
   const overlaySuffix = (current: AppOverlay | undefined) => {
     if (!current) return ''
     if (current.kind === 'settings') return PATHS.SETTINGS
     if (current.kind === 'telemetry') return PATHS.TELEMETRY
     return current.step
-      ? `${PATHS.ONBOARDING}/${current.step}`
+      ? `${PATHS.ONBOARDING}/${encodeStep(current.step)}`
       : PATHS.ONBOARDING
   }
 
   const parseOverlay = (pathname: string): AppOverlay | undefined => {
-    if (pathname.endsWith(PATHS.SETTINGS)) return { kind: 'settings' }
-    if (pathname.endsWith(PATHS.TELEMETRY)) return { kind: 'telemetry' }
+    // Onboarding is checked first because its step is an arbitrary path, so a
+    // step could itself end in `/settings` and be misread as one.
     const onboarding = pathname.indexOf(`${PATHS.ONBOARDING}/`)
     if (onboarding !== -1) {
       return {
         kind: 'onboarding',
-        step: pathname.slice(onboarding + PATHS.ONBOARDING.length + 1),
+        step: decodeURIComponent(
+          pathname.slice(onboarding + PATHS.ONBOARDING.length + 1)
+        ),
       }
     }
     if (pathname.endsWith(PATHS.ONBOARDING)) return { kind: 'onboarding' }
+    if (pathname.endsWith(PATHS.SETTINGS)) return { kind: 'settings' }
+    if (pathname.endsWith(PATHS.TELEMETRY)) return { kind: 'telemetry' }
     return undefined
   }
 
