@@ -1,0 +1,16 @@
+[package]
+name = "kcl-engine-codec"
+description = "Serialization and deserialization for the KCL engine protocol"
+version = "0.2.181"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
+authors = ["KittyCAD, Inc"]
+
+[dependencies]
+kittycad-modeling-cmds = { workspace = true }
+rmp-serde = { workspace = true }
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

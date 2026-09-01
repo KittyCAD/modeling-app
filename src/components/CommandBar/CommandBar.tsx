@@ -13,6 +13,7 @@ import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { keymapService } from '@src/registry/contracts/keymap'
+import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
@@ -169,14 +170,9 @@ export const CommandBar = () => {
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox
-                options={commands.filter((command: Command) => {
-                  return (
-                    // By default everything is undefined
-                    // If marked explicitly as false hide
-                    command.hideFromSearch === undefined ||
-                    command.hideFromSearch === false
-                  )
-                })}
+                options={commands.filter((command: Command) =>
+                  isCommandVisibleInSearch(command)
+                )}
               />
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument stepBack={stepBack} />
