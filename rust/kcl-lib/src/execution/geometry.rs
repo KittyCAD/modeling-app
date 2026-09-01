@@ -2225,6 +2225,15 @@ impl ExtrudeSurface {
         }
     }
 
+    pub fn set_id(&mut self, id: uuid::Uuid) {
+        match self {
+            ExtrudeSurface::ExtrudePlane(ep) => ep.geo_meta.id = id,
+            ExtrudeSurface::ExtrudeArc(ea) => ea.geo_meta.id = id,
+            ExtrudeSurface::Fillet(f) => f.geo_meta.id = id,
+            ExtrudeSurface::Chamfer(c) => c.geo_meta.id = id,
+        }
+    }
+
     pub fn face_id(&self) -> uuid::Uuid {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.face_id,

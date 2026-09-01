@@ -21,6 +21,7 @@ import {
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { selectSketchPlane } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
+import { shouldLockViewControls } from '@src/components/viewControlMenuUtils'
 import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
@@ -33,9 +34,10 @@ export function useViewControlMenuItems() {
   )
 
   const settingsValues = settings.useSettings()
-  const shouldLockView =
-    modelingState.matches('Sketch') &&
-    !settingsValues.app.allowOrbitInSketchMode.current
+  const shouldLockView = shouldLockViewControls(
+    modelingState,
+    settingsValues.app.allowOrbitInSketchMode.current
+  )
 
   const sketching =
     modelingState.matches('Sketch') || modelingState.matches('sketchSolveMode')
