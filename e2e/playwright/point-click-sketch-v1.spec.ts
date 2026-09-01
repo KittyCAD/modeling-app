@@ -9,13 +9,20 @@ import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
   KCL_DEFAULT_INSTANCES,
   KCL_DEFAULT_LENGTH,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
 } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
-  test.use({ userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG] })
+  // These sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+  test.use({
+    userFeatures: [
+      EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+      LEGACY_SKETCH_MODE_FEATURE_FLAG,
+    ],
+  })
 
   test('Create an Extrude operation with a tag and edit it via Feature Tree', async ({
     context,

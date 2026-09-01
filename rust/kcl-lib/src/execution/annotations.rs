@@ -344,12 +344,13 @@ impl fmt::Display for VersionConstraint {
 
 /// Returns true when the concrete `version` (e.g., from `@settings(kclVersion = ...)`)
 /// is greater than or equal to the `constraint`. Returns false if `version` cannot be
-/// parsed as a dotted integer version.
+/// parsed as a dotted integer version with an optional pre-release suffix.
 pub(crate) fn version_ge(version: &str, constraint: &VersionConstraint) -> bool {
-    let Some(parsed): Option<Vec<u32>> = version.split('.').map(|p| p.parse::<u32>().ok()).collect() else {
+    let release = version.split_once('-').map_or(version, |(release, _)| release);
+    let Some(parsed) = VersionConstraint::parse(release) else {
         return false;
     };
-    parsed >= constraint.0
+    parsed.0 >= constraint.0
 }
 
 pub(super) fn get_fn_attrs(
@@ -482,5 +483,11 @@ mod tests {
         assert!(!version_ge("1.99", &vc("2.0")));
         // An unparsable concrete version never satisfies the constraint.
         assert!(!version_ge("bogus", &vc("1.0")));
+    }
+
+    #[test]
+    fn version_ge_supports_prerelease_versions() {
+        assert!(version_ge("3.0-preview", &vc("2.0")));
+        assert!(!version_ge("3.0-preview", &vc("4.0")));
     }
 }

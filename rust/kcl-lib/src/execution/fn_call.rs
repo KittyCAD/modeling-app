@@ -531,14 +531,16 @@ impl FunctionSource {
     }
 
     /// Compute a KCL function body's result while the callee environment is
-    /// still pushed: an `Exit` passes through untouched; otherwise the
-    /// function's result is the `__return` value recorded in the callee
-    /// environment, if any.
+    /// still pushed: an `Exit` or `Return` passes through untouched;
+    /// otherwise the function's result is the `__return` value recorded in
+    /// the callee environment, if any.
     ///
-    /// NOTE: a `return` statement does NOT stop the body -- it records
-    /// `__return` and execution continues to the following statements (see
-    /// exec_block's ReturnStatement arm). The block's own trailing value is
-    /// deliberately ignored here; only `__return` counts.
+    /// NOTE: under a pre-KCL-3.0 entry point, a `return` statement does NOT
+    /// stop the body -- it records `__return` and execution continues to the
+    /// following statements (see exec_block's ReturnStatement arm). The block's
+    /// own trailing value is deliberately ignored here; only `__return` counts.
+    /// Under KCL 3.0, `return` stops the body and arrives here as a `Return`
+    /// control flow instead; `__return` is never written.
     pub(super) fn kcl_body_result(
         &self,
         block_result: Result<Option<KclValueControlFlow>, KclError>,
@@ -584,7 +586,9 @@ impl FunctionSource {
     /// `Exit` control flow bypasses tags and coercion (it terminates the whole
     /// evaluation rather than completing this function normally), and errors
     /// skip them too; both still restore ambient state and finalize the
-    /// operation.
+    /// operation. `Return` control flow (a KCL 3.0 early return) is absorbed
+    /// here: it completes this function normally, so tags and coercion apply to
+    /// it exactly as they do to a `__return` value.
     pub(super) fn call_finish(
         &self,
         state: CallState,
@@ -626,12 +630,14 @@ impl FunctionSource {
 
         let mut result = match result {
             Ok(Some(value)) => {
-                if value.is_some_return() {
+                if value.is_exit() {
                     // `Exit` terminates the whole evaluation rather than completing this
                     // function normally, so it bypasses return-type validation, including
                     // the `never` contract.
                     return Ok(Some(value));
                 } else {
+                    // `Continue` and `Return` both complete this function
+                    // normally.
                     Ok(Some(value.into_value()))
                 }
             }
@@ -2402,6 +2408,26 @@ plane = startSketchOn(XY)
             warnings[0].message
         );
         assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deprecated_since_warns_for_prerelease_kcl_version() {
+        let program = r#"@settings(kclVersion = "3.0-preview")
+plane = startSketchOn(XY)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].severity, Severity::Warning);
+        assert_eq!(warnings[0].tag, crate::errors::Tag::Deprecated);
+        assert!(
+            warnings[0]
+                .message
+                .contains("`startSketchOn` is deprecated as of KCL 2.0"),
+            "found {}",
+            warnings[0].message
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
