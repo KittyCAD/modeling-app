@@ -359,6 +359,70 @@ export class ElectronZoo {
   }
 }
 
+interface NavigationDriftRecord {
+  derived: string
+  actual: string
+}
+
+/**
+ * Report navigation drift observed during a test.
+ *
+ * The app records every disagreement between the URL its own state serialises
+ * to and the URL it actually has. Collecting it here means one suite run
+ * enumerates every place the router inversion would move the user, across every
+ * flow the suite already covers, without anything having changed behaviour yet.
+ *
+ * It reports rather than fails, because the outbound direction is not live: a
+ * disagreement today is information, not a regression. Set
+ * `FAIL_ON_NAV_DRIFT=true` to make it a hard failure, which is what the branch
+ * that turns the outbound direction on will default to.
+ */
+async function reportNavigationDrift(page: Page, testInfo: TestInfo) {
+  let drift: NavigationDriftRecord[] = []
+  try {
+    drift = await page.evaluate(
+      () =>
+        (window as unknown as { __navDrift?: NavigationDriftRecord[] })
+          .__navDrift ?? []
+    )
+  } catch {
+    // The page can already be gone by teardown. Nothing to report is fine;
+    // this must never be the reason a test fails.
+    return
+  }
+
+  if (drift.length === 0) return
+
+  const unique = [
+    ...new Map(drift.map((d) => [`${d.derived}\u0000${d.actual}`, d])).values(),
+  ]
+
+  await testInfo.attach('navigation-drift.json', {
+    body: JSON.stringify({ total: drift.length, unique }, null, 2),
+    contentType: 'application/json',
+  })
+
+  const summary = unique
+    .slice(0, 5)
+    .map((d) => `  derived ${d.derived}\n  actual  ${d.actual}`)
+    .join('\n')
+  console.warn(
+    `navigation drift in "${testInfo.title}": ${drift.length} record(s), ${unique.length} unique\n${summary}` +
+      (unique.length > 5 ? `\n  ...and ${unique.length - 5} more` : '')
+  )
+
+  // Only escalate a test that otherwise passed: this runs in teardown, and
+  // throwing over a test that already failed would bury its real reason.
+  if (
+    process.env.FAIL_ON_NAV_DRIFT === 'true' &&
+    testInfo.status === 'passed'
+  ) {
+    throw new Error(
+      `Navigation drift detected:\n${JSON.stringify(unique, null, 2)}`
+    )
+  }
+}
+
 // If yee encounter this, please try to type it.
 type FnUse = any
 
@@ -368,7 +432,11 @@ const fixturesForElectron = {
     use: FnUse,
     testInfo: TestInfo
   ) => {
-    await use(tronApp.page)
+    try {
+      await use(tronApp.page)
+    } finally {
+      await reportNavigationDrift(tronApp.page, testInfo)
+    }
   },
   context: async (
     { tronApp }: { tronApp: ElectronZoo },
@@ -421,7 +489,11 @@ const fixturesForWeb = {
     const webApp = new AuthenticatedApp(context, page, testInfo)
     await webApp.initialise('', userFeatures)
 
-    await use(page)
+    try {
+      await use(page)
+    } finally {
+      await reportNavigationDrift(page, testInfo)
+    }
   },
 }
 
