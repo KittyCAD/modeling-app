@@ -38,6 +38,10 @@ export function getToolForConstraintType(
 export function getToolForApiObject(
   apiObject: ApiObject
 ): EquipTool | undefined {
+  if (isPointSegment(apiObject)) {
+    return apiObject.kind.segment.owner === null ? 'pointTool' : undefined
+  }
+
   if (isLineSegment(apiObject)) {
     return 'lineTool'
   }

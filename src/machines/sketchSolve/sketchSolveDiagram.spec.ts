@@ -218,6 +218,20 @@ describe('sketchSolveMachine selection clearing', () => {
 })
 
 describe('sketchSolveMachine hovered tool picker', () => {
+  it('equips the point tool over a standalone point', () => {
+    const objects = [
+      createSketchApiObject({ id: 0, segments: [1] }),
+      createPointApiObject({ id: 1, x: 10, y: 10 }),
+    ]
+    const { actor, getPlaneIntersectPoint } = createSketchSolveHarness(objects)
+    getPlaneIntersectPoint.mockReturnValue({ twoD: { x: 10, y: 10 } })
+
+    actor.send({ type: 'pick hovered tool' })
+
+    expect(actor.getSnapshot().matches('using tool')).toBe(true)
+    expect(actor.getSnapshot().context.sketchSolveToolName).toBe('pointTool')
+  })
+
   it('equips the line under the cursor and leaves the active line tool alone', () => {
     const objects = [
       createSketchApiObject({ id: 0, segments: [1, 2, 3] }),

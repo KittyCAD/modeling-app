@@ -62,20 +62,22 @@ describe('toolPicker', () => {
     }
   })
 
-  it('maps lines, arcs, circles, and constraint objects to their tools', () => {
+  it('maps standalone points, lines, arcs, circles, and constraint objects to their tools', () => {
+    const point = createPointApiObject({ id: 12 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
     const arc = createArcApiObject({ id: 7, center: 4, start: 5, end: 6 })
     const circle = createCircleApiObject({ id: 10, center: 8, start: 9 })
     const constraint = createHorizontalConstraintApiObject(11)
 
+    expect(getToolForApiObject(point)).toBe('pointTool')
     expect(getToolForApiObject(line)).toBe('lineTool')
     expect(getToolForApiObject(arc)).toBe('centerArcTool')
     expect(getToolForApiObject(circle)).toBe('circleTool')
     expect(getToolForApiObject(constraint)).toBe('horizontalConstraintTool')
   })
 
-  it('skips an unsupported point to pick the line underneath it', () => {
-    const point = createPointApiObject({ id: 1 })
+  it('skips an owned endpoint to pick the line underneath it', () => {
+    const point = createPointApiObject({ id: 1, owner: 3 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
 
     expect(resolveToolPickerSelection([point, line])).toEqual({
