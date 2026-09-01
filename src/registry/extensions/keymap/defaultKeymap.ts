@@ -521,7 +521,7 @@ export const defaultKeymap: KeymapDocument = {
     {
       id: 'toolbar.sketch.tool-picker',
       title: 'Pick hovered sketch tool',
-      scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      when: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
       keystrokes: ['p'],
       command: TOOLBAR_COMMAND_IDS.sketchSolve.toolPicker,
     },
