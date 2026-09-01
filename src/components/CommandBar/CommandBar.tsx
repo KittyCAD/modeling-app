@@ -197,9 +197,10 @@ export const CommandBar = () => {
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox
-                options={commands.filter((command: Command) =>
-                  isCommandVisibleInSearch(command) &&
-                  isCommandSearchable(command, effectiveCommandScopes)
+                options={commands.filter(
+                  (command: Command) =>
+                    isCommandVisibleInSearch(command) &&
+                    isCommandSearchable(command, effectiveCommandScopes)
                 )}
               />
             ) : commandBarState.matches('Gathering arguments') ? (
