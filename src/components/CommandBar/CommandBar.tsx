@@ -12,7 +12,10 @@ import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { keymapService } from '@src/registry/contracts/keymap'
+import {
+  COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
+  commandScopeService,
+} from '@src/registry/contracts/commands'
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
@@ -20,7 +23,7 @@ export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const { commands: cmd, project, registry } = useApp()
-  const keymap = registry.optional(keymapService)
+  const commandScopes = registry.optional(commandScopeService)
   const commandBarState = cmd.useState()
   const isCommandBarOpen = !commandBarState.matches('Closed')
   const {
@@ -58,16 +61,16 @@ export const CommandBar = () => {
   }, [pathname])
 
   useEffect(() => {
-    if (!keymap || !isCommandBarOpen) {
+    if (!commandScopes || !isCommandBarOpen) {
       return
     }
 
-    keymap.applyScope('cmd-palette-open')
+    commandScopes.applyScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
 
     return () => {
-      keymap.removeScope('cmd-palette-open')
+      commandScopes.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
     }
-  }, [isCommandBarOpen, keymap])
+  }, [commandScopes, isCommandBarOpen])
 
   // Hook up keyboard shortcuts
   useHotkeyWrapper(

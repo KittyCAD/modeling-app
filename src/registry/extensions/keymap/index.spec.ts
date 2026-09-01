@@ -6,6 +6,8 @@ import {
 } from '@kittycad/registry'
 import {
   type CommandSystemService,
+  commandScopeService,
+  commandScopesValueSpec,
   commandSystemService,
 } from '@src/registry/contracts/commands'
 import {
@@ -15,6 +17,8 @@ import {
   MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   type PersistedKeymap,
+  keymapContract,
+  keymapScopesValueSpec,
   keymapService,
   provideKeymapDocument,
   provideKeymapItem,
@@ -50,6 +54,28 @@ describe('keymap extension', () => {
     ).toBe('Base')
 
     registry[Symbol.dispose]()
+  })
+
+  it('shares active scope state with the command scope service', () => {
+    const registry = createRegistryWithKeymapItems([])
+    const commandScopes = registry.get(commandScopeService)
+    const keymap = registry.get(keymapService)
+
+    commandScopes.applyScope('test.command-scope')
+    expect(keymap.getCurrentScopes()).toContain('test.command-scope')
+
+    keymap.applyScope('test.keymap-scope')
+    expect(commandScopes.activeScopes.value).toContain('test.keymap-scope')
+
+    keymap.removeScope('test.command-scope')
+    expect(commandScopes.getCurrentScopes()).not.toContain('test.command-scope')
+
+    registry[Symbol.dispose]()
+  })
+
+  it('keeps the keymap scope ValueSpec as a command scope alias', () => {
+    expect(keymapScopesValueSpec).toBe(commandScopesValueSpec)
+    expect(keymapContract.keymapScopesValueSpec).toBe(commandScopesValueSpec)
   })
 
   it('uses Shift+Escape to exit sketch across desktop and web', () => {
