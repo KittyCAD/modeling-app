@@ -70,6 +70,20 @@ jobs:
           cd rust/kcl-language-server
           npm run test
         if: runner.os != 'Linux'
+  zed-extension:
+    name: kcl-language-server (Zed extension)
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        with:
+          target: wasm32-wasip2
+      - name: Test extension logic
+        run: cargo test --manifest-path rust/kcl-language-server/zed/Cargo.toml
+      - name: Check Zed WebAssembly build
+        run: cargo check --manifest-path rust/kcl-language-server/zed/Cargo.toml --target wasm32-wasip2
   build-release:
     strategy:
       fail-fast: false

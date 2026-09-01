@@ -1,7 +1,7 @@
 # kcl-lsp
 
 The `kcl` [Language Server Protocol](https://microsoft.github.io/language-server-protocol)
-implementation and VSCode extension.
+implementation and editor extensions.
 
 The Rust language-server implementation, its executable, tests, benchmarks,
 and VS Code extension live in this crate. It depends on the KCL compiler and
@@ -10,6 +10,13 @@ language tooling published as [kcl-lib](https://crates.io/crates/kcl-lib).
 ## VSCode
 
 Install our extension: [KittyCAD Language Server](https://marketplace.visualstudio.com/items?itemName=KittyCAD.kcl-language-server)
+
+## Zed
+
+The Zed extension lives in [`zed/`](./zed). To try it locally, run
+`zed: install dev extension` from Zed's command palette and select that
+directory. It recognizes `.kcl` files and starts `kcl-language-server` with
+`server --stdio`.
 
 ## Neovim
 

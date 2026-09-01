@@ -1,0 +1,20 @@
+id = "zoo-kcl"
+name = "Zoo KCL"
+description = "Zoo KCL language support for Zoo Design Studio projects."
+version = "0.1.3"
+schema_version = 1
+authors = ["Zoo <info@zoo.dev>"]
+repository = "https://github.com/KittyCAD/modeling-app"
+
+[language_servers.kcl-language-server]
+name = "Zoo KCL Language Server"
+languages = ["Zoo KCL"]
+
+[grammars.kcl]
+repository = "https://github.com/KittyCAD/tree-sitter-kcl"
+rev = "f96734a2a1f097f382d99fcf8e83e813ddbefaa3"
+
+[[capabilities]]
+kind = "download_file"
+host = "github.com"
+path = ["KittyCAD", "modeling-app", "releases", "download", "**"]
