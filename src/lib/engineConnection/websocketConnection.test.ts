@@ -61,49 +61,38 @@ const dispatchFailureMessage = (
   )
 }
 
+const dispatchConnectionError = ({
+  code,
+  detail,
+  retryable = false,
+  cloudProjectId,
+}: {
+  code:
+    | 'auth_token_invalid'
+    | 'insufficient_scope'
+    | 'missing_payment_method'
+    | 'too_many_connections'
+    | 'backend_disconnected'
+  detail: string
+  retryable?: boolean
+  cloudProjectId?: string
+}) => {
+  createMessageHandler(cloudProjectId)(
+    new MessageEvent('message', {
+      data: JSON.stringify({
+        success: false,
+        request_id: 'request-123',
+        connection_error: { code, detail, retryable },
+      }),
+    })
+  )
+}
+
 describe('createOnWebSocketMessage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.spyOn(console, 'warn').mockImplementation(() => {})
-  })
-
-  it('reports backend Engine disconnect failures with the cloud project ID', () => {
-    dispatchFailureMessage(
-      'modeling connection interrupted; please reconnect and retry',
-      'cloud-project-123'
-    )
-
-    expect(reportClientError).toHaveBeenCalledOnce()
-    expect(setConnectionError).toHaveBeenCalledWith({
-      kind: EngineConnectionErrorKind.BackendDisconnect,
-      message: 'modeling connection interrupted; please reconnect and retry',
-      terminal: true,
-    })
-    expect(reportClientError).toHaveBeenCalledWith({
-      code: 'engine_backend_disconnect',
-      message: 'modeling connection interrupted; please reconnect and retry',
-      extra: {
-        source: 'EngineWebSocket',
-        errorCode: 'internal_api',
-        cloudProjectId: 'cloud-project-123',
-      },
-    })
-  })
-
-  it('reports backend Engine disconnect failures for local-only projects', () => {
-    dispatchFailureMessage(
-      'modeling connection interrupted; please reconnect and retry'
-    )
-
-    expect(reportClientError).toHaveBeenCalledWith({
-      code: 'engine_backend_disconnect',
-      message: 'modeling connection interrupted; please reconnect and retry',
-      extra: {
-        source: 'EngineWebSocket',
-        errorCode: 'internal_api',
-      },
-    })
   })
 
   it('does not report other internal API failures as backend disconnects', () => {
@@ -113,12 +102,52 @@ describe('createOnWebSocketMessage', () => {
     expect(reportClientError).not.toHaveBeenCalled()
   })
 
-  it('stops reconnecting when the authorization token is invalid', () => {
+  it('keeps other bad request failures retryable', () => {
     dispatchFailureMessage(
-      'The authorization token is invalid.',
+      'Unable to acquire a session.',
       undefined,
-      'auth_token_invalid'
+      'bad_request'
     )
+
+    expect(setConnectionError).not.toHaveBeenCalled()
+    expect(tearDownManager).not.toHaveBeenCalled()
+  })
+
+  it('handles a typed backend disconnect and reports its cloud project ID', () => {
+    dispatchConnectionError({
+      code: 'backend_disconnected',
+      detail: 'backend disconnected',
+      cloudProjectId: 'cloud-project-123',
+    })
+
+    const connectionError: EngineConnectionError = {
+      kind: EngineConnectionErrorKind.BackendDisconnect,
+      message: 'backend disconnected',
+      terminal: true,
+    }
+    expect(setConnectionError).toHaveBeenCalledWith(connectionError)
+    expect(reportClientError).toHaveBeenCalledWith({
+      code: 'engine_backend_disconnect',
+      message: 'backend disconnected',
+      extra: {
+        source: 'EngineWebSocket',
+        errorCode: 'backend_disconnected',
+        requestId: 'request-123',
+        cloudProjectId: 'cloud-project-123',
+      },
+    })
+    expect(tearDownManager).toHaveBeenCalledWith({
+      websocketClosed: true,
+      connectionError,
+    })
+    expect(disconnectAll).not.toHaveBeenCalled()
+  })
+
+  it('handles typed invalid authorization tokens', () => {
+    dispatchConnectionError({
+      code: 'auth_token_invalid',
+      detail: 'The authorization token is invalid.',
+    })
 
     const connectionError: EngineConnectionError = {
       kind: EngineConnectionErrorKind.AuthTokenInvalid,
@@ -131,36 +160,34 @@ describe('createOnWebSocketMessage', () => {
       websocketClosed: true,
       connectionError,
     })
-    expect(disconnectAll).not.toHaveBeenCalled()
   })
 
-  it('stops reconnecting when the user has too many active connections', () => {
-    dispatchFailureMessage(
-      'Too many active connections, only 2 allowed per user.',
-      undefined,
-      'bad_request'
-    )
+  it.each([
+    ['insufficient_scope', EngineConnectionErrorKind.InsufficientScope],
+    ['missing_payment_method', EngineConnectionErrorKind.AccessDenied],
+    ['too_many_connections', EngineConnectionErrorKind.TooManyConnections],
+  ] as const)('classifies typed %s connection errors', (code, kind) => {
+    dispatchConnectionError({ code, detail: 'connection denied' })
 
-    const connectionError: EngineConnectionError = {
-      kind: EngineConnectionErrorKind.TooManyConnections,
-      message: 'Too many active connections, only 2 allowed per user.',
+    expect(setConnectionError).toHaveBeenCalledWith({
+      kind,
+      message: 'connection denied',
       terminal: true,
-    }
-    expect(setConnectionError).toHaveBeenCalledWith(connectionError)
-    expect(tearDownManager).toHaveBeenCalledWith({
-      websocketClosed: true,
-      connectionError,
     })
   })
 
-  it('keeps other bad request failures retryable', () => {
-    dispatchFailureMessage(
-      'Unable to acquire a session.',
-      undefined,
-      'bad_request'
-    )
+  it('does not tear down for a typed retryable connection error', () => {
+    dispatchConnectionError({
+      code: 'backend_disconnected',
+      detail: 'temporarily unavailable',
+      retryable: true,
+    })
 
-    expect(setConnectionError).not.toHaveBeenCalled()
+    expect(setConnectionError).toHaveBeenCalledWith({
+      kind: EngineConnectionErrorKind.BackendDisconnect,
+      message: 'temporarily unavailable',
+      terminal: false,
+    })
     expect(tearDownManager).not.toHaveBeenCalled()
   })
 })

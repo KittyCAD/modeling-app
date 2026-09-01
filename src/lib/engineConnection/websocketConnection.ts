@@ -19,10 +19,49 @@ import { mark } from '@src/lib/performance'
 import { notifySessionExpired } from '@src/lib/sessionExpired'
 import { reportRejection } from '@src/lib/trap'
 
-const MODELING_BACKEND_DISCONNECTED_MESSAGE =
-  'modeling connection interrupted; please reconnect and retry'
-const MODELING_CONCURRENCY_LIMIT_MESSAGE =
-  /^Too many active connections, only \d+ allowed per user\.$/
+// TODO: Replace these compatibility types with the generated SDK types after
+// KittyCAD/api#4472 is released in @kittycad/lib.
+type ModelingConnectionErrorCode =
+  | 'auth_token_invalid'
+  | 'insufficient_scope'
+  | 'missing_payment_method'
+  | 'payment_method_failed'
+  | 'billing_threshold_reached'
+  | 'pay_as_you_go_disabled'
+  | 'upgrade_downgrade_abuse'
+  | 'admin'
+  | 'too_many_connections'
+  | 'backend_disconnected'
+
+type ConnectionErrorWebSocketResponse = {
+  success: false
+  request_id?: string | null
+  connection_error: {
+    code: ModelingConnectionErrorCode
+    detail: string
+    retryable: boolean
+  }
+}
+
+type ModelingWebSocketResponse =
+  | WebSocketResponse
+  | ConnectionErrorWebSocketResponse
+
+const CONNECTION_ERROR_KINDS: Record<
+  ModelingConnectionErrorCode,
+  EngineConnectionErrorKind
+> = {
+  auth_token_invalid: EngineConnectionErrorKind.AuthTokenInvalid,
+  insufficient_scope: EngineConnectionErrorKind.InsufficientScope,
+  missing_payment_method: EngineConnectionErrorKind.AccessDenied,
+  payment_method_failed: EngineConnectionErrorKind.AccessDenied,
+  billing_threshold_reached: EngineConnectionErrorKind.AccessDenied,
+  pay_as_you_go_disabled: EngineConnectionErrorKind.AccessDenied,
+  upgrade_downgrade_abuse: EngineConnectionErrorKind.AccessDenied,
+  admin: EngineConnectionErrorKind.AccessDenied,
+  too_many_connections: EngineConnectionErrorKind.TooManyConnections,
+  backend_disconnected: EngineConnectionErrorKind.BackendDisconnect,
+}
 
 /**
  * 4 different event listeners to clean up
@@ -128,6 +167,28 @@ export const createOnWebSocketMessage = ({
   setConnectionError: (connectionError: EngineConnectionError) => void
   tearDownManager: (options?: ManagerTearDown) => void
 }) => {
+  const reportBackendDisconnect = ({
+    message,
+    errorCode,
+    requestId,
+  }: {
+    message: string
+    errorCode: string
+    requestId?: string | null
+  }) => {
+    const cloudProjectId = getCloudProjectId()
+    void reportClientError({
+      code: ClientErrorCode.EngineBackendDisconnect,
+      message,
+      extra: {
+        source: 'EngineWebSocket',
+        errorCode,
+        requestId,
+        ...(cloudProjectId ? { cloudProjectId } : {}),
+      },
+    })
+  }
+
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
     // the server that relate to the ICE handshake, or WebRTC
@@ -140,60 +201,37 @@ export const createOnWebSocketMessage = ({
       return
     }
 
-    const message: WebSocketResponse = JSON.parse(event.data)
+    const message: ModelingWebSocketResponse = JSON.parse(event.data)
 
-    if (!message.success && 'errors' in message) {
-      const backendDisconnectError = message.errors.find(
-        (error) => error.message === MODELING_BACKEND_DISCONNECTED_MESSAGE
-      )
-      const authTokenInvalidError = message.errors.find(
-        (error) => error.error_code === 'auth_token_invalid'
-      )
-      const concurrencyLimitError = message.errors.find(
-        (error) =>
-          error.error_code === 'bad_request' &&
-          MODELING_CONCURRENCY_LIMIT_MESSAGE.test(error.message)
-      )
+    if (!message.success && 'connection_error' in message) {
+      const { code, detail, retryable } = message.connection_error
+      const connectionError: EngineConnectionError = {
+        kind: CONNECTION_ERROR_KINDS[code],
+        message: detail,
+        terminal: !retryable,
+      }
+      setConnectionError(connectionError)
 
-      const terminalConnectionError: EngineConnectionError | undefined =
-        backendDisconnectError
-          ? {
-              kind: EngineConnectionErrorKind.BackendDisconnect,
-              message: backendDisconnectError.message,
-              terminal: true,
-            }
-          : authTokenInvalidError
-            ? {
-                kind: EngineConnectionErrorKind.AuthTokenInvalid,
-                message: authTokenInvalidError.message,
-                terminal: true,
-              }
-            : concurrencyLimitError
-              ? {
-                  kind: EngineConnectionErrorKind.TooManyConnections,
-                  message: concurrencyLimitError.message,
-                  terminal: true,
-                }
-              : undefined
-
-      if (terminalConnectionError) {
-        setConnectionError(terminalConnectionError)
+      if (code === 'backend_disconnected') {
+        reportBackendDisconnect({
+          message: detail,
+          errorCode: code,
+          requestId: message.request_id,
+        })
+      } else if (code === 'auth_token_invalid') {
+        notifySessionExpired('engine-websocket')
       }
 
-      if (backendDisconnectError) {
-        const cloudProjectId = getCloudProjectId()
-        void reportClientError({
-          code: ClientErrorCode.EngineBackendDisconnect,
-          message: backendDisconnectError.message,
-          extra: {
-            source: 'EngineWebSocket',
-            errorCode: backendDisconnectError.error_code,
-            requestId: message.request_id,
-            ...(cloudProjectId ? { cloudProjectId } : {}),
-          },
+      if (!retryable) {
+        tearDownManager({
+          websocketClosed: true,
+          connectionError,
         })
       }
+      return
+    }
 
+    if (!message.success && 'errors' in message) {
       const errorsString = message?.errors
         ?.map((error) => {
           return `  - ${error.error_code}: ${error.message}`
@@ -211,18 +249,6 @@ export const createOnWebSocketMessage = ({
          * The server will spam ping you with this until you send them. If you see a few then it stops then you set the headers in the websocket safely.
          */
         console.error(`Error from server:\n${errorsString}`)
-      }
-
-      if (authTokenInvalidError) {
-        notifySessionExpired('engine-websocket')
-      }
-
-      if (authTokenInvalidError || concurrencyLimitError) {
-        tearDownManager({
-          websocketClosed: true,
-          connectionError: terminalConnectionError,
-        })
-        return
       }
 
       const firstError = message.errors[0]

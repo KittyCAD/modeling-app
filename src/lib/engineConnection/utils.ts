@@ -339,8 +339,10 @@ export enum EngineConnectionManagerEvents {
 }
 
 export enum EngineConnectionErrorKind {
+  AccessDenied = 'access-denied',
   AuthTokenInvalid = 'auth-token-invalid',
   BackendDisconnect = 'backend-disconnect',
+  InsufficientScope = 'insufficient-scope',
   TooManyConnections = 'too-many-connections',
 }
 
