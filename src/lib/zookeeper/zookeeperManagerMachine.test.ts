@@ -1,6 +1,7 @@
 import type { ClientErrorReport } from '@kittycad/lib'
 import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
+import { CLIENT_COMMAND_SCHEMA_UPDATE } from '@src/lib/zookeeper/clientCommands'
 import {
   type Conversation,
   createZookeeperCorrelation,
@@ -11,6 +12,7 @@ import {
   toMlCopilotFile,
   ZOOKEEPER_HEARTBEAT_INTERVAL_MS,
   ZOOKEEPER_HEARTBEAT_TIMEOUT_MS,
+  ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
   ZOOKEEPER_SETUP_ATTEMPT_TIMEOUT_MS,
   ZOOKEEPER_SETUP_INACTIVITY_TIMEOUT_MS,
   ZookeeperConversationToMarkdown,
@@ -20,7 +22,6 @@ import {
   ZookeeperManagerTransitions,
   ZookeeperSetupErrors,
   zookeeperManagerMachine,
-  ZOOKEEPER_RESUME_SUPERSEDED_CLOSE_CODE,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { S } from '@src/machines/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -395,6 +396,51 @@ describe('zookeeperManagerMachine', () => {
             type: 'headers',
             headers: { Authorization: 'Bearer hydrated-token' },
           })
+        )
+      })
+
+      actor.stop()
+    })
+
+    it('advertises and routes ephemeral client commands when enabled', async () => {
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: {
+          apiToken: 'token',
+          clientCommandsEnabled: true,
+        },
+      }).start()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+      })
+
+      const socket = ControllableSetupWebSocket.instances[0]
+      socket.open()
+      await vi.waitFor(() => {
+        expect(socket.sentPayloads).toContain(
+          JSON.stringify(CLIENT_COMMAND_SCHEMA_UPDATE)
+        )
+      })
+
+      socket.receive({
+        client_command_request: {
+          request_id: 'request-1',
+          catalog_revision: 1,
+          command_id: 'modeling.export',
+          arguments: { format: 'step' },
+        },
+      })
+
+      await vi.waitFor(() => {
+        expect(actor.getSnapshot().context.pendingClientCommandRequest).toEqual(
+          {
+            request_id: 'request-1',
+            catalog_revision: 1,
+            command_id: 'modeling.export',
+            arguments: { format: 'step' },
+          }
         )
       })
 

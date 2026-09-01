@@ -31,6 +31,11 @@ import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
+  CLIENT_COMMAND_SCHEMA_UPDATE,
+  type ClientCommandRequest,
+  parseClientCommandRequest,
+} from '@src/lib/zookeeper/clientCommands'
+import {
   constructZookeeperUserPromptRequest,
   type KittyCadLibFile,
 } from '@src/lib/zookeeper/zookeeperPromptRequest'
@@ -238,6 +243,8 @@ export enum ZookeeperManagerTransitions {
   CacheSetupAndConnect = 'cache-setup-and-connect',
   BackendShutdown = 'backend-shutdown',
   SetupProgress = 'setup-progress',
+  ClientCommandRequested = 'client-command-requested',
+  ClientCommandFinished = 'client-command-finished',
 }
 
 export const NUMBER_OF_ZOOKEEPER_SETUP_ATTEMPTS = 3
@@ -407,6 +414,14 @@ export type ZookeeperManagerEvents =
   | {
       type: ZookeeperManagerTransitions.SetupProgress
     }
+  | {
+      type: ZookeeperManagerTransitions.ClientCommandRequested
+      request: ClientCommandRequest
+    }
+  | {
+      type: ZookeeperManagerTransitions.ClientCommandFinished
+      requestId: string
+    }
 
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
@@ -434,6 +449,7 @@ export type Conversation = {
 
 export interface ZookeeperManagerContext {
   apiToken: string
+  clientCommandsEnabled: boolean
   ws?: WebSocket
   abruptlyClosed: boolean
   setupFailed: boolean
@@ -452,6 +468,7 @@ export interface ZookeeperManagerContext {
   pendingBackendShutdown: boolean
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
+  pendingClientCommandRequest?: ClientCommandRequest
   cachedSetup?: {
     refParentSend?: (event: ZookeeperManagerEvents) => void
     conversationId?: string
@@ -462,9 +479,11 @@ export interface ZookeeperManagerContext {
 export const zookeeperDefaultContext = (args: {
   input?: {
     apiToken?: string
+    clientCommandsEnabled?: boolean
   } | null
 }): ZookeeperManagerContext => ({
   apiToken: args.input?.apiToken ?? '',
+  clientCommandsEnabled: args.input?.clientCommandsEnabled ?? false,
   ws: undefined,
   abruptlyClosed: false,
   setupFailed: false,
@@ -483,6 +502,7 @@ export const zookeeperDefaultContext = (args: {
   pendingBackendShutdown: false,
   defaultMode: undefined,
   modeOptions: undefined,
+  pendingClientCommandRequest: undefined,
 })
 
 const ZOOKEEPER_DISCONNECT_LOG_PREFIX = '[zookeeper-disconnect]'
@@ -779,7 +799,10 @@ type XSInput<T> = {
 export const zookeeperManagerMachine = setup({
   types: {
     context: {} as ZookeeperManagerContext,
-    input: {} as Pick<ZookeeperManagerContext, 'apiToken'>,
+    input: {} as {
+      apiToken: string
+      clientCommandsEnabled?: boolean
+    },
     events: {} as ZookeeperManagerEvents,
   },
   guards: {
@@ -883,6 +906,7 @@ export const zookeeperManagerMachine = setup({
         setupFailureReason: undefined,
         accessDeniedCode,
         closeReason,
+        pendingClientCommandRequest: undefined,
       }
     }),
     handleNetworkOffline: assign(({ context }) => {
@@ -895,6 +919,7 @@ export const zookeeperManagerMachine = setup({
         setupFailureReason: undefined,
         accessDeniedCode: undefined,
         closeReason: 'No internet connection.',
+        pendingClientCommandRequest: undefined,
       }
     }),
     prepareSetupRetry: assign(({ event, context }) => {
@@ -950,6 +975,17 @@ export const zookeeperManagerMachine = setup({
         modeOptions: event.modeOptions,
       }
     }),
+    assignClientCommandRequest: assign(({ event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.ClientCommandRequested)
+      return { pendingClientCommandRequest: event.request }
+    }),
+    clearFinishedClientCommandRequest: assign(({ context, event }) => {
+      assertEvent(event, ZookeeperManagerTransitions.ClientCommandFinished)
+      if (context.pendingClientCommandRequest?.request_id !== event.requestId) {
+        return {}
+      }
+      return { pendingClientCommandRequest: undefined }
+    }),
     disconnectIfIdle: ({ context }) => {
       if (!context.awaitingResponse) {
         logZookeeperDisconnect(
@@ -1002,6 +1038,7 @@ export const zookeeperManagerMachine = setup({
         awaitingResponse: false,
         attachmentsLoadedForCurrentPrompt: true,
         pendingBackendShutdown: false,
+        pendingClientCommandRequest: undefined,
         cachedSetup: {
           refParentSend: event.refParentSend,
           conversationId: event.conversationId,
@@ -1245,6 +1282,15 @@ export const zookeeperManagerMachine = setup({
               return
             }
 
+            const clientCommandRequest = parseClientCommandRequest(response)
+            if (clientCommandRequest !== undefined) {
+              theRefParentSend({
+                type: ZookeeperManagerTransitions.ClientCommandRequested,
+                request: clientCommandRequest,
+              })
+              return
+            }
+
             if (!isMlCopilotServerMessage(response)) return
 
             // Ignore the authorization bug
@@ -1382,6 +1428,9 @@ export const zookeeperManagerMachine = setup({
             type: 'list_modes',
           }
           ws.send(JSON.stringify(listModesRequest))
+          if (args.input.context.clientCommandsEnabled) {
+            ws.send(JSON.stringify(CLIENT_COMMAND_SCHEMA_UPDATE))
+          }
 
           ws.addEventListener('close', function (event: CloseEvent) {
             clearInterval(pingIntervalId)
@@ -1636,6 +1685,12 @@ export const zookeeperManagerMachine = setup({
     [ZookeeperManagerTransitions.ModesReceive]: {
       actions: ['assignModeOptions'],
     },
+    [ZookeeperManagerTransitions.ClientCommandRequested]: {
+      actions: ['assignClientCommandRequest'],
+    },
+    [ZookeeperManagerTransitions.ClientCommandFinished]: {
+      actions: ['clearFinishedClientCommandRequest'],
+    },
     [ZookeeperManagerTransitions.AbruptClose]: {
       target: '#zookeeper-abrupt-close',
       actions: ['handleAbruptClose'],
@@ -1732,6 +1787,7 @@ export const zookeeperManagerMachine = setup({
               awaitingResponse: false,
               attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
+              pendingClientCommandRequest: undefined,
             })),
             'clearCacheSetup',
           ],
@@ -2093,6 +2149,7 @@ export const zookeeperManagerMachine = setup({
               awaitingResponse: false,
               attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
+              pendingClientCommandRequest: undefined,
               closeReason: undefined,
               ws: undefined,
             }
