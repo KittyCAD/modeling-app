@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties sweep_mirror.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.0616197696612063,
+      "y": 2.2344176542023524,
+      "z": 2.745615228095534
+    },
+    "dimensions": {
+      "x": 1.4434465090579829,
+      "y": 6.263897515979254,
+      "z": 5.491230456191068
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 12.513526632673688
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.0007606977050581923
+  }
+}

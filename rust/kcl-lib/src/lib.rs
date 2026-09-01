@@ -1,7 +1,7 @@
 //! Rust support for KCL (aka the KittyCAD Language).
 //!
 //! KCL is written in Rust. This crate contains the compiler tooling (e.g. parser, lexer, code generation),
-//! the standard library implementation, a LSP implementation, generator for the docs, and more.
+//! the standard library implementation, generator for the docs, and more.
 #![recursion_limit = "1024"]
 #![allow(clippy::boxed_local)]
 
@@ -68,7 +68,7 @@ pub(crate) mod id;
 mod import_format;
 pub mod lint;
 mod log;
-mod lsp;
+mod lsp_types;
 mod modules;
 mod parsing;
 mod project;
@@ -90,6 +90,76 @@ mod variant_name;
 pub mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
+
+/// Internal compiler APIs consumed by the standalone language-server crate.
+#[doc(hidden)]
+pub mod lsp_support {
+    pub mod docs {
+        pub mod kcl_doc {
+            pub use crate::docs::kcl_doc::ArgData;
+            pub use crate::docs::kcl_doc::DocData;
+            pub use crate::docs::kcl_doc::ModData;
+            pub use crate::docs::kcl_doc::walk_stdlib;
+        }
+    }
+
+    pub mod engine {
+        #[cfg(not(target_arch = "wasm32"))]
+        pub use crate::engine::new_zoo_client;
+    }
+
+    pub mod errors {
+        pub use crate::errors::Severity;
+        pub use crate::errors::Suggestion;
+    }
+
+    pub mod execution {
+        pub use crate::execution::ExecutorContext;
+        pub use crate::execution::MockConfig;
+
+        pub mod cache {
+            pub use crate::execution::cache::read_old_memory_var;
+        }
+
+        pub mod typed_path {
+            pub use crate::execution::typed_path::TypedPath;
+        }
+    }
+
+    pub mod fs {
+        pub use crate::fs::FileManager;
+        pub use crate::fs::FileSystemHandle;
+        pub use crate::fs::new_file_system_handle;
+
+        #[cfg(all(target_arch = "wasm32", not(test)))]
+        pub mod wasm {
+            pub use crate::fs::wasm::FileSystemManager;
+        }
+    }
+
+    pub mod parsing {
+        pub use crate::parsing::PIPE_OPERATOR;
+        pub use crate::parsing::parse_str;
+        pub use crate::parsing::parse_tokens;
+
+        pub mod ast {
+            pub mod types {
+                pub use crate::parsing::ast::types::*;
+            }
+        }
+
+        pub mod token {
+            pub use crate::parsing::token::LexerMode;
+            pub use crate::parsing::token::RESERVED_WORDS;
+            pub use crate::parsing::token::TokenStream;
+            pub use crate::parsing::token::lex;
+
+            pub mod adapter {
+                pub use crate::parsing::token::adapter::lex_with_diagnostics;
+            }
+        }
+    }
+}
 
 pub use engine::AsyncTasks;
 pub use engine::EngineBatchContext;
@@ -127,11 +197,6 @@ pub use execution::SketchConstraintReport;
 pub use execution::SketchConstraintStatus;
 pub use execution::bust_cache;
 pub use execution::clear_mem_cache;
-pub use execution::pre_execute_transpile;
-pub use execution::transpile_all_old_sketches_to_new;
-pub use execution::transpile_old_sketch_to_new;
-pub use execution::transpile_old_sketch_to_new_ast;
-pub use execution::transpile_old_sketch_to_new_with_execution;
 pub use execution::typed_path::TypedPath;
 pub use fs::FileSystem;
 pub use fs::FileSystemHandle;
@@ -139,10 +204,9 @@ pub use fs::in_memory::InMemoryFiles;
 pub use fs::new_file_system_handle;
 pub use kcl_error;
 pub use kcl_error::SourceRange;
-pub use lsp::ToLspRange;
-pub use lsp::copilot::Backend as CopilotLspBackend;
-pub use lsp::kcl::Backend as KclLspBackend;
-pub use lsp::kcl::Server as KclLspServerSubCommand;
+pub use lsp_types::IntoDiagnostic;
+pub use lsp_types::LspSuggestion;
+pub use lsp_types::ToLspRange;
 pub use modules::ModuleId;
 pub use parsing::ast::types::FormatOptions;
 pub use parsing::ast::types::NodePath;
@@ -285,11 +349,6 @@ pub struct Program {
     #[serde(skip)]
     pub original_file_contents: String,
 }
-
-#[cfg(any(test, feature = "lsp-test-util"))]
-pub use lsp::test_util::copilot_lsp_server;
-#[cfg(any(test, feature = "lsp-test-util"))]
-pub use lsp::test_util::kcl_lsp_server;
 
 impl Program {
     pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationIssue>), KclError> {

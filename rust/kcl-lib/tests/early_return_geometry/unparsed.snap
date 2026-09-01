@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing early_return_geometry.kcl
+---
+// Early return with real geometry under KCL 3.0. The unreachable geometry
+// after the return must not appear in the scene or artifacts.
+@settings(kclVersion = "3.0-preview")
+
+fn box(@size) {
+  return startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [size, 0])
+    |> line(end = [0, size])
+    |> line(end = [-size, 0])
+    |> close()
+    |> extrude(length = size)
+  unreachable = startSketchOn(XY)
+    |> circle(center = [30, 30], radius = size)
+    |> extrude(length = 1)
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+
+b = box(10)

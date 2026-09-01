@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties liquid-impeller.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -2.741410845589421,
+      "y": -0.2014832491017984,
+      "z": 4.737099999999998
+    },
+    "dimensions": {
+      "x": 113.18056937582524,
+      "y": 115.68825210536954,
+      "z": 10.845800000000004
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 26630.269673659113
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 32.46392839151522
+  }
+}

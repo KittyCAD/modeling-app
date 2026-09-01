@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties golf-tee.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0000000000000008881784197001252,
+      "y": -0.0000000000000008881784197001252,
+      "z": 35.0
+    },
+    "dimensions": {
+      "x": 14.6,
+      "y": 14.6,
+      "z": 70.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 1355.8647821585446
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1.7406923525335134
+  }
+}

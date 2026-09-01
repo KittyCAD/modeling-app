@@ -61,6 +61,8 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
 } from '@src/lib/constants'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
@@ -103,6 +105,13 @@ interface StdLibCallInfo {
   supportsTranslate?: boolean
   supportsRotate?: boolean
   supportsScale?: boolean
+}
+
+function hasLegacySketchMode(): boolean {
+  return (
+    window.app?.userFeatures.has(LEGACY_SKETCH_MODE_FEATURE_FLAG, false) ??
+    false
+  )
 }
 
 function retrieveUnlabeledSelectionsForEdit(
@@ -3766,6 +3775,9 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     // TODO: fix matching sketches-on-faces and offset planes back to their
     // original plane artifacts in order to edit them.
     async prepareToEdit({ artifact }) {
+      if (!hasLegacySketchMode()) {
+        return { reason: LEGACY_SKETCH_MODE_REMOVED_MESSAGE }
+      }
       if (artifact) {
         return {
           name: 'Enter sketch',
