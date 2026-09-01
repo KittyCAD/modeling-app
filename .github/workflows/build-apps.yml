@@ -70,7 +70,7 @@ jobs:
           export VERSION=255.255.0
           npm run files:set-version
 
-      - name: Set dummy updater url (forced release build that doesn't downgrade to the last release)
+      - name: Set dummy updater URL
         if: ${{ env.FORCE_RELEASE_BUILD == 'true' && env.FORCE_RELEASE_BUILD_ALLOW_DOWNGRADE == 'false' }}
         run: |
           yq -i '.publish[0].url = "https://dl.zoo.dev/releases/design-studio/no-update"' electron-builder.yml
