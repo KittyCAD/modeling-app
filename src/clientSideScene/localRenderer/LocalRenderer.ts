@@ -1,5 +1,6 @@
 import type { GetSketchModePlane } from '@kittycad/lib'
 import { LOCAL_WEBGPU_RENDERING_ENABLED } from '@src/clientSideScene/localRenderer/config'
+import type { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import {
@@ -59,7 +60,8 @@ const ENGINE_DEFAULT_SURFACE_COLOR = new Color(0.9, 0.9, 0.9)
 const HOVER_COLOR = new Color(SKETCH_HIGHLIGHT_COLOR)
 const SELECTED_COLOR = new Color(SKETCH_SELECTION_COLOR)
 const previewMaterialBaseColors = new WeakMap<Material, Color>()
-const EDGE_RAYCAST_THRESHOLD_GLTF_METERS = 0.001
+const NATIVE_LINE_RAYCAST_THRESHOLD_GLTF_METERS = 0.001
+const EDGE_RAYCAST_THRESHOLD_PX = 2
 
 export interface LocalRendererProps {
   backgroundColor: string
@@ -83,6 +85,7 @@ export class LocalRenderer {
   private scene: Scene | null = null
   private exportScene: (() => Promise<void>) | null = null
   private cleanup: (() => void) | null = null
+  private edgeRenderer: EdgeRenderer | null = null
   private disposed = false
 
   constructor(
@@ -108,6 +111,7 @@ export class LocalRenderer {
     this.backgroundColor = backgroundColor
     if (this.scene) {
       this.scene.background = new Color(backgroundColor)
+      this.edgeRenderer?.setBackgroundColor(backgroundColor)
       this.requestRender?.()
     }
   }
@@ -401,13 +405,19 @@ export class LocalRenderer {
 
       raycaster.params.Line = {
         ...(raycaster.params.Line ?? {}),
-        // Keep edge picking tight so faces remain easy to select.
-        threshold: EDGE_RAYCAST_THRESHOLD_GLTF_METERS,
+        threshold: NATIVE_LINE_RAYCAST_THRESHOLD_GLTF_METERS,
+      }
+      raycaster.params.Line2 = {
+        threshold: EDGE_RAYCAST_THRESHOLD_PX,
       }
 
-      return raycaster
+      const intersection = raycaster
         .intersectObject(currentModel, true)
         .find((intersection) => {
+          if (this.edgeRenderer?.isLineObject(intersection.object)) {
+            return true
+          }
+
           if (intersection.object instanceof Line) {
             return true
           }
@@ -432,6 +442,26 @@ export class LocalRenderer {
             primitive?.trimLoops ?? null
           )
         })
+
+      if (!intersection || intersection.faceIndex == null) {
+        return intersection
+      }
+
+      if (!this.edgeRenderer?.isLineObject(intersection.object)) {
+        return intersection
+      }
+
+      const edgeObject = this.edgeRenderer.getEdgeObjectForSegment(
+        intersection.faceIndex
+      )
+      if (!edgeObject) {
+        return intersection
+      }
+
+      return {
+        ...intersection,
+        object: edgeObject,
+      }
     }
 
     const updateHoverFromIntersection = (
@@ -505,11 +535,13 @@ export class LocalRenderer {
       logLocalWebGpuPreview('initializing preview renderer')
       const [
         { WebGPURenderer, RenderPipeline },
+        { EdgeRenderer },
         { createWebGpuSurfaceResources },
         { pass, vec3, vec4 },
         { ao },
       ] = await Promise.all([
         import('three/webgpu'),
+        import('@src/clientSideScene/localRenderer/EdgeRenderer'),
         import('@src/clientSideScene/webgpuTrim'),
         import('three/tsl'),
         import('three/examples/jsm/tsl/display/GTAONode.js'),
@@ -634,6 +666,10 @@ export class LocalRenderer {
         renderer.dispose()
         return
       }
+
+      const edgeRenderer = new EdgeRenderer(this.backgroundColor)
+      this.edgeRenderer = edgeRenderer
+
       const exportCurrentScene = async () => {
         if (!currentModel) {
           logLocalWebGpuPreview('GLB export skipped; no current model')
@@ -1214,6 +1250,7 @@ export class LocalRenderer {
       const clearModel = () => {
         if (currentModel) {
           scene.remove(currentModel)
+          edgeRenderer.removeFromParent()
           disposeObject3D(currentModel)
           currentModel = null
         }
@@ -1234,11 +1271,15 @@ export class LocalRenderer {
         currentModel.traverse((object) => {
           object.layers.mask = previewCamera?.layers.mask ?? object.layers.mask
 
-          if (!(object instanceof Mesh) && !(object instanceof Line)) {
+          const metadata = getPickedObjectMetadata(object, parserState)
+          if (
+            !(object instanceof Mesh) &&
+            !(object instanceof Line) &&
+            !metadata.kittycadEdgeExtras
+          ) {
             return
           }
 
-          const metadata = getPickedObjectMetadata(object, parserState)
           if (object instanceof Mesh && metadata.primitiveExtras) {
             object.userData.gltfPrimitiveExtras = metadata.primitiveExtras
           }
@@ -1267,7 +1308,7 @@ export class LocalRenderer {
               )
             }
           }
-          if (object instanceof Line && metadata.kittycadEdgeExtras) {
+          if (metadata.kittycadEdgeExtras) {
             object.userData.kittycadEdgeExtras = metadata.kittycadEdgeExtras
             if (isKittycadEdgeExtras(metadata.kittycadEdgeExtras)) {
               const resolvedSelectionEntity =
@@ -1430,7 +1471,8 @@ export class LocalRenderer {
           )
           const packetModel = buildRenderPacketModel(
             renderPacket,
-            currentSurfaceResources
+            currentSurfaceResources,
+            edgeRenderer
           )
           currentModel = packetModel.model
           updateAmbientOcclusionScale(packetModel.modelBounds)
@@ -1499,6 +1541,8 @@ export class LocalRenderer {
         selectedObjects.clear()
         previousSelectedObjects.forEach(applyObjectState)
         clearModel()
+        edgeRenderer.dispose()
+        this.edgeRenderer = null
         resizeObserver?.disconnect()
         unregisterSharedCameraListener()
         if (animationFrameId !== -1) {
@@ -1610,7 +1654,8 @@ function summarizeRenderPacketTrimModes(
 
 function buildRenderPacketModel(
   packet: LocalRenderPacket,
-  surfaceResources: WebGpuSurfaceResources
+  surfaceResources: WebGpuSurfaceResources,
+  edgeRenderer: EdgeRenderer
 ) {
   const root = new Group()
   const primitiveByObject = new WeakMap<Object3D, LocalRenderPacketPrimitive>()
@@ -1736,33 +1781,10 @@ function buildRenderPacketModel(
     root.add(mesh)
   })
 
-  packet.edges.forEach((edge) => {
-    if (edge.positions.length < 6) {
-      return
-    }
-
-    const geometry = new BufferGeometry()
-    geometry.setAttribute('position', new BufferAttribute(edge.positions, 3))
-
-    const line = new Line(
-      geometry,
-      new LineBasicMaterial({
-        color: 0xf2f3f5,
-        transparent: true,
-        opacity: 0.95,
-      })
-    )
-    line.name = `edge_${edge.edgeIndex}`
-    line.userData.kittycadEdgeExtras = {
-      object_id: edge.objectId,
-      body_id: edge.bodyId,
-      edge_id: edge.edgeId,
-      edge_index: edge.edgeIndex,
-    } satisfies KittycadEdgeExtras
-    line.renderOrder = 2
-    edgeByObject.set(line, edge)
-    root.add(line)
-  })
+  for (const { edge, object } of edgeRenderer.setEdges(packet.edges)) {
+    edgeByObject.set(object, edge)
+  }
+  edgeRenderer.addTo(root)
 
   packet.sketches.forEach((segment) => {
     if (segment.positions.length < 6) {
@@ -1883,6 +1905,7 @@ function prepareLoadedModelForPreview(root: Object3D) {
     meshCount += 1
     if (
       object.userData?.kittycadSurfaceBatch ||
+      object.userData?.kittycadEdgeBatch ||
       object.userData?.kittycadRegionExtras
     ) {
       const materials = (
