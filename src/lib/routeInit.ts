@@ -21,33 +21,20 @@ import {
 } from '@src/lib/constants'
 import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import {
-  getRouterSearchFromRequestUrl,
-  PATHS,
-  parseProjectRoute,
-  safeEncodeForRouterPaths,
-} from '@src/lib/paths'
+import { getRouterSearchFromRequestUrl, PATHS } from '@src/lib/paths'
 import {
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultDirectoryProjectLibrarySetting,
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
-import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import {
   loadHomeProjects,
   webHomeRouteEnabled,
 } from '@src/lib/routeLoaderUtils'
-import {
-  type AppSettings,
-  loadAndValidateSettings,
-} from '@src/lib/settings/settingsUtils'
+import { loadRouteSettings } from '@src/lib/routeSettings'
+import type { AppSettings } from '@src/lib/settings/settingsUtils'
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
-import {
-  projectLibrarySettingDefaultPoliciesValueSpec,
-  projectLibrarySettingDefaultsValueSpec,
-} from '@src/registry/contracts/projectLibraries'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -66,23 +53,6 @@ type CanonicalWebProjectLibrary = {
   library: ProjectLibrarySetting
   projectPath: string
   defaultFilePath: string
-}
-
-function loadRouteSettings(
-  app: App,
-  wasmInstance: Awaited<App['wasmPromise']>,
-  projectPath?: string
-) {
-  return loadAndValidateSettings(wasmInstance, {
-    defaultProjectLibraries: app.registry.get(
-      projectLibrarySettingDefaultsValueSpec
-    ),
-    projectLibrarySettingDefaultPolicies: app.registry.get(
-      projectLibrarySettingDefaultPoliciesValueSpec
-    ),
-    extensionSettings: app.registry.get(settingsValueSpec),
-    projectPath,
-  })
 }
 
 async function getCanonicalWebProjectLibrary(
@@ -197,15 +167,17 @@ export async function initIndexRoute(
 }
 
 /**
- * Initialization for `/file/:id`: resolve the id to a project and a file, open
- * the project, and open the file in the editor.
+ * Initialization for `/file/:id`.
+ *
+ * Almost all of this is `app.openFile`: resolving the id to a project and a
+ * file, deciding whether the URL names something that has to be corrected, and
+ * opening it. What stays here is the one genuinely routing-shaped thing — a
+ * legacy URL shape that has no meaning as application state.
  */
 export async function initFileRoute(
   app: App,
   { id, requestUrl }: { id: string | undefined; requestUrl: string }
 ): Promise<RouteInitResult<FileLoaderData>> {
-  const { kclManager } = app.singletons
-
   // Must basically remain for all eternity, until the last person
   // who's ever used ZDS on web before this point has died.
   if (id?.startsWith('/browser')) {
@@ -214,90 +186,10 @@ export async function initFileRoute(
     return { kind: 'redirect', to: PATHS.HOME }
   }
 
-  const wasmInstance = await kclManager.wasmInstancePromise
-
-  // Resolve the project root before loading project settings. Loading project
-  // settings from a selected file's parent folder creates project.toml in
-  // nested folders and makes them look like project roots.
-  const appSettings = await loadRouteSettings(app, wasmInstance)
-  const currentProjectPath = app.project?.projectIORefSignal.value.path
-  const targetLibraryPath = id
-    ? (
-        await getProjectLibraryOwnership(
-          appSettings.settings.app.libraries?.current ?? [],
-          id
-        )
-      )?.libraryPath
-    : undefined
-  const projectPathData = id
-    ? parseProjectRoute(appSettings.configuration, id, {
-        activeProjectPath: currentProjectPath,
-        candidateProjectDirectories: targetLibraryPath
-          ? [targetLibraryPath]
-          : [],
-      })
-    : undefined
-
-  if (!projectPathData) {
-    return Promise.reject(
-      new Error('bug: projectPathData undefined, early return')
-    )
-  }
-
-  await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
-
-  const { projectName, projectPath, currentFileName, currentFilePath } =
-    projectPathData
-
-  const urlObj = new URL(requestUrl)
-
-  if (!urlObj.pathname.endsWith('/settings')) {
-    const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
-      .default_file
-    // NOTE: this shadows the module-level `fileExists`, and the `catch` below
-    // compares an Error to the string 'ENOENT', so it never matches and this
-    // stays true. Preserved verbatim: fixing it changes behaviour and belongs
-    // in its own change with its own Playwright run.
-    let fileExists = true
-    if (currentFilePath && fileExists) {
-      try {
-        await fsZds.stat(currentFilePath)
-      } catch (e) {
-        if (e === 'ENOENT') {
-          fileExists = false
-        }
-      }
-    }
-
-    // If we are navigating to the project and want to navigate to its
-    // default file, redirect to it keeping everything else in the URL the same.
-    if (projectPath && !currentFileName && fileExists && id) {
-      const encodedId = safeEncodeForRouterPaths(id)
-      const requestUrlWithDefaultFile = requestUrl.replace(
-        encodedId,
-        safeEncodeForRouterPaths(fallbackFile)
-      )
-      return { kind: 'redirect', to: requestUrlWithDefaultFile }
-    }
-
-    if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
-      const routerSearch = getRouterSearchFromRequestUrl(
-        requestUrl,
-        Boolean(window.electron)
-      )
-      return {
-        kind: 'redirect',
-        to: fileRoutePath(fallbackFile, routerSearch),
-      }
-    }
-  }
-
-  const data = await app.openFile({
-    resolved: { projectName, projectPath, currentFileName, currentFilePath },
-    wasmInstance,
-  })
-
-  return { kind: 'ok', data }
+  const outcome = await app.openFile({ id, requestUrl })
+  return outcome.kind === 'redirect'
+    ? { kind: 'redirect', to: outcome.to }
+    : { kind: 'ok', data: outcome.data }
 }
 
 /**

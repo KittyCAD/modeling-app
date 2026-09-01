@@ -1,5 +1,4 @@
 import type { App } from '@src/lib/app'
-import type * as PathsModule from '@src/lib/paths'
 import { PATHS } from '@src/lib/paths'
 import {
   initFileRoute,
@@ -24,9 +23,8 @@ const mocks = vi.hoisted(() => ({
   getInitialDefaultDir: vi.fn(async () => '/library'),
   projectSkeletonCreate: vi.fn(async () => undefined),
   stat: vi.fn(),
-  parseProjectRoute: vi.fn(),
-  getProjectLibraryOwnership: vi.fn(async () => undefined),
   loadAndValidateSettings: vi.fn(),
+  openFile: vi.fn(),
 }))
 
 vi.mock('@src/lib/routeLoaderUtils', () => ({
@@ -47,10 +45,6 @@ vi.mock('@src/lang/std/fileSystemManager', () => ({
   projectFsManager: { dir: '' },
 }))
 
-vi.mock('@src/lib/projectLibraryOwnership', () => ({
-  getProjectLibraryOwnership: mocks.getProjectLibraryOwnership,
-}))
-
 vi.mock('@src/lib/settings/settingsUtils', () => ({
   loadAndValidateSettings: mocks.loadAndValidateSettings,
 }))
@@ -62,11 +56,6 @@ vi.mock('@src/lib/fs-zds', () => ({
   },
 }))
 
-vi.mock('@src/lib/paths', async () => {
-  const actual = await vi.importActual<typeof PathsModule>('@src/lib/paths')
-  return { ...actual, parseProjectRoute: mocks.parseProjectRoute }
-})
-
 const originalElectron = window.electron
 
 function fakeApp(): App {
@@ -74,6 +63,7 @@ function fakeApp(): App {
     registry: { get: () => [] },
     singletons: { kclManager: { wasmInstancePromise: Promise.resolve({}) } },
     settings: { actor: { getSnapshot: () => ({ matches: () => true }) } },
+    openFile: mocks.openFile,
     project: undefined,
   } as unknown as App
 }
@@ -169,91 +159,42 @@ describe('initFileRoute', () => {
       id: '/browser/whatever.kcl',
       requestUrl: 'http://localhost/file/%2Fbrowser%2Fwhatever.kcl',
     })
+    // The one genuinely routing-shaped case left here: a legacy URL shape with
+    // no meaning as application state, so it never reaches `openFile`.
     expect(result).toEqual({ kind: 'redirect', to: PATHS.HOME })
+    expect(mocks.openFile).not.toHaveBeenCalled()
   })
 
-  test('a project root redirects to its default file, preserving the rest of the URL', async () => {
+  test('hands everything else to app.openFile and passes its redirect through', async () => {
     setDesktop(false)
-    mocks.parseProjectRoute.mockReturnValue({
-      projectName: 'proj',
-      projectPath: '/library/proj',
-      currentFileName: undefined,
-      currentFilePath: undefined,
-    })
-    mocks.getProjectInfo.mockResolvedValue({
-      default_file: '/library/proj/main.kcl',
+    mocks.openFile.mockResolvedValue({
+      kind: 'redirect',
+      to: '/file/elsewhere',
     })
 
     const result = await initFileRoute(fakeApp(), {
       id: '/library/proj',
-      requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj?pool=alpha`,
+      requestUrl: 'http://localhost/file/%2Flibrary%2Fproj',
     })
 
-    // The redirect is a substitution on the whole request URL rather than a
-    // rebuilt path, so the origin and query string survive untouched. This is
-    // the redirect most at risk of drifting when the URL is derived instead.
-    expect(result).toEqual({
-      kind: 'redirect',
-      to: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fmain.kcl?pool=alpha`,
-    })
-  })
-
-  test('a /settings URL never redirects to the default file', async () => {
-    setDesktop(false)
-    mocks.parseProjectRoute.mockReturnValue({
-      projectName: 'proj',
-      projectPath: '/library/proj',
-      currentFileName: undefined,
-      currentFilePath: undefined,
-    })
-
-    // The `/settings` guard skips default-file resolution entirely, so the
-    // shape that would otherwise redirect falls through to opening the project
-    // instead. Settings is reachable on a project root, not just on a file.
-    const result = await initFileRoute(fakeApp(), {
+    expect(mocks.openFile).toHaveBeenCalledWith({
       id: '/library/proj',
-      requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj/settings`,
-    }).catch((error: Error) => error)
-
-    expect(result).not.toMatchObject({ kind: 'redirect' })
+      requestUrl: 'http://localhost/file/%2Flibrary%2Fproj',
+    })
+    expect(result).toEqual({ kind: 'redirect', to: '/file/elsewhere' })
   })
 
-  test('an unresolvable route throws, so the router error element still shows', async () => {
+  test('passes an opened file back as loader data', async () => {
     setDesktop(false)
-    mocks.parseProjectRoute.mockReturnValue(undefined)
-
-    await expect(
-      initFileRoute(fakeApp(), {
-        id: '/library/proj/main.kcl',
-        requestUrl: 'http://localhost/file/x',
-      })
-    ).rejects.toThrow('bug: projectPathData undefined')
-  })
-
-  test('an unusable file falls back to the project default, carrying the query string', async () => {
-    setDesktop(false)
-    mocks.parseProjectRoute.mockReturnValue({
-      // No project name is one of the four ways this route decides the target
-      // is unusable and falls back.
-      projectName: undefined,
-      projectPath: '/library/proj',
-      currentFileName: 'main.kcl',
-      currentFilePath: '/library/proj/main.kcl',
-    })
-    mocks.getProjectInfo.mockResolvedValue({
-      default_file: '/library/proj/main.kcl',
-    })
-    mocks.stat.mockResolvedValue({})
+    const data = { code: 'x = 1' }
+    mocks.openFile.mockResolvedValue({ kind: 'opened', data })
 
     const result = await initFileRoute(fakeApp(), {
-      id: '/library/proj/nope.kcl',
-      requestUrl: `http://localhost${PATHS.FILE}/%2Flibrary%2Fproj%2Fnope.kcl?pool=alpha`,
+      id: '/library/proj/main.kcl',
+      requestUrl: 'http://localhost/file/%2Flibrary%2Fproj%2Fmain.kcl',
     })
 
-    expect(result).toEqual({
-      kind: 'redirect',
-      to: `${PATHS.FILE}/${encodeURIComponent('/library/proj/main.kcl')}?pool=alpha`,
-    })
+    expect(result).toEqual({ kind: 'ok', data })
   })
 })
 
