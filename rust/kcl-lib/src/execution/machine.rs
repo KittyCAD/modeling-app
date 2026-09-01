@@ -42,6 +42,102 @@
 //!   `call_kw`, which fresh-roots a machine run per callback, adding O(1)
 //!   native frames per callback nesting level (bounded by the recursive
 //!   executor's call-stack cap, which still guards that path).
+//!
+//! # State transitions under KCL 3.0
+//!
+//! In the notation of the CEK/CESK literature (Felleisen and Friedman's
+//! original CEK machine; the presentation in Van Horn and Might's
+//! "Abstracting Abstract Machines"), a state is a triple ⟨C, ρ, κ⟩: control,
+//! environment, continuation. Here ρ is the current `EnvironmentRef`, and the
+//! arena of environments doubles as the store σ (environments are heap
+//! entries addressed by refs); both are ambient in `ExecState` rather than
+//! copied into the state tuple, so ρ is only written below where it changes
+//! (▷ pushes a frame or scope, and the matching pop happens in the rule that
+//! consumes the frame). κ is the `Vec<Kont>`; the innermost frame is written
+//! leftmost (`f :: κ`), which is the end of the vector in code. Apply-mode
+//! states are written ⟨v, κ⟩. The machine is in exactly one of five modes:
+//!
+//! ```text
+//! ⟨e, ρ, κ⟩     eval mode        Control::Eval    dispatch on the expression e
+//! ⟨v, κ⟩        apply mode       Control::Apply   dispatch on the innermost frame
+//! R⟨v, κ⟩       return unwind    Control::Return  KCL 3.0 only
+//! X⟨v, κ⟩       exit unwind      Control::Exit
+//! E⟨err, κ⟩     error unwind     (the Err return path through run_loop)
+//! ```
+//!
+//! Core transitions. The long tail of evaluation frames (Unary, ArrayElems,
+//! ObjectProps, RangeStartDone/RangeEndDone, MemberPropDone/MemberObjDone,
+//! AscribeDone, LabelDone, CallArgs, SketchArgs) follows the same
+//! left-to-right pattern as the binary-operator rules and is omitted.
+//!
+//! ```text
+//! Atoms and names
+//!   ⟨lit, ρ, κ⟩                       ↦  ⟨value(lit), κ⟩
+//!   ⟨x, ρ, κ⟩                         ↦  ⟨ρ(x), κ⟩            lookup via parent refs
+//!
+//! Binary operators (representative of the boilerplate family)
+//!   ⟨e₁ ⊕ e₂, ρ, κ⟩                   ↦  ⟨e₁, ρ, BinaryLhsDone(⊕, e₂) :: κ⟩
+//!   ⟨v₁, BinaryLhsDone(⊕, e₂) :: κ⟩   ↦  ⟨e₂, ρ, BinaryRhsDone(⊕, v₁) :: κ⟩
+//!   ⟨v₂, BinaryRhsDone(⊕, v₁) :: κ⟩   ↦  ⟨v₁ ⊕ v₂, κ⟩
+//!
+//! Blocks (statement sequencing; `last` is the trailing expression value)
+//!   ⟨{s₁ … sₙ}, ρ, κ⟩                 ↦  ⟨s₁, ρ, BlockSeq₁ :: κ⟩
+//!   ⟨v, BlockSeqᵢ :: κ⟩               ↦  ⟨sᵢ₊₁, ρ, BlockSeqᵢ₊₁ :: κ⟩
+//!   ⟨v, BlockSeqₙ :: κ⟩               ↦  ⟨Block(last), κ⟩
+//!
+//! Function calls (user-defined KCL functions)
+//!   ⟨f(args…), ρ, κ⟩                  ↦  ⟨args…, ρ, CallArgs :: κ⟩
+//!   ⟨vargs, CallArgs :: κ⟩            ↦  ⟨body, ρf ▷ frame, CallBoundary :: κ⟩
+//!                                        where ρf is the closure's captured env
+//!   ⟨Block(last), CallBoundary :: κ⟩  ↦  ⟨v, κ⟩    call_finish pops the frame; the
+//!                                        result is a Return absorbed at the boundary
+//!                                        (KCL 3.0) or `__return` read from the frame
+//!                                        (pre-KCL-3.0); `last` itself is ignored
+//!
+//! If-expressions (conditions evaluate in the enclosing ρ)
+//!   ⟨if e₀ {b₀} …, ρ, κ⟩              ↦  ⟨e₀, ρ, IfCondDone₀ :: κ⟩
+//!   ⟨false, IfCondDoneᵢ :: κ⟩         ↦  ⟨eᵢ₊₁, ρ, IfCondDoneᵢ₊₁ :: κ⟩   the next
+//!                                        cond, or the final else body via the
+//!                                        true-rule below when conds are exhausted
+//!   ⟨true, IfCondDoneᵢ :: κ⟩          ↦  ⟨bᵢ, ρ ▷ arm, IfArmDone :: κ⟩
+//!                                        KCL 3.0: the arm body gets its own scope
+//!                                        env (pre-KCL-3.0: bᵢ runs directly in ρ)
+//!   ⟨Block(v), IfArmDone :: κ⟩        ↦  ⟨v, κ⟩    KCL 3.0: pop the arm env; values
+//!                                        escaping the arm stay valid because
+//!                                        referenced envs survive the pop
+//!
+//! return (KCL 3.0: genuine control flow)
+//!   ⟨return e, ρ, κ⟩                  ↦  ⟨e, ρ, BlockSeq{Return} :: κ⟩
+//!   ⟨v, BlockSeq{Return} :: κ⟩        ↦  R⟨v, κ⟩   the rest of the block is dropped
+//!                                        (pre-KCL-3.0: bind `__return` in ρ and
+//!                                        continue with the next statement instead)
+//!   R⟨v, f :: κ⟩                      ↦  R⟨v, κ⟩   non-boundary f runs cleanup(f):
+//!                                        IfArmDone pops its arm env, PipeSeq
+//!                                        restores the pipe value, …
+//!   R⟨v, SketchBody :: κ⟩             ↦  R⟨v, κ⟩   sketch cleanup; finalization
+//!                                        skipped
+//!   R⟨v, CallBoundary :: κ⟩           ↦  ⟨v′, κ⟩   absorbed: call_finish pops the
+//!                                        frame, applies tag updates and return-type
+//!                                        coercion, and the machine resumes
+//!   R⟨v, ∅⟩                           ↦  the fresh root hands the Return upward (a
+//!                                        callback's native frame absorbs it; a Root
+//!                                        block rejects it: "Cannot return from
+//!                                        outside a function")
+//!
+//! exit() (never absorbed at a boundary)
+//!   X⟨v, f :: κ⟩                      ↦  X⟨v, κ⟩   cleanup(f); at CallBoundary the
+//!                                        exit flavor of call_finish (skips tags and
+//!                                        coercion); at SketchBody sketch cleanup
+//!   X⟨v, ∅⟩                           ↦  the program result
+//!
+//! Errors (mirrors X, plus call_finish(Err) and per-boundary backtrace
+//! decoration via add_unwind_location)
+//!   E⟨err, f :: κ⟩                    ↦  E⟨err′, κ⟩
+//! ```
+//!
+//! Pipes thread `%` through ambient state rather than κ: PipeFirstDone and
+//! PipeSeq save and restore `pipe_value` around each element, which is why
+//! the unwind rules must run cleanup on them.
 
 use std::env;
 use std::sync::Arc;
