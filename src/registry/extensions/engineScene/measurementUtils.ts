@@ -6,6 +6,7 @@ import type {
   UnitVolume,
 } from '@kittycad/lib'
 import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import {
   isDefaultPlaneSelection,
   isEnginePrimitiveSelection,
@@ -190,6 +191,19 @@ export function getMeasurementEntities(
       }
     ),
   ])
+}
+
+export function graphSelectionsReferenceCurrentArtifacts(
+  selectionRanges: Selections,
+  artifactGraph: ArtifactGraph
+): boolean {
+  return selectionRanges.graphSelections.every((selection) => {
+    if (!selection.artifact) {
+      return true
+    }
+
+    return artifactGraph.get(selection.artifact.id) === selection.artifact
+  })
 }
 
 export function getMeasurementEntityIds(selectionRanges: Selections): string[] {

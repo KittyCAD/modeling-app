@@ -1,10 +1,18 @@
 import {
   getDimensions,
+  getModelingData,
+  getResponseErrorMessage,
   MAX_STREAM_DIMENSION,
   MIN_STREAM_DIMENSION,
   STREAM_DIMENSION_FACTOR,
 } from '@src/lib/engineConnection/utils'
 import { describe, expect, it } from 'vitest'
+
+function modelingResponse(type: string, data: unknown) {
+  return {
+    resp: { type: 'modeling', data: { modeling_response: { type, data } } },
+  }
+}
 
 function expectSupportedStreamDimensions({
   width,
@@ -65,5 +73,30 @@ describe('getDimensions', () => {
 
   it('leaves zero dimensions invalid for the connection guard', () => {
     expect(getDimensions(0, 800)).toEqual({ width: 0, height: 800 })
+  })
+})
+
+describe('engine response helpers', () => {
+  it('extracts error messages from rejected and failed commands', () => {
+    expect(getResponseErrorMessage(new Error('Rejected'), 'Fallback')).toBe(
+      'Rejected'
+    )
+    expect(
+      getResponseErrorMessage(
+        [{ errors: [{ message: 'Engine failed' }] }],
+        'Fallback'
+      )
+    ).toBe('Engine failed')
+    expect(getResponseErrorMessage(null, 'Fallback')).toBe('Fallback')
+  })
+
+  it('extracts data only from the expected modeling response', () => {
+    expect(
+      getModelingData(modelingResponse('volume', 42), 'volume', 'Failed')
+    ).toEqual({ type: 'data', data: 42 })
+
+    expect(
+      getModelingData(modelingResponse('mass', 42), 'volume', 'Failed')
+    ).toEqual({ type: 'error', error: new Error('Failed') })
   })
 })

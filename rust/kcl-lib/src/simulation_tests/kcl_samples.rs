@@ -7,6 +7,7 @@ use std::path::PathBuf;
 
 use ahash::AHashSet;
 use anyhow::Result;
+use anyhow::bail;
 use serde::Deserialize;
 use serde::Serialize;
 use walkdir::WalkDir;
@@ -15,6 +16,24 @@ use super::Test;
 use crate::tooling::render_artifacts::RENDERED_MODEL_NAME;
 
 const ALLOWED_FILETYPES: [&str; 3] = ["kcl", "stp", "step"];
+const SAMPLE_CATEGORIES: [&str; 16] = [
+    "Aerospace",
+    "Architecture & Construction",
+    "Art & Design",
+    "Automotive & Transportation",
+    "Electronics & Computing",
+    "Home & Lifestyle",
+    "Industrial & Manufacturing",
+    "Mechanical Components",
+    "Medical & Assistive",
+    "Musical Instruments",
+    "Robotics & Automation",
+    "Science & Education",
+    "Toys, Games, & Recreation",
+    "3D Printable",
+    "Parametric",
+    "Tools",
+];
 
 lazy_static::lazy_static! {
     /// The directory containing the KCL samples source.
@@ -152,6 +171,14 @@ fn test_after_engine_generate_manifest() {
     let _manifest: Vec<KclMetadata> = serde_json::from_str(&fs::read_to_string(&manifest_path).unwrap()).unwrap();
 }
 
+#[test]
+fn parse_sample_categories_preserves_commas_in_names() {
+    assert_eq!(
+        parse_sample_categories("Toys, Games, & Recreation; 3D Printable"),
+        vec!["Toys, Games, & Recreation", "3D Printable"]
+    );
+}
+
 fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     let parent = std::fs::canonicalize(entry_point.parent().unwrap()).unwrap();
     let inputs_dir = std::fs::canonicalize(INPUTS_DIR.as_path()).unwrap();
@@ -170,6 +197,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
         output_dir: relative_output_dir,
         // Skip is temporary while we have non-deterministic output.
         skip_assert_artifact_graph: true,
+        snapshot_physical_properties: true,
         expected_deprecation_warnings: Some(0),
     }
 }
@@ -289,7 +317,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
             .trim()
             .strip_prefix("Categories: ")
     {
-        categories_line.split(',').map(|s| s.trim().to_string()).collect()
+        parse_sample_categories(categories_line)
     } else {
         Vec::new()
     };
@@ -313,6 +341,15 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         files,
         categories,
     })
+}
+
+fn parse_sample_categories(categories_line: &str) -> Vec<String> {
+    categories_line
+        .split(';')
+        .map(str::trim)
+        .filter(|category| !category.is_empty())
+        .map(str::to_owned)
+        .collect()
 }
 
 // Function to scan the directory and generate the manifest.json
@@ -356,6 +393,13 @@ fn generate_kcl_manifest(kcl_samples_root_dir: &Path) -> Result<()> {
             }
 
             if let Some(metadata) = get_kcl_metadata(&path, &files) {
+                if let Some(category) = metadata
+                    .categories
+                    .iter()
+                    .find(|category| !SAMPLE_CATEGORIES.contains(&category.as_str()))
+                {
+                    bail!("Unknown category {category:?} in {}", full_path_for_error(&path));
+                }
                 manifest.push(metadata);
             }
         }
@@ -372,6 +416,10 @@ fn generate_kcl_manifest(kcl_samples_root_dir: &Path) -> Result<()> {
     );
 
     Ok(())
+}
+
+fn full_path_for_error(path: &Path) -> String {
+    path.join("main.kcl").to_string_lossy().into_owned()
 }
 
 /// Updates README.md by finding a specific search string and replacing all content after it

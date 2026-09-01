@@ -425,6 +425,7 @@ impl From<KclError> for pyo3::PyErr {
         pyo3::exceptions::PyException::new_err(error.to_string())
     }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;

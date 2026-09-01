@@ -1,6 +1,10 @@
 import nodeFsSync from 'fs'
 import path from 'path'
-import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
+import {
+  DEFAULT_PROJECT_KCL_FILE,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  REGEXP_UUIDV4,
+} from '@src/lib/constants'
 import nodeFs from 'fs/promises'
 import type { Page } from '@playwright/test'
 import { NIL as uuidNIL } from 'uuid'
@@ -16,6 +20,9 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 type ProjectCardContextMenuAction = 'rename' | 'delete'
 

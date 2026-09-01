@@ -79,10 +79,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3347,
-            "end": 3352,
+            "commentStart": 3381,
+            "end": 3386,
             "moduleId": 0,
-            "start": 3347,
+            "start": 3381,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -93,10 +93,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3419,
-            "end": 3424,
+            "commentStart": 3453,
+            "end": 3458,
             "moduleId": 0,
-            "start": 3419,
+            "start": 3453,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -107,10 +107,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3489,
-            "end": 3494,
+            "commentStart": 3523,
+            "end": 3528,
             "moduleId": 0,
-            "start": 3489,
+            "start": 3523,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -121,10 +121,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3559,
-            "end": 3564,
+            "commentStart": 3593,
+            "end": 3598,
             "moduleId": 0,
-            "start": 3559,
+            "start": 3593,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -146,10 +146,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               -6.0
             ],
             "tag": {
-              "commentStart": 3347,
-              "end": 3352,
+              "commentStart": 3381,
+              "end": 3386,
               "moduleId": 0,
-              "start": 3347,
+              "start": 3381,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -170,10 +170,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               -6.0
             ],
             "tag": {
-              "commentStart": 3419,
-              "end": 3424,
+              "commentStart": 3453,
+              "end": 3458,
               "moduleId": 0,
-              "start": 3419,
+              "start": 3453,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -194,10 +194,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3489,
-              "end": 3494,
+              "commentStart": 3523,
+              "end": 3528,
               "moduleId": 0,
-              "start": 3489,
+              "start": 3523,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -218,10 +218,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3559,
-              "end": 3564,
+              "commentStart": 3593,
+              "end": 3598,
               "moduleId": 0,
-              "start": 3559,
+              "start": 3593,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -321,10 +321,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3347,
-            "end": 3352,
+            "commentStart": 3381,
+            "end": 3386,
             "moduleId": 0,
-            "start": 3347,
+            "start": 3381,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -335,10 +335,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3419,
-            "end": 3424,
+            "commentStart": 3453,
+            "end": 3458,
             "moduleId": 0,
-            "start": 3419,
+            "start": 3453,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -349,10 +349,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3489,
-            "end": 3494,
+            "commentStart": 3523,
+            "end": 3528,
             "moduleId": 0,
-            "start": 3489,
+            "start": 3523,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -363,10 +363,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3559,
-            "end": 3564,
+            "commentStart": 3593,
+            "end": 3598,
             "moduleId": 0,
-            "start": 3559,
+            "start": 3593,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -388,10 +388,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               -6.0
             ],
             "tag": {
-              "commentStart": 3347,
-              "end": 3352,
+              "commentStart": 3381,
+              "end": 3386,
               "moduleId": 0,
-              "start": 3347,
+              "start": 3381,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -412,10 +412,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               -6.0
             ],
             "tag": {
-              "commentStart": 3419,
-              "end": 3424,
+              "commentStart": 3453,
+              "end": 3458,
               "moduleId": 0,
-              "start": 3419,
+              "start": 3453,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -436,10 +436,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3489,
-              "end": 3494,
+              "commentStart": 3523,
+              "end": 3528,
               "moduleId": 0,
-              "start": 3489,
+              "start": 3523,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -460,10 +460,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               6.0
             ],
             "tag": {
-              "commentStart": 3559,
-              "end": 3564,
+              "commentStart": 3593,
+              "end": 3598,
               "moduleId": 0,
-              "start": 3559,
+              "start": 3593,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -663,10 +663,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             0.00000000000000000005501783810362672
           ],
           "tag": {
-            "commentStart": 278,
-            "end": 283,
+            "commentStart": 312,
+            "end": 317,
             "moduleId": 0,
-            "start": 278,
+            "start": 312,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -687,10 +687,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             0.0000000000000030469122162151693
           ],
           "tag": {
-            "commentStart": 453,
-            "end": 458,
+            "commentStart": 487,
+            "end": 492,
             "moduleId": 0,
-            "start": 453,
+            "start": 487,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -711,10 +711,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             11.999999999999995
           ],
           "tag": {
-            "commentStart": 635,
-            "end": 640,
+            "commentStart": 669,
+            "end": 674,
             "moduleId": 0,
-            "start": 635,
+            "start": 669,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -735,10 +735,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             11.489930515974109
           ],
           "tag": {
-            "commentStart": 815,
-            "end": 820,
+            "commentStart": 849,
+            "end": 854,
             "moduleId": 0,
-            "start": 815,
+            "start": 849,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -765,10 +765,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 49.32000000101538,
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -795,10 +795,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 49.32000000101538,
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -825,10 +825,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 49.32000000101538,
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -855,10 +855,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 49.32000000101538,
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -885,10 +885,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 49.32000000101538,
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -915,10 +915,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 49.32000000101538,
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -945,10 +945,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 0.5100000046994079,
           "tag": {
-            "commentStart": 2056,
-            "end": 2060,
+            "commentStart": 2090,
+            "end": 2094,
             "moduleId": 0,
-            "start": 2056,
+            "start": 2090,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -1081,10 +1081,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000000043014,
           "tag": {
-            "commentStart": 1152,
-            "end": 1159,
+            "commentStart": 1186,
+            "end": 1193,
             "moduleId": 0,
-            "start": 1152,
+            "start": 1186,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1111,10 +1111,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000000043014,
           "tag": {
-            "commentStart": 1152,
-            "end": 1159,
+            "commentStart": 1186,
+            "end": 1193,
             "moduleId": 0,
-            "start": 1152,
+            "start": 1186,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1141,10 +1141,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000000043014,
           "tag": {
-            "commentStart": 1152,
-            "end": 1159,
+            "commentStart": 1186,
+            "end": 1193,
             "moduleId": 0,
-            "start": 1152,
+            "start": 1186,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -1277,10 +1277,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000000642484,
           "tag": {
-            "commentStart": 1269,
-            "end": 1276,
+            "commentStart": 1303,
+            "end": 1310,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1303,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -1307,10 +1307,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000000642484,
           "tag": {
-            "commentStart": 1269,
-            "end": 1276,
+            "commentStart": 1303,
+            "end": 1310,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1303,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -1337,10 +1337,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000000642484,
           "tag": {
-            "commentStart": 1269,
-            "end": 1276,
+            "commentStart": 1303,
+            "end": 1310,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1303,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -1367,10 +1367,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000000642484,
           "tag": {
-            "commentStart": 1269,
-            "end": 1276,
+            "commentStart": 1303,
+            "end": 1310,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1303,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -1503,10 +1503,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000001505187,
           "tag": {
-            "commentStart": 1389,
-            "end": 1396,
+            "commentStart": 1423,
+            "end": 1430,
             "moduleId": 0,
-            "start": 1389,
+            "start": 1423,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -1533,10 +1533,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000001505187,
           "tag": {
-            "commentStart": 1389,
-            "end": 1396,
+            "commentStart": 1423,
+            "end": 1430,
             "moduleId": 0,
-            "start": 1389,
+            "start": 1423,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -1563,10 +1563,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000001505187,
           "tag": {
-            "commentStart": 1389,
-            "end": 1396,
+            "commentStart": 1423,
+            "end": 1430,
             "moduleId": 0,
-            "start": 1389,
+            "start": 1423,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -1593,10 +1593,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000001505187,
           "tag": {
-            "commentStart": 1389,
-            "end": 1396,
+            "commentStart": 1423,
+            "end": 1430,
             "moduleId": 0,
-            "start": 1389,
+            "start": 1423,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -1729,10 +1729,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.000000001052158,
           "tag": {
-            "commentStart": 1509,
-            "end": 1516,
+            "commentStart": 1543,
+            "end": 1550,
             "moduleId": 0,
-            "start": 1509,
+            "start": 1543,
             "type": "TagDeclarator",
             "value": "circle4"
           },
@@ -1759,10 +1759,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.000000001052158,
           "tag": {
-            "commentStart": 1509,
-            "end": 1516,
+            "commentStart": 1543,
+            "end": 1550,
             "moduleId": 0,
-            "start": 1509,
+            "start": 1543,
             "type": "TagDeclarator",
             "value": "circle4"
           },
@@ -1789,10 +1789,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.000000001052158,
           "tag": {
-            "commentStart": 1509,
-            "end": 1516,
+            "commentStart": 1543,
+            "end": 1550,
             "moduleId": 0,
-            "start": 1509,
+            "start": 1543,
             "type": "TagDeclarator",
             "value": "circle4"
           },
@@ -1819,10 +1819,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.000000001052158,
           "tag": {
-            "commentStart": 1509,
-            "end": 1516,
+            "commentStart": 1543,
+            "end": 1550,
             "moduleId": 0,
-            "start": 1509,
+            "start": 1543,
             "type": "TagDeclarator",
             "value": "circle4"
           },
@@ -1955,10 +1955,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000002922733,
           "tag": {
-            "commentStart": 1629,
-            "end": 1636,
+            "commentStart": 1663,
+            "end": 1670,
             "moduleId": 0,
-            "start": 1629,
+            "start": 1663,
             "type": "TagDeclarator",
             "value": "circle5"
           },
@@ -1985,10 +1985,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000002922733,
           "tag": {
-            "commentStart": 1629,
-            "end": 1636,
+            "commentStart": 1663,
+            "end": 1670,
             "moduleId": 0,
-            "start": 1629,
+            "start": 1663,
             "type": "TagDeclarator",
             "value": "circle5"
           },
@@ -2015,10 +2015,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           ],
           "radius": 1.0000000002922733,
           "tag": {
-            "commentStart": 1629,
-            "end": 1636,
+            "commentStart": 1663,
+            "end": 1670,
             "moduleId": 0,
-            "start": 1629,
+            "start": 1663,
             "type": "TagDeclarator",
             "value": "circle5"
           },
@@ -2145,10 +2145,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             -6.0
           ],
           "tag": {
-            "commentStart": 3347,
-            "end": 3352,
+            "commentStart": 3381,
+            "end": 3386,
             "moduleId": 0,
-            "start": 3347,
+            "start": 3381,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2169,10 +2169,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             -6.0
           ],
           "tag": {
-            "commentStart": 3419,
-            "end": 3424,
+            "commentStart": 3453,
+            "end": 3458,
             "moduleId": 0,
-            "start": 3419,
+            "start": 3453,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2193,10 +2193,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             6.0
           ],
           "tag": {
-            "commentStart": 3489,
-            "end": 3494,
+            "commentStart": 3523,
+            "end": 3528,
             "moduleId": 0,
-            "start": 3489,
+            "start": 3523,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2217,10 +2217,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             6.0
           ],
           "tag": {
-            "commentStart": 3559,
-            "end": 3564,
+            "commentStart": 3593,
+            "end": 3598,
             "moduleId": 0,
-            "start": 3559,
+            "start": 3593,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2315,10 +2315,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 453,
-            "end": 458,
+            "commentStart": 487,
+            "end": 492,
             "moduleId": 0,
-            "start": 453,
+            "start": 487,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2329,10 +2329,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 635,
-            "end": 640,
+            "commentStart": 669,
+            "end": 674,
             "moduleId": 0,
-            "start": 635,
+            "start": 669,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2343,10 +2343,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 815,
-            "end": 820,
+            "commentStart": 849,
+            "end": 854,
             "moduleId": 0,
-            "start": 815,
+            "start": 849,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2357,10 +2357,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2371,10 +2371,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2385,10 +2385,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2399,10 +2399,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2413,10 +2413,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2427,10 +2427,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 964,
-            "end": 968,
+            "commentStart": 998,
+            "end": 1002,
             "moduleId": 0,
-            "start": 964,
+            "start": 998,
             "type": "TagDeclarator",
             "value": "arc1"
           },
@@ -2441,10 +2441,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2056,
-            "end": 2060,
+            "commentStart": 2090,
+            "end": 2094,
             "moduleId": 0,
-            "start": 2056,
+            "start": 2090,
             "type": "TagDeclarator",
             "value": "arc2"
           },
@@ -2466,10 +2466,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               0.00000000000000000005501783810362672
             ],
             "tag": {
-              "commentStart": 278,
-              "end": 283,
+              "commentStart": 312,
+              "end": 317,
               "moduleId": 0,
-              "start": 278,
+              "start": 312,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2490,10 +2490,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               0.0000000000000030469122162151693
             ],
             "tag": {
-              "commentStart": 453,
-              "end": 458,
+              "commentStart": 487,
+              "end": 492,
               "moduleId": 0,
-              "start": 453,
+              "start": 487,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2514,10 +2514,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               11.999999999999995
             ],
             "tag": {
-              "commentStart": 635,
-              "end": 640,
+              "commentStart": 669,
+              "end": 674,
               "moduleId": 0,
-              "start": 635,
+              "start": 669,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2538,10 +2538,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
               11.489930515974109
             ],
             "tag": {
-              "commentStart": 815,
-              "end": 820,
+              "commentStart": 849,
+              "end": 854,
               "moduleId": 0,
-              "start": 815,
+              "start": 849,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2568,10 +2568,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 49.32000000101538,
             "tag": {
-              "commentStart": 964,
-              "end": 968,
+              "commentStart": 998,
+              "end": 1002,
               "moduleId": 0,
-              "start": 964,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -2598,10 +2598,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 49.32000000101538,
             "tag": {
-              "commentStart": 964,
-              "end": 968,
+              "commentStart": 998,
+              "end": 1002,
               "moduleId": 0,
-              "start": 964,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -2628,10 +2628,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 49.32000000101538,
             "tag": {
-              "commentStart": 964,
-              "end": 968,
+              "commentStart": 998,
+              "end": 1002,
               "moduleId": 0,
-              "start": 964,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -2658,10 +2658,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 49.32000000101538,
             "tag": {
-              "commentStart": 964,
-              "end": 968,
+              "commentStart": 998,
+              "end": 1002,
               "moduleId": 0,
-              "start": 964,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -2688,10 +2688,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 49.32000000101538,
             "tag": {
-              "commentStart": 964,
-              "end": 968,
+              "commentStart": 998,
+              "end": 1002,
               "moduleId": 0,
-              "start": 964,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -2718,10 +2718,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 49.32000000101538,
             "tag": {
-              "commentStart": 964,
-              "end": 968,
+              "commentStart": 998,
+              "end": 1002,
               "moduleId": 0,
-              "start": 964,
+              "start": 998,
               "type": "TagDeclarator",
               "value": "arc1"
             },
@@ -2748,10 +2748,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 0.5100000046994079,
             "tag": {
-              "commentStart": 2056,
-              "end": 2060,
+              "commentStart": 2090,
+              "end": 2094,
               "moduleId": 0,
-              "start": 2056,
+              "start": 2090,
               "type": "TagDeclarator",
               "value": "arc2"
             },
@@ -2879,10 +2879,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1152,
-            "end": 1159,
+            "commentStart": 1186,
+            "end": 1193,
             "moduleId": 0,
-            "start": 1152,
+            "start": 1186,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2893,10 +2893,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1152,
-            "end": 1159,
+            "commentStart": 1186,
+            "end": 1193,
             "moduleId": 0,
-            "start": 1152,
+            "start": 1186,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2907,10 +2907,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1152,
-            "end": 1159,
+            "commentStart": 1186,
+            "end": 1193,
             "moduleId": 0,
-            "start": 1152,
+            "start": 1186,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2938,10 +2938,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000000043014,
             "tag": {
-              "commentStart": 1152,
-              "end": 1159,
+              "commentStart": 1186,
+              "end": 1193,
               "moduleId": 0,
-              "start": 1152,
+              "start": 1186,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2968,10 +2968,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000000043014,
             "tag": {
-              "commentStart": 1152,
-              "end": 1159,
+              "commentStart": 1186,
+              "end": 1193,
               "moduleId": 0,
-              "start": 1152,
+              "start": 1186,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2998,10 +2998,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000000043014,
             "tag": {
-              "commentStart": 1152,
-              "end": 1159,
+              "commentStart": 1186,
+              "end": 1193,
               "moduleId": 0,
-              "start": 1152,
+              "start": 1186,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -3129,10 +3129,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1269,
-            "end": 1276,
+            "commentStart": 1303,
+            "end": 1310,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1303,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3143,10 +3143,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1269,
-            "end": 1276,
+            "commentStart": 1303,
+            "end": 1310,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1303,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3157,10 +3157,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1269,
-            "end": 1276,
+            "commentStart": 1303,
+            "end": 1310,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1303,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3171,10 +3171,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1269,
-            "end": 1276,
+            "commentStart": 1303,
+            "end": 1310,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1303,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -3202,10 +3202,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000000642484,
             "tag": {
-              "commentStart": 1269,
-              "end": 1276,
+              "commentStart": 1303,
+              "end": 1310,
               "moduleId": 0,
-              "start": 1269,
+              "start": 1303,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -3232,10 +3232,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000000642484,
             "tag": {
-              "commentStart": 1269,
-              "end": 1276,
+              "commentStart": 1303,
+              "end": 1310,
               "moduleId": 0,
-              "start": 1269,
+              "start": 1303,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -3262,10 +3262,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000000642484,
             "tag": {
-              "commentStart": 1269,
-              "end": 1276,
+              "commentStart": 1303,
+              "end": 1310,
               "moduleId": 0,
-              "start": 1269,
+              "start": 1303,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -3292,10 +3292,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000000642484,
             "tag": {
-              "commentStart": 1269,
-              "end": 1276,
+              "commentStart": 1303,
+              "end": 1310,
               "moduleId": 0,
-              "start": 1269,
+              "start": 1303,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -3423,10 +3423,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1389,
-            "end": 1396,
+            "commentStart": 1423,
+            "end": 1430,
             "moduleId": 0,
-            "start": 1389,
+            "start": 1423,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -3437,10 +3437,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1389,
-            "end": 1396,
+            "commentStart": 1423,
+            "end": 1430,
             "moduleId": 0,
-            "start": 1389,
+            "start": 1423,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -3451,10 +3451,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1389,
-            "end": 1396,
+            "commentStart": 1423,
+            "end": 1430,
             "moduleId": 0,
-            "start": 1389,
+            "start": 1423,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -3465,10 +3465,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1389,
-            "end": 1396,
+            "commentStart": 1423,
+            "end": 1430,
             "moduleId": 0,
-            "start": 1389,
+            "start": 1423,
             "type": "TagDeclarator",
             "value": "circle3"
           },
@@ -3496,10 +3496,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000001505187,
             "tag": {
-              "commentStart": 1389,
-              "end": 1396,
+              "commentStart": 1423,
+              "end": 1430,
               "moduleId": 0,
-              "start": 1389,
+              "start": 1423,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -3526,10 +3526,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000001505187,
             "tag": {
-              "commentStart": 1389,
-              "end": 1396,
+              "commentStart": 1423,
+              "end": 1430,
               "moduleId": 0,
-              "start": 1389,
+              "start": 1423,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -3556,10 +3556,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000001505187,
             "tag": {
-              "commentStart": 1389,
-              "end": 1396,
+              "commentStart": 1423,
+              "end": 1430,
               "moduleId": 0,
-              "start": 1389,
+              "start": 1423,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -3586,10 +3586,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000001505187,
             "tag": {
-              "commentStart": 1389,
-              "end": 1396,
+              "commentStart": 1423,
+              "end": 1430,
               "moduleId": 0,
-              "start": 1389,
+              "start": 1423,
               "type": "TagDeclarator",
               "value": "circle3"
             },
@@ -3717,10 +3717,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1509,
-            "end": 1516,
+            "commentStart": 1543,
+            "end": 1550,
             "moduleId": 0,
-            "start": 1509,
+            "start": 1543,
             "type": "TagDeclarator",
             "value": "circle4"
           },
@@ -3731,10 +3731,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1509,
-            "end": 1516,
+            "commentStart": 1543,
+            "end": 1550,
             "moduleId": 0,
-            "start": 1509,
+            "start": 1543,
             "type": "TagDeclarator",
             "value": "circle4"
           },
@@ -3745,10 +3745,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1509,
-            "end": 1516,
+            "commentStart": 1543,
+            "end": 1550,
             "moduleId": 0,
-            "start": 1509,
+            "start": 1543,
             "type": "TagDeclarator",
             "value": "circle4"
           },
@@ -3759,10 +3759,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1509,
-            "end": 1516,
+            "commentStart": 1543,
+            "end": 1550,
             "moduleId": 0,
-            "start": 1509,
+            "start": 1543,
             "type": "TagDeclarator",
             "value": "circle4"
           },
@@ -3790,10 +3790,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.000000001052158,
             "tag": {
-              "commentStart": 1509,
-              "end": 1516,
+              "commentStart": 1543,
+              "end": 1550,
               "moduleId": 0,
-              "start": 1509,
+              "start": 1543,
               "type": "TagDeclarator",
               "value": "circle4"
             },
@@ -3820,10 +3820,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.000000001052158,
             "tag": {
-              "commentStart": 1509,
-              "end": 1516,
+              "commentStart": 1543,
+              "end": 1550,
               "moduleId": 0,
-              "start": 1509,
+              "start": 1543,
               "type": "TagDeclarator",
               "value": "circle4"
             },
@@ -3850,10 +3850,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.000000001052158,
             "tag": {
-              "commentStart": 1509,
-              "end": 1516,
+              "commentStart": 1543,
+              "end": 1550,
               "moduleId": 0,
-              "start": 1509,
+              "start": 1543,
               "type": "TagDeclarator",
               "value": "circle4"
             },
@@ -3880,10 +3880,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.000000001052158,
             "tag": {
-              "commentStart": 1509,
-              "end": 1516,
+              "commentStart": 1543,
+              "end": 1550,
               "moduleId": 0,
-              "start": 1509,
+              "start": 1543,
               "type": "TagDeclarator",
               "value": "circle4"
             },
@@ -4011,10 +4011,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1629,
-            "end": 1636,
+            "commentStart": 1663,
+            "end": 1670,
             "moduleId": 0,
-            "start": 1629,
+            "start": 1663,
             "type": "TagDeclarator",
             "value": "circle5"
           },
@@ -4025,10 +4025,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1629,
-            "end": 1636,
+            "commentStart": 1663,
+            "end": 1670,
             "moduleId": 0,
-            "start": 1629,
+            "start": 1663,
             "type": "TagDeclarator",
             "value": "circle5"
           },
@@ -4039,10 +4039,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1629,
-            "end": 1636,
+            "commentStart": 1663,
+            "end": 1670,
             "moduleId": 0,
-            "start": 1629,
+            "start": 1663,
             "type": "TagDeclarator",
             "value": "circle5"
           },
@@ -4070,10 +4070,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000002922733,
             "tag": {
-              "commentStart": 1629,
-              "end": 1636,
+              "commentStart": 1663,
+              "end": 1670,
               "moduleId": 0,
-              "start": 1629,
+              "start": 1663,
               "type": "TagDeclarator",
               "value": "circle5"
             },
@@ -4100,10 +4100,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000002922733,
             "tag": {
-              "commentStart": 1629,
-              "end": 1636,
+              "commentStart": 1663,
+              "end": 1670,
               "moduleId": 0,
-              "start": 1629,
+              "start": 1663,
               "type": "TagDeclarator",
               "value": "circle5"
             },
@@ -4130,10 +4130,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
             ],
             "radius": 1.0000000002922733,
             "tag": {
-              "commentStart": 1629,
-              "end": 1636,
+              "commentStart": 1663,
+              "end": 1670,
               "moduleId": 0,
-              "start": 1629,
+              "start": 1663,
               "type": "TagDeclarator",
               "value": "circle5"
             },
@@ -5664,10 +5664,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     0.00000000000000000005501783810362672
                   ],
                   "tag": {
-                    "commentStart": 278,
-                    "end": 283,
+                    "commentStart": 312,
+                    "end": 317,
                     "moduleId": 0,
-                    "start": 278,
+                    "start": 312,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5705,10 +5705,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     0.0000000000000030469122162151693
                   ],
                   "tag": {
-                    "commentStart": 453,
-                    "end": 458,
+                    "commentStart": 487,
+                    "end": 492,
                     "moduleId": 0,
-                    "start": 453,
+                    "start": 487,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -5746,10 +5746,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     11.999999999999995
                   ],
                   "tag": {
-                    "commentStart": 635,
-                    "end": 640,
+                    "commentStart": 669,
+                    "end": 674,
                     "moduleId": 0,
-                    "start": 635,
+                    "start": 669,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -5787,10 +5787,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     11.489930515974109
                   ],
                   "tag": {
-                    "commentStart": 815,
-                    "end": 820,
+                    "commentStart": 849,
+                    "end": 854,
                     "moduleId": 0,
-                    "start": 815,
+                    "start": 849,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -5817,10 +5817,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   ],
                   "radius": 49.32000000101538,
                   "tag": {
-                    "commentStart": 964,
-                    "end": 968,
+                    "commentStart": 998,
+                    "end": 1002,
                     "moduleId": 0,
-                    "start": 964,
+                    "start": 998,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -5864,10 +5864,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   ],
                   "radius": 1.0000000000043014,
                   "tag": {
-                    "commentStart": 1152,
-                    "end": 1159,
+                    "commentStart": 1186,
+                    "end": 1193,
                     "moduleId": 0,
-                    "start": 1152,
+                    "start": 1186,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -5911,10 +5911,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   ],
                   "radius": 1.0000000000642484,
                   "tag": {
-                    "commentStart": 1269,
-                    "end": 1276,
+                    "commentStart": 1303,
+                    "end": 1310,
                     "moduleId": 0,
-                    "start": 1269,
+                    "start": 1303,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -5958,10 +5958,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   ],
                   "radius": 1.0000000001505187,
                   "tag": {
-                    "commentStart": 1389,
-                    "end": 1396,
+                    "commentStart": 1423,
+                    "end": 1430,
                     "moduleId": 0,
-                    "start": 1389,
+                    "start": 1423,
                     "type": "TagDeclarator",
                     "value": "circle3"
                   },
@@ -6005,10 +6005,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   ],
                   "radius": 1.000000001052158,
                   "tag": {
-                    "commentStart": 1509,
-                    "end": 1516,
+                    "commentStart": 1543,
+                    "end": 1550,
                     "moduleId": 0,
-                    "start": 1509,
+                    "start": 1543,
                     "type": "TagDeclarator",
                     "value": "circle4"
                   },
@@ -6052,10 +6052,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   ],
                   "radius": 1.0000000002922733,
                   "tag": {
-                    "commentStart": 1629,
-                    "end": 1636,
+                    "commentStart": 1663,
+                    "end": 1670,
                     "moduleId": 0,
-                    "start": 1629,
+                    "start": 1663,
                     "type": "TagDeclarator",
                     "value": "circle5"
                   },
@@ -6099,10 +6099,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                   ],
                   "radius": 0.5100000046994079,
                   "tag": {
-                    "commentStart": 2056,
-                    "end": 2060,
+                    "commentStart": 2090,
+                    "end": 2094,
                     "moduleId": 0,
-                    "start": 2056,
+                    "start": 2090,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -6963,10 +6963,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     -6.0
                   ],
                   "tag": {
-                    "commentStart": 3347,
-                    "end": 3352,
+                    "commentStart": 3381,
+                    "end": 3386,
                     "moduleId": 0,
-                    "start": 3347,
+                    "start": 3381,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -6987,10 +6987,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     -6.0
                   ],
                   "tag": {
-                    "commentStart": 3419,
-                    "end": 3424,
+                    "commentStart": 3453,
+                    "end": 3458,
                     "moduleId": 0,
-                    "start": 3419,
+                    "start": 3453,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -7011,10 +7011,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     6.0
                   ],
                   "tag": {
-                    "commentStart": 3489,
-                    "end": 3494,
+                    "commentStart": 3523,
+                    "end": 3528,
                     "moduleId": 0,
-                    "start": 3489,
+                    "start": 3523,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7035,10 +7035,10 @@ description: Variables in memory after executing fun-stacker-toy.kcl
                     6.0
                   ],
                   "tag": {
-                    "commentStart": 3559,
-                    "end": 3564,
+                    "commentStart": 3593,
+                    "end": 3598,
                     "moduleId": 0,
-                    "start": 3559,
+                    "start": 3593,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
