@@ -96,6 +96,14 @@ pub(super) struct GlobalState {
     /// `deprecated_since` warnings. Runtime behavior still uses the version
     /// declared by the KCL program.
     pub deprecation_version_override: Option<String>,
+    /// The entry-point (root) module's declared kclVersion, when it is KCL 3.0
+    /// or later. `Some` makes this single version govern version-conditional
+    /// runtime behavior for the whole execution -- every module and every
+    /// function body. `None` (entry point on 1.0/2.0 or undeclared) preserves
+    /// the legacy per-module lookup and its caller-version quirk; see
+    /// [`ExecState::legacy_caller_kcl_version`]. Assigned unconditionally at
+    /// the start of every execution.
+    pub entry_point_kcl_version: Option<KclVersion>,
     /// Global artifacts that represent the entire program.
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
@@ -654,6 +662,7 @@ impl ExecState {
             var_solutions: self.global.root_module_artifacts.var_solutions,
             refactor_metadata: self.global.root_module_artifacts.refactor_metadata.clone(),
             issues: self.global.issues,
+            source_files: self.global.id_to_source,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         })
     }
@@ -1323,8 +1332,52 @@ impl ExecState {
         Ok(())
     }
 
+    /// The KCL version governing version-conditional runtime behavior.
+    ///
+    /// If the entry-point module declared kclVersion 3.0-preview (or later),
+    /// that single version governs the entire execution -- all modules and
+    /// all function bodies. Otherwise, falls back to the legacy per-module
+    /// lookup; see [`Self::legacy_caller_kcl_version`].
     pub(crate) fn kcl_version(&self) -> KclVersion {
+        self.global
+            .entry_point_kcl_version
+            .unwrap_or_else(|| self.legacy_caller_kcl_version())
+    }
+
+    /// The legacy kclVersion lookup: the current module-local settings.
+    ///
+    /// Quirk (fixed when the entry point declares 3.0-preview or later):
+    /// `mod_local` is swapped only around module top-level execution, never
+    /// around function calls, so module-level code sees its own module's
+    /// declared version, but a function body sees the CALLING module's
+    /// version -- a function defined in a 1.0 module but called from a 2.0
+    /// module observes 2.0 here.
+    pub(crate) fn legacy_caller_kcl_version(&self) -> KclVersion {
         self.mod_local.settings.kcl_version
+    }
+
+    /// Gate for behaviors introduced in KCL 3.0. True only when the entry-point
+    /// module of this execution declares KCL 3.0 or later. This never looks at
+    /// [`Self::legacy_caller_kcl_version()`] so that control flow behavior
+    /// never varies within a single execution.
+    pub(crate) fn use_kcl_v3_control_flow(&self) -> bool {
+        self.global
+            .entry_point_kcl_version
+            .is_some_and(|v| v >= KclVersion::V3Preview)
+    }
+
+    /// Record the entry-point program's declared kclVersion for this
+    /// execution. Only 3.0-preview or later is recorded; older or undeclared
+    /// versions leave the field unset so that the legacy per-module lookup
+    /// applies. Must be assigned unconditionally at the start of every
+    /// execution since the state may be reused across executions whose
+    /// programs declare different versions.
+    pub(crate) fn set_entry_point_kcl_version(&mut self, program: &crate::Program) {
+        let declared = program.meta_settings().ok().flatten().map(|s| s.kcl_version);
+        self.global.entry_point_kcl_version = match declared {
+            Some(v) if v >= KclVersion::V3Preview => Some(v),
+            _ => None,
+        };
     }
 }
 
@@ -1380,6 +1433,7 @@ impl GlobalState {
             mod_loader: Default::default(),
             issues: Default::default(),
             deprecation_version_override: None,
+            entry_point_kcl_version: None,
             id_to_source: Default::default(),
             segment_ids_edited,
             drag_anchors: Vec::new(),

@@ -2,10 +2,15 @@
 name = "kcl-language-server"
 description = "A language server for KCL."
 authors = ["KittyCAD Inc <kcl@kittycad.io>"]
-version = "0.2.180"
+version = "0.2.181"
 edition = "2024"
 license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = []
+# Helpers shared by the LSP integration tests and benchmark.
+lsp-test-util = ["kcl-lib/lsp-test-util"]
 
 [[bin]]
 name = "kcl-language-server"
@@ -14,21 +19,40 @@ bench = false
 
 [dependencies]
 anyhow = { workspace = true }
+async-trait = { workspace = true }
 clap = { workspace = true, features = ["cargo", "derive", "env", "unicode"] }
 dashmap = { workspace = true }
-kcl-lib = { path = "../kcl-lib", default-features = false, features = [
+kcl-lib = { version = "=0.2.181", path = "../kcl-lib", default-features = false, features = [
 	"cli",
 	"engine",
 	"disable-println",
 ] }
+kittycad-modeling-cmds = { workspace = true }
 kittycad = { workspace = true }
 lazy_static = { workspace = true }
 log = { version = "0.4.30", features = ["serde"] }
+ropey = "1.6.1"
+serde = { workspace = true }
+serde_json = { workspace = true }
 slog = { workspace = true }
 slog-async = { workspace = true }
 slog-json = { workspace = true }
 slog-term = { workspace = true }
 tracing-subscriber = { workspace = true }
+tokio = { workspace = true, features = ["sync"] }
+ts-rs = { workspace = true }
+uuid = { workspace = true }
+url = { version = "2.5.8", features = ["serde"] }
+
+[dev-dependencies]
+criterion = { version = "0.8.2", features = ["async_tokio"] }
+kcl-lib = { version = "=0.2.181", path = "../kcl-lib", features = ["lsp-test-util"] }
+pretty_assertions = "1.4.1"
+
+[[bench]]
+name = "lsp_semantic_tokens_benchmark_criterion"
+harness = false
+required-features = ["lsp-test-util"]
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 signal-hook = "0.4.4"

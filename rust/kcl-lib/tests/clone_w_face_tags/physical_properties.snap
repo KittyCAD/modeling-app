@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties clone_w_face_tags.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 1.76,
+      "y": 2.635,
+      "z": 1.0
+    },
+    "dimensions": {
+      "x": 2.68,
+      "y": 3.45,
+      "z": 2.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 84.4434889018808
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.03640803564070963
+  }
+}

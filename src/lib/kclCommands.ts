@@ -28,6 +28,7 @@ import {
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
+import { isStepFile } from '@src/lib/fileExtensions'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
@@ -57,6 +58,7 @@ interface KclCommandConfig {
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 const EXECUTING_MESSAGE =
   'Cannot run command while code is executing. Please try again later.'
+const DEFAULT_IMPORT_REPRESENTATION = 'mesh' as const
 
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
@@ -258,18 +260,67 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             return true
           },
         },
+        representation: {
+          displayName: 'Representation',
+          description:
+            'Choose how this STEP file should be represented in your model.',
+          status: 'experimental',
+          inputType: 'options',
+          required: (context) => isStepFile(context.argumentsToSubmit.path),
+          hidden: (context) => !isStepFile(context.argumentsToSubmit.path),
+          defaultValue: DEFAULT_IMPORT_REPRESENTATION,
+          options: [
+            {
+              name: 'Mesh',
+              description:
+                'Faster to import. Best when you only need visual reference geometry.',
+              value: DEFAULT_IMPORT_REPRESENTATION,
+              isCurrent: true,
+            },
+            {
+              name: 'B-rep (experimental)',
+              description:
+                'Under development and currently supports only simple shapes. Imported geometry is not editable; use Mesh for now.',
+              value: 'brep',
+            },
+          ],
+        },
       },
       onSubmit: (data) => {
         if (!data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
-        const ast = commandProps.kclManager.ast
+        let ast = commandProps.kclManager.ast
         const { path, localName } = data
+        const representation = isStepFile(path)
+          ? (data.representation ?? DEFAULT_IMPORT_REPRESENTATION)
+          : undefined
+
+        if (
+          representation &&
+          commandProps.kclManager.fileSettings.experimentalFeatures?.type !==
+            'Allow'
+        ) {
+          const astWithExperimentalFeatures = setExperimentalFeatures(
+            commandProps.kclManager.code,
+            { type: 'Allow' },
+            commandProps.wasmInstance
+          )
+          if (err(astWithExperimentalFeatures)) {
+            toast.error(
+              `Failed to enable experimental features for STEP import: ${astWithExperimentalFeatures.message}`
+            )
+            return astWithExperimentalFeatures
+          }
+          ast = astWithExperimentalFeatures
+        }
+
         const { modifiedAst, pathToNode } = addModuleImport({
           ast,
           path,
           localName,
+          representation,
         })
         updateModelingState(
           modifiedAst,

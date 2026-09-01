@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties bench-for-kids.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 100.0,
+      "z": 230.7592344560256
+    },
+    "dimensions": {
+      "x": 480.0,
+      "y": 1000.0,
+      "z": 561.5184689120512
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 1364942.3384985474
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 57925.24860833859
+  }
+}

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties multiple-foreign-imports-all-render.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.5,
+      "y": 0.5,
+      "z": 500.5
+    },
+    "dimensions": {
+      "x": 1001.0,
+      "y": 1001.0,
+      "z": 1001.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 18000000.0
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 3000000.0
+  }
+}

@@ -1,0 +1,8 @@
+// The entry point's kclVersion governs the whole execution: this
+// KCL 3.0 entry point gives early-return semantics to functions from
+// an imported 2.0 module too.
+@settings(kclVersion = "3.0-preview")
+
+import addOne from "dep.kcl"
+
+assert(addOne(1), isEqualTo = 2, error = "the imported function early-returns")
