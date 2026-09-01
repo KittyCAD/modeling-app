@@ -440,6 +440,74 @@ export async function opfsPathExists(page: Page, path: string) {
   }, path)
 }
 
+export async function readCloudSyncProjectState(
+  page: Page,
+  projectPath: string
+) {
+  return page.evaluate(async (projectPathToRead) => {
+    type StoredProjectMetadata = {
+      remoteProjectId?: unknown
+      remoteRevision?: unknown
+      baseManifest?: unknown
+    }
+    type StoredOutboxEntry = {
+      projectPath?: unknown
+    }
+
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('zds-opfs-cloud-sync', 1)
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => resolve(request.result)
+    })
+    const requestResult = <T>(request: IDBRequest<T>) =>
+      new Promise<T>((resolve, reject) => {
+        request.onerror = () => reject(request.error)
+        request.onsuccess = () => resolve(request.result)
+      })
+
+    try {
+      if (
+        !db.objectStoreNames.contains('projects') ||
+        !db.objectStoreNames.contains('outbox')
+      ) {
+        return undefined
+      }
+
+      const transaction = db.transaction(['projects', 'outbox'], 'readonly')
+      const [metadata, outboxEntries] = await Promise.all([
+        requestResult(
+          transaction.objectStore('projects').get(projectPathToRead)
+        ) as Promise<StoredProjectMetadata | undefined>,
+        requestResult(transaction.objectStore('outbox').getAll()) as Promise<
+          StoredOutboxEntry[]
+        >,
+      ])
+      if (!metadata) {
+        return undefined
+      }
+
+      return {
+        remoteProjectId:
+          typeof metadata.remoteProjectId === 'string'
+            ? metadata.remoteProjectId
+            : undefined,
+        remoteRevision:
+          typeof metadata.remoteRevision === 'string'
+            ? metadata.remoteRevision
+            : undefined,
+        hasBaseManifest:
+          typeof metadata.baseManifest === 'object' &&
+          metadata.baseManifest !== null,
+        pendingOutboxCount: outboxEntries.filter(
+          (entry) => entry.projectPath === projectPathToRead
+        ).length,
+      }
+    } finally {
+      db.close()
+    }
+  }, projectPath)
+}
+
 async function fulfillJson(route: Route, body: unknown, status = 200) {
   await route.fulfill({
     status,

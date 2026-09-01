@@ -1,8 +1,10 @@
+import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import {
   type CloudProject,
   createRemoteListGate,
   opfsPathExists,
   PROJECT_DIR,
+  readCloudSyncProjectState,
   readOpfsTextFiles,
   routeCloudProjects,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
@@ -49,6 +51,22 @@ test(
   'Replay onboarding creates a uniquely named Personal Cloud tutorial',
   { tag: '@web' },
   async ({ context, page }, testInfo) => {
+    const clientErrors: Array<{ code?: string; stack?: string }> = []
+    await context.route('**/user/client-errors', async (route) => {
+      const report = route.request().postDataJSON() as {
+        code?: unknown
+        stack?: unknown
+      }
+      clientErrors.push({
+        code: typeof report.code === 'string' ? report.code : undefined,
+        stack: typeof report.stack === 'string' ? report.stack : undefined,
+      })
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({}),
+      })
+    })
     const remoteProjects: CloudProject[] = []
     const remoteRevisions = new Map<string, number>()
     const remoteListGate = createRemoteListGate()
@@ -127,12 +145,24 @@ test(
     await expect(
       tutorialProjectLink.getByTestId('project-file-count')
     ).toHaveText('1')
+    const cloudSyncStatus = page.getByTestId('cloud-library-sync-status')
+    await expect(cloudSyncStatus).toContainText('Cloud syncing')
     remoteListGate.release()
     await expect.poll(() => apiCalls.creates.length).toBe(1)
     expect(apiCalls.creates[0]).toContain('tutorial-project')
     await expect
       .poll(() => apiCalls.remoteListResponses)
       .toBeGreaterThanOrEqual(1)
+    const firstProjectPath = `${PROJECT_DIR}/tutorial-project`
+    await expect
+      .poll(() => readCloudSyncProjectState(page, firstProjectPath))
+      .toMatchObject({
+        remoteProjectId: TUTORIAL_PROJECT_IDS[0],
+        remoteRevision: `${TUTORIAL_PROJECT_IDS[0]}-rev-1`,
+        hasBaseManifest: true,
+        pendingOutboxCount: 0,
+      })
+    await expect(cloudSyncStatus).toContainText('Cloud synced')
     await expect(tutorialProjectLink).toHaveCount(1)
     await expect(
       tutorialProjectLink.getByTestId('project-file-count')
@@ -140,13 +170,55 @@ test(
     await tutorialProjectLink.click()
     await expect(page).toHaveURL(/tutorial-project%2Fmain\.kcl$/)
 
-    await page.evaluate(async (mainPath) => {
-      await window.fsZds.writeFile(
-        mainPath,
-        new TextEncoder().encode('changed = true')
+    const editor = new EditorFixture(page)
+    await editor.openPane()
+    await expect(editor.codeContent).toContainText('plateLength = 10')
+    const firstProjectUpdatesBeforeEdit = apiCalls.updates.filter(
+      ({ projectId }) => projectId === TUTORIAL_PROJECT_IDS[0]
+    ).length
+    const firstProjectStateBeforeEdit = await readCloudSyncProjectState(
+      page,
+      firstProjectPath
+    )
+    expect(firstProjectStateBeforeEdit?.remoteRevision).toBeDefined()
+    const firstProjectUpdateResponse = page.waitForResponse((response) => {
+      const url = new URL(response.url())
+      return (
+        response.request().method() === 'PUT' &&
+        url.pathname.endsWith(`/user/projects/${TUTORIAL_PROJECT_IDS[0]}`)
       )
-    }, `${PROJECT_DIR}/tutorial-project/main.kcl`)
-    await expect.poll(() => apiCalls.updates.length).toBeGreaterThanOrEqual(1)
+    })
+    await editor.replaceCode('', 'changed = true')
+    await expect
+      .poll(async () => {
+        const files = await readOpfsTextFiles(page, {
+          main: `${PROJECT_DIR}/tutorial-project/main.kcl`,
+        })
+        return files.main
+      })
+      .toBe('changed = true')
+    expect((await firstProjectUpdateResponse).ok()).toBe(true)
+    expect(
+      apiCalls.updates.filter(
+        ({ projectId }) => projectId === TUTORIAL_PROJECT_IDS[0]
+      ).length
+    ).toBeGreaterThan(firstProjectUpdatesBeforeEdit)
+    await expect
+      .poll(async () => {
+        const state = await readCloudSyncProjectState(page, firstProjectPath)
+        return {
+          ...state,
+          remoteRevisionChanged:
+            state?.remoteRevision !==
+            firstProjectStateBeforeEdit?.remoteRevision,
+        }
+      })
+      .toMatchObject({
+        remoteProjectId: TUTORIAL_PROJECT_IDS[0],
+        remoteRevisionChanged: true,
+        hasBaseManifest: true,
+        pendingOutboxCount: 0,
+      })
 
     await replayOnboardingFromSettings(page, 'tutorial-project-1')
     await expect.poll(() => apiCalls.creates.length).toBe(2)
@@ -214,6 +286,13 @@ test(
       `project_id = "${TUTORIAL_PROJECT_IDS[1]}"`
     )
     expect(apiCalls.creates).toHaveLength(2)
+    expect(
+      clientErrors.some(
+        ({ code, stack }) =>
+          code === 'cloud_sync_untracked_local_changes' &&
+          stack?.includes(TUTORIAL_PROJECT_IDS[0])
+      )
+    ).toBe(false)
 
     await page.keyboard.press('Escape')
     await expect(page).toHaveURL(/\/home$/)
