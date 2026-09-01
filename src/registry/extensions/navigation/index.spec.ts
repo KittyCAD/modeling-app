@@ -162,14 +162,14 @@ describe('serialising the location', () => {
 describe('opaque search parameters', () => {
   test('are appended to the derived path', () => {
     harness = createHarness()
-    harness.navigation.setOpaqueSearch(new URLSearchParams({ pool: 'alpha' }))
+    harness.navigation.setOpaqueSearch('pool=alpha')
 
     expect(harness.navigation.path.value).toBe('/?pool=alpha')
   })
 
   test('survive a change of location', () => {
     harness = createHarness()
-    harness.navigation.setOpaqueSearch(new URLSearchParams({ pool: 'alpha' }))
+    harness.navigation.setOpaqueSearch('pool=alpha')
     harness.projectLocation.value = {
       kind: 'project',
       projectPath: '/library/proj',
@@ -182,9 +182,20 @@ describe('opaque search parameters', () => {
     )
   })
 
+  test('are preserved character for character', () => {
+    harness = createHarness()
+    // The case the drift detector actually caught: `/` is legal unencoded in a
+    // query value, and re-encoding it changes the URL for no reason.
+    harness.navigation.setOpaqueSearch('sample=socket-head-cap-screw/main.kcl')
+
+    expect(harness.navigation.path.value).toBe(
+      '/?sample=socket-head-cap-screw/main.kcl'
+    )
+  })
+
   test('an empty set adds no question mark', () => {
     harness = createHarness()
-    harness.navigation.setOpaqueSearch(new URLSearchParams())
+    harness.navigation.setOpaqueSearch('')
     expect(harness.navigation.path.value).toBe('/')
   })
 })

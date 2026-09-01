@@ -56,7 +56,7 @@ export default defineRegistryItemFactory((ctx) => {
     return HOME
   })
 
-  const opaqueSearch = signal(new URLSearchParams())
+  const opaqueSearch = signal('')
 
   const path = computed(() => {
     const current = location.value
@@ -69,7 +69,7 @@ export default defineRegistryItemFactory((ctx) => {
       }
     }
 
-    const search = opaqueSearch.value.toString()
+    const search = opaqueSearch.value
     if (!search) return base
     // `toPath` is contracted not to emit a query, but `PATHS.SETTINGS_USER` and
     // friends make that easy to get wrong, so joining correctly is cheaper than
@@ -92,7 +92,7 @@ export default defineRegistryItemFactory((ctx) => {
           location,
           path,
           opaqueSearch,
-          setOpaqueSearch: (next: URLSearchParams) => {
+          setOpaqueSearch: (next: string) => {
             opaqueSearch.value = next
           },
           loadUrl,

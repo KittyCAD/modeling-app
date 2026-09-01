@@ -94,13 +94,20 @@ export interface NavigationService {
    * deliberately a single place to look: emptying it is how this migration
    * finishes, one parameter at a time.
    *
-   * Set through `setOpaqueSearch` rather than by assignment: the registry
-   * re-exposes signal-valued service fields as readonly on purpose, so a
-   * mutable surface has to be an explicit method.
+   * **A raw string, not `URLSearchParams`, and that distinction is load-bearing.**
+   * Parsing and re-serialising is not lossless: `URLSearchParams.toString()`
+   * percent-encodes characters that were legal unencoded, so
+   * `?sample=a/main.kcl` comes back as `?sample=a%2Fmain.kcl`. Same value, but a
+   * different URL — and this is the one thing here whose whole job is to be
+   * passed through untouched. Opaque means uninterpreted.
+   *
+   * Excludes the leading `?`. Set through `setOpaqueSearch` rather than by
+   * assignment: the registry re-exposes signal-valued service fields as readonly
+   * on purpose, so a mutable surface has to be an explicit method.
    */
-  readonly opaqueSearch: ReadonlySignal<URLSearchParams>
-  /** Replace the carried parameters wholesale. */
-  setOpaqueSearch(next: URLSearchParams): void
+  readonly opaqueSearch: ReadonlySignal<string>
+  /** Replace the carried query string wholesale. Exclude the leading `?`. */
+  setOpaqueSearch(next: string): void
   /**
    * Apply an incoming URL, on boot or on a history pop.
    *

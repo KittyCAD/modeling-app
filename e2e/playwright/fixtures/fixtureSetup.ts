@@ -379,16 +379,27 @@ interface NavigationDriftRecord {
  */
 async function reportNavigationDrift(page: Page, testInfo: TestInfo) {
   let drift: NavigationDriftRecord[] = []
+  let timer: ReturnType<typeof setTimeout> | undefined
   try {
-    drift = await page.evaluate(
-      () =>
-        (window as unknown as { __navDrift?: NavigationDriftRecord[] })
-          .__navDrift ?? []
-    )
+    // Bounded on purpose. This runs in teardown, and a wedged page would
+    // otherwise let a diagnostic hold a worker open; reporting nothing is
+    // always preferable to delaying the run.
+    drift = await Promise.race([
+      page.evaluate(
+        () =>
+          (window as unknown as { __navDrift?: NavigationDriftRecord[] })
+            .__navDrift ?? []
+      ),
+      new Promise<NavigationDriftRecord[]>((resolve) => {
+        timer = setTimeout(() => resolve([]), 5_000)
+      }),
+    ])
   } catch {
     // The page can already be gone by teardown. Nothing to report is fine;
     // this must never be the reason a test fails.
     return
+  } finally {
+    if (timer) clearTimeout(timer)
   }
 
   if (drift.length === 0) return

@@ -159,29 +159,66 @@ describe('URL round-tripping', () => {
   })
 })
 
+/**
+ * Query strings as they actually appear, including characters that are legal
+ * unencoded in a query value and therefore must not be re-encoded. `/` is the
+ * one the drift detector caught in the real suite.
+ */
+const rawQueryString = fc
+  .array(
+    fc.tuple(
+      fc.constantFrom('cmd', 'groupId', 'sample', 'source', 'pool', 'tab'),
+      fc.constantFrom(
+        'alpha',
+        'a/main.kcl',
+        'socket-head-cap-screw/main.kcl',
+        'kcl-samples',
+        'x.y-z',
+        '1'
+      )
+    ),
+    { minLength: 1, maxLength: 4 }
+  )
+  .map((pairs) =>
+    pairs
+      .map(([k, v]) => `${k}=${v}`)
+      .reduce((acc, part) => (acc ? `${acc}&${part}` : part), '')
+  )
+
 describe('opaque search parameters', () => {
-  test('survive serialisation whatever the location is', async () => {
+  test('are carried through character for character', async () => {
     await fc.assert(
       fc.asyncProperty(
         fc.oneof(projectUrl, libraryUrl, homeUrl),
-        fc.dictionary(segment, segment, { minKeys: 1, maxKeys: 4 }),
-        async (path, params) => {
+        rawQueryString,
+        async (path, search) => {
           const navigation = createNavigation()
           await navigation.loadUrl(new URL(`http://localhost${path}`))
-
-          const search = new URLSearchParams(params)
           navigation.setOpaqueSearch(search)
 
-          const derived = new URL(`http://localhost${navigation.path.value}`)
-          // Every parameter the location union does not model has to come out
-          // the other side unchanged, or the first authoritative write drops it.
-          expect([...derived.searchParams.entries()].sort()).toEqual(
-            [...search.entries()].sort()
-          )
-          expect(derived.pathname).toBe(path)
+          // Verbatim, not merely equivalent. Parsing and re-serialising through
+          // URLSearchParams turns `sample=a/main.kcl` into `sample=a%2Fmain.kcl`
+          // — the same value, a different URL, and this is the one thing whose
+          // whole job is to pass through untouched.
+          expect(navigation.path.value).toBe(`${path}?${search}`)
         }
       ),
-      { numRuns: 200 }
+      { numRuns: 300 }
+    )
+  })
+
+  test('an empty query string adds no question mark', async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        fc.oneof(projectUrl, libraryUrl, homeUrl),
+        async (path) => {
+          const navigation = createNavigation()
+          await navigation.loadUrl(new URL(`http://localhost${path}`))
+          navigation.setOpaqueSearch('')
+          expect(navigation.path.value).toBe(path)
+        }
+      ),
+      { numRuns: 100 }
     )
   })
 })

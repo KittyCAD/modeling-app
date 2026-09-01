@@ -41,8 +41,11 @@ export function NavigationRouterBridge() {
     const navigation = app.registry.get(navigationService)
 
     return router.location.subscribe((location) => {
-      const incoming = new URLSearchParams(location.search)
-      if (incoming.toString() !== navigation.opaqueSearch.peek().toString()) {
+      // Verbatim, with the leading '?' stripped. Round-tripping this through
+      // URLSearchParams would re-encode characters that were legal unencoded
+      // and change the URL for no reason.
+      const incoming = location.search.replace(/^\?/, '')
+      if (incoming !== navigation.opaqueSearch.peek()) {
         navigation.setOpaqueSearch(incoming)
       }
 
