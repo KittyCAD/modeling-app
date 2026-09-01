@@ -1,5 +1,5 @@
-import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
+import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
 import { render, waitFor } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -56,7 +56,11 @@ vi.mock('@src/lib/zookeeper/components/ZookeeperConversationPane', () => ({
 
 vi.mock('@src/hooks/useModelingContext', () => ({
   useModelingContext: () => ({
-    context: {},
+    context: {
+      store: {
+        defaultUnit: { current: 'mm' },
+      },
+    },
     send: vi.fn(),
     theProject: { current: undefined },
   }),
@@ -82,6 +86,9 @@ vi.mock('@src/lib/boot', () => ({
     },
     systemIOActor: {
       send: mocks.systemIOSend,
+    },
+    userFeatures: {
+      useHas: () => false,
     },
   }),
   useSingletons: () => ({
