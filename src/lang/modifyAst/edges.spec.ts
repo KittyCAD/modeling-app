@@ -1026,7 +1026,7 @@ sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(point = [0mm, 0mm], sketch = sketch001)
-extrude001 = extrude(region001, length = 10, tagEnd = $capEnd001)
+extrude001 = extrude(region001, length = 10)
 
 sketch002 = sketch(on = XY) {
   circle1 = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
@@ -1038,7 +1038,7 @@ edge001 = edgeId(part, index = 0)
 fillet001 = fillet(
   part,
   tags = [
-    getCommonEdge(faces = [region001.tags.circle1, capEnd001]),
+    getOppositeEdge(part.sketch.tags.circle1),
     edge001
   ],
   radius = 1,
@@ -1580,7 +1580,10 @@ edge001 = edgeId(extrude001, index = 0)
 chamfer001 = chamfer(
   extrude001,
   tags = [
-    getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
+    getCommonEdge(faces = [
+      extrude001.sketch.tags.seg01,
+      extrude001.faces.capEnd001
+    ]),
     edge001
   ],
   length = 1,
