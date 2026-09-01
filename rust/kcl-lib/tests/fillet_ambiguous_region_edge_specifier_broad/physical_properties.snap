@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties fillet_ambiguous_region_edge_specifier_broad.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.529237019207331,
+      "y": 0.010917630454832404,
+      "z": 2.0
+    },
+    "dimensions": {
+      "x": 12.951161905493308,
+      "y": 15.68068641316409,
+      "z": 4.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 286.8894034295244
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.3033487341525945
+  }
+}
