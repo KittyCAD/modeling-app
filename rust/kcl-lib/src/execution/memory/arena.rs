@@ -1418,6 +1418,29 @@ mod tests {
     }
 
     #[test]
+    fn preserved_nested_block_env_pins_parent_chain() {
+        let mem = &mut stack_for_tests();
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        mem.add("frame_local".to_owned(), val(1), sr()).unwrap();
+        mem.push_new_env_for_block().unwrap();
+        mem.add("outer_block_local".to_owned(), val(2), sr()).unwrap();
+        mem.push_new_env_for_block().unwrap();
+        mem.add("inner_block_local".to_owned(), val(3), sr()).unwrap();
+
+        // Unlike closure creation, preserving an environment does not take a
+        // snapshot first. It must still pin the block's parent unconditionally.
+        let preserved_env = mem.pop_and_preserve_env().unwrap();
+        mem.pop_env().unwrap(); // outer block pins the frame
+        mem.pop_env().unwrap(); // the frame survives
+
+        assert_get_from(mem, "inner_block_local", 3, preserved_env);
+        assert_get_from(mem, "outer_block_local", 2, preserved_env);
+        assert_get_from(mem, "frame_local", 1, preserved_env);
+        assert_eq!(mem.memory.envs_with_bindings(), 3);
+    }
+
+    #[test]
     fn block_env_parent_ref_hides_later_parent_bindings() {
         let mem = &mut stack_for_tests();
 
