@@ -110,8 +110,33 @@ describe('remote project uploads', () => {
       entrypoint_path: 'main.kcl',
       project_toml_path: 'project.toml',
       expected_revision: 'rev-1',
-      deleted_paths: [],
     })
+  })
+
+  test('omits deletion intent when no deleted paths are provided', async () => {
+    let uploadedBody: Record<string, unknown> | undefined
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>(async (_input, init) => {
+        uploadedBody = await uploadBodyFromRequest(init)
+        return projectResponse('project-existing', 'rev-2')
+      })
+    )
+
+    await updateRemoteProject({
+      config: { enabled: true, baseUrl: 'https://api.dev.zoo.dev' },
+      projectPath: '/projects/bracket',
+      project: {
+        id: 'project-existing',
+        description: '',
+        category_ids: [],
+      },
+      files: [projectFile('main.kcl')],
+      expectedRevision: 'rev-1',
+      deletedPaths: [],
+    })
+
+    expect(uploadedBody).not.toHaveProperty('deleted_paths')
   })
 
   test('declares explicit deletion intent when replacing a cloud project', async () => {

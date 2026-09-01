@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties bracket.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 63.01123264079055,
+      "y": 0.0,
+      "z": -28.086232640790556
+    },
+    "dimensions": {
+      "x": 127.9775347184189,
+      "y": 127.0,
+      "z": 58.1275347184189
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 48458.42244702681
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 201.5553166316112
+  }
+}

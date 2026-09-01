@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties flange.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.000000004444984824658604,
+      "y": 0.0,
+      "z": 8.800599999999996
+    },
+    "dimensions": {
+      "x": 140.97000002667,
+      "y": 140.97000002667,
+      "z": 20.651200000000003
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 30493.849178128585
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 156.75951111996747
+  }
+}
