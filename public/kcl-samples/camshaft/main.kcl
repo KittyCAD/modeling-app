@@ -1,6 +1,6 @@
 // Camshaft
 // A camshaft is a rotating shaft with cam lobes that open and close an engine’s intake and exhaust valves at precise times. The lobe shape and timing control valve lift and duration, directly affecting engine performance and efficiency.
-// Categories: Automotive
+// Categories: Automotive & Transportation; Mechanical Components
 
 @settings(defaultLengthUnit = in, kclVersion = 2.0, experimentalFeatures = allow)
 

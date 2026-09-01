@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties parametric-shelf-unit.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -175.0,
+      "z": 1000.0
+    },
+    "dimensions": {
+      "x": 1000.0,
+      "y": 450.0,
+      "z": 2000.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 9169800.316914916
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 95840.00865773608
+  }
+}

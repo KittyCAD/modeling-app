@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties ceiling-fan.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.00000000019032597720070044,
+      "y": 28.293345943452664,
+      "z": 0.00000000038667380408696767
+    },
+    "dimensions": {
+      "x": 238.02205076004628,
+      "y": 206.13314261939897,
+      "z": 16.591523959010715
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 17015.094396845452
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 26.13535354809016
+  }
+}

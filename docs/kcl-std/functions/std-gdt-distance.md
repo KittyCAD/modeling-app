@@ -9,7 +9,7 @@ GD&T distance annotation for displaying measured edge lengths or distances betwe
 
 ```kcl
 gdt::distance(
-  tolerance: number(Length),
+  tolerance?: number(Length),
   from?: Face | TaggedFace | Edge | any,
   to?: Face | TaggedFace | Edge | any,
   edges?: [Edge | any; 1+],
@@ -27,7 +27,7 @@ This is part of model-based definition (MBD).
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The acceptable distance tolerance. | Yes |
+| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The acceptable distance tolerance. If not given, or 0, tolerance will not be shown. | No |
 | `from` | [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any) | The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
 | `to` | [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any) | The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
 | `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
@@ -45,6 +45,8 @@ This is part of model-based definition (MBD).
 ### Examples
 
 ```kcl
+@settings(kclVersion = 2.0)
+
 startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0], tag = $side1)
@@ -68,6 +70,8 @@ gdt::distance(
 ![Rendered example of gdt::distance 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-distance0.png)
 
 ```kcl
+@settings(kclVersion = 2.0)
+
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
@@ -96,5 +100,43 @@ gdt::distance(
 
 
 ![Rendered example of gdt::distance 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-distance1.png)
+
+```kcl
+@settings(kclVersion = 2.0)
+
+// Example of a distance annotation with no tolerance.
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -6.19mm, var 4.16mm], end = [var 7.91mm, var 4.16mm])
+  line2 = line(start = [var 7.91mm, var 4.16mm], end = [var 7.91mm, var -3.35mm])
+  line3 = line(start = [var 7.91mm, var -3.35mm], end = [var -6.19mm, var -3.35mm])
+  line4 = line(start = [var -6.19mm, var -3.35mm], end = [var -6.19mm, var 4.16mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 1, tagEnd = $capEnd001)
+gdt::distance(
+  edges = [
+    getCommonEdge(faces = [
+      region001.tags.line1,
+      extrude001.faces.capEnd001
+    ])
+  ],
+  framePosition = [5, 5],
+  fontSize = 0.5276mm,
+)
+
+```
+
+
+![Rendered example of gdt::distance 2](/kcl-test-outputs/serial_test_example_fn_std-gdt-distance2.png)
 
 

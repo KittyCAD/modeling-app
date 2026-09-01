@@ -144,10 +144,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 344,
-            "end": 349,
+            "commentStart": 357,
+            "end": 362,
             "moduleId": 0,
-            "start": 344,
+            "start": 357,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -158,10 +158,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 415,
-            "end": 420,
+            "commentStart": 428,
+            "end": 433,
             "moduleId": 0,
-            "start": 415,
+            "start": 428,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -172,10 +172,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 529,
-            "end": 534,
+            "commentStart": 542,
+            "end": 547,
             "moduleId": 0,
-            "start": 529,
+            "start": 542,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -186,10 +186,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 643,
-            "end": 648,
+            "commentStart": 656,
+            "end": 661,
             "moduleId": 0,
-            "start": 643,
+            "start": 656,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -211,10 +211,10 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 344,
-              "end": 349,
+              "commentStart": 357,
+              "end": 362,
               "moduleId": 0,
-              "start": 344,
+              "start": 357,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -235,10 +235,10 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 415,
-              "end": 420,
+              "commentStart": 428,
+              "end": 433,
               "moduleId": 0,
-              "start": 415,
+              "start": 428,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -259,10 +259,10 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 529,
-              "end": 534,
+              "commentStart": 542,
+              "end": 547,
               "moduleId": 0,
-              "start": 529,
+              "start": 542,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -283,10 +283,10 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 643,
-              "end": 648,
+              "commentStart": 656,
+              "end": 661,
               "moduleId": 0,
-              "start": 643,
+              "start": 656,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -934,10 +934,10 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 344,
-                    "end": 349,
+                    "commentStart": 357,
+                    "end": 362,
                     "moduleId": 0,
-                    "start": 344,
+                    "start": 357,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -958,10 +958,10 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 415,
-                    "end": 420,
+                    "commentStart": 428,
+                    "end": 433,
                     "moduleId": 0,
-                    "start": 415,
+                    "start": 428,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -982,10 +982,10 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 529,
-                    "end": 534,
+                    "commentStart": 542,
+                    "end": 547,
                     "moduleId": 0,
-                    "start": 529,
+                    "start": 542,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1006,10 +1006,10 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 643,
-                    "end": 648,
+                    "commentStart": 656,
+                    "end": 661,
                     "moduleId": 0,
-                    "start": 643,
+                    "start": 656,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1114,10 +1114,10 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 344,
-            "end": 349,
+            "commentStart": 357,
+            "end": 362,
             "moduleId": 0,
-            "start": 344,
+            "start": 357,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1138,10 +1138,10 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 415,
-            "end": 420,
+            "commentStart": 428,
+            "end": 433,
             "moduleId": 0,
-            "start": 415,
+            "start": 428,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1162,10 +1162,10 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 529,
-            "end": 534,
+            "commentStart": 542,
+            "end": 547,
             "moduleId": 0,
-            "start": 529,
+            "start": 542,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1186,10 +1186,10 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 643,
-            "end": 648,
+            "commentStart": 656,
+            "end": 661,
             "moduleId": 0,
-            "start": 643,
+            "start": 656,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1363,10 +1363,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8578,
-            "end": 8583,
+            "commentStart": 8591,
+            "end": 8596,
             "moduleId": 0,
-            "start": 8578,
+            "start": 8591,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1377,10 +1377,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8651,
-            "end": 8656,
+            "commentStart": 8664,
+            "end": 8669,
             "moduleId": 0,
-            "start": 8651,
+            "start": 8664,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1391,10 +1391,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8765,
-            "end": 8770,
+            "commentStart": 8778,
+            "end": 8783,
             "moduleId": 0,
-            "start": 8765,
+            "start": 8778,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1405,10 +1405,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8881,
-            "end": 8886,
+            "commentStart": 8894,
+            "end": 8899,
             "moduleId": 0,
-            "start": 8881,
+            "start": 8894,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1419,10 +1419,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10679,
-            "end": 10692,
+            "commentStart": 10692,
+            "end": 10705,
             "moduleId": 0,
-            "start": 10679,
+            "start": 10692,
             "type": "TagDeclarator",
             "value": "holeFrontLeft"
           },
@@ -1433,10 +1433,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11229,
-            "end": 11243,
+            "commentStart": 11242,
+            "end": 11256,
             "moduleId": 0,
-            "start": 11229,
+            "start": 11242,
             "type": "TagDeclarator",
             "value": "holeFrontRight"
           },
@@ -1447,10 +1447,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 11780,
-            "end": 11793,
+            "commentStart": 11793,
+            "end": 11806,
             "moduleId": 0,
-            "start": 11780,
+            "start": 11793,
             "type": "TagDeclarator",
             "value": "holeBackRight"
           },
@@ -1461,10 +1461,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 12321,
-            "end": 12333,
+            "commentStart": 12334,
+            "end": 12346,
             "moduleId": 0,
-            "start": 12321,
+            "start": 12334,
             "type": "TagDeclarator",
             "value": "holeBackLeft"
           },
@@ -1486,10 +1486,10 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "tag": {
-              "commentStart": 8578,
-              "end": 8583,
+              "commentStart": 8591,
+              "end": 8596,
               "moduleId": 0,
-              "start": 8578,
+              "start": 8591,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1510,10 +1510,10 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "tag": {
-              "commentStart": 8651,
-              "end": 8656,
+              "commentStart": 8664,
+              "end": 8669,
               "moduleId": 0,
-              "start": 8651,
+              "start": 8664,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1534,10 +1534,10 @@ description: Variables in memory after executing enclosure.kcl
               172.0
             ],
             "tag": {
-              "commentStart": 8765,
-              "end": 8770,
+              "commentStart": 8778,
+              "end": 8783,
               "moduleId": 0,
-              "start": 8765,
+              "start": 8778,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1558,10 +1558,10 @@ description: Variables in memory after executing enclosure.kcl
               172.0
             ],
             "tag": {
-              "commentStart": 8881,
-              "end": 8886,
+              "commentStart": 8894,
+              "end": 8899,
               "moduleId": 0,
-              "start": 8881,
+              "start": 8894,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1588,10 +1588,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 10679,
-              "end": 10692,
+              "commentStart": 10692,
+              "end": 10705,
               "moduleId": 0,
-              "start": 10679,
+              "start": 10692,
               "type": "TagDeclarator",
               "value": "holeFrontLeft"
             },
@@ -1618,10 +1618,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 11229,
-              "end": 11243,
+              "commentStart": 11242,
+              "end": 11256,
               "moduleId": 0,
-              "start": 11229,
+              "start": 11242,
               "type": "TagDeclarator",
               "value": "holeFrontRight"
             },
@@ -1648,10 +1648,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 11780,
-              "end": 11793,
+              "commentStart": 11793,
+              "end": 11806,
               "moduleId": 0,
-              "start": 11780,
+              "start": 11793,
               "type": "TagDeclarator",
               "value": "holeBackRight"
             },
@@ -1678,10 +1678,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 12321,
-              "end": 12333,
+              "commentStart": 12334,
+              "end": 12346,
               "moduleId": 0,
-              "start": 12321,
+              "start": 12334,
               "type": "TagDeclarator",
               "value": "holeBackLeft"
             },
@@ -1886,10 +1886,10 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "tag": {
-            "commentStart": 8578,
-            "end": 8583,
+            "commentStart": 8591,
+            "end": 8596,
             "moduleId": 0,
-            "start": 8578,
+            "start": 8591,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1910,10 +1910,10 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "tag": {
-            "commentStart": 8651,
-            "end": 8656,
+            "commentStart": 8664,
+            "end": 8669,
             "moduleId": 0,
-            "start": 8651,
+            "start": 8664,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1934,10 +1934,10 @@ description: Variables in memory after executing enclosure.kcl
             172.0
           ],
           "tag": {
-            "commentStart": 8765,
-            "end": 8770,
+            "commentStart": 8778,
+            "end": 8783,
             "moduleId": 0,
-            "start": 8765,
+            "start": 8778,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1958,10 +1958,10 @@ description: Variables in memory after executing enclosure.kcl
             172.0
           ],
           "tag": {
-            "commentStart": 8881,
-            "end": 8886,
+            "commentStart": 8894,
+            "end": 8899,
             "moduleId": 0,
-            "start": 8881,
+            "start": 8894,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1988,10 +1988,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 10679,
-            "end": 10692,
+            "commentStart": 10692,
+            "end": 10705,
             "moduleId": 0,
-            "start": 10679,
+            "start": 10692,
             "type": "TagDeclarator",
             "value": "holeFrontLeft"
           },
@@ -2018,10 +2018,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 11229,
-            "end": 11243,
+            "commentStart": 11242,
+            "end": 11256,
             "moduleId": 0,
-            "start": 11229,
+            "start": 11242,
             "type": "TagDeclarator",
             "value": "holeFrontRight"
           },
@@ -2048,10 +2048,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 11780,
-            "end": 11793,
+            "commentStart": 11793,
+            "end": 11806,
             "moduleId": 0,
-            "start": 11780,
+            "start": 11793,
             "type": "TagDeclarator",
             "value": "holeBackRight"
           },
@@ -2078,10 +2078,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 12321,
-            "end": 12333,
+            "commentStart": 12334,
+            "end": 12346,
             "moduleId": 0,
-            "start": 12321,
+            "start": 12334,
             "type": "TagDeclarator",
             "value": "holeBackLeft"
           },
@@ -4130,10 +4130,10 @@ description: Variables in memory after executing enclosure.kcl
                     3.0
                   ],
                   "tag": {
-                    "commentStart": 8578,
-                    "end": 8583,
+                    "commentStart": 8591,
+                    "end": 8596,
                     "moduleId": 0,
-                    "start": 8578,
+                    "start": 8591,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -4154,10 +4154,10 @@ description: Variables in memory after executing enclosure.kcl
                     3.0
                   ],
                   "tag": {
-                    "commentStart": 8651,
-                    "end": 8656,
+                    "commentStart": 8664,
+                    "end": 8669,
                     "moduleId": 0,
-                    "start": 8651,
+                    "start": 8664,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -4178,10 +4178,10 @@ description: Variables in memory after executing enclosure.kcl
                     172.0
                   ],
                   "tag": {
-                    "commentStart": 8765,
-                    "end": 8770,
+                    "commentStart": 8778,
+                    "end": 8783,
                     "moduleId": 0,
-                    "start": 8765,
+                    "start": 8778,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -4202,10 +4202,10 @@ description: Variables in memory after executing enclosure.kcl
                     172.0
                   ],
                   "tag": {
-                    "commentStart": 8881,
-                    "end": 8886,
+                    "commentStart": 8894,
+                    "end": 8899,
                     "moduleId": 0,
-                    "start": 8881,
+                    "start": 8894,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -4249,10 +4249,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 10679,
-                    "end": 10692,
+                    "commentStart": 10692,
+                    "end": 10705,
                     "moduleId": 0,
-                    "start": 10679,
+                    "start": 10692,
                     "type": "TagDeclarator",
                     "value": "holeFrontLeft"
                   },
@@ -4296,10 +4296,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 11229,
-                    "end": 11243,
+                    "commentStart": 11242,
+                    "end": 11256,
                     "moduleId": 0,
-                    "start": 11229,
+                    "start": 11242,
                     "type": "TagDeclarator",
                     "value": "holeFrontRight"
                   },
@@ -4343,10 +4343,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 11780,
-                    "end": 11793,
+                    "commentStart": 11793,
+                    "end": 11806,
                     "moduleId": 0,
-                    "start": 11780,
+                    "start": 11793,
                     "type": "TagDeclarator",
                     "value": "holeBackRight"
                   },
@@ -4390,10 +4390,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 12321,
-                    "end": 12333,
+                    "commentStart": 12334,
+                    "end": 12346,
                     "moduleId": 0,
-                    "start": 12321,
+                    "start": 12334,
                     "type": "TagDeclarator",
                     "value": "holeBackLeft"
                   },
@@ -4630,10 +4630,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3821,
-            "end": 3826,
+            "commentStart": 3834,
+            "end": 3839,
             "moduleId": 0,
-            "start": 3821,
+            "start": 3834,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4644,10 +4644,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3892,
-            "end": 3897,
+            "commentStart": 3905,
+            "end": 3910,
             "moduleId": 0,
-            "start": 3892,
+            "start": 3905,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4658,10 +4658,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4006,
-            "end": 4011,
+            "commentStart": 4019,
+            "end": 4024,
             "moduleId": 0,
-            "start": 4006,
+            "start": 4019,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4672,10 +4672,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4120,
-            "end": 4125,
+            "commentStart": 4133,
+            "end": 4138,
             "moduleId": 0,
-            "start": 4120,
+            "start": 4133,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4686,10 +4686,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5805,
-            "end": 5818,
+            "commentStart": 5818,
+            "end": 5831,
             "moduleId": 0,
-            "start": 5805,
+            "start": 5818,
             "type": "TagDeclarator",
             "value": "holeFrontLeft"
           },
@@ -4700,10 +4700,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6339,
-            "end": 6353,
+            "commentStart": 6352,
+            "end": 6366,
             "moduleId": 0,
-            "start": 6339,
+            "start": 6352,
             "type": "TagDeclarator",
             "value": "holeFrontRight"
           },
@@ -4714,10 +4714,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6876,
-            "end": 6889,
+            "commentStart": 6889,
+            "end": 6902,
             "moduleId": 0,
-            "start": 6876,
+            "start": 6889,
             "type": "TagDeclarator",
             "value": "holeBackRight"
           },
@@ -4728,10 +4728,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 7401,
-            "end": 7413,
+            "commentStart": 7414,
+            "end": 7426,
             "moduleId": 0,
-            "start": 7401,
+            "start": 7414,
             "type": "TagDeclarator",
             "value": "holeBackLeft"
           },
@@ -4753,10 +4753,10 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3821,
-              "end": 3826,
+              "commentStart": 3834,
+              "end": 3839,
               "moduleId": 0,
-              "start": 3821,
+              "start": 3834,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4777,10 +4777,10 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 3892,
-              "end": 3897,
+              "commentStart": 3905,
+              "end": 3910,
               "moduleId": 0,
-              "start": 3892,
+              "start": 3905,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -4801,10 +4801,10 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 4006,
-              "end": 4011,
+              "commentStart": 4019,
+              "end": 4024,
               "moduleId": 0,
-              "start": 4006,
+              "start": 4019,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4825,10 +4825,10 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 4120,
-              "end": 4125,
+              "commentStart": 4133,
+              "end": 4138,
               "moduleId": 0,
-              "start": 4120,
+              "start": 4133,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -4855,10 +4855,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 5805,
-              "end": 5818,
+              "commentStart": 5818,
+              "end": 5831,
               "moduleId": 0,
-              "start": 5805,
+              "start": 5818,
               "type": "TagDeclarator",
               "value": "holeFrontLeft"
             },
@@ -4885,10 +4885,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 6339,
-              "end": 6353,
+              "commentStart": 6352,
+              "end": 6366,
               "moduleId": 0,
-              "start": 6339,
+              "start": 6352,
               "type": "TagDeclarator",
               "value": "holeFrontRight"
             },
@@ -4915,10 +4915,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 6876,
-              "end": 6889,
+              "commentStart": 6889,
+              "end": 6902,
               "moduleId": 0,
-              "start": 6876,
+              "start": 6889,
               "type": "TagDeclarator",
               "value": "holeBackRight"
             },
@@ -4945,10 +4945,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 7401,
-              "end": 7413,
+              "commentStart": 7414,
+              "end": 7426,
               "moduleId": 0,
-              "start": 7401,
+              "start": 7414,
               "type": "TagDeclarator",
               "value": "holeBackLeft"
             },
@@ -5126,10 +5126,10 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3821,
-            "end": 3826,
+            "commentStart": 3834,
+            "end": 3839,
             "moduleId": 0,
-            "start": 3821,
+            "start": 3834,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5150,10 +5150,10 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 3892,
-            "end": 3897,
+            "commentStart": 3905,
+            "end": 3910,
             "moduleId": 0,
-            "start": 3892,
+            "start": 3905,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5174,10 +5174,10 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 4006,
-            "end": 4011,
+            "commentStart": 4019,
+            "end": 4024,
             "moduleId": 0,
-            "start": 4006,
+            "start": 4019,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5198,10 +5198,10 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 4120,
-            "end": 4125,
+            "commentStart": 4133,
+            "end": 4138,
             "moduleId": 0,
-            "start": 4120,
+            "start": 4133,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5228,10 +5228,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 5805,
-            "end": 5818,
+            "commentStart": 5818,
+            "end": 5831,
             "moduleId": 0,
-            "start": 5805,
+            "start": 5818,
             "type": "TagDeclarator",
             "value": "holeFrontLeft"
           },
@@ -5258,10 +5258,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 6339,
-            "end": 6353,
+            "commentStart": 6352,
+            "end": 6366,
             "moduleId": 0,
-            "start": 6339,
+            "start": 6352,
             "type": "TagDeclarator",
             "value": "holeFrontRight"
           },
@@ -5288,10 +5288,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 6876,
-            "end": 6889,
+            "commentStart": 6889,
+            "end": 6902,
             "moduleId": 0,
-            "start": 6876,
+            "start": 6889,
             "type": "TagDeclarator",
             "value": "holeBackRight"
           },
@@ -5318,10 +5318,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 7401,
-            "end": 7413,
+            "commentStart": 7414,
+            "end": 7426,
             "moduleId": 0,
-            "start": 7401,
+            "start": 7414,
             "type": "TagDeclarator",
             "value": "holeBackLeft"
           },
@@ -7370,10 +7370,10 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3821,
-                    "end": 3826,
+                    "commentStart": 3834,
+                    "end": 3839,
                     "moduleId": 0,
-                    "start": 3821,
+                    "start": 3834,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -7394,10 +7394,10 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 3892,
-                    "end": 3897,
+                    "commentStart": 3905,
+                    "end": 3910,
                     "moduleId": 0,
-                    "start": 3892,
+                    "start": 3905,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -7418,10 +7418,10 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 4006,
-                    "end": 4011,
+                    "commentStart": 4019,
+                    "end": 4024,
                     "moduleId": 0,
-                    "start": 4006,
+                    "start": 4019,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -7442,10 +7442,10 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 4120,
-                    "end": 4125,
+                    "commentStart": 4133,
+                    "end": 4138,
                     "moduleId": 0,
-                    "start": 4120,
+                    "start": 4133,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -7489,10 +7489,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 5805,
-                    "end": 5818,
+                    "commentStart": 5818,
+                    "end": 5831,
                     "moduleId": 0,
-                    "start": 5805,
+                    "start": 5818,
                     "type": "TagDeclarator",
                     "value": "holeFrontLeft"
                   },
@@ -7536,10 +7536,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 6339,
-                    "end": 6353,
+                    "commentStart": 6352,
+                    "end": 6366,
                     "moduleId": 0,
-                    "start": 6339,
+                    "start": 6352,
                     "type": "TagDeclarator",
                     "value": "holeFrontRight"
                   },
@@ -7583,10 +7583,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 6876,
-                    "end": 6889,
+                    "commentStart": 6889,
+                    "end": 6902,
                     "moduleId": 0,
-                    "start": 6876,
+                    "start": 6889,
                     "type": "TagDeclarator",
                     "value": "holeBackRight"
                   },
@@ -7630,10 +7630,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 7401,
-                    "end": 7413,
+                    "commentStart": 7414,
+                    "end": 7426,
                     "moduleId": 0,
-                    "start": 7401,
+                    "start": 7414,
                     "type": "TagDeclarator",
                     "value": "holeBackLeft"
                   },
@@ -7775,10 +7775,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2438,
-            "end": 2449,
+            "commentStart": 2451,
+            "end": 2462,
             "moduleId": 0,
-            "start": 2438,
+            "start": 2451,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -7789,10 +7789,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2851,
-            "end": 2862,
+            "commentStart": 2864,
+            "end": 2875,
             "moduleId": 0,
-            "start": 2851,
+            "start": 2864,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -7820,10 +7820,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 2438,
-              "end": 2449,
+              "commentStart": 2451,
+              "end": 2462,
               "moduleId": 0,
-              "start": 2438,
+              "start": 2451,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -7850,10 +7850,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 2851,
-              "end": 2862,
+              "commentStart": 2864,
+              "end": 2875,
               "moduleId": 0,
-              "start": 2851,
+              "start": 2864,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -7961,10 +7961,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 2438,
-              "end": 2449,
+              "commentStart": 2451,
+              "end": 2462,
               "moduleId": 0,
-              "start": 2438,
+              "start": 2451,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -7991,10 +7991,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 2851,
-              "end": 2862,
+              "commentStart": 2864,
+              "end": 2875,
               "moduleId": 0,
-              "start": 2851,
+              "start": 2864,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -8086,10 +8086,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2438,
-            "end": 2449,
+            "commentStart": 2451,
+            "end": 2462,
             "moduleId": 0,
-            "start": 2438,
+            "start": 2451,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -8100,10 +8100,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2851,
-            "end": 2862,
+            "commentStart": 2864,
+            "end": 2875,
             "moduleId": 0,
-            "start": 2851,
+            "start": 2864,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -8131,10 +8131,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 2438,
-              "end": 2449,
+              "commentStart": 2451,
+              "end": 2462,
               "moduleId": 0,
-              "start": 2438,
+              "start": 2451,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -8161,10 +8161,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 2851,
-              "end": 2862,
+              "commentStart": 2864,
+              "end": 2875,
               "moduleId": 0,
-              "start": 2851,
+              "start": 2864,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -8256,10 +8256,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2438,
-            "end": 2449,
+            "commentStart": 2451,
+            "end": 2462,
             "moduleId": 0,
-            "start": 2438,
+            "start": 2451,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -8270,10 +8270,10 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2851,
-            "end": 2862,
+            "commentStart": 2864,
+            "end": 2875,
             "moduleId": 0,
-            "start": 2851,
+            "start": 2864,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -8301,10 +8301,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 7.0,
             "tag": {
-              "commentStart": 2438,
-              "end": 2449,
+              "commentStart": 2451,
+              "end": 2462,
               "moduleId": 0,
-              "start": 2438,
+              "start": 2451,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -8331,10 +8331,10 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 2851,
-              "end": 2862,
+              "commentStart": 2864,
+              "end": 2875,
               "moduleId": 0,
-              "start": 2851,
+              "start": 2864,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -8556,10 +8556,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 7.0,
           "tag": {
-            "commentStart": 2438,
-            "end": 2449,
+            "commentStart": 2451,
+            "end": 2462,
             "moduleId": 0,
-            "start": 2438,
+            "start": 2451,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -8586,10 +8586,10 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 2851,
-            "end": 2862,
+            "commentStart": 2864,
+            "end": 2875,
             "moduleId": 0,
-            "start": 2851,
+            "start": 2864,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -8933,10 +8933,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 7.0,
                   "tag": {
-                    "commentStart": 2438,
-                    "end": 2449,
+                    "commentStart": 2451,
+                    "end": 2462,
                     "moduleId": 0,
-                    "start": 2438,
+                    "start": 2451,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -8980,10 +8980,10 @@ description: Variables in memory after executing enclosure.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 2851,
-                    "end": 2862,
+                    "commentStart": 2864,
+                    "end": 2875,
                     "moduleId": 0,
-                    "start": 2851,
+                    "start": 2864,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },

@@ -4425,7 +4425,7 @@ description: Result of parsing split-washer-flat-version.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Fasteners",
+            "value": "Categories: Mechanical Components",
             "style": "line"
           }
         },

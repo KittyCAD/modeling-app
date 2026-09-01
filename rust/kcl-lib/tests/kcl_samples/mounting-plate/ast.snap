@@ -6670,7 +6670,7 @@ description: Result of parsing mounting-plate.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Manufacturing, Construction",
+            "value": "Categories: Mechanical Components; Industrial & Manufacturing",
             "style": "line"
           }
         },
