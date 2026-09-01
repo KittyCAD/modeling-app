@@ -157,6 +157,8 @@ export function ZookeeperConversationFeedbackDialog({
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
+                tabIndex={0}
+                className="h-7 w-fit focus-visible:outline-appForeground"
               >
                 Cancel
               </ActionButton>
@@ -164,6 +166,8 @@ export function ZookeeperConversationFeedbackDialog({
                 Element="button"
                 type="submit"
                 disabled={!feedback.trim() || isSubmitting}
+                tabIndex={0}
+                className="h-7 w-fit border-ml-green bg-ml-green text-chalkboard-100 enabled:hover:brightness-95 focus-visible:outline-appForeground dark:border-ml-green dark:bg-ml-green dark:text-chalkboard-100"
                 data-testid="zookeeper-conversation-feedback-submit"
               >
                 {isSubmitting ? 'Sending...' : 'Send feedback'}
