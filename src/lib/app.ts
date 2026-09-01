@@ -740,6 +740,7 @@ export class App implements AppSubsystems {
       userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
+    window.kclManager = kclManager
 
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({

@@ -2,4 +2,4 @@
 /// x = operation::facing()
 /// ```
 @(impl = std_rust, feature_tree = false)
-export fn facing(): number(_) {}
+export fn facing(@solid: Solid, toolDiameter: number(Length)): number(_) {}
