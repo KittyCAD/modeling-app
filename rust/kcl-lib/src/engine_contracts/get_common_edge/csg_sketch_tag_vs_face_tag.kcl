@@ -1,0 +1,19 @@
+@settings(kclVersion = 2.0)
+
+boxSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+boxRegion = region(point = [5mm, 5mm], sketch = boxSketch)
+boxSolid = extrude(boxRegion, length = 5mm, tagEnd = $boxEnd)
+
+toolSketch = sketch(on = XY) {
+  circle1 = circle(start = [var 7mm, var 5mm], center = [var 5mm, var 5mm])
+}
+toolRegion = region(segments = [toolSketch.circle1])
+toolSolid = extrude(toolRegion, length = 5mm)
+part = subtract(boxSolid, tools = [toolSolid])
+
+edge = getCommonEdge(faces = [part.sketch.tags.line2, part.faces.boxEnd])

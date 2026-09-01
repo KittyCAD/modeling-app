@@ -117,8 +117,6 @@ async fn inner_clone(
                     result_artifact_id,
                     source_topology_id: source_topology_id.into(),
                 });
-                new_solid.id = new_id;
-                new_solid.value_id = new_id;
                 new_solid.become_new_body(new_id, result_artifact_id);
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
@@ -128,6 +126,12 @@ async fn inner_clone(
         };
 
         if args.ctx.no_engine_commands().await {
+            // Real execution rebuilds carried face tags below in
+            // fix_tags_and_references; keep mock same-body validation
+            // consistent with that.
+            if let GeometryWithImportedGeometry::Solid(new_solid) = &mut new_geometry {
+                new_solid.retarget_face_tags_to_self(exec_state.stack().current_epoch());
+            }
             res.push(new_geometry);
         } else {
             exec_state

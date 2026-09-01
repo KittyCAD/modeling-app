@@ -1,0 +1,22 @@
+@settings(kclVersion = 2.0)
+
+boxASketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+regionA = region(point = [5mm, 5mm], sketch = boxASketch)
+solidA = extrude(regionA, length = 5mm, tagEnd = $aEnd)
+
+boxBSketch = sketch(on = XY) {
+  line1 = line(start = [var 5mm, var 0mm], end = [var 15mm, var 0mm])
+  line2 = line(start = [var 15mm, var 0mm], end = [var 15mm, var 10mm])
+  line3 = line(start = [var 15mm, var 10mm], end = [var 5mm, var 10mm])
+  line4 = line(start = [var 5mm, var 10mm], end = [var 5mm, var 0mm])
+}
+regionB = region(point = [10mm, 5mm], sketch = boxBSketch)
+solidB = extrude(regionB, length = 5mm, tagEnd = $bEnd)
+combined = union([solidA, solidB])
+
+edge = getCommonEdge(faces = [combined.sketch.tags.line2, combined.faces.aEnd])

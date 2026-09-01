@@ -59,6 +59,8 @@ static ALLOC: dhat::Alloc = dhat::Alloc;
 pub mod collections;
 mod docs;
 mod engine;
+#[cfg(test)]
+mod engine_contracts;
 mod errors;
 mod execution;
 mod fmt;

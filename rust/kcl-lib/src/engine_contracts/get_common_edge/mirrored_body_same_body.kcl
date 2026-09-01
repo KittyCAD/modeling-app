@@ -1,0 +1,13 @@
+@settings(kclVersion = 2.0)
+
+rectangleSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+rectangleRegion = region(point = [5mm, 5mm], sketch = rectangleSketch)
+sourceSolid = extrude(rectangleRegion, length = 5mm, tagEnd = $endFace)
+mirroredSolid = mirror3d(sourceSolid, across = XZ)
+
+edge = getCommonEdge(faces = [mirroredSolid.sketch.tags.line2, mirroredSolid.faces.endFace])

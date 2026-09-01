@@ -1,0 +1,14 @@
+@settings(kclVersion = 2.0)
+
+rectangleSketch = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
+rectangleRegion = region(point = [5mm, 5mm], sketch = rectangleSketch)
+firstSolid = extrude(rectangleRegion, length = 5mm, tagEnd = $endFace)
+clonedSolid = clone(firstSolid)
+  |> translate(x = 20mm)
+
+edge = getCommonEdge(faces = [firstSolid.sketch.tags.line2, clonedSolid.faces.endFace])

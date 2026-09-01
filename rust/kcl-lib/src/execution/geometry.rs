@@ -1403,13 +1403,84 @@ impl Solid {
         self.topology_id
     }
 
-    /// Make this solid a brand-new body produced by an operation. It now owns
-    /// the topology of `engine_id`, and any retained pattern provenance no
-    /// longer applies.
+    /// Make this solid a brand-new body produced by an operation. It becomes
+    /// the engine entity `engine_id` and owns that entity's topology, and any
+    /// retained pattern provenance no longer applies.
+    ///
+    /// This sets every identity field, including the embedded sketch's ID, so
+    /// callers must not assign IDs separately. A caller that represents
+    /// several outputs of one operation as one KCL value generation may
+    /// overwrite `value_id` after this returns.
     pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId) {
+        self.id = engine_id;
+        self.value_id = engine_id;
+        // Keep the embedded sketch consistent for sketch-on-face in
+        // extrude.rs.
+        if let Some(sketch) = self.sketch_mut() {
+            sketch.id = engine_id;
+        }
         self.topology_id = engine_id;
         self.pattern_source_artifact_id = None;
         self.artifact_id = artifact_id;
+    }
+
+    /// Point the face tags carried onto this body at this body.
+    ///
+    /// Real execution for clone and mirror rebuilds carried face tags from
+    /// the engine's response (see `fix_tags_and_references`), so their
+    /// current info names the new body. Mock execution cannot do that
+    /// rebuild, which would leave the face tags naming the source body and
+    /// make the same-body validation in std functions disagree with real
+    /// execution. Only mock execution should call this.
+    ///
+    /// CSG results do not get this treatment in either execution mode:
+    /// their carried face tags keep naming the consumed source body, and
+    /// mock execution matches real execution by leaving them alone. Pattern
+    /// copies share their seed's tag data in both modes as well.
+    ///
+    /// Epoch handling matches [`TagIdentifier::merge_info`]: entries
+    /// already at `epoch` are overwritten in place; entries from an earlier
+    /// epoch are preserved and re-pushed at `epoch` with the new owner.
+    pub(crate) fn retarget_face_tags_to_self(&mut self, epoch: usize) {
+        if self.faces.is_empty() {
+            return;
+        }
+        let mut owner = self.clone();
+        if let Some(sketch) = owner.sketch_mut() {
+            // Avoid recursive tags.
+            sketch.tags.clear();
+        }
+        owner.faces.clear();
+        let owner = Geometry::Solid(owner);
+
+        for tag in self.faces.values_mut() {
+            let Some(last_epoch) = tag.info.last().map(|(e, _)| *e) else {
+                continue;
+            };
+            // Region-mapped tags can have several entries at one epoch.
+            let current_start = tag
+                .info
+                .iter()
+                .rposition(|(e, _)| *e != last_epoch)
+                .map_or(0, |i| i + 1);
+            match last_epoch.cmp(&epoch) {
+                std::cmp::Ordering::Equal => {
+                    for (_, info) in &mut tag.info[current_start..] {
+                        info.geometry = owner.clone();
+                    }
+                }
+                std::cmp::Ordering::Less => {
+                    let mut entries = tag.info[current_start..].to_vec();
+                    for (entry_epoch, info) in &mut entries {
+                        *entry_epoch = epoch;
+                        info.geometry = owner.clone();
+                    }
+                    tag.info.extend(entries);
+                }
+                // Never expected; don't rewrite info from a newer epoch.
+                std::cmp::Ordering::Greater => {}
+            }
+        }
     }
 
     /// Make this solid a pattern copy. It gets a new top-level entity artifact
