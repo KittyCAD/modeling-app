@@ -5,9 +5,10 @@ use std::sync::Arc;
 use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
-pub use kcl_api::KclVersion;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
+use kittycad_modeling_cmds as kcmc;
+pub use kittycad_modeling_cmds::KclVersion;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
@@ -1663,6 +1664,16 @@ impl Default for MetaSettings {
     }
 }
 
+pub trait InvalidKclVersionExt {
+    fn as_kcl_error(&self, source_range: Vec<SourceRange>) -> KclError;
+}
+
+impl InvalidKclVersionExt for kcmc::InvalidKclVersion {
+    fn as_kcl_error(&self, sources: Vec<SourceRange>) -> KclError {
+        KclError::new_semantic(KclErrorDetails::new(self.to_string(), sources))
+    }
+}
+
 impl MetaSettings {
     pub(crate) fn update_from_annotation(
         &mut self,
@@ -1688,7 +1699,9 @@ impl MetaSettings {
                 }
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_kcl_version(&p.inner.value)?;
-                    self.kcl_version = value.parse()?;
+                    self.kcl_version = value
+                        .parse()
+                        .map_err(|e: kcmc::InvalidKclVersion| e.as_kcl_error(p.as_source_ranges()))?;
                 }
                 annotations::SETTINGS_EXPERIMENTAL_FEATURES => {
                     let value = annotations::expect_ident(&p.inner.value)?;
