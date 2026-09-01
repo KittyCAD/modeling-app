@@ -1,12 +1,12 @@
 import {
-  Registry,
-  Slot,
   defineRegistryItem,
   provideService,
+  Registry,
+  Slot,
 } from '@kittycad/registry'
 import type { KclManager } from '@src/lang/KclManager'
-import { MachineManager } from '@src/lib/MachineManager'
 import type { Command } from '@src/lib/commandTypes'
+import { MachineManager } from '@src/lib/MachineManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import {
@@ -82,6 +82,63 @@ describe('commands extension', () => {
     registry.reconfigure(commandsSlot, [])
 
     expect(commandSystem.actor.getSnapshot().context.commands).toEqual([])
+
+    registry[Symbol.dispose]()
+  })
+
+  it('runs a command selection sent before that command is registered', () => {
+    const commandsSlot = new Slot()
+    const onSubmit = vi.fn()
+    const command: Command = {
+      groupId: 'test',
+      name: 'late-command',
+      needsReview: false,
+      onSubmit,
+    }
+    const commandItem = defineRegistryItem({
+      id: 'late-command-item',
+      provides: [provideCommand(command)],
+    })
+
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-wasm-promise',
+        provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
+      }),
+      defineRegistryItem({
+        id: 'test-machine-manager',
+        providesServices: [
+          provideService(machineManagerService, {
+            manager: new MachineManager(),
+          }),
+        ],
+      }),
+      commandsExtension,
+      commandsSlot.of(),
+    ])
+
+    const commandSystem = registry.get(commandSystemService)
+    commandSystem.send({
+      type: 'Find and select command',
+      data: {
+        groupId: command.groupId,
+        name: String(command.name),
+      },
+    })
+    commandSystem.send({
+      type: 'Find and select command',
+      data: {
+        groupId: command.groupId,
+        name: String(command.name),
+      },
+    })
+
+    expect(onSubmit).not.toHaveBeenCalled()
+
+    registry.reconfigure(commandsSlot, [commandItem])
+
+    expect(onSubmit).toHaveBeenCalledOnce()
 
     registry[Symbol.dispose]()
   })
