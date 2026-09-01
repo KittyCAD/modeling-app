@@ -14,25 +14,9 @@
  */
 
 import type { App } from '@src/lib/app'
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
-import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
-import {
-  getRouterSearchFromRequestUrl,
-  PATHS,
-  parseProjectRoute,
-  safeEncodeForRouterPaths,
-} from '@src/lib/paths'
-import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
+import { getRouterSearchFromRequestUrl, PATHS } from '@src/lib/paths'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
-import { getOnboardingChildRoute } from '@src/lib/routeLoaderNavigation'
-import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
-import {
-  projectLibrarySettingDefaultPoliciesValueSpec,
-  projectLibrarySettingDefaultsValueSpec,
-} from '@src/registry/contracts/projectLibraries'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
 
 /**
  * What a route wants to happen, said rather than done.
@@ -44,27 +28,6 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 export type RouteInitResult<T> =
   | { kind: 'ok'; data: T }
   | { kind: 'redirect'; to: string }
-
-function loadRouteSettings(
-  app: App,
-  wasmInstance: Awaited<App['wasmPromise']>,
-  projectPath?: string
-) {
-  return loadAndValidateSettings(
-    app.registry.get(fileOperationsService),
-    wasmInstance,
-    {
-      defaultProjectLibraries: app.registry.get(
-        projectLibrarySettingDefaultsValueSpec
-      ),
-      projectLibrarySettingDefaultPolicies: app.registry.get(
-        projectLibrarySettingDefaultPoliciesValueSpec
-      ),
-      extensionSettings: app.registry.get(settingsValueSpec),
-      projectPath,
-    }
-  )
-}
 
 /**
  * Initialization for `/`, which is a funnel: it never renders anything, it
@@ -91,8 +54,12 @@ export async function initIndexRoute(
 }
 
 /**
- * Initialization for `/file/:id`: resolve the id to a project and a file, open
- * the project, and open the file in the editor.
+ * Initialization for `/file/:id`.
+ *
+ * Almost all of this is `app.openFile`: resolving the id to a project and a
+ * file, deciding whether the URL names something that has to be corrected, and
+ * opening it. What stays here is the one genuinely routing-shaped thing — a
+ * legacy URL shape that has no meaning as application state.
  */
 export async function initFileRoute(
   app: App,
@@ -106,9 +73,6 @@ export async function initFileRoute(
     requestSignal?: AbortSignal
   }
 ): Promise<RouteInitResult<FileLoaderData>> {
-  const assertCurrent = app.beginFileRouteLoad(requestSignal)
-  const { kclManager } = app.singletons
-
   // Must basically remain for all eternity, until the last person
   // who's ever used ZDS on web before this point has died.
   if (id?.startsWith('/browser')) {
@@ -117,100 +81,14 @@ export async function initFileRoute(
     return { kind: 'redirect', to: PATHS.HOME }
   }
 
-  const wasmInstance = await kclManager.wasmInstancePromise
-  assertCurrent()
-
-  // Resolve the project root before loading project settings. Loading project
-  // settings from a selected file's parent folder creates project.toml in
-  // nested folders and makes them look like project roots.
-  const appSettings = await loadRouteSettings(app, wasmInstance)
-  assertCurrent()
-  const currentProjectPath = app.project?.projectIORefSignal.value.path
-  const targetLibraryPath = id
-    ? (
-        await getProjectLibraryOwnership(
-          appSettings.settings.app.libraries?.current ?? [],
-          id
-        )
-      )?.libraryPath
-    : undefined
-  const projectPathData = id
-    ? parseProjectRoute(appSettings.configuration, id, {
-        activeProjectPath: currentProjectPath,
-        candidateProjectDirectories: targetLibraryPath
-          ? [targetLibraryPath]
-          : [],
-      })
-    : undefined
-
-  if (!projectPathData) {
-    return Promise.reject(
-      new Error('bug: projectPathData undefined, early return')
-    )
-  }
-
-  await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
-  assertCurrent()
-
-  const { projectName, projectPath, currentFileName, currentFilePath } =
-    projectPathData
-
-  const urlObj = new URL(requestUrl)
-
-  if (!urlObj.pathname.endsWith('/settings')) {
-    const fallbackFile = (
-      await getProjectInfo(
-        app.registry.get(fileOperationsService),
-        projectPath,
-        wasmInstance
-      )
-    ).default_file
-    let fileExists = true
-    if (currentFilePath && fileExists) {
-      try {
-        await app.registry.get(fileOperationsService).stat(currentFilePath)
-      } catch (e) {
-        if (isPathNotFoundError(e)) {
-          fileExists = false
-        }
-      }
-    }
-
-    // If we are navigating to the project and want to navigate to its
-    // default file, redirect to it keeping everything else in the URL the same.
-    if (projectPath && !currentFileName && fileExists && id) {
-      const encodedId = safeEncodeForRouterPaths(id)
-      const requestUrlWithDefaultFile = requestUrl.replace(
-        encodedId,
-        safeEncodeForRouterPaths(fallbackFile)
-      )
-      return { kind: 'redirect', to: requestUrlWithDefaultFile }
-    }
-
-    if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
-      const routerSearch = getRouterSearchFromRequestUrl(
-        requestUrl,
-        Boolean(window.electron)
-      )
-      const onboardingChildRoute = id
-        ? getOnboardingChildRoute(requestUrl, id)
-        : ''
-      return {
-        kind: 'redirect',
-        to: `${PATHS.FILE}/${encodeURIComponent(
-          fallbackFile
-        )}${onboardingChildRoute}${routerSearch}`,
-      }
-    }
-  }
-
-  const data = await app.openFile({
-    resolved: { projectName, projectPath, currentFileName, currentFilePath },
-    wasmInstance,
-    assertCurrent,
+  const outcome = await app.openFile({
+    id,
+    requestUrl,
+    signal: requestSignal,
   })
-
-  return { kind: 'ok', data }
+  return outcome.kind === 'redirect'
+    ? { kind: 'redirect', to: outcome.to }
+    : { kind: 'ok', data: outcome.data }
 }
 
 /**
