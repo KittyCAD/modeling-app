@@ -197,6 +197,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
         output_dir: relative_output_dir,
         // Skip is temporary while we have non-deterministic output.
         skip_assert_artifact_graph: true,
+        snapshot_physical_properties: true,
         expected_deprecation_warnings: Some(0),
     }
 }
