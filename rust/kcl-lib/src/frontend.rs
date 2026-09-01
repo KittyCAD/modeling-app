@@ -2053,6 +2053,7 @@ impl FrontendState {
             var_solutions,
             refactor_metadata,
             filenames,
+            source_files,
             default_planes,
             ..
         } = err;
@@ -2069,6 +2070,7 @@ impl FrontendState {
             var_solutions,
             refactor_metadata,
             issues: non_fatal,
+            source_files,
             default_planes,
         })
     }
@@ -7048,8 +7050,6 @@ pub(crate) fn ast_sketch2_name(name: &str) -> ast::Name {
     }
 }
 
-// Shared AST creation helpers used by both frontend and transpiler to ensure consistency.
-
 /// Create an AST node for coincident([expr1, expr2, ...])
 pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) -> ast::Expr {
     let elements = exprs.into_iter().collect::<Vec<_>>();
@@ -7067,70 +7067,6 @@ pub(crate) fn create_coincident_ast(exprs: impl IntoIterator<Item = ast::Expr>) 
         callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
         unlabeled: Some(array_expr),
         arguments: Default::default(),
-        digest: None,
-        non_code_meta: Default::default(),
-    })))
-}
-
-/// Create an AST node for line(start = [...], end = [...])
-pub(crate) fn create_line_ast(start_ast: ast::Expr, end_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
-        callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
-        unlabeled: None,
-        arguments: vec![
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(LINE_START_PARAM)),
-                arg: start_ast,
-            },
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(LINE_END_PARAM)),
-                arg: end_ast,
-            },
-        ],
-        digest: None,
-        non_code_meta: Default::default(),
-    })))
-}
-
-/// Create an AST node for arc(start = [...], end = [...], center = [...])
-pub(crate) fn create_arc_ast(start_ast: ast::Expr, end_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
-        callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
-        unlabeled: None,
-        arguments: vec![
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(ARC_START_PARAM)),
-                arg: start_ast,
-            },
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(ARC_END_PARAM)),
-                arg: end_ast,
-            },
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
-                arg: center_ast,
-            },
-        ],
-        digest: None,
-        non_code_meta: Default::default(),
-    })))
-}
-
-/// Create an AST node for circle(start = [...], center = [...])
-pub(crate) fn create_circle_ast(start_ast: ast::Expr, center_ast: ast::Expr) -> ast::Expr {
-    ast::Expr::CallExpressionKw(BoxNode::new(ast::Node::no_src(ast::CallExpressionKw {
-        callee: ast::Node::no_src(ast_sketch2_name(CIRCLE_FN)),
-        unlabeled: None,
-        arguments: vec![
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(CIRCLE_START_PARAM)),
-                arg: start_ast,
-            },
-            ast::LabeledArg {
-                label: Some(ast::Identifier::new(CIRCLE_CENTER_PARAM)),
-                arg: center_ast,
-            },
-        ],
         digest: None,
         non_code_meta: Default::default(),
     })))
@@ -9334,6 +9270,7 @@ cylinder = startSketchOn(XY)
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
+            source_files: Default::default(),
             default_planes: Default::default(),
         };
 
@@ -9488,6 +9425,7 @@ sketch(on = XY) {
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
+            source_files: Default::default(),
             default_planes: Default::default(),
         }
     }

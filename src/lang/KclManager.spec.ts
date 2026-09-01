@@ -12,15 +12,16 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 const clientErrorMocks = vi.hoisted(() => ({
   reportSystemIOError: vi.fn(),
 }))
+const toastMocks = vi.hoisted(() => ({
+  success: vi.fn(),
+  error: vi.fn(),
+}))
 
 vi.mock('@src/machines/systemIO/errorReporting', () => ({
   reportSystemIOError: clientErrorMocks.reportSystemIOError,
 }))
 vi.mock('react-hot-toast', () => ({
-  default: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
+  default: toastMocks,
 }))
 
 import {
@@ -623,8 +624,63 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('from disk')
   })
 
+  it('does not report Zookeeper disk writes as conflicts when the editor snapshot is stale', async () => {
+    const { kclManager } = createKclManagerTestHarness('zookeeper edit')
+    const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
+    const testInternals = kclManager as unknown as {
+      markFileCodeAsSynced(code: string): void
+      systemDeps: { projectPath: { value: string } }
+    }
+
+    kclManager.path = '/tmp/kcl-manager-zookeeper-watch-test.kcl'
+    kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
+    testInternals.systemDeps.projectPath.value = '/tmp/project'
+    testInternals.markFileCodeAsSynced('from disk')
+
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue(
+      'newer zookeeper edit'
+    )
+
+    const watchHandler = kclManager.onWatchEvent.at(-1)
+    expect(watchHandler).toBeDefined()
+
+    watchHandler?.('change', kclManager.path)
+    await flushPromises()
+
+    expect(toastMocks.error).not.toHaveBeenCalled()
+    expect(updateCodeEditorSpy).not.toHaveBeenCalled()
+    expect(kclManager.code).toBe('zookeeper edit')
+  })
+
+  it('reports external disk conflicts when the editor has unsaved changes', async () => {
+    const { kclManager } = createKclManagerTestHarness('local edit')
+    const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
+    const testInternals = kclManager as unknown as {
+      markFileCodeAsSynced(code: string): void
+      systemDeps: { projectPath: { value: string } }
+    }
+
+    kclManager.path = '/tmp/kcl-manager-external-watch-test.kcl'
+    testInternals.systemDeps.projectPath.value = '/tmp/project'
+    testInternals.markFileCodeAsSynced('from disk')
+
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external edit')
+
+    const watchHandler = kclManager.onWatchEvent.at(-1)
+    expect(watchHandler).toBeDefined()
+
+    watchHandler?.('change', kclManager.path)
+    await flushPromises()
+
+    expect(toastMocks.error).toHaveBeenCalledWith(
+      'File changed on disk while this editor has unsaved changes. Reload was skipped to protect your work.'
+    )
+    expect(updateCodeEditorSpy).not.toHaveBeenCalled()
+    expect(kclManager.code).toBe('local edit')
+  })
+
   it('does not reload active editor disk updates while Zookeeper history is pending', async () => {
-    const { kclManager } = createKclManagerTestHarness('from disk')
+    const { kclManager } = createKclManagerTestHarness('zookeeper edit')
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
     const testInternals = kclManager as unknown as {
       markFileCodeAsSynced(code: string): void
@@ -636,7 +692,9 @@ describe('KclManager diagnostics', () => {
     testInternals.systemDeps.projectPath.value = '/tmp/project'
     testInternals.markFileCodeAsSynced('from disk')
 
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('zookeeper edit')
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue(
+      'newer zookeeper edit'
+    )
 
     const watchHandler = kclManager.onWatchEvent.at(-1)
     expect(watchHandler).toBeDefined()
@@ -644,8 +702,9 @@ describe('KclManager diagnostics', () => {
     watchHandler?.('change', kclManager.path)
     await flushPromises()
 
+    expect(toastMocks.error).not.toHaveBeenCalled()
     expect(updateCodeEditorSpy).not.toHaveBeenCalled()
-    expect(kclManager.code).toBe('from disk')
+    expect(kclManager.code).toBe('zookeeper edit')
   })
 
   it('arms disk watcher when reusing the singleton editor for an opened file', async () => {

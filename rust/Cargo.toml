@@ -5,6 +5,7 @@ members = [
   "kcl-bumper",
   "kcl-derive-docs",
   "kcl-directory-test-macro",
+  "kcl-engine-codec",
   "kcl-error",
   "kcl-language-server",
   "kcl-language-server-release",
@@ -64,6 +65,14 @@ tracing-subscriber = { version = "0.3.23", features = [
   "ansi",
   "tracing-log",
   "json",
+] }
+ts-rs = { version = "12.0.1", features = [
+  "uuid-impl",
+  "url-impl",
+  "chrono-impl",
+  "indexmap-impl",
+  "no-serde-warnings",
+  "serde-json-impl",
 ] }
 uuid = { version = "1", features = ["v4", "serde"] }
 zip = { version = "8.6.0", default-features = false }

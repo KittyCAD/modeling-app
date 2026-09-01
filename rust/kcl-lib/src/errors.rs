@@ -30,8 +30,8 @@ use crate::execution::RefactorMetadata;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
-use crate::lsp::IntoDiagnostic;
-use crate::lsp::ToLspRange;
+use crate::lsp_types::IntoDiagnostic;
+use crate::lsp_types::ToLspRange;
 use crate::modules::ModulePath;
 use crate::modules::ModuleSource;
 
@@ -238,7 +238,7 @@ impl KclErrorWithOutputs {
             refactor_metadata: outcome.refactor_metadata,
             scene_graph: Default::default(),
             filenames: outcome.filenames,
-            source_files: Default::default(),
+            source_files: outcome.source_files,
             default_planes: outcome.default_planes,
         }
     }
@@ -578,12 +578,32 @@ impl miette::Diagnostic for CompilationIssueReport {
 }
 
 /// Render a [`CompilationIssue`] as a miette report string, mirroring the
-/// formatting used for [`Report`].
-pub fn render_compilation_issue_miette(filename: &str, source: &str, issue: CompilationIssue) -> String {
+/// formatting used for [`Report`]. The issue is rendered against the module
+/// its source range points into: issues from imported modules use their
+/// entry in `source_files`, while top-level issues use `top_level_filename`
+/// and `top_level_source`, since callers know the real top-level filename
+/// (e.g. an absolute path) while `source_files` only records the module
+/// path. The top-level pair is also the fallback when the module is missing
+/// from `source_files`, so callers without a source map can pass an empty
+/// one.
+pub fn render_compilation_issue_miette(
+    top_level_filename: &str,
+    top_level_source: &str,
+    source_files: &IndexMap<ModuleId, ModuleSource>,
+    issue: CompilationIssue,
+) -> String {
+    let module_id = issue.source_range.module_id();
+    let module_source = (!module_id.is_top_level())
+        .then(|| source_files.get(&module_id))
+        .flatten();
+    let (filename, kcl_source) = match module_source {
+        Some(module_source) => (module_source.path.to_string(), module_source.source.clone()),
+        None => (top_level_filename.to_owned(), top_level_source.to_owned()),
+    };
     let report = CompilationIssueReport {
         issue,
-        kcl_source: source.to_owned(),
-        filename: filename.to_owned(),
+        kcl_source,
+        filename,
     };
     let report = miette::Report::new(report);
     format!("{report:?}")
@@ -762,5 +782,63 @@ mod tests {
 
         assert_eq!(report.primary_labels.len(), 1);
         assert_eq!(report.related.len(), 2);
+    }
+
+    #[test]
+    fn compilation_issues_render_against_the_module_their_range_points_into() {
+        let imported_module = ModuleId::from_usize(1);
+        // Long enough that ranges into it lie past the end of the top-level
+        // source below.
+        let imported_code = "// enough leading padding to push the range out of the top level\nexport value = 1 * 2\n";
+        let mul_start = imported_code.find("1 * 2").unwrap();
+        let mut source_files = IndexMap::new();
+        source_files.insert(
+            imported_module,
+            ModuleSource {
+                source: imported_code.to_owned(),
+                path: ModulePath::Local {
+                    value: "/project/derived.kcl".into(),
+                    original_import_path: None,
+                },
+            },
+        );
+        let issue_at = |source_range| CompilationIssue {
+            source_range,
+            message: "unknown units".to_owned(),
+            suggestion: None,
+            severity: Severity::Warning,
+            tag: Tag::UnknownNumericUnits,
+        };
+
+        // Imported ranges render the imported module's filename and source.
+        let report = render_compilation_issue_miette(
+            "/project/main.kcl",
+            "top",
+            &source_files,
+            issue_at(SourceRange::new(mul_start, mul_start + 5, imported_module)),
+        );
+        assert!(report.contains("derived.kcl"), "{report}");
+        assert!(report.contains("1 * 2"), "{report}");
+        assert!(!report.contains("OutOfBounds"), "{report}");
+
+        // Top-level ranges use the caller's filename and source, not the
+        // module path recorded in `source_files`.
+        let report = render_compilation_issue_miette(
+            "/project/main.kcl",
+            "top",
+            &source_files,
+            issue_at(SourceRange::new(0, 3, ModuleId::default())),
+        );
+        assert!(report.contains("main.kcl"), "{report}");
+
+        // Modules missing from the map fall back to the top-level pair, for
+        // callers that have no source map.
+        let report = render_compilation_issue_miette(
+            "/project/main.kcl",
+            "top",
+            &source_files,
+            issue_at(SourceRange::new(0, 3, ModuleId::from_usize(9))),
+        );
+        assert!(report.contains("main.kcl"), "{report}");
     }
 }

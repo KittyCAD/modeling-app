@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties wing-spar.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -17.881268963927766,
+      "y": -326.4657652473819,
+      "z": 2.527649229693772
+    },
+    "dimensions": {
+      "x": 745.7625379278554,
+      "y": 747.0684695052362,
+      "z": 105.05529845938754
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 318307.09556334116
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 628.3962805025411
+  }
+}
