@@ -394,6 +394,19 @@ describe('operations.test.ts', () => {
       const actual = filterOperations(operations)
       expect(actual).toEqual([sketchBlockBegin(0)])
     })
+
+    it('drops region operations from the feature tree', () => {
+      const operations = [
+        stdlib('startSketchOn'),
+        stdlib('region'),
+        stdlib('extrude'),
+      ]
+
+      expect(filterOperations(operations)).toEqual([
+        stdlib('startSketchOn'),
+        stdlib('extrude'),
+      ])
+    })
   })
 
   function rangeOfText(fullCode: string, target: string): SourceRange {

@@ -7,7 +7,7 @@ import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
-import fsZds from '@src/lib/fs-zds'
+import { useProjectThumbnailUrl } from '@src/hooks/useProjectThumbnailUrl'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
@@ -15,7 +15,6 @@ import { toSync } from '@src/lib/utils'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
-  HomeProjectThumbnail,
 } from '@src/registry/contracts/homeProjects'
 import type { FormEvent, HTMLAttributes } from 'react'
 import { useEffect, useRef, useState } from 'react'
@@ -63,71 +62,6 @@ function getDisplayedTime(dateTimeMs: number) {
   return date.getTime() < startOfToday.getTime()
     ? date.toLocaleDateString()
     : date.toLocaleTimeString()
-}
-
-function useProjectThumbnailUrl(thumbnail: HomeProjectThumbnail | undefined) {
-  const [imageUrl, setImageUrl] = useState('')
-  const thumbnailType = thumbnail?.type
-  const localThumbnailPath =
-    thumbnail?.type === 'local' ? thumbnail.path : undefined
-  const remoteThumbnailUrl =
-    thumbnail?.type === 'remote' ? thumbnail.url : undefined
-
-  useEffect(() => {
-    if (!thumbnailType) {
-      setImageUrl('')
-      return
-    }
-
-    if (thumbnailType === 'remote') {
-      setImageUrl(remoteThumbnailUrl ?? '')
-      return
-    }
-
-    if (!localThumbnailPath) {
-      setImageUrl('')
-      return
-    }
-
-    const thumbnailPath = localThumbnailPath
-    let disposed = false
-    let createdImageUrl: string | undefined
-
-    async function setupImageUrl() {
-      try {
-        await fsZds.stat(thumbnailPath)
-        const imageData = await fsZds.readFile(thumbnailPath)
-        const blob = new Blob([new Uint8Array(imageData)], {
-          type: 'image/png',
-        })
-
-        if (blob.size === 0) {
-          return
-        }
-
-        createdImageUrl = URL.createObjectURL(blob)
-        if (disposed) {
-          URL.revokeObjectURL(createdImageUrl)
-          return
-        }
-        setImageUrl(createdImageUrl)
-      } catch (e: unknown) {
-        console.log(e)
-      }
-    }
-
-    setImageUrl('')
-    void setupImageUrl()
-
-    return () => {
-      disposed = true
-      if (createdImageUrl) {
-        URL.revokeObjectURL(createdImageUrl)
-      }
-    }
-  }, [localThumbnailPath, remoteThumbnailUrl, thumbnailType])
-
-  return imageUrl
 }
 
 function AppProjectCard({

@@ -1,11 +1,12 @@
 import { MlEphantConversationPaneWrapper } from '@src/lib/zookeeper/components/MlEphantConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
-import { render, waitFor } from '@testing-library/react'
-import { describe, expect, test, vi } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
   const systemIOSend = vi.fn()
+  const notifyProjectEdited = vi.fn()
   const useWatchForNewFileRequestsFromMlEphant = vi.fn()
   const mlEphantSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
   const kclManager = {
@@ -23,7 +24,10 @@ const mocks = vi.hoisted(() => {
 
   return {
     kclManager,
+    managerProviderMounts: 0,
     mlEphantSubscribe,
+    notifyProjectEdited,
+    projectPath: '/workspace/demo',
     systemIOSend,
     useWatchForNewFileRequestsFromMlEphant,
     watchCallback: undefined as
@@ -50,8 +54,14 @@ vi.mock('@src/components/layout/Panel/HeaderMenu', () => ({
   ),
 }))
 
+vi.mock('@src/components/UndoRedoButtons', () => ({
+  UndoRedoButtons: (props: { 'data-testid'?: string }) => (
+    <div data-testid={props['data-testid']}>Undo and redo</div>
+  ),
+}))
+
 vi.mock('@src/lib/zookeeper/components/MlEphantConversationPane', () => ({
-  MlEphantConversationPane: () => null,
+  MlEphantConversationPane: () => <textarea aria-label="Zookeeper prompt" />,
 }))
 
 vi.mock('@src/hooks/useModelingContext', () => ({
@@ -72,7 +82,7 @@ vi.mock('@src/lib/boot', () => ({
     debug: {},
     project: {
       name: 'demo',
-      path: '/workspace/demo',
+      path: mocks.projectPath,
       executingPath: '/workspace/demo/main.kcl',
       executingFileEntry: { value: { name: 'main.kcl' } },
     },
@@ -89,6 +99,13 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
+vi.mock('@src/lib/aiFirstCad/context', () => ({
+  useAiFirstCad: () => ({
+    mode: 'ai',
+    notifyProjectEdited: mocks.notifyProjectEdited,
+  }),
+}))
+
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
     join: (...parts: string[]) =>
@@ -102,19 +119,30 @@ vi.mock('@src/lib/fs-zds', () => ({
   },
 }))
 
-vi.mock('@src/lib/zookeeper/mlEphantManagerMachine', () => ({
-  MlEphantConversationToMarkdown: vi.fn(() => ''),
-  MlEphantManagerReactContext: {
-    Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-    useActorRef: () => ({
-      getSnapshot: () => ({
-        context: {},
+vi.mock('@src/lib/zookeeper/mlEphantManagerMachine', async () => {
+  const { useState } = await import('react')
+
+  return {
+    MlEphantConversationToMarkdown: vi.fn(() => ''),
+    MlEphantManagerReactContext: {
+      Provider: ({ children }: { children: React.ReactNode }) => {
+        const [instanceId] = useState(() => ++mocks.managerProviderMounts)
+        return (
+          <div data-instance-id={instanceId} data-testid="manager-provider">
+            {children}
+          </div>
+        )
+      },
+      useActorRef: () => ({
+        getSnapshot: () => ({
+          context: {},
+        }),
+        send: vi.fn(),
+        subscribe: mocks.mlEphantSubscribe,
       }),
-      send: vi.fn(),
-      subscribe: mocks.mlEphantSubscribe,
-    }),
-  },
-}))
+    },
+  }
+})
 
 vi.mock('@src/lib/zookeeper/components/MlEphantConversationPaneHooks', () => ({
   useProjectIdToConversationId: vi.fn(),
@@ -180,6 +208,87 @@ async function flushQueuedWork() {
 }
 
 describe('MlEphantConversationPaneWrapper', () => {
+  beforeEach(() => {
+    mocks.managerProviderMounts = 0
+    mocks.projectPath = '/workspace/demo'
+  })
+
+  test('mounts the existing Zookeeper prompt inside the pane', () => {
+    render(
+      <MlEphantConversationPaneWrapper
+        areaConfig={{ hide: () => false }}
+        layout={{
+          areaType: AreaType.TTC,
+          id: 'zookeeper',
+          label: 'Zookeeper',
+          type: LayoutType.Simple,
+        }}
+        onClose={vi.fn()}
+      />
+    )
+
+    expect(
+      screen.getByRole('textbox', { name: 'Zookeeper prompt' })
+    ).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'Chat' })).toBeVisible()
+    expect(screen.getByTestId('chat-header-undo-redo')).toBeVisible()
+  })
+
+  test('remounts the conversation manager when the project changes', () => {
+    const props = {
+      areaConfig: { hide: () => false },
+      layout: {
+        areaType: AreaType.TTC,
+        id: 'zookeeper',
+        label: 'Zookeeper',
+        type: LayoutType.Simple as const,
+      },
+      onClose: vi.fn(),
+    }
+    const { rerender } = render(<MlEphantConversationPaneWrapper {...props} />)
+    const initialInstanceId = screen
+      .getByTestId('manager-provider')
+      .getAttribute('data-instance-id')
+
+    mocks.projectPath = '/workspace/other-project'
+    rerender(<MlEphantConversationPaneWrapper {...props} />)
+
+    expect(
+      screen.getByTestId('manager-provider').getAttribute('data-instance-id')
+    ).not.toBe(initialInstanceId)
+  })
+
+  test('notifies the AI project grid after a successful edit fully settles', async () => {
+    mocks.notifyProjectEdited.mockClear()
+    mocks.systemIOSend.mockClear()
+    mocks.watchCallback = undefined
+
+    render(
+      <MlEphantConversationPaneWrapper
+        areaConfig={{ hide: () => false }}
+        layout={{
+          areaType: AreaType.TTC,
+          id: 'zookeeper',
+          label: 'Zookeeper',
+          type: LayoutType.Simple,
+        }}
+        onClose={vi.fn()}
+      />
+    )
+
+    emitZookeeperFileRequest('new code')
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
+
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+    request.onFileSystemSuccess()
+    expect(mocks.notifyProjectEdited).not.toHaveBeenCalled()
+
+    request.onSuccess()
+    await waitFor(() =>
+      expect(mocks.notifyProjectEdited).toHaveBeenCalledTimes(1)
+    )
+  })
+
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
     mocks.systemIOSend.mockClear()
     mocks.kclManager.updateCodeEditor.mockClear()

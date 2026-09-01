@@ -7,6 +7,7 @@ import {
 import {
   buildOperationTree,
   findSameVisibleStdLibOperationAfterSourceChange,
+  partitionOperationTree,
 } from '@src/lib/featureTreeOperationTree'
 import { describe, expect, it } from 'vitest'
 
@@ -228,6 +229,39 @@ describe('buildOperationTree', () => {
     )
     expect(lugNutParams).toBeDefined()
     expect(lugNutParams).not.toHaveProperty('children')
+  })
+})
+
+describe('partitionOperationTree', () => {
+  it('separates parameters from features while preserving module branches', () => {
+    const operationsByModule: OperationsByModule = {
+      map: {
+        0: [
+          createVariableDeclarationOperation([0, 10, 0], 'rootLength'),
+          createStdLibCallOperation('extrude', [11, 20, 0]),
+          createModuleInstanceOperation(1, [21, 30, 0], 'component'),
+        ],
+        1: [
+          createVariableDeclarationOperation([0, 10, 1], 'componentWidth'),
+          createStdLibCallOperation('fillet', [11, 20, 1]),
+        ],
+      },
+    }
+
+    const partitioned = partitionOperationTree(
+      buildOperationTree(operationsByModule, 0)
+    )
+    const parameters = JSON.stringify(partitioned.parameters)
+    const features = JSON.stringify(partitioned.features)
+
+    expect(parameters).toContain('rootLength')
+    expect(parameters).toContain('componentWidth')
+    expect(parameters).not.toContain('extrude')
+    expect(parameters).not.toContain('fillet')
+    expect(features).toContain('extrude')
+    expect(features).toContain('fillet')
+    expect(features).not.toContain('rootLength')
+    expect(features).not.toContain('componentWidth')
   })
 })
 

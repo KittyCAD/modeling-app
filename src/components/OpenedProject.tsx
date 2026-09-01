@@ -1,26 +1,36 @@
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
-import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
-import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
-import {
-  defaultGlobalStatusBarItems,
-  defaultLocalStatusBarItems,
-} from '@src/components/StatusBar/defaultStatusBarItems'
-import { StatusBar } from '@src/components/StatusBar/StatusBar'
-import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
-import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { WasmErrToast } from '@src/components/WasmErrToast'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useProjectStatus } from '@src/hooks/useProjectStatus'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import { lspService } from '@src/lang/lsp/registry/contract'
+import { AiPaneToggleButton } from '@src/lib/aiFirstCad/AiPaneToggleButton'
+import { CadModeToggle } from '@src/lib/aiFirstCad/CadModeToggle'
 import {
-  autoUpdateDownloadProgressSignal,
-  autoUpdateReadySignal,
-} from '@src/lib/autoUpdate'
+  type AiFirstCadMode,
+  AiFirstCadProvider,
+  getCodeCadPaneLabel,
+  useAiFirstCad,
+} from '@src/lib/aiFirstCad/context'
+import {
+  AI_CANVAS_PANEL_ID,
+  AI_PROJECTS_PANEL_ID,
+  aiFirstLayoutConfig,
+  codeCadLayoutConfig,
+  manualFirstLayoutConfig,
+} from '@src/lib/aiFirstCad/layouts'
+import { WorkspaceDrawer } from '@src/lib/aiFirstCad/SharedProjectFilesDrawer'
+import {
+  getWorkspacePaneLabel,
+  getWorkspacePaneLabelForArea,
+  WORKSPACE_PANE_OPTIONS,
+  type WorkspacePaneContent,
+} from '@src/lib/aiFirstCad/workspacePanes'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
@@ -30,32 +40,27 @@ import {
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
+import type { Layout } from '@src/lib/layout'
+import { LayoutRootNode } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
-import { lspService } from '@src/lang/lsp/registry/contract'
+import { findLayoutChildNode } from '@src/lib/layout/utils'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { xStateValueToString } from '@src/lib/xStateValueToString'
 
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
-import {
-  filterStatusBarItemsForScopes,
-  statusBarGlobalItemsValueSpec,
-  statusBarLocalItemsValueSpec,
-} from '@src/registry/contracts/statusBar'
 import {
   needsToOnboard,
   TutorialRequestToast,
   useApplyRememberedOnboardingWorkflow,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
@@ -66,10 +71,30 @@ if (window.electron) {
     .catch(reportRejection)
 }
 
+const AI_COLLAPSIBLE_PANEL_IDS = [
+  AI_PROJECTS_PANEL_ID,
+  AI_CANVAS_PANEL_ID,
+] as const
+
 export function OpenedProject() {
+  return (
+    <AiFirstCadProvider>
+      <OpenedProjectContents />
+    </AiFirstCadProvider>
+  )
+}
+
+function OpenedProjectContents() {
   useSignals()
-  const { auth, billing, settings, layout, project, systemIOActor, registry } =
-    useApp()
+  const { auth, billing, settings, project, systemIOActor, registry } = useApp()
+  const {
+    codeCadPaneAssignments,
+    isCodeLeftPaneVisible,
+    isCodeStreamVisible,
+    mode,
+    setCodeLeftPaneVisible,
+    setCodeStreamVisible,
+  } = useAiFirstCad()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   const defaultAreaLibrary = useDefaultAreaLibrary()
@@ -77,15 +102,73 @@ export function OpenedProject() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
   useQueryParamEffects(kclManager)
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
+  const [isProjectsPaneCollapsed, setIsProjectsPaneCollapsed] = useState(false)
+  const [isCanvasPaneCollapsed, setIsCanvasPaneCollapsed] = useState(false)
+  const [
+    isTraditionalCadLeftDrawerCollapsed,
+    setIsTraditionalCadLeftDrawerCollapsed,
+  ] = useState(false)
+  const [traditionalCadLeftDrawerContent, setTraditionalCadLeftDrawerContent] =
+    useState<WorkspacePaneContent>('files')
+  const [
+    isTraditionalCadRightDrawerCollapsed,
+    setIsTraditionalCadRightDrawerCollapsed,
+  ] = useState(true)
+  const [
+    traditionalCadRightDrawerContent,
+    setTraditionalCadRightDrawerContent,
+  ] = useState<WorkspacePaneContent>('projects')
+  const [rndLayouts, setRndLayouts] = useState<Record<AiFirstCadMode, Layout>>(
+    () => ({
+      ai: structuredClone(aiFirstLayoutConfig),
+      manual: structuredClone(manualFirstLayoutConfig),
+      code: structuredClone(codeCadLayoutConfig),
+    })
+  )
+  const activeLayout = rndLayouts[mode]
+  const getLayoutPaneLabel = useCallback(
+    (layout: Layout, panelId: string, fallbackLabel: string) => {
+      const panel = findLayoutChildNode({
+        rootLayout: layout,
+        targetNodeId: panelId,
+      })
+      return panel && 'areaType' in panel
+        ? getWorkspacePaneLabelForArea(panel.areaType, panel.label)
+        : fallbackLabel
+    },
+    []
+  )
+  const getActiveLayout = useCallback(() => activeLayout, [activeLayout])
+  const setActiveLayout = useCallback(
+    (nextLayout: Layout) => {
+      setRndLayouts((layouts) => ({ ...layouts, [mode]: nextLayout }))
+    },
+    [mode]
+  )
+  const collapsedAiPanelIds = useMemo(
+    () => [
+      ...(isProjectsPaneCollapsed ? [AI_PROJECTS_PANEL_ID] : []),
+      ...(isCanvasPaneCollapsed ? [AI_CANVAS_PANEL_ID] : []),
+    ],
+    [isCanvasPaneCollapsed, isProjectsPaneCollapsed]
+  )
+  const collapsedPanelIds = mode === 'ai' ? collapsedAiPanelIds : []
+  const collapsiblePanelIds = mode === 'ai' ? AI_COLLAPSIBLE_PANEL_IDS : []
+  const onPanelCollapsedChange = useCallback(
+    (panelId: string, collapsed: boolean) => {
+      if (panelId === AI_PROJECTS_PANEL_ID) {
+        setIsProjectsPaneCollapsed(collapsed)
+      } else if (panelId === AI_CANVAS_PANEL_ID) {
+        setIsCanvasPaneCollapsed(collapsed)
+      }
+    },
+    []
+  )
   const location = useLocation()
   const navigate = useNavigate()
-  const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
-  const autoUpdateReady = autoUpdateReadySignal.value
   const lastOperation = useLastOperation()
   const projects = useFolders()
   const lsp = registry.get(lspService)
-  const networkHealthStatus = useNetworkHealthStatus()
-  const networkMachineStatus = useNetworkMachineStatus()
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
@@ -173,15 +256,6 @@ export function OpenedProject() {
   useHotKeyListener(kclManager)
 
   const settingsValues = settings.useSettings()
-  const machineApiEnabled = settingsValues.app.machineApi.current
-  const registryGlobalStatusBarItems = filterStatusBarItemsForScopes(
-    registry.signal(statusBarGlobalItemsValueSpec).value,
-    ['file']
-  )
-  const registryLocalStatusBarItems = filterStatusBarItemsForScopes(
-    registry.signal(statusBarLocalItemsValueSpec).value,
-    ['file']
-  )
   const authToken = auth.useToken()
   const currentProject = project?.projectIORefSignal.value
   const projectStatus = useProjectStatus(
@@ -314,17 +388,6 @@ export function OpenedProject() {
     }
   }, [])
 
-  const undoRedoButtons = useMemo(
-    () => (
-      <UndoRedoButtons
-        data-testid="app-header-undo-redo"
-        kclManager={kclManager}
-        className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
-      />
-    ),
-    [kclManager]
-  )
-
   const notifications: boolean[] = Object.values(defaultAreaLibrary).map(
     (x) => {
       if ('useNotifications' in x) {
@@ -336,64 +399,146 @@ export function OpenedProject() {
   )
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden select-none">
-      <div className="relative flex flex-1 flex-col">
+    <div
+      className={`h-screen flex flex-col overflow-hidden select-none ${
+        mode === 'ai' ? 'dark:bg-[#181818]' : ''
+      }`}
+    >
+      <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="relative flex items-center flex-col">
           <AppHeader
-            className="transition-opacity transition-duration-75"
+            className={`transition-opacity transition-duration-75 ${
+              mode === 'ai' ? 'dark:!bg-[#181818]' : ''
+            }`}
             project={project?.projectIORefSignal.value}
             file={project?.executingFileEntry.value}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
-            projectMenuChildren={undoRedoButtons}
+            showProjectSelector={false}
+            hiddenItemIds={['command-bar.open', 'publish.open']}
+            leadingActions={
+              mode === 'ai' ? (
+                <AiPaneToggleButton
+                  collapsed={isProjectsPaneCollapsed}
+                  label={getLayoutPaneLabel(
+                    rndLayouts.ai,
+                    AI_PROJECTS_PANEL_ID,
+                    'Projects'
+                  )}
+                  onClick={() =>
+                    setIsProjectsPaneCollapsed((collapsed) => !collapsed)
+                  }
+                  side="left"
+                />
+              ) : mode === 'code' ? (
+                <AiPaneToggleButton
+                  collapsed={!isCodeLeftPaneVisible}
+                  label={getCodeCadPaneLabel(codeCadPaneAssignments.left)}
+                  onClick={() => setCodeLeftPaneVisible(!isCodeLeftPaneVisible)}
+                  side="left"
+                />
+              ) : (
+                <AiPaneToggleButton
+                  collapsed={isTraditionalCadLeftDrawerCollapsed}
+                  label={getWorkspacePaneLabel(traditionalCadLeftDrawerContent)}
+                  onClick={() =>
+                    setIsTraditionalCadLeftDrawerCollapsed(
+                      (collapsed) => !collapsed
+                    )
+                  }
+                  side="left"
+                />
+              )
+            }
+            headerActions={
+              <>
+                <CadModeToggle />
+                {mode === 'ai' ? (
+                  <AiPaneToggleButton
+                    collapsed={isCanvasPaneCollapsed}
+                    label={getLayoutPaneLabel(
+                      rndLayouts.ai,
+                      AI_CANVAS_PANEL_ID,
+                      'Canvas'
+                    )}
+                    onClick={() =>
+                      setIsCanvasPaneCollapsed((collapsed) => !collapsed)
+                    }
+                    side="right"
+                  />
+                ) : mode === 'code' ? (
+                  <AiPaneToggleButton
+                    collapsed={!isCodeStreamVisible}
+                    label={getCodeCadPaneLabel(codeCadPaneAssignments.right)}
+                    onClick={() => setCodeStreamVisible(!isCodeStreamVisible)}
+                    side="right"
+                  />
+                ) : (
+                  <AiPaneToggleButton
+                    collapsed={isTraditionalCadRightDrawerCollapsed}
+                    label={getWorkspacePaneLabel(
+                      traditionalCadRightDrawerContent
+                    )}
+                    onClick={() =>
+                      setIsTraditionalCadRightDrawerCollapsed(
+                        (collapsed) => !collapsed
+                      )
+                    }
+                    side="right"
+                  />
+                )}
+              </>
+            }
           />
         </div>
         <ModalContainer />
-        <section className="pointer-events-auto flex-1">
-          <LayoutRootNode
-            layout={layout.signal.value || defaultLayout}
-            getLayout={layout.get}
-            setLayout={layout.set}
-            areaLibrary={defaultAreaLibrary}
-            actionLibrary={defaultActionLibrary}
-            showDebugPanel={settingsValues.debug.showPanel.current}
-            notifications={notifications}
-            artifactGraph={kclManager.artifactGraph}
-          />
+        <section
+          className={`pointer-events-auto min-h-0 flex-1 overflow-hidden ${
+            mode === 'ai' ? 'dark:bg-[#181818]' : ''
+          }`}
+        >
+          <div className="flex h-full min-w-0">
+            {mode === 'manual' && (
+              <WorkspaceDrawer
+                areaLibrary={defaultAreaLibrary}
+                collapsed={isTraditionalCadLeftDrawerCollapsed}
+                content={traditionalCadLeftDrawerContent}
+                onContentChange={setTraditionalCadLeftDrawerContent}
+                side="left"
+              />
+            )}
+            <div className="min-w-0 flex-1">
+              <LayoutRootNode
+                areaSelectorOptions={WORKSPACE_PANE_OPTIONS}
+                layout={activeLayout}
+                getLayout={getActiveLayout}
+                setLayout={setActiveLayout}
+                areaLibrary={defaultAreaLibrary}
+                actionLibrary={defaultActionLibrary}
+                collapsedPanelIds={collapsedPanelIds}
+                collapsiblePanelIds={collapsiblePanelIds}
+                hideResizeHandleLines={mode === 'ai'}
+                onPanelCollapsedChange={
+                  mode === 'ai' || mode === 'code'
+                    ? onPanelCollapsedChange
+                    : undefined
+                }
+                showDebugPanel={settingsValues.debug.showPanel.current}
+                notifications={notifications}
+                artifactGraph={kclManager.artifactGraph}
+              />
+            </div>
+            {mode === 'manual' && (
+              <WorkspaceDrawer
+                areaLibrary={defaultAreaLibrary}
+                collapsed={isTraditionalCadRightDrawerCollapsed}
+                content={traditionalCadRightDrawerContent}
+                onContentChange={setTraditionalCadRightDrawerContent}
+                side="right"
+              />
+            )}
+          </div>
         </section>
-        <StatusBar
-          globalItems={[
-            networkHealthStatus,
-            ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
-            ...defaultGlobalStatusBarItems({
-              autoUpdateDownloadProgress,
-              autoUpdateReady,
-              onRestartToUpdate: () => {
-                window.electron?.appRestart()
-              },
-            }),
-            ...registryGlobalStatusBarItems,
-          ]}
-          localItems={[
-            ...(settingsValues.debug.showModelingMachineState.current
-              ? ([
-                  {
-                    id: 'modeling-state',
-                    element: 'text',
-                    label:
-                      modelingState.value instanceof Object
-                        ? (xStateValueToString(modelingState.value) ?? '')
-                        : modelingState.value,
-                    toolTip: {
-                      children: 'The current state of the modeler',
-                    },
-                  },
-                ] satisfies StatusBarItemType[])
-              : []),
-            ...registryLocalStatusBarItems,
-            ...defaultLocalStatusBarItems,
-          ]}
-        />
       </div>
     </div>
   )

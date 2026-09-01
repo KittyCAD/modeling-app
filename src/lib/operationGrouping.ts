@@ -163,7 +163,7 @@ const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
   isNotGroupEnd,
-  isNotHideOperation,
+  hasVisibleFeatureTreeOperation,
 ]
 
 /**
@@ -232,8 +232,16 @@ function isNotGroupEnd(ops: Operation[]): Operation[] {
 }
 
 /**
- * A filter to exclude `hide()` operations from a list of operations.
+ * Hide calls and regions are implementation details, not user-facing features.
+ * This predicate is also applied to operations restored inside grouped sketches.
  */
-function isNotHideOperation(ops: Operation[]): Operation[] {
-  return ops.filter((op) => !(op.type === 'StdLibCall' && op.name === 'hide'))
+export function isFeatureTreeOperationVisible(operation: Operation): boolean {
+  return !(
+    operation.type === 'StdLibCall' &&
+    (operation.name === 'hide' || operation.name === 'region')
+  )
+}
+
+function hasVisibleFeatureTreeOperation(ops: Operation[]): Operation[] {
+  return ops.filter(isFeatureTreeOperationVisible)
 }

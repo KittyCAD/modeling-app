@@ -1,5 +1,6 @@
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { useFileExplorerPreviews } from '@src/components/Explorer/FileExplorerPreviewContext'
 import {
   type FileExplorerDropData,
   type FileExplorerEntry,
@@ -315,6 +316,13 @@ export const FileExplorerRowElement = ({
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
   const dragPreviewId = `drag-preview-${row.key}`
+  const { previewUrls, showPreviews } = useFileExplorerPreviews()
+  const showPreview =
+    showPreviews &&
+    !row.isFolder &&
+    !row.isFake &&
+    row.name.toLocaleLowerCase().endsWith('.kcl')
+  const previewUrl = showPreview ? previewUrls.get(row.path) : undefined
 
   // Removes the drag preview element from the DOM
   const removeDragPreviewElem = useCallback(() => {
@@ -360,7 +368,9 @@ export const FileExplorerRowElement = ({
     : ''
   const interactionCSS = isInteractionDisabled
     ? 'cursor-wait opacity-70'
-    : 'cursor-pointer hover:outline hover:outline-1 hover:bg-gray-300/50'
+    : showPreview
+      ? 'cursor-pointer hover:border-chalkboard-30 hover:bg-chalkboard-20 dark:hover:border-chalkboard-70 dark:hover:bg-chalkboard-100'
+      : 'cursor-pointer hover:outline hover:outline-1 hover:bg-gray-300/50'
   const handleDeleteDismiss = useCallback(() => {
     setIsConfirmingDelete(false)
     onDeleteEnd()
@@ -373,7 +383,11 @@ export const FileExplorerRowElement = ({
       ref={rowElementRef}
       role="treeitem"
       data-testid="file-tree-item"
-      className={`h-5 flex flex-row items-center text-xs -outline-offset-1 ${outlineCSS} ${interactionCSS} ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
+      className={`flex flex-row items-center -outline-offset-1 ${
+        showPreview
+          ? 'mx-2 my-1 min-h-14 gap-2 overflow-hidden rounded-md border border-transparent px-2 py-1.5 text-sm'
+          : 'h-5 text-xs'
+      } ${outlineCSS} ${interactionCSS} ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
@@ -497,14 +511,35 @@ export const FileExplorerRowElement = ({
         removeDragPreviewElem()
       }}
     >
-      <div style={{ width: '0.5rem' }}></div>
+      {showPreview ? null : <div style={{ width: '0.5rem' }}></div>}
       {Spacer(row.level)}
-      <CustomIcon
-        name={row.icon}
-        className="inline-block w-4 text-current mr-1"
-      />
+      {showPreview ? (
+        <span className="grid h-11 w-16 flex-none place-content-center overflow-hidden rounded border border-chalkboard-30 bg-gradient-to-br from-chalkboard-20 to-chalkboard-30 dark:border-chalkboard-70 dark:from-chalkboard-90 dark:to-chalkboard-100">
+          {previewUrl ? (
+            <img
+              alt={`Preview of ${row.name}`}
+              className="h-full w-full scale-[1.15] object-cover"
+              loading="lazy"
+              src={previewUrl}
+            />
+          ) : (
+            <CustomIcon className="h-4 w-4 text-current" name={row.icon} />
+          )}
+        </span>
+      ) : (
+        <CustomIcon
+          name={row.icon}
+          className="inline-block w-4 text-current mr-1"
+        />
+      )}
       {!isMyRowRenaming && !row.isFake ? (
-        <span className="overflow-hidden whitespace-nowrap text-ellipsis">
+        <span
+          className={
+            showPreview
+              ? 'line-clamp-3 min-w-0 flex-1 break-words leading-5'
+              : 'overflow-hidden whitespace-nowrap text-ellipsis'
+          }
+        >
           {row.name}
         </span>
       ) : (

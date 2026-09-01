@@ -6,13 +6,12 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError } from '@src/lang/errors'
+import { isInterruptedExecutionErrorMessage } from '@src/lang/executionInterrupts'
 import type { ExecCallbacks, ExecState, Program } from '@src/lang/wasm'
 import { emptyExecState } from '@src/lang/wasm'
-import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray } from '@src/lib/utils'
-import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/lib/engineConnection/utils'
 
 export interface ExecutionResultMock {
   logs: string[]
@@ -47,14 +46,7 @@ function handleExecuteError(e: unknown): ExecutionResultMock {
   let isInterrupted = false
 
   if (e instanceof KCLError) {
-    if (
-      e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING) ||
-      e.msg.includes('Failed to wait for promise from send modeling command') ||
-      e.msg.includes(
-        'no connection to send on, connection manager called tearDown()'
-      ) ||
-      e.msg.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
-    ) {
+    if (isInterruptedExecutionErrorMessage(e.msg)) {
       isInterrupted = true
     }
     const execState = emptyExecState()
@@ -70,14 +62,7 @@ function handleExecuteError(e: unknown): ExecutionResultMock {
   }
 
   const msg = getFirstErrorMessage(e)
-  if (
-    msg !== undefined &&
-    (msg.includes(
-      'no connection to send on, connection manager called tearDown()'
-    ) ||
-      msg.includes('Failed to wait for promise from send modeling command') ||
-      msg.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE))
-  ) {
+  if (msg !== undefined && isInterruptedExecutionErrorMessage(msg)) {
     isInterrupted = true
   }
 

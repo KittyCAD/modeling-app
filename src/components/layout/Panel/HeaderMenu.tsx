@@ -3,6 +3,7 @@ import type { PropsWithChildren } from 'react'
 import { useId, useRef } from 'react'
 
 import { ActionIcon } from '@src/components/ActionIcon'
+import { cleanPaneHeaderButtonClassName } from '@src/components/layout/Panel/CleanPaneHeader'
 
 export const HeaderMenu = ({ children }: PropsWithChildren) => {
   const id = useId().replace(/[^a-zA-Z0-9_-]/g, '')
@@ -15,7 +16,7 @@ export const HeaderMenu = ({ children }: PropsWithChildren) => {
       <div className="relative">
         <Menu.Button
           ref={buttonRef}
-          className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none"
+          className={cleanPaneHeaderButtonClassName}
           onClick={(e) => e.stopPropagation()}
           style={{ anchorName }}
         >

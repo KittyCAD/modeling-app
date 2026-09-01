@@ -95,14 +95,19 @@ describe('ProjectSidebarMenu tests', () => {
     const logoLink = screen.getByTestId('app-logo').closest('a')
 
     expect(logoLink).toHaveAttribute('href', PATHS.HOME)
+    expect(logoLink).toHaveClass('h-full', 'p-1.5')
+    expect(logoLink?.querySelector('svg')).toHaveClass('h-4', 'w-auto')
     expect(screen.getByRole('tooltip')).toHaveTextContent('Go home')
   })
 
-  test('Shows the full project-relative file path in the breadcrumb', () => {
+  test('Labels the project and current part in the breadcrumb', () => {
     renderBreadcrumb()
 
+    expect(screen.getByTestId('app-header-project-name')).toHaveTextContent(
+      'Project: Simple Box'
+    )
     expect(screen.getByTestId('app-header-file-name')).toHaveTextContent(
-      'parts / generated / nested-part.kcl'
+      'Part: nested-part.kcl'
     )
   })
 
@@ -113,7 +118,7 @@ describe('ProjectSidebarMenu tests', () => {
     renderBreadcrumb()
 
     expect(await screen.findByRole('tooltip')).toHaveTextContent(
-      'Simple Box / parts / generated / nested-part.kcl'
+      'Project: Simple Box, Part: nested-part.kcl'
     )
   })
 })

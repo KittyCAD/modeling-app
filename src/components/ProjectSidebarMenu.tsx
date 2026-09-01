@@ -12,7 +12,7 @@ import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBa
 import { APP_NAME } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
-import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
+import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -48,6 +48,7 @@ interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   absoluteFilePath?: string
   onProjectClose?: ProjectCloseHandler
   onHomeNavigate?: () => void
+  showProjectSelector?: boolean
 }
 
 type ProjectCloseHandler = (
@@ -104,6 +105,7 @@ const ProjectSidebarMenu = ({
   absoluteFilePath,
   onProjectClose = noopProjectClose,
   onHomeNavigate = noopHomeNavigate,
+  showProjectSelector = true,
   children,
 }: ProjectSidebarMenuProps) => {
   // Make room for traffic lights on desktop left side.
@@ -116,8 +118,12 @@ const ProjectSidebarMenu = ({
   const projectDisplayName = project ? getProjectDisplayName(project) : APP_NAME
 
   return (
-    <div className={`!no-underline flex min-w-0 gap-2 ${trafficLightsOffset}`}>
-      <div className="relative group/home">
+    <div
+      className={`!no-underline flex gap-2 ${
+        showProjectSelector ? 'min-w-0 flex-1' : 'flex-none'
+      } ${trafficLightsOffset}`}
+    >
+      <div className="relative flex items-center group/home">
         <AppLogoLink
           project={project}
           file={file}
@@ -129,27 +135,31 @@ const ProjectSidebarMenu = ({
           <Tooltip position="bottom-left">Go home</Tooltip>
         )}
       </div>
-      {enableMenu ? (
-        app ? (
-          <ProjectMenuPopover
-            app={app}
-            project={project}
-            file={file}
-            filePath={absoluteFilePath}
-            homeNavigationEnabled={homeNavigationEnabled}
-            onProjectClose={onProjectClose}
-            onHomeNavigate={onHomeNavigate}
-          />
-        ) : null
-      ) : (
-        <span
-          className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
-          data-testid="project-name"
-        >
-          {projectDisplayName}
-        </span>
-      )}
-      {children}
+      {showProjectSelector ? (
+        enableMenu ? (
+          app ? (
+            <ProjectMenuPopover
+              app={app}
+              project={project}
+              file={file}
+              filePath={absoluteFilePath}
+              homeNavigationEnabled={homeNavigationEnabled}
+              onProjectClose={onProjectClose}
+              onHomeNavigate={onHomeNavigate}
+            />
+          ) : null
+        ) : (
+          <span
+            className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+            data-testid="project-name"
+          >
+            {projectDisplayName}
+          </span>
+        )
+      ) : null}
+      {children ? (
+        <div className="flex items-center gap-2">{children}</div>
+      ) : null}
     </div>
   )
 }
@@ -169,7 +179,7 @@ function AppLogoLink({
 }) {
   const wrapperClassName =
     "cursor-pointer relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
-  const logoClassName = 'w-auto h-4 text-chalkboard-10'
+  const logoClassName = 'h-4 w-auto text-chalkboard-10'
 
   if (!enabled) {
     return (
@@ -473,7 +483,7 @@ function ProjectMenuPopover({
     'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left '
 
   return (
-    <Popover className="relative min-w-0">
+    <Popover className="absolute left-1/2 top-1/2 flex max-w-[50vw] -translate-x-1/2 -translate-y-1/2 justify-center">
       <ProjectBreadcrumbButton
         project={project}
         file={file}
@@ -487,7 +497,7 @@ function ProjectMenuPopover({
         as={Fragment}
       >
         <Popover.Panel
-          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
+          className={`z-10 absolute left-1/2 top-full mt-1 w-52 -translate-x-1/2 pb-1 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
         >
@@ -546,14 +556,12 @@ export function ProjectBreadcrumbButton({
   file?: IndexLoaderData['file']
   hasCloudConflict?: boolean
 }) {
-  // Breadcrumb for project and project-relative file path
-  const relativeFilePath = getProjectRelativeFilePath(project, file)
-  const formattedRelativeFilePath = relativeFilePath.replaceAll('/', ' / ')
   const projectDisplayName = project ? getProjectDisplayName(project) : ''
+  const partDisplayName = file?.name ?? ''
   const breadCrumb = {
-    projectName: projectDisplayName,
-    sep: ' / ',
-    filePath: formattedRelativeFilePath,
+    projectName: projectDisplayName ? `Project: ${projectDisplayName}` : '',
+    sep: ', ',
+    filePath: partDisplayName ? `Part: ${partDisplayName}` : '',
   }
   const breadCrumbTooltip = breadCrumb.projectName
     ? `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filePath}`
@@ -596,31 +604,33 @@ export function ProjectBreadcrumbButton({
 
   return (
     <Popover.Button
-      className="gap-1 rounded-sm mr-auto max-h-min min-w-0 max-w-full border-0 py-1 px-2 flex items-center focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
+      className="mx-auto flex max-h-min min-w-0 max-w-full items-center gap-1 rounded-sm border-0 px-2 py-1 focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
       data-testid="project-sidebar-toggle"
     >
       <div className="flex min-w-0 items-baseline py-0.5 text-sm">
-        {project && (
+        {breadCrumb.projectName && (
           <>
             <span
               ref={projectNameRef}
-              className="hidden whitespace-nowrap md:block max-w-80 truncate"
+              className="max-w-80 truncate whitespace-nowrap"
               data-testid="app-header-project-name"
             >
               {breadCrumb.projectName}
             </span>
-            <span className="hidden whitespace-pre md:inline">
-              {breadCrumb.sep}
-            </span>
+            {breadCrumb.filePath ? (
+              <span className="whitespace-pre">{breadCrumb.sep}</span>
+            ) : null}
           </>
         )}
-        <span
-          ref={filePathRef}
-          className="min-w-0 truncate text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap"
-          data-testid="app-header-file-name"
-        >
-          {breadCrumb.filePath}
-        </span>
+        {breadCrumb.filePath ? (
+          <span
+            ref={filePathRef}
+            className="min-w-0 truncate whitespace-nowrap text-sm text-chalkboard-110 dark:text-chalkboard-20"
+            data-testid="app-header-file-name"
+          >
+            {breadCrumb.filePath}
+          </span>
+        ) : null}
       </div>
       {hasCloudConflict && (
         <span

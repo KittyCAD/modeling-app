@@ -28,7 +28,9 @@ import {
   getOperationKey,
   getOperationTreeNodeKey,
   isOperationTreeBranch,
+  partitionOperationTree,
 } from '@src/lib/featureTreeOperationTree'
+import { isFeatureTreeOperationVisible } from '@src/lib/operationGrouping'
 import {
   getOpTypeLabel,
   getOperationCalculatedDisplay,
@@ -54,8 +56,14 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import { LayoutPanel } from '@src/components/layout/Panel'
+import { CleanPaneHeader } from '@src/components/layout/Panel/CleanPaneHeader'
+import { CollapsiblePaneSection } from '@src/components/layout/Panel/CollapsiblePaneSection'
+import { BodiesPaneContents } from '@src/components/layout/areas/BodiesPane'
+import {
+  FeatureTreeMenu,
+  ParametersMenu,
+} from '@src/components/layout/areas/FeatureTreeMenu'
 import usePlatform from '@src/hooks/usePlatform'
 import { sourceRangeToUtf16, toUtf16 } from '@src/lang/errors'
 import {
@@ -158,21 +166,23 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
       id={`${props.layout.id}-pane`}
       className="border-none"
     >
-      <LayoutPanelHeader
-        id={props.layout.id}
-        icon="model"
-        title={props.layout.label}
-        Menu={FeatureTreeMenu}
-        onClose={() => {
-          // Gotcha: because our layout system is a goofy first draft,
-          // it doesn't know how to handle Splits as children of Panes very well,
-          // so the onClose here needs to explicitly state the Split to close,
-          // since this layout will be used in a Simple layout now.
-          props.onClose?.('feature-tree')
-        }}
-      />
+      <CleanPaneHeader title={props.layout.label}>
+        <FeatureTreeMenu />
+      </CleanPaneHeader>
       <FeatureTreePaneContents />
     </LayoutPanel>
+  )
+}
+
+export function TraditionalCadStructureOverlay() {
+  return (
+    <aside
+      aria-label="Model Structure"
+      className="h-full min-h-0 overflow-hidden bg-transparent"
+      data-testid="traditional-cad-structure-overlay"
+    >
+      <FeatureTreePaneContents hoverScrollbar sectioned />
+    </aside>
   )
 }
 
@@ -190,220 +200,300 @@ function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
   )
 }
 
-export const FeatureTreePaneContents = memo(() => {
-  useSignals()
-  const app = useApp()
-  const { layout, commands, settings } = app
-  const settingsValues = settings.useSettings()
-  const platform = usePlatform()
-  const keymap = app.registry.optional(keymapService)
-  const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
-    keymap
-      ? findKeymapItemForCommand(
-          keymap.keymap.value,
-          APP_COMMAND_IDS.editor.render,
-          keymap.getCurrentScopes(),
-          app.registry.signal(keymapScopesValueSpec).value
-        )?.keystrokes
-      : [UNRENDERED_EXECUTE_HOTKEY],
-    platform
-  )
-  const { kclManager } = useSingletons()
-  const executionService = app.registry.signal(executingEditorService).value
-  const { engineCommandManager, rustContext } = kclManager
-  const {
-    send: modelingSend,
-    state: modelingState,
-    actor: modelingActor,
-  } = useModelingContext()
-  const systemDeps: SystemDeps = useMemo(
-    () => ({
-      kclManager,
-      sceneInfra: kclManager.sceneInfra,
-      sceneEntitiesManager: kclManager.sceneEntitiesManager,
-      rustContext,
-      commandBarActor: commands.actor,
-    }),
-    [kclManager, rustContext, commands.actor]
-  )
-
-  const selectOperation = useCallback(
-    (sourceRange: SourceRange) => {
-      sendSelectionEvent({
-        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+export const FeatureTreePaneContents = memo(
+  ({
+    hoverScrollbar = false,
+    sectioned = false,
+  }: {
+    hoverScrollbar?: boolean
+    sectioned?: boolean
+  } = {}) => {
+    useSignals()
+    const app = useApp()
+    const { layout, commands, settings } = app
+    const settingsValues = settings.useSettings()
+    const platform = usePlatform()
+    const keymap = app.registry.optional(keymapService)
+    const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
+      keymap
+        ? findKeymapItemForCommand(
+            keymap.keymap.value,
+            APP_COMMAND_IDS.editor.render,
+            keymap.getCurrentScopes(),
+            app.registry.signal(keymapScopesValueSpec).value
+          )?.keystrokes
+        : [UNRENDERED_EXECUTE_HOTKEY],
+      platform
+    )
+    const { kclManager } = useSingletons()
+    const executionService = app.registry.signal(executingEditorService).value
+    const { engineCommandManager, rustContext } = kclManager
+    const {
+      send: modelingSend,
+      state: modelingState,
+      actor: modelingActor,
+    } = useModelingContext()
+    const systemDeps: SystemDeps = useMemo(
+      () => ({
         kclManager,
-        modelingSend,
+        sceneInfra: kclManager.sceneInfra,
+        sceneEntitiesManager: kclManager.sceneEntitiesManager,
+        rustContext,
+        commandBarActor: commands.actor,
+      }),
+      [kclManager, rustContext, commands.actor]
+    )
+
+    const selectOperation = useCallback(
+      (sourceRange: SourceRange) => {
+        sendSelectionEvent({
+          sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+          kclManager,
+          modelingSend,
+        })
+      },
+      [modelingSend, kclManager]
+    )
+
+    const sketchNoFace = modelingState.matches('Sketch no face')
+    const hasParseErrors = kclManager.hasParseErrors()
+    const disableModelingForUnrenderedChanges =
+      shouldDisableModelingForUnrenderedChanges({
+        settings: settingsValues,
+        hasEditsSinceLastExecution:
+          kclManager.hasEditsSinceLastExecutionSignal.value,
       })
-    },
-    [modelingSend, kclManager]
-  )
+    const diagnostics = kclManager.diagnosticsSignal.value
+    const parseDiagnostics = hasParseErrors
+      ? diagnostics.filter((diagnostic) => diagnostic.severity === 'error')
+      : []
+    const firstParseDiagnostic = parseDiagnostics[0]
+    const firstParseAction = firstParseDiagnostic?.actions?.[0]
 
-  const sketchNoFace = modelingState.matches('Sketch no face')
-  const hasParseErrors = kclManager.hasParseErrors()
-  const disableModelingForUnrenderedChanges =
-    shouldDisableModelingForUnrenderedChanges({
-      settings: settingsValues,
-      hasEditsSinceLastExecution:
-        kclManager.hasEditsSinceLastExecutionSignal.value,
-    })
-  const diagnostics = kclManager.diagnosticsSignal.value
-  const parseDiagnostics = hasParseErrors
-    ? diagnostics.filter((diagnostic) => diagnostic.severity === 'error')
-    : []
-  const firstParseDiagnostic = parseDiagnostics[0]
-  const firstParseAction = firstParseDiagnostic?.actions?.[0]
+    // If there are engine errors we show the successful operations
+    // Errors return an operation list, so use the longest one if there are multiple
+    const longestErrorOperationsByModule = kclManager.errors.reduce(
+      (acc, error) => {
+        return countOperations(error.operations) > countOperations(acc)
+          ? error.operations
+          : acc
+      },
+      emptyOperationsByModule()
+    )
 
-  // If there are engine errors we show the successful operations
-  // Errors return an operation list, so use the longest one if there are multiple
-  const longestErrorOperationsByModule = kclManager.errors.reduce(
-    (acc, error) => {
-      return countOperations(error.operations) > countOperations(acc)
-        ? error.operations
-        : acc
-    },
-    emptyOperationsByModule()
-  )
-
-  const unfilteredOperationsByModule = kclManager.isExecuting
-    ? kclManager.operationsByModule
-    : !hasParseErrors
-      ? !kclManager.errors.length
-        ? kclManager.operationsByModule
-        : longestErrorOperationsByModule
-      : kclManager.lastSuccessfulOperations
-  // We use the code that corresponds to the operations. In case this is an
-  // error on the first run, fall back to whatever is currently in the code
-  // editor.
-  const operationsCode = hasParseErrors
-    ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
-    : disableModelingForUnrenderedChanges
+    const unfilteredOperationsByModule = kclManager.isExecuting
+      ? kclManager.operationsByModule
+      : !hasParseErrors
+        ? !kclManager.errors.length
+          ? kclManager.operationsByModule
+          : longestErrorOperationsByModule
+        : kclManager.lastSuccessfulOperations
+    // We use the code that corresponds to the operations. In case this is an
+    // error on the first run, fall back to whatever is currently in the code
+    // editor.
+    const operationsCode = hasParseErrors
       ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
-      : kclManager.codeSignal.value
-  const isReadOnlyFeatureTree =
-    hasParseErrors || disableModelingForUnrenderedChanges
+      : disableModelingForUnrenderedChanges
+        ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
+        : kclManager.codeSignal.value
+    const isReadOnlyFeatureTree =
+      hasParseErrors || disableModelingForUnrenderedChanges
 
-  // We filter out operations that are not useful to show in the feature tree
-  const operationList = buildOperationTree(
-    unfilteredOperationsByModule,
-    ROOT_MODULE_ID
-  )
-  const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
+    // We filter out operations that are not useful to show in the feature tree
+    const operationList = buildOperationTree(
+      unfilteredOperationsByModule,
+      ROOT_MODULE_ID
+    )
+    const partitionedOperationList = partitionOperationTree(operationList)
+    const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
-  // Live execution tracking: expand only the active module branch.
-  const liveActiveModuleId = kclManager.liveActiveModuleId
+    // Live execution tracking: expand only the active module branch.
+    const liveActiveModuleId = kclManager.liveActiveModuleId
 
-  function goToError() {
-    const l = layout.signal.value
-    if (!isCodePaneOpen(l)) {
-      openCodePane(l, layout.set)
+    function goToError() {
+      const l = layout.signal.value
+      if (!isCodePaneOpen(l)) {
+        openCodePane(l, layout.set)
+      }
+      kclManager.scrollToFirstErrorDiagnosticIfExists()
     }
-    kclManager.scrollToFirstErrorDiagnosticIfExists()
-  }
 
-  function applyParseQuickFix() {
-    if (!firstParseDiagnostic || !firstParseAction) return
-    firstParseAction.apply(
-      kclManager.editorView,
-      firstParseDiagnostic.from,
-      firstParseDiagnostic.to
+    function applyParseQuickFix() {
+      if (!firstParseDiagnostic || !firstParseAction) return
+      firstParseAction.apply(
+        kclManager.editorView,
+        firstParseDiagnostic.from,
+        firstParseDiagnostic.to
+      )
+    }
+
+    const renderOperationNodes = (
+      nodes: OperationTreeNode[],
+      ungroupArrays = false
+    ) =>
+      nodes.map((node) => (
+        <OperationTreeNodeItem
+          key={getOperationTreeNodeKey(node)}
+          node={node}
+          code={operationsCode}
+          isStaleReference={isReadOnlyFeatureTree}
+          sketchNoFace={sketchNoFace}
+          systemDeps={systemDeps}
+          modelingActor={modelingActor}
+          engineCommandManager={engineCommandManager}
+          onSelect={selectOperation}
+          liveActiveModuleId={liveActiveModuleId}
+          ungroupArrays={ungroupArrays}
+        />
+      ))
+
+    const executionStatus = kclManager.isExecuting ? (
+      <div className="text-xs bg-primary/10 text-primary py-2 px-2 rounded flex-none mb-2 border border-primary/20">
+        Updating feature tree...
+      </div>
+    ) : null
+
+    const featureTreeWarnings = (
+      <>
+        {disableModelingForUnrenderedChanges && !hasParseErrors && (
+          <div className="text-sm bg-2 text-2 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2 border border-chalkboard-20 dark:border-chalkboard-80">
+            <p className="font-medium">Feature tree actions are disabled.</p>
+            <p className="text-xs opacity-80">
+              {getUnrenderedChangesDisabledReason()}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  executionService?.executeCode().catch(reportRejection)
+                }}
+                disabled={kclManager.isExecuting || !executionService}
+                className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
+              >
+                <CustomIcon name="play" className="w-5 h-5" />
+                <span>Execute</span>
+                {unrenderedExecuteHotkeyLabel && (
+                  <kbd className="hotkey text-xs">
+                    {unrenderedExecuteHotkeyLabel}
+                  </kbd>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+        {hasParseErrors && (
+          <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
+            <p className="font-medium">
+              KCL parse errors are blocking the current feature tree.
+            </p>
+            <p className="whitespace-pre-wrap break-words text-xs">
+              {firstParseDiagnostic?.message ||
+                'Fix the parse error to rebuild the feature tree.'}
+            </p>
+            <p className="text-xs text-chalkboard-20">
+              {isShowingStaleFeatureTree
+                ? 'Showing the last successful feature tree as a read-only reference. It may not match the current code.'
+                : 'No successful feature tree is available yet for this file.'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={goToError}
+                className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
+              >
+                View error
+              </button>
+              {firstParseAction && (
+                <button
+                  onClick={applyParseQuickFix}
+                  className="bg-destroy-70 text-chalkboard-10 p-1 rounded-sm flex-none hover:bg-destroy-60 border-transparent"
+                >
+                  {firstParseAction.name}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </>
+    )
+
+    if (sectioned) {
+      const sectionPanelClassName = 'flex-none pl-8 pr-1'
+
+      return (
+        <div
+          className={`flex h-full min-h-0 flex-col overflow-x-hidden overflow-y-auto ${hoverScrollbar ? 'hover-reveal-scrollbar' : ''}`}
+          data-testid={
+            hoverScrollbar ? 'traditional-cad-structure-scroll' : undefined
+          }
+        >
+          <CollapsiblePaneSection
+            openClassName="flex-none"
+            panelClassName={sectionPanelClassName}
+            title="Planes"
+          >
+            {!modelingState.matches('Sketch') ? (
+              <DefaultPlanes
+                systemDeps={systemDeps}
+                disabled={disableModelingForUnrenderedChanges}
+                showSeparator={false}
+              />
+            ) : null}
+          </CollapsiblePaneSection>
+          <CollapsiblePaneSection
+            actions={<ParametersMenu />}
+            openClassName="flex-none"
+            panelClassName={sectionPanelClassName}
+            title="Parameters"
+          >
+            <div>
+              {renderOperationNodes(partitionedOperationList.parameters, true)}
+            </div>
+          </CollapsiblePaneSection>
+          <CollapsiblePaneSection
+            actions={<FeatureTreeMenu includeCreateParameter={false} />}
+            openClassName="flex-none"
+            panelClassName={sectionPanelClassName}
+            title="Feature Tree"
+          >
+            <div>
+              {executionStatus}
+              {featureTreeWarnings}
+              {renderOperationNodes(partitionedOperationList.features)}
+            </div>
+          </CollapsiblePaneSection>
+          <CollapsiblePaneSection
+            openClassName="flex-none"
+            panelClassName={sectionPanelClassName}
+            title="Bodies"
+          >
+            <BodiesPaneContents scrollable={false} />
+          </CollapsiblePaneSection>
+        </div>
+      )
+    }
+
+    return (
+      <div className="relative">
+        <section
+          data-testid="debug-panel"
+          className="absolute inset-0 p-1 box-border overflow-auto mr-1"
+        >
+          <>
+            {executionStatus}
+            {!modelingState.matches('Sketch') && (
+              <DefaultPlanes
+                systemDeps={systemDeps}
+                disabled={disableModelingForUnrenderedChanges}
+              />
+            )}
+            {featureTreeWarnings}
+            {renderOperationNodes(operationList)}
+          </>
+        </section>
+      </div>
     )
   }
-
-  return (
-    <div className="relative">
-      <section
-        data-testid="debug-panel"
-        className="absolute inset-0 p-1 box-border overflow-auto mr-1"
-      >
-        <>
-          {kclManager.isExecuting && (
-            <div className="text-xs bg-primary/10 text-primary py-2 px-2 rounded flex-none mb-2 border border-primary/20">
-              Updating feature tree...
-            </div>
-          )}
-          {!modelingState.matches('Sketch') && (
-            <DefaultPlanes
-              systemDeps={systemDeps}
-              disabled={disableModelingForUnrenderedChanges}
-            />
-          )}
-          {disableModelingForUnrenderedChanges && !hasParseErrors && (
-            <div className="text-sm bg-2 text-2 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2 border border-chalkboard-20 dark:border-chalkboard-80">
-              <p className="font-medium">Feature tree actions are disabled.</p>
-              <p className="text-xs opacity-80">
-                {getUnrenderedChangesDisabledReason()}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    executionService?.executeCode().catch(reportRejection)
-                  }}
-                  disabled={kclManager.isExecuting || !executionService}
-                  className="flex gap-1 items-center py-0 pl-0.5 pr-1 m-0 flex-none text-primary dark:text-primary border border-solid border-primary bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 hover:border-primary active:border-primary disabled:cursor-wait disabled:opacity-70"
-                >
-                  <CustomIcon name="play" className="w-5 h-5" />
-                  <span>Execute</span>
-                  {unrenderedExecuteHotkeyLabel && (
-                    <kbd className="hotkey text-xs">
-                      {unrenderedExecuteHotkeyLabel}
-                    </kbd>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-          {hasParseErrors && (
-            <div className="text-sm bg-destroy-80 text-chalkboard-10 py-2 px-2 rounded flex flex-col gap-2 flex-none mb-2">
-              <p className="font-medium">
-                KCL parse errors are blocking the current feature tree.
-              </p>
-              <p className="whitespace-pre-wrap break-words text-xs">
-                {firstParseDiagnostic?.message ||
-                  'Fix the parse error to rebuild the feature tree.'}
-              </p>
-              <p className="text-xs text-chalkboard-20">
-                {isShowingStaleFeatureTree
-                  ? 'Showing the last successful feature tree as a read-only reference. It may not match the current code.'
-                  : 'No successful feature tree is available yet for this file.'}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={goToError}
-                  className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
-                >
-                  View error
-                </button>
-                {firstParseAction && (
-                  <button
-                    onClick={applyParseQuickFix}
-                    className="bg-destroy-70 text-chalkboard-10 p-1 rounded-sm flex-none hover:bg-destroy-60 border-transparent"
-                  >
-                    {firstParseAction.name}
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-          {operationList.map((node) => (
-            <OperationTreeNodeItem
-              key={getOperationTreeNodeKey(node)}
-              node={node}
-              code={operationsCode}
-              isStaleReference={isReadOnlyFeatureTree}
-              sketchNoFace={sketchNoFace}
-              systemDeps={systemDeps}
-              modelingActor={modelingActor}
-              engineCommandManager={engineCommandManager}
-              onSelect={selectOperation}
-              liveActiveModuleId={liveActiveModuleId}
-            />
-          ))}
-        </>
-      </section>
-    </div>
-  )
-})
+)
 
 interface VisibilityToggleProps {
   visible: boolean
@@ -427,7 +517,9 @@ function OperationItemGroup({
   items: Operation[]
   isModuleOwned?: boolean
 }) {
-  const contentItems = items.filter((item) => item.type !== 'GroupEnd')
+  const contentItems = items.filter(
+    (item) => item.type !== 'GroupEnd' && isFeatureTreeOperationVisible(item)
+  )
   if (contentItems.length === 0) {
     return null
   }
@@ -442,7 +534,7 @@ function OperationItemGroup({
     : []
 
   if (parentItem) {
-    if (childItems.length === 0) {
+    if (parentItem.group.type === 'SketchBlock' || childItems.length === 0) {
       return (
         <OperationItem
           item={parentItem}
@@ -559,10 +651,12 @@ function OperationBranchGroup({
   onSelect,
   isModuleOwned = false,
   liveActiveModuleId,
+  ungroupArrays = false,
 }: Omit<OperationProps, 'item'> & {
   parentItem: ModuleInstanceOperation
   childItems: OperationTreeNode[]
   isModuleOwned?: boolean
+  ungroupArrays?: boolean
 }) {
   if (childItems.length === 0) {
     return (
@@ -635,6 +729,7 @@ function OperationBranchGroup({
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
                 isModuleOwned={true}
+                ungroupArrays={ungroupArrays}
               />
             )
           })}
@@ -646,12 +741,28 @@ function OperationBranchGroup({
 
 function OperationTreeNodeItem({
   node,
+  ungroupArrays = false,
   ...props
 }: Omit<OperationProps, 'item'> & {
   node: OperationTreeNode
   isModuleOwned?: boolean
+  ungroupArrays?: boolean
 }) {
   if (isArray(node)) {
+    if (ungroupArrays) {
+      return (
+        <>
+          {node.map((item) => (
+            <OperationItem
+              key={getOperationTreeNodeKey(item)}
+              item={item}
+              {...props}
+            />
+          ))}
+        </>
+      )
+    }
+
     return <OperationItemGroup items={node} {...props} />
   }
 
@@ -660,6 +771,7 @@ function OperationTreeNodeItem({
       <OperationBranchGroup
         parentItem={node.parent}
         childItems={node.children}
+        ungroupArrays={ungroupArrays}
         {...props}
       />
     )
@@ -1535,9 +1647,11 @@ const OperationItem = ({
 const DefaultPlanes = ({
   systemDeps,
   disabled = false,
+  showSeparator = true,
 }: {
   systemDeps: SystemDeps
   disabled?: boolean
+  showSeparator?: boolean
 }) => {
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
@@ -1661,7 +1775,7 @@ const DefaultPlanes = ({
           }
         />
       ))}
-      <div className="h-px bg-chalkboard-50/20 my-2" />
+      {showSeparator ? <div className="h-px bg-chalkboard-50/20 my-2" /> : null}
     </div>
   )
 }

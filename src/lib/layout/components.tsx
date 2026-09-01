@@ -6,11 +6,12 @@ import {
   type ContextMenuProps,
 } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { PaneContentSelectorProvider } from '@src/components/layout/Panel/PaneContentSelector'
+import { SplitResizeHandle } from '@src/components/layout/Panel/SplitResizeHandle'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import { LayoutType } from '@src/lib/layout/types'
 import type {
   Action,
   ActionLibrary,
@@ -25,6 +26,12 @@ import type {
   Side,
   SplitLayout as SplitLayoutType,
 } from '@src/lib/layout/types'
+import { LayoutType } from '@src/lib/layout/types'
+import type {
+  IReplaceLayoutChildNode,
+  ITogglePane,
+  IUpdateNodeSizes,
+} from '@src/lib/layout/utils'
 import {
   defaultLayout,
   findAndReplaceLayoutChildNode,
@@ -44,17 +51,13 @@ import {
   sideToTailwindTabDirection,
   togglePaneLayoutNode,
 } from '@src/lib/layout/utils'
-import type {
-  IReplaceLayoutChildNode,
-  ITogglePane,
-  IUpdateNodeSizes,
-} from '@src/lib/layout/utils'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { isArray } from '@src/lib/utils'
 import {
-  Fragment,
   createContext,
+  Fragment,
   memo,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -63,8 +66,11 @@ import {
 } from 'react'
 import isEqual from 'react-fast-compare'
 import { useHotkeys } from 'react-hotkeys-hook'
-import type { ImperativePanelGroupHandle } from 'react-resizable-panels'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import type {
+  ImperativePanelGroupHandle,
+  ImperativePanelHandle,
+} from 'react-resizable-panels'
+import { Panel, PanelGroup } from 'react-resizable-panels'
 
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
@@ -75,6 +81,18 @@ interface LayoutState {
   togglePane: (props: WithoutRootLayout<ITogglePane>) => void
   /** Kind of a feature flag, remove in future */
   enableContextMenus: boolean
+  collapsedPanelIds: readonly string[]
+  collapsiblePanelIds: readonly string[]
+  hideResizeHandleGrabbers: boolean
+  hideResizeHandleLines: boolean
+  onPanelCollapsedChange: (panelId: string, collapsed: boolean) => void
+  areaSelectorOptions: readonly LayoutAreaSelectorOption[]
+}
+
+export type LayoutAreaSelectorOption = {
+  id: string
+  label: string
+  areaType: string
 }
 
 const missingAreaDefinition = {
@@ -98,6 +116,12 @@ const LayoutStateContext = createContext<LayoutState>({
   togglePane: () => {},
   /** Kind of a feature flag, remove in future */
   enableContextMenus: false,
+  collapsedPanelIds: [],
+  collapsiblePanelIds: [],
+  hideResizeHandleGrabbers: false,
+  hideResizeHandleLines: false,
+  onPanelCollapsedChange: () => {},
+  areaSelectorOptions: [],
 })
 
 export const useLayoutState = () => useContext(LayoutStateContext)
@@ -115,6 +139,12 @@ interface LayoutRootNodeProps {
   layoutName?: string
   /** Kind of a feature flag, remove in future */
   enableContextMenus?: boolean
+  collapsedPanelIds?: readonly string[]
+  collapsiblePanelIds?: readonly string[]
+  hideResizeHandleGrabbers?: boolean
+  hideResizeHandleLines?: boolean
+  onPanelCollapsedChange?: (panelId: string, collapsed: boolean) => void
+  areaSelectorOptions?: readonly LayoutAreaSelectorOption[]
 }
 
 export const LayoutRootNode = memo(
@@ -124,42 +154,57 @@ export const LayoutRootNode = memo(
     layout,
     getLayout,
     setLayout,
-    showDebugPanel,
     enableContextMenus = false,
+    collapsedPanelIds = [],
+    collapsiblePanelIds = [],
+    hideResizeHandleGrabbers = false,
+    hideResizeHandleLines = false,
+    onPanelCollapsedChange = () => {},
+    areaSelectorOptions = [],
   }: LayoutRootNodeProps) {
-    const getLayoutWithFallback = () => getLayout() || defaultLayout
+    const getLayoutWithFallback = useCallback(
+      () => getLayout() || defaultLayout,
+      [getLayout]
+    )
 
-    function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
-      const rootLayout = getLayoutWithFallback()
-      setLayout(
-        findAndUpdateSplitSizes({
-          rootLayout: structuredClone(rootLayout),
-          ...props,
-        })
-      )
-    }
+    const updateSplitSizes = useCallback(
+      (props: WithoutRootLayout<IUpdateNodeSizes>) => {
+        const rootLayout = getLayoutWithFallback()
+        setLayout(
+          findAndUpdateSplitSizes({
+            rootLayout: structuredClone(rootLayout),
+            ...props,
+          })
+        )
+      },
+      [getLayoutWithFallback, setLayout]
+    )
 
-    function replaceLayoutNode(
-      props: WithoutRootLayout<IReplaceLayoutChildNode>
-    ) {
-      const rootLayout = getLayoutWithFallback()
-      setLayout(
-        findAndReplaceLayoutChildNode({
-          rootLayout: structuredClone(rootLayout),
-          ...props,
-        })
-      )
-    }
+    const replaceLayoutNode = useCallback(
+      (props: WithoutRootLayout<IReplaceLayoutChildNode>) => {
+        const rootLayout = getLayoutWithFallback()
+        setLayout(
+          findAndReplaceLayoutChildNode({
+            rootLayout: structuredClone(rootLayout),
+            ...props,
+          })
+        )
+      },
+      [getLayoutWithFallback, setLayout]
+    )
 
-    function togglePane(props: WithoutRootLayout<ITogglePane>) {
-      const rootLayout = getLayoutWithFallback()
-      setLayout(
-        togglePaneLayoutNode({
-          rootLayout: structuredClone(rootLayout),
-          ...props,
-        })
-      )
-    }
+    const togglePane = useCallback(
+      (props: WithoutRootLayout<ITogglePane>) => {
+        const rootLayout = getLayoutWithFallback()
+        setLayout(
+          togglePaneLayoutNode({
+            rootLayout: structuredClone(rootLayout),
+            ...props,
+          })
+        )
+      },
+      [getLayoutWithFallback, setLayout]
+    )
 
     const providerValue = useMemo(
       () => ({
@@ -169,16 +214,28 @@ export const LayoutRootNode = memo(
         replaceLayoutNode,
         togglePane,
         enableContextMenus,
+        collapsedPanelIds,
+        collapsiblePanelIds,
+        hideResizeHandleGrabbers,
+        hideResizeHandleLines,
+        onPanelCollapsedChange,
+        areaSelectorOptions,
         // More API here if needed within nested layout components
         // The other properties are all callbacks which are set once.
       }),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         enableContextMenus,
+        collapsedPanelIds,
+        collapsiblePanelIds,
+        hideResizeHandleGrabbers,
+        hideResizeHandleLines,
+        onPanelCollapsedChange,
+        areaSelectorOptions,
         areaLibrary,
         actionLibrary,
+        replaceLayoutNode,
         togglePane,
-        showDebugPanel,
+        updateSplitSizes,
       ]
     )
 
@@ -193,6 +250,12 @@ export const LayoutRootNode = memo(
     oldProps.areaLibrary === newProps.areaLibrary &&
     oldProps.actionLibrary === newProps.actionLibrary &&
     oldProps.enableContextMenus === newProps.enableContextMenus &&
+    isEqual(oldProps.collapsedPanelIds, newProps.collapsedPanelIds) &&
+    isEqual(oldProps.collapsiblePanelIds, newProps.collapsiblePanelIds) &&
+    oldProps.hideResizeHandleGrabbers === newProps.hideResizeHandleGrabbers &&
+    oldProps.hideResizeHandleLines === newProps.hideResizeHandleLines &&
+    oldProps.onPanelCollapsedChange === newProps.onPanelCollapsedChange &&
+    isEqual(oldProps.areaSelectorOptions, newProps.areaSelectorOptions) &&
     oldProps.showDebugPanel === newProps.showDebugPanel &&
     isEqual(oldProps.notifications, newProps.notifications) &&
     isEqual(oldProps.artifactGraph, newProps.artifactGraph)
@@ -206,7 +269,8 @@ function LayoutNode({
   layout,
   onClose,
 }: { layout: Layout } & Partial<Closeable>) {
-  const { areaLibrary } = useLayoutState()
+  const { areaLibrary, areaSelectorOptions, replaceLayoutNode } =
+    useLayoutState()
   switch (layout.type) {
     case LayoutType.Splits:
       return (
@@ -221,7 +285,46 @@ function LayoutNode({
     default: {
       const { Component, ...props } =
         areaLibrary[layout.areaType] ?? missingAreaDefinition
-      return <Component areaConfig={props} layout={layout} onClose={onClose} />
+      const currentOption =
+        areaSelectorOptions.find(
+          (option) =>
+            option.areaType === layout.areaType && option.label === layout.label
+        ) ??
+        areaSelectorOptions.find(
+          (option) => option.areaType === layout.areaType
+        )
+      const component = (
+        <Component areaConfig={props} layout={layout} onClose={onClose} />
+      )
+
+      if (!currentOption) {
+        return component
+      }
+
+      return (
+        <PaneContentSelectorProvider
+          currentId={currentOption.id}
+          onSelect={(nextId) => {
+            const nextOption = areaSelectorOptions.find(
+              (option) => option.id === nextId
+            )
+            if (!nextOption) {
+              return
+            }
+            replaceLayoutNode({
+              targetNodeId: layout.id,
+              newNode: {
+                ...layout,
+                areaType: nextOption.areaType,
+                label: nextOption.label,
+              },
+            })
+          }}
+          options={areaSelectorOptions}
+        >
+          {component}
+        </PaneContentSelectorProvider>
+      )
     }
   }
 }
@@ -260,8 +363,16 @@ function SplitLayoutContents({
   onClose?: (id: string) => void
 }) {
   const ref = useRef<ImperativePanelGroupHandle>(null)
+  const panelRefs = useRef(new Map<string, ImperativePanelHandle>())
+  const desiredCollapsedPanels = useRef(new Map<string, boolean>())
+  const isDraggingRef = useRef(false)
   const [newSizes, setNewSizes] = useState<number[]>([])
-  const { updateSplitSizes } = useLayoutState()
+  const {
+    collapsedPanelIds,
+    collapsiblePanelIds,
+    onPanelCollapsedChange,
+    updateSplitSizes,
+  } = useLayoutState()
   const hasValidChildren = 'children' in layout && isArray(layout.children)
   const hasValidSizes =
     'sizes' in layout &&
@@ -288,11 +399,80 @@ function SplitLayoutContents({
     }
   }, [sizes, hasValidSizes, layout.id])
 
+  useEffect(() => {
+    const animationFrames: number[] = []
+
+    for (const panelId of collapsiblePanelIds) {
+      const panel = panelRefs.current.get(panelId)
+      if (!panel) {
+        continue
+      }
+
+      const shouldCollapse = collapsedPanelIds.includes(panelId)
+      const previousShouldCollapse = desiredCollapsedPanels.current.get(panelId)
+      desiredCollapsedPanels.current.set(panelId, shouldCollapse)
+      if (
+        previousShouldCollapse === shouldCollapse ||
+        (previousShouldCollapse === undefined && !shouldCollapse) ||
+        isDraggingRef.current
+      ) {
+        continue
+      }
+
+      const panelIndex =
+        hasValidChildren && 'children' in layout
+          ? layout.children.findIndex((child) => child.id === panelId)
+          : -1
+      const configuredSize =
+        panelIndex >= 0 && sizes ? sizes[panelIndex] : undefined
+      const targetSize = shouldCollapse
+        ? 0
+        : configuredSize && configuredSize > 2
+          ? configuredSize
+          : 20
+      const startingSize = panel.getSize()
+      const startedAt = performance.now()
+      const duration = 240
+
+      const animate = (now: number) => {
+        if (isDraggingRef.current) {
+          return
+        }
+
+        const progress = Math.min((now - startedAt) / duration, 1)
+        const easedProgress =
+          progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - (-2 * progress + 2) ** 3 / 2
+        const nextSize =
+          startingSize + (targetSize - startingSize) * easedProgress
+
+        if (progress < 1) {
+          panel.resize(nextSize)
+          animationFrames.push(window.requestAnimationFrame(animate))
+        } else if (shouldCollapse) {
+          panel.collapse()
+        } else {
+          panel.resize(targetSize)
+        }
+      }
+
+      animationFrames.push(window.requestAnimationFrame(animate))
+    }
+
+    return () => {
+      for (const animationFrame of animationFrames) {
+        window.cancelAnimationFrame(animationFrame)
+      }
+    }
+  }, [collapsedPanelIds, collapsiblePanelIds, hasValidChildren, layout, sizes])
+
   if (!hasValidChildren || !hasValidSizes) {
     return <></>
   }
 
   function onHandleDrag(isDragging: boolean) {
+    isDraggingRef.current = isDragging
     if (!isDragging) {
       updateSplitSizes({ targetNodeId: layout.id, newSizes })
     }
@@ -311,6 +491,7 @@ function SplitLayoutContents({
           const disableResize = !shouldEnableResizeHandle(a, i, arr)
           const disableFlex = shouldDisableFlex(a, layout)
           const isCollapsed = isCollapsedPaneLayout(a)
+          const isCollapsible = collapsiblePanelIds.includes(a.id)
           const size = isCollapsed ? undefined : layout.sizes[i]
           return (
             <Fragment key={a.id}>
@@ -320,23 +501,44 @@ function SplitLayoutContents({
                 order={i}
                 defaultSize={size}
                 className={`flex bg-default ${disableFlex ? '!flex-none !overflow-visible' : ''}`}
+                collapsedSize={isCollapsible ? 0 : undefined}
+                collapsible={isCollapsible}
                 minSize={2}
+                onCollapse={
+                  isCollapsible
+                    ? () => onPanelCollapsedChange(a.id, true)
+                    : undefined
+                }
+                onExpand={
+                  isCollapsible
+                    ? () => onPanelCollapsedChange(a.id, false)
+                    : undefined
+                }
+                ref={(panel) => {
+                  if (panel) {
+                    panelRefs.current.set(a.id, panel)
+                  } else {
+                    panelRefs.current.delete(a.id)
+                  }
+                }}
               >
                 <LayoutNode
                   layout={a}
-                  onClose={(idOverride?: unknown) => {
-                    onClose?.(
-                      typeof idOverride === 'string' ? idOverride : a.id
-                    )
-                  }}
+                  onClose={
+                    onClose
+                      ? (idOverride?: unknown) => {
+                          onClose(
+                            typeof idOverride === 'string' ? idOverride : a.id
+                          )
+                        }
+                      : undefined
+                  }
                 />
               </Panel>
               <ResizeHandle
                 direction={direction}
                 id={`handle-${a.id}`}
                 disabled={disableResize}
-                layout={layout}
-                currentIndex={i}
                 onDragging={onHandleDrag}
               />
             </Fragment>
@@ -464,23 +666,19 @@ function ResizeHandle({
   direction: Direction
   id: string
   disabled: boolean
-  layout: Layout
-  currentIndex: number
   onDragging: (isDragging: boolean) => void
 }) {
+  const { hideResizeHandleGrabbers, hideResizeHandleLines } = useLayoutState()
+
   return (
-    <PanelResizeHandle
+    <SplitResizeHandle
+      direction={direction}
       disabled={disabled}
-      className={`relative group/handle ${direction === 'vertical' ? 'h-[1px]' : 'w-[1px]'} ${disabled ? 'bg-default' : ''}`}
       id={id}
       onDragging={onDragging}
-    >
-      <div
-        className={`hidden group-data-[resize-handle-state=hover]/handle:grid place-content-center z-10 py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm bg-3 border b-5 ${direction === 'horizontal' ? '' : 'rotate-90'}`}
-      >
-        <CustomIcon className="w-4 h-4 -mx-0.5 rotate-90" name="sixDots" />
-      </div>
-    </PanelResizeHandle>
+      showGrabber={!hideResizeHandleGrabbers}
+      transparent={hideResizeHandleLines}
+    />
   )
 }
 

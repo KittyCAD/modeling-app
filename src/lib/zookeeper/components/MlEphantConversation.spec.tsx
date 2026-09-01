@@ -120,6 +120,41 @@ describe('MlEphantConversation', () => {
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
   })
 
+  test('keeps the prompt input in normal layout flow', () => {
+    const { container } = render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={() => {}}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        contexts={[]}
+        disabled={false}
+        hasPromptCompleted={true}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+        modeOptions={SERVER_MODE_OPTIONS}
+      />
+    )
+
+    const conversation = container.firstElementChild
+    const conversationBody = conversation?.firstElementChild
+    expect(conversation).toHaveClass('flex')
+    expect(conversationBody).not.toHaveClass('absolute')
+    const composerCard = screen.getByTestId('ml-ephant-composer-card')
+    const promptInput = screen.getByTestId('ml-ephant-conversation-input')
+    expect(composerCard).toHaveClass('rounded-2xl', 'border-none')
+    expect(promptInput).toBeVisible()
+    expect(promptInput).toHaveClass('resize-none')
+    expect(
+      screen.getByTestId('ml-ephant-conversation-input-button')
+    ).toHaveClass('rounded-full', 'border-none')
+  })
+
   function rendersRequestBubbleThenDisplayResponse(
     mode: MlCopilotModeId = 'deep'
   ) {
@@ -193,8 +228,18 @@ describe('MlEphantConversation', () => {
 
       const requestBubble = screen.getByTestId('ml-request-chat-bubble')
       expect(requestBubble).toHaveTextContent(promptText)
+      expect(requestBubble.firstElementChild).toHaveClass(
+        'bg-chalkboard-20',
+        'dark:bg-chalkboard-90'
+      )
+      expect(requestBubble.firstElementChild).not.toHaveClass('border')
 
       const responseBubble = screen.getByTestId('ml-response-chat-bubble')
+      expect(responseBubble.firstElementChild).toHaveClass('bg-transparent')
+      expect(responseBubble.firstElementChild).not.toHaveClass(
+        'rounded-md',
+        'shadow-sm'
+      )
       expect(
         within(responseBubble).getByTestId('ml-response-chat-bubble-thinking')
       ).toBeInTheDocument()
@@ -576,36 +621,22 @@ describe('MlEphantConversation', () => {
     }
   )
 
-  test('preserves active reasoning time when its exchange remounts', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-07-15T12:20:00.000Z'))
+  test('does not render exchange timestamps or reasoning timers', () => {
+    render(
+      <ExchangeCard
+        request={{ type: 'user', content: 'Render an assembly' }}
+        responses={[
+          { reasoning: { type: 'text', content: 'Checking constraints' } },
+        ]}
+        deltasAggregated=""
+        startedAt={new Date('2026-07-15T12:00:00.000Z')}
+        isLastResponse={true}
+        onClickClearChat={() => {}}
+      />
+    )
 
-    const renderExchange = () =>
-      render(
-        <ExchangeCard
-          request={{ type: 'user', content: 'Render an assembly' }}
-          responses={[
-            { reasoning: { type: 'text', content: 'Checking constraints' } },
-          ]}
-          deltasAggregated=""
-          startedAt={new Date('2026-07-15T12:00:00.000Z')}
-          isLastResponse={true}
-          onClickClearChat={() => {}}
-        />
-      )
-
-    try {
-      const { unmount } = renderExchange()
-      expect(screen.getByText('Reasoned for 20 minutes')).toBeInTheDocument()
-      unmount()
-
-      vi.setSystemTime(new Date('2026-07-15T12:21:00.000Z'))
-      renderExchange()
-      expect(screen.getByText('Reasoned for 21 minutes')).toBeInTheDocument()
-    } finally {
-      vi.clearAllTimers()
-      vi.useRealTimers()
-    }
+    expect(screen.queryByText(/ago$/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/^Reasoned for/)).not.toBeInTheDocument()
   })
 
   test('hides the immediate thought when end_of_stream is followed by another response', () => {

@@ -1,4 +1,12 @@
-import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
+import {
+  Fragment,
+  memo,
+  use,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
@@ -59,8 +67,15 @@ import { useSelector } from '@xstate/react'
 import type { SnapshotFrom } from 'xstate'
 
 type ToolbarProps = {
+  embedded?: boolean
+  expandedDropdownItemIds?: readonly string[]
+  hideSketchPlanePrompt?: boolean
+  hiddenItemIds?: readonly string[]
   isExecuting: boolean
   disableModelingForUnrenderedChanges: boolean
+  onItemClick?: () => void
+  variant?: 'toolbar' | 'list'
+  visibleItemIds?: readonly string[]
 } & Omit<ReturnType<typeof useModelingContext>, 'theProject'> &
   Pick<
     ReturnType<typeof useNetworkContext>,
@@ -259,25 +274,48 @@ const Toolbar_ = memo(
       | ToolbarItemResolvedDropdown
       | 'break'
     )[] = useMemo(() => {
-      return toolbarConfig[toolbarConfigurationName].items.map(
-        (maybeIconConfig) => {
-          if (maybeIconConfig === 'break') {
-            return 'break'
-          } else if (isToolbarDropdown(maybeIconConfig)) {
-            return {
-              id: maybeIconConfig.id,
-              display: maybeIconConfig.display,
-              visibleItemCount: maybeIconConfig.visibleItemCount,
-              defaultVisibleItemIds: maybeIconConfig.defaultVisibleItemIds,
-              array: maybeIconConfig.array.map((item) =>
-                resolveItemConfig(item, wasmInstance)
-              ),
-            }
-          } else {
-            return resolveItemConfig(maybeIconConfig, wasmInstance)
-          }
-        }
+      const visibleItemIds = props.visibleItemIds
+        ? new Set(props.visibleItemIds)
+        : null
+      const hiddenItemIds = props.hiddenItemIds
+        ? new Set(props.hiddenItemIds)
+        : null
+      const configuredItems = toolbarConfig[toolbarConfigurationName].items
+      const filteredItems = visibleItemIds
+        ? configuredItems.filter(
+            (item) => item !== 'break' && visibleItemIds.has(item.id)
+          )
+        : hiddenItemIds
+          ? configuredItems.filter(
+              (item) => item === 'break' || !hiddenItemIds.has(item.id)
+            )
+          : configuredItems
+      const toolbarItems = filteredItems.filter(
+        (item, index) =>
+          item !== 'break' ||
+          (index > 0 &&
+            index < filteredItems.length - 1 &&
+            filteredItems[index - 1] !== 'break' &&
+            filteredItems[index + 1] !== 'break')
       )
+
+      return toolbarItems.map((maybeIconConfig) => {
+        if (maybeIconConfig === 'break') {
+          return 'break'
+        } else if (isToolbarDropdown(maybeIconConfig)) {
+          return {
+            id: maybeIconConfig.id,
+            display: maybeIconConfig.display,
+            visibleItemCount: maybeIconConfig.visibleItemCount,
+            defaultVisibleItemIds: maybeIconConfig.defaultVisibleItemIds,
+            array: maybeIconConfig.array.map((item) =>
+              resolveItemConfig(item, wasmInstance)
+            ),
+          }
+        } else {
+          return resolveItemConfig(maybeIconConfig, wasmInstance)
+        }
+      })
 
       function resolveItemConfig(
         maybeIconConfig: ToolbarItem,
@@ -360,6 +398,8 @@ const Toolbar_ = memo(
       showNonVisualConstraints,
       sketchSolveSelectedIdsKey,
       keymapTree,
+      props.hiddenItemIds,
+      props.visibleItemIds,
     ])
 
     // To remember the last selected item in a standard ActionButtonDropdown
@@ -418,21 +458,115 @@ const Toolbar_ = memo(
       []
     )
 
+    if (props.variant === 'list') {
+      return (
+        <menu
+          aria-disabled={disableSketchToolbar}
+          data-current-mode={toolbarConfigurationName}
+          data-testid="toolbar"
+          data-toolbar-variant="list"
+          className={`m-0 max-w-full p-0 text-inherit ${
+            disableSketchToolbar ? 'opacity-50' : ''
+          }`}
+        >
+          <ul
+            className={`m-0 flex flex-col p-1 ${
+              disableSketchToolbar ? 'pointer-events-none' : ''
+            }`}
+          >
+            {currentModeItems.map((maybeIconConfig, index) => {
+              if (maybeIconConfig === 'break') {
+                return (
+                  <li
+                    key={`break-${index}`}
+                    aria-hidden
+                    className="mx-2 my-1 h-px bg-chalkboard-30 dark:bg-chalkboard-80"
+                  />
+                )
+              }
+
+              const itemConfigs = isToolbarItemResolvedDropdown(maybeIconConfig)
+                ? maybeIconConfig.array
+                : [maybeIconConfig]
+
+              return (
+                <Fragment key={maybeIconConfig.id}>
+                  {itemConfigs.map((itemConfig) => {
+                    const disabled =
+                      disableAllButtons ||
+                      !['available', 'experimental'].includes(
+                        itemConfig.status
+                      ) ||
+                      itemConfig.disabled === true
+                    const hotkeyLabel = hotkeyDisplay(
+                      itemConfig.hotkey,
+                      platform
+                    )
+
+                    return (
+                      <li className="contents" key={itemConfig.id}>
+                        <button
+                          type="button"
+                          aria-pressed={itemConfig.isActive}
+                          className="group m-0 flex w-full items-center gap-2 rounded-sm border-0 bg-transparent px-2 py-1.5 text-left font-sans text-xs text-inherit hover:bg-primary/10 aria-pressed:bg-primary/15 dark:hover:bg-chalkboard-80 disabled:cursor-not-allowed disabled:opacity-45"
+                          data-onboarding-id={itemConfig.id}
+                          data-testid={itemConfig.id}
+                          disabled={disabled}
+                          onClick={(event) => {
+                            itemConfig.onClick({
+                              ...itemConfig.callbackProps,
+                              keepSelection:
+                                getKeepSelectionFromMouseEvent(event),
+                            })
+                            props.onItemClick?.()
+                          }}
+                        >
+                          {itemConfig.icon ? (
+                            <CustomIcon
+                              className="h-4 w-4 flex-none"
+                              name={itemConfig.icon}
+                              style={{ color: itemConfig.iconColor }}
+                            />
+                          ) : (
+                            <span className="h-4 w-4 flex-none" />
+                          )}
+                          <span className="min-w-0 flex-1 truncate">
+                            {itemConfig.title}
+                          </span>
+                          {hotkeyLabel ? (
+                            <kbd className="hotkey flex-none text-[0.65rem]">
+                              {hotkeyLabel}
+                            </kbd>
+                          ) : null}
+                        </button>
+                      </li>
+                    )
+                  })}
+                </Fragment>
+              )
+            })}
+          </ul>
+        </menu>
+      )
+    }
+
     return (
       <menu
         aria-disabled={disableSketchToolbar}
         data-current-mode={toolbarConfigurationName}
         data-testid="toolbar"
         data-onboarding-id="toolbar"
-        className={`toolbar z-[19] max-w-full whitespace-nowrap px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm ${
-          disableSketchToolbar ? 'opacity-50' : ''
-        }`}
+        className={`toolbar z-[19] max-w-full whitespace-nowrap relative ${
+          props.embedded
+            ? 'm-0 overflow-hidden border-none bg-transparent p-0 shadow-none'
+            : 'mx-auto border border-t-0 border-chalkboard-30 bg-chalkboard-10 px-2 py-1 shadow-sm dark:border-chalkboard-80 dark:bg-chalkboard-100'
+        } ${disableSketchToolbar ? 'opacity-50' : ''}`}
       >
         <ul
           ref={toolbarButtonsRef}
-          className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex flex-wrap gap-1.5 items-center ${
-            disableSketchToolbar ? 'pointer-events-none' : ''
-          }`}
+          className={`has-[[aria-expanded=true]]:!pointer-events-none m-0 rounded-l-sm flex items-center ${
+            props.embedded ? 'flex-nowrap gap-1 py-0' : 'flex-wrap gap-1.5 py-1'
+          } ${disableSketchToolbar ? 'pointer-events-none' : ''}`}
         >
           {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
           {currentModeItems.map((maybeIconConfig, i) => {
@@ -445,6 +579,98 @@ const Toolbar_ = memo(
                 />
               )
             } else if (isToolbarItemResolvedDropdown(maybeIconConfig)) {
+              if (props.expandedDropdownItemIds?.includes(maybeIconConfig.id)) {
+                return (
+                  <Fragment key={maybeIconConfig.id}>
+                    {maybeIconConfig.array.map((itemConfig) => (
+                      <div
+                        className={`relative ${itemConfig.alwaysDark ? ' dark bg-chalkboard-90 ' : ''}`}
+                        data-expanded-toolbar-group={maybeIconConfig.id}
+                        key={itemConfig.id}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        role="presentation"
+                      >
+                        <ActionButton
+                          Element="button"
+                          id={itemConfig.id}
+                          data-testid={itemConfig.id}
+                          data-onboarding-id={itemConfig.id}
+                          iconStart={
+                            itemConfig.icon
+                              ? {
+                                  icon: itemConfig.icon,
+                                  iconColor: itemConfig.iconColor,
+                                  className: iconClassName,
+                                  bgClassName: bgClassName,
+                                }
+                              : undefined
+                          }
+                          className={
+                            'pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
+                            buttonBorderClassName +
+                            ' ' +
+                            buttonBgClassName +
+                            (itemConfig.icon && !itemConfig.showTitle
+                              ? ' !px-0'
+                              : '')
+                          }
+                          name={itemConfig.title}
+                          aria-description={itemConfig.description}
+                          aria-pressed={itemConfig.isActive}
+                          disabled={
+                            disableAllButtons ||
+                            !['available', 'experimental'].includes(
+                              itemConfig.status
+                            ) ||
+                            itemConfig.disabled
+                          }
+                          onClick={(event) =>
+                            itemConfig.onClick({
+                              ...itemConfig.callbackProps,
+                              keepSelection:
+                                getKeepSelectionFromMouseEvent(event),
+                            })
+                          }
+                        >
+                          <span
+                            className={
+                              itemConfig.icon && !itemConfig.showTitle
+                                ? 'sr-only'
+                                : ''
+                            }
+                          >
+                            {itemConfig.title}
+                          </span>
+                        </ActionButton>
+                        <ToolbarItemTooltip
+                          itemConfig={itemConfig}
+                          configCallbackProps={configCallbackProps}
+                          contentClassName={tooltipContentClassName}
+                        >
+                          {showRichContent ? (
+                            <ToolbarItemTooltipRichContent
+                              itemConfig={itemConfig}
+                              state={props.state}
+                              platform={platform}
+                            />
+                          ) : (
+                            <ToolbarItemTooltipShortContent
+                              status={itemConfig.status}
+                              title={
+                                itemConfig.tooltipTitle ?? itemConfig.title
+                              }
+                              hotkey={itemConfig.hotkey}
+                              platform={platform}
+                            />
+                          )}
+                        </ToolbarItemTooltip>
+                      </div>
+                    ))}
+                  </Fragment>
+                )
+              }
+
               if (getToolbarDropdownDisplay(maybeIconConfig) === 'recent') {
                 const visibleItemIds =
                   visibleRecentDropdownItemIds.get(maybeIconConfig.id) ??
@@ -799,13 +1025,8 @@ const Toolbar_ = memo(
               </button>
             </div>
           )}
-          {props.state.matches('Sketch no face') && (
-            <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
-              <p className="text-xs">
-                Select a plane or face to start sketching.
-              </p>
-            </div>
-          )}
+          {props.state.matches('Sketch no face') &&
+            !props.hideSketchPlanePrompt && <SketchPlaneSelectionPrompt />}
           {symmetricToolPrompt && (
             <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
               <p className="text-xs">{symmetricToolPrompt}</p>
@@ -819,6 +1040,9 @@ const Toolbar_ = memo(
     )
   },
   (oldP, newP) =>
+    oldP.embedded === newP.embedded &&
+    oldP.expandedDropdownItemIds === newP.expandedDropdownItemIds &&
+    oldP.hideSketchPlanePrompt === newP.hideSketchPlanePrompt &&
     oldP.isExecuting === newP.isExecuting &&
     oldP.state.value === newP.state.value &&
     oldP.overallState === newP.overallState &&
@@ -827,7 +1051,11 @@ const Toolbar_ = memo(
     oldP.isStreamAcceptingInput === newP.isStreamAcceptingInput &&
     oldP.disableModelingForUnrenderedChanges ===
       newP.disableModelingForUnrenderedChanges &&
-    oldP.context?.currentTool === newP.context?.currentTool
+    oldP.variant === newP.variant &&
+    oldP.onItemClick === newP.onItemClick &&
+    oldP.context?.currentTool === newP.context?.currentTool &&
+    oldP.hiddenItemIds === newP.hiddenItemIds &&
+    oldP.visibleItemIds === newP.visibleItemIds
 )
 
 interface ToolbarItemContentsProps extends React.PropsWithChildren {
@@ -1026,7 +1254,23 @@ const ToolbarItemTooltipRichContent = memo(
 
 // Making this toplevel Toolbar memo'd is no-op, because we use context
 // inside that causes a render anyway. Instead we memo the inner.
-export function Toolbar() {
+export function Toolbar({
+  embedded,
+  expandedDropdownItemIds,
+  hideSketchPlanePrompt,
+  hiddenItemIds,
+  onItemClick,
+  variant,
+  visibleItemIds,
+}: {
+  embedded?: boolean
+  expandedDropdownItemIds?: readonly string[]
+  hideSketchPlanePrompt?: boolean
+  hiddenItemIds?: readonly string[]
+  onItemClick?: () => void
+  variant?: 'toolbar' | 'list'
+  visibleItemIds?: readonly string[]
+} = {}) {
   const { kclManager } = useSingletons()
   const { settings } = useApp()
   const settingsValues = settings.useSettings()
@@ -1053,7 +1297,29 @@ export function Toolbar() {
       isStreamAcceptingInput={isStreamAcceptingInput}
       isExecuting={kclManager.isExecutingSignal.value}
       disableModelingForUnrenderedChanges={disableModelingForUnrenderedChanges}
+      embedded={embedded}
+      expandedDropdownItemIds={expandedDropdownItemIds}
+      hideSketchPlanePrompt={hideSketchPlanePrompt}
+      hiddenItemIds={hiddenItemIds}
+      onItemClick={onItemClick}
+      variant={variant}
+      visibleItemIds={visibleItemIds}
     />
+  )
+}
+
+export function SketchPlaneSelectionPrompt({
+  className = '',
+}: {
+  className?: string
+}) {
+  return (
+    <div
+      className={`mt-2 rounded border border-chalkboard-20 bg-chalkboard-10 px-2 py-1 shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-90 ${className}`}
+      data-testid="sketch-plane-selection-prompt"
+    >
+      <p className="m-0 text-xs">Select a plane or face to start sketching.</p>
+    </div>
   )
 }
 

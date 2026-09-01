@@ -1,14 +1,11 @@
 import type { MlCopilotServerMessage } from '@kittycad/lib'
-import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { Thinking } from '@src/components/Thinking'
-import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
   isMlCopilotUserRequest,
 } from '@src/lib/zookeeper/mlEphantManagerMachine'
-import ms from 'ms'
 import {
   type ComponentProps,
   type ReactNode,
@@ -19,7 +16,6 @@ import {
 import toast from 'react-hot-toast'
 
 export type ExchangeCardProps = Exchange & {
-  userAvatar?: string
   onClickClearChat: () => void
   isLastResponse: boolean
 }
@@ -81,27 +77,24 @@ export const ButtonCopy = (props: IButtonCopyProps) => (
         }
       )
     }}
-    className="pt-1 pb-1"
+    className="px-0 py-1 text-xs text-chalkboard-70 dark:text-chalkboard-40"
   >
-    <CustomIcon name="clipboard" className="w-4 h-4" />
-    <Tooltip
-      position="right"
-      hoverOnly={true}
-      contentClassName="text-sm max-w-none flex items-center gap-5"
-    >
-      <span>Copy to clipboard</span>
-    </Tooltip>
+    Copy
   </button>
 )
 
-export const ButtonClearChat = (props: ComponentProps<'button'>) => (
-  <button {...props} className="pt-1 pb-1">
-    <span className="flex flex-row gap-1">
-      <CustomIcon name="trash" className="w-4 h-4" />
-      <span>Clear chat</span>
-    </span>
-  </button>
-)
+export const ButtonClearChat = (props: ComponentProps<'button'>) => {
+  const { className = '', ...buttonProps } = props
+
+  return (
+    <button
+      {...buttonProps}
+      className={`px-0 py-1 text-xs text-chalkboard-70 dark:text-chalkboard-40 ${className}`}
+    >
+      Clear chat
+    </button>
+  )
+}
 
 export const ResponseCardToolBar = (props: {
   responses?: MlCopilotServerMessage[]
@@ -118,7 +111,7 @@ export const ResponseCardToolBar = (props: {
   }
 
   return (
-    <div className="pl-9 flex flex-row justify-between">
+    <div className="flex flex-row justify-between">
       {isEndOfStream ? (
         <ButtonCopy content={contentForClipboard ?? ''} />
       ) : (
@@ -134,11 +127,8 @@ export const ResponseCardToolBar = (props: {
 export const ExchangeCardStatus = (props: {
   responses?: MlCopilotServerMessage[]
   onlyShowImmediateThought: boolean
-  startedAt: Date
-  updatedAt?: Date
   maybeError?: MlCopilotServerMessageError
 }) => {
-  const [triggerRender, setTriggerRender] = useState<number>(0)
   const thinker = (
     <Thinking
       thoughts={props.responses}
@@ -151,77 +141,17 @@ export const ExchangeCardStatus = (props: {
   // see an end_of_stream from them.
   const isEndOfStream = isExchangeComplete(props.responses)
 
-  useEffect(() => {
-    const i = setInterval(() => {
-      setTriggerRender(triggerRender + 1)
-    }, 500)
-
-    if (isEndOfStream) {
-      clearInterval(i)
-    }
-
-    return () => {
-      clearInterval(i)
-    }
-  }, [triggerRender, isEndOfStream])
-
-  let timeReasonedFor = 0
-  if (isEndOfStream) {
-    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
-    if (endOfStreamResponse !== undefined) {
-      timeReasonedFor =
-        new Date(
-          endOfStreamResponse.end_of_stream.completed_at ?? 0
-        ).getTime() -
-        new Date(endOfStreamResponse.end_of_stream.started_at ?? 0).getTime()
-    }
-  } else {
-    timeReasonedFor =
-      (props.updatedAt ?? new Date()).getTime() - props.startedAt.getTime()
-  }
-
   return props.onlyShowImmediateThought ? (
     <div className="text-sm text-chalkboard-70">
       {isEndOfStream && <MaybeError />}
       {!isEndOfStream && thinker}
     </div>
   ) : (
-    <div className="relative">
-      {thinker}
-      {props.updatedAt && (
-        <div className="text-chalkboard-70 p-2 pb-0">
-          {timeReasonedFor ? (
-            <>Reasoned for {ms(timeReasonedFor, { long: true })}</>
-          ) : null}
-        </div>
-      )}
-    </div>
+    <div className="relative">{thinker}</div>
   )
 }
 
-export const AvatarUser = (props: { src?: string }) => {
-  return (
-    <div className="avatar h-7 w-7">
-      {props.src ? (
-        <img
-          src={props.src || ''}
-          className="h-7 w-7 rounded-sm"
-          referrerPolicy="no-referrer"
-          alt="user avatar"
-        />
-      ) : (
-        <CustomIcon
-          name="person"
-          className="w-7 h-7 text-chalkboard-70 dark:text-chalkboard-40 bg-chalkboard-20 dark:bg-chalkboard-80"
-        />
-      )}
-    </div>
-  )
-}
-
-type RequestCardProps = Exchange['request'] & {
-  userAvatar?: ReactNode
-}
+type RequestCardProps = Exchange['request']
 
 const MAX_VISIBLE_ATTACHMENTS = 2
 
@@ -234,32 +164,30 @@ const hasVisibleChildren = (children: ReactNode) => {
 
 export const ChatBubble = (props: {
   side: 'left' | 'right'
-  userAvatar?: ReactNode
   wfull?: true
   children: ReactNode
   dataTestId?: string
   placeholderTestId?: string
   className?: string
 }) => {
-  const cssRequest =
-    `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? '' : 'border b-4'} bg-2 text-default rounded-t-md pl-4 pr-4 ${props.className} ` +
-    (props.side === 'left' ? 'rounded-br-md' : 'rounded-bl-md')
+  const cssRequest = `${props.wfull ? 'w-full ' : ''}select-text whitespace-pre-line hyphens-auto text-default ${
+    props.side === 'left'
+      ? 'bg-transparent'
+      : 'max-w-[85%] rounded-md bg-chalkboard-20 px-4 dark:bg-chalkboard-90'
+  } ${props.className ?? ''}`
 
   return (
     <div
-      className={`flex justify-end items-end gap-2 w-full ${props.side === 'right' ? 'flex-row' : 'flex-row-reverse'}`}
+      className={`flex w-full ${props.side === 'right' ? 'justify-end' : 'justify-start'}`}
       data-testid={props.dataTestId}
     >
-      <div className="flex flex-col items-end gap-2 w-full">
-        <div style={{ wordBreak: 'break-word' }} className={cssRequest}>
-          {hasVisibleChildren(props.children) ? (
-            props.children
-          ) : (
-            <PlaceholderLine data-testid={props.placeholderTestId} />
-          )}
-        </div>
+      <div style={{ wordBreak: 'break-word' }} className={cssRequest}>
+        {hasVisibleChildren(props.children) ? (
+          props.children
+        ) : (
+          <PlaceholderLine data-testid={props.placeholderTestId} />
+        )}
       </div>
-      <div className="w-fit-content">{props.userAvatar}</div>
     </div>
   )
 }
@@ -281,14 +209,13 @@ export const RequestCard = (props: RequestCardProps) => {
     <>
       <ChatBubble
         side={'right'}
-        userAvatar={props.userAvatar}
         dataTestId="ml-request-chat-bubble"
         className="pt-2 pb-2"
       >
         {props.content}
       </ChatBubble>
       {additionalFiles.length > 0 && (
-        <div className="flex justify-end pr-9">
+        <div className="flex justify-end">
           <div
             className="flex flex-col items-end gap-1"
             data-testid="ml-request-chat-bubble-attachments"
@@ -301,7 +228,6 @@ export const RequestCard = (props: RequestCardProps) => {
                 key={`${file.name}-${index}`}
                 className="flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs"
               >
-                <CustomIcon name="paperclip" className="w-3 h-3 shrink-0" />
                 <span className="min-w-0 truncate">{file.name}</span>
               </div>
             ))}
@@ -339,11 +265,7 @@ type ResponsesCardProp = {
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
   props.maybeError ? (
-    <div className="text-rose-400 flex flex-row gap-1 items-start">
-      <CustomIcon
-        name="triangleExclamation"
-        className="w-4 h-4 inline valign"
-      />
+    <div className="text-rose-400">
       <MarkdownText text={props.maybeError?.error.detail} />
     </div>
   ) : null
@@ -376,6 +298,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
       <MarkdownText
+        key="response"
         text={props.deltasAggregated}
         className="whitespace-normal"
       />
@@ -396,7 +319,6 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
         <ChatBubble
           side={'left'}
           wfull={true}
-          userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
           dataTestId="ml-response-info-chat-bubble"
           className="py-4"
         >
@@ -407,7 +329,6 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
         <ChatBubble
           side={'left'}
           wfull={true}
-          userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
           dataTestId="ml-response-chat-bubble"
           placeholderTestId="ml-response-chat-bubble-thinking"
           className="py-4"
@@ -425,9 +346,6 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 }
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
-  let [startedAt] = useState<Date>(props.startedAt ?? new Date())
-  const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
-
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
 
   const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
@@ -438,30 +356,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     setShowFullReasoning(!showFullReasoning)
   }
 
-  useEffect(() => {
-    setUpdatedAt(new Date())
-  }, [props.responses.length])
-
   const isEndOfStream = isExchangeComplete(props.responses)
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      if (isEndOfStream) {
-        clearInterval(id)
-      }
-      setUpdatedAt(new Date())
-    }, 1000)
-    return () => {
-      clearInterval(id)
-    }
-  }, [isEndOfStream])
-
-  if (isEndOfStream) {
-    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
-    if (endOfStreamResponse !== undefined) {
-      startedAt = new Date(endOfStreamResponse.end_of_stream.started_at ?? 0)
-    }
-  }
 
   useEffect(() => {
     if (isEndOfStream) {
@@ -475,22 +370,14 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
 
   return (
     <div className={cssCard}>
-      <div className="p-7 text-chalkboard-70 text-center">
-        {ms(Date.now() - startedAt.getTime(), { long: true })} ago
-      </div>
       {isMlCopilotUserRequest(props.request) && (
-        <RequestCard
-          {...props.request}
-          userAvatar={<AvatarUser src={props.userAvatar} />}
-        />
+        <RequestCard {...props.request} />
       )}
       {showFullReasoning && reasoningThoughts.length > 0 && (
         <div>
           <ExchangeCardStatus
             responses={props.responses}
             onlyShowImmediateThought={false}
-            startedAt={startedAt}
-            updatedAt={updatedAt}
           />
         </div>
       )}
@@ -503,13 +390,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         >
           <div>
             <button className="flex justify-center items-center flex-none pt-1 pb-1">
-              {showFullReasoning ? (
-                <>
-                  Collapse <CustomIcon name="collapse" className="w-5 h-5" />
-                </>
-              ) : (
-                <>See reasoning</>
-              )}
+              {showFullReasoning ? 'Collapse' : 'See reasoning'}
             </button>
           </div>
           {props.isLastResponse && (
@@ -517,8 +398,6 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
               maybeError={maybeError}
               responses={props.responses}
               onlyShowImmediateThought={true}
-              startedAt={startedAt}
-              updatedAt={updatedAt}
             />
           )}
         </div>

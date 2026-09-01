@@ -53,7 +53,6 @@ export interface MlEphantConversationProps {
   disabled?: boolean
   needsReconnect: boolean
   hasPromptCompleted: boolean
-  userAvatarSrc?: string
   showMakeathonAnnouncement?: boolean
   blockedReason?: string
   defaultPrompt?: string
@@ -100,7 +99,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
       <Popover className="relative min-w-0 max-w-full">
         <Popover.Button
           data-testid="ml-copilot-efforts-button"
-          className="h-7 max-w-full min-w-0 bg-default flex flex-row items-center gap-1 m-0 pl-1 pr-1.5 rounded-sm"
+          className="m-0 flex h-7 min-w-0 max-w-full flex-row items-center gap-1 rounded-md border-none bg-transparent pl-1 pr-1.5 hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90"
         >
           {props.children}
           <CustomIcon
@@ -192,7 +191,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           data-testid="ml-ephant-attachments-button"
           onClick={props.onAttachFiles}
           disabled={props.attachmentsDisabled}
-          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          className="m-0 flex h-7 w-7 flex-none items-center justify-center rounded-md border-none bg-transparent p-0 hover:bg-chalkboard-20 disabled:opacity-60 dark:hover:bg-chalkboard-90"
           aria-label="Attach files"
         >
           <CustomIcon name="paperclip" className="w-5 h-5" />
@@ -205,7 +204,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           data-testid="ml-ephant-screenshot-button"
           onClick={props.onCaptureScreenshot}
           disabled={props.attachmentsDisabled}
-          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          className="m-0 flex h-7 w-7 flex-none items-center justify-center rounded-md border-none bg-transparent p-0 hover:bg-chalkboard-20 disabled:opacity-60 dark:hover:bg-chalkboard-90"
           aria-label="Capture viewport screenshot"
         >
           <CustomIcon name="camera" className="w-5 h-5" />
@@ -219,10 +218,10 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           onClick={props.onAnnotateScreenshot}
           disabled={props.attachmentsDisabled && !props.isZoodleActive}
           aria-pressed={props.isZoodleActive ?? false}
-          className={`h-7 w-7 flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60 ${
+          className={`m-0 flex h-7 w-7 flex-none items-center justify-center rounded-md border-none p-0 disabled:opacity-60 ${
             props.isZoodleActive
               ? 'bg-ml-green text-chalkboard-100 hover:bg-ml-green'
-              : 'bg-default'
+              : 'bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-90'
           }`}
           aria-label="Zoodle"
         >
@@ -501,9 +500,10 @@ export const MlEphantConversationInput = (
   }
 
   return (
-    <div className="flex flex-col p-4 gap-2">
+    <div className="flex flex-col gap-2 p-4">
       <div
-        className={`p-2 border b-4 focus-within:b-default flex flex-col gap-2 relative ${isDraggingOver ? 'border-ml-green border-dashed' : ''}`}
+        className={`relative flex flex-col gap-3 rounded-2xl border-none bg-chalkboard-10 p-3 shadow-sm dark:bg-chalkboard-100 ${isDraggingOver ? 'ring-1 ring-ml-green' : ''}`}
+        data-testid="ml-ephant-composer-card"
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -545,7 +545,7 @@ export const MlEphantConversationInput = (
             }
           }}
           onPaste={handlePaste}
-          className="bg-transparent outline-none w-full text-sm overflow-auto"
+          className="w-full resize-none overflow-auto bg-transparent text-sm outline-none"
           style={{ height: '3lh' }}
         ></textarea>
         {attachments.length > 0 && (
@@ -602,7 +602,7 @@ export const MlEphantConversationInput = (
               <button
                 data-testid="ml-ephant-conversation-cancel-button"
                 onClick={props.onCancel}
-                className="m-0 p-1 rounded-sm border-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+                className="m-0 grid h-8 w-8 place-content-center rounded-full border-none bg-destroy-10 p-0 text-destroy-80 group-hover:brightness-110 dark:bg-destroy-80 dark:text-destroy-10"
               >
                 <CustomIcon name="close" className="w-5 h-5" />
                 <Tooltip position="top" hoverOnly={true}>
@@ -614,7 +614,7 @@ export const MlEphantConversationInput = (
               data-testid="ml-ephant-conversation-input-button"
               disabled={props.disabled}
               onClick={onClick}
-              className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
+              className="m-0 grid h-8 w-8 place-content-center rounded-full border-none bg-ml-green p-0 text-chalkboard-100 hover:bg-ml-green"
             >
               <CustomIcon name="arrowShortUp" className="w-5 h-5" />
               <Tooltip position="top" hoverOnly={true}>
@@ -633,17 +633,6 @@ export const MlEphantConversationInput = (
 }
 
 const StarterCard = ({ text }: { text: string }) => {
-  const [, setTrigger] = useState<number>(0)
-
-  useEffect(() => {
-    const i = setInterval(() => {
-      setTrigger((t) => t + 1)
-    }, 500)
-    return () => {
-      clearInterval(i)
-    }
-  }, [])
-
   return (
     <ExchangeCard
       onClickClearChat={() => {}}
@@ -690,7 +679,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
         <ExchangeCard
           key={`exchange-${exchangeIndex}`}
           {...exchange}
-          userAvatar={props.userAvatarSrc}
           isLastResponse={isLastResponse}
           onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
         />
@@ -700,10 +688,10 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const shouldShowWelcomeMessage = isNonNullable(props.welcomeMessage)
 
   return (
-    <div className="relative">
-      <div className="absolute inset-0">
-        <div className="flex flex-col h-full">
-          <div className="h-full flex flex-col justify-end overflow-auto relative">
+    <div className="relative flex min-h-0 flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="relative flex min-h-0 flex-1 flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.blockedReason ? (
                 <StarterCard text={props.blockedReason} />

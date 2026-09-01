@@ -1,10 +1,13 @@
 import type { EditorState } from '@codemirror/state'
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { LayoutPanel } from '@src/components/layout/Panel'
+import { CleanPaneHeader } from '@src/components/layout/Panel/CleanPaneHeader'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
+import { useAiFirstCad } from '@src/lib/aiFirstCad/context'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
@@ -88,11 +91,13 @@ function getZookeeperChangedFilePreviousCode(
 }
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
-  const { auth } = useApp()
+  useSignals()
+  const { auth, project } = useApp()
   const token = auth.useToken()
 
   return (
     <MlEphantManagerReactContext.Provider
+      key={project?.path}
       options={{
         input: {
           apiToken: token,
@@ -109,6 +114,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   const app = useApp()
   const { auth, billing, settings, project, systemIOActor } = app
   const { kclManager } = useSingletons()
+  const { mode, notifyProjectEdited } = useAiFirstCad()
   const settingsValues = settings.useSettings()
   const user = auth.useUser()
   const token = auth.useToken()
@@ -210,12 +216,20 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
             new Promise<void>((resolve) => {
               let pendingHistoryStarted = false
               let requestSettled = false
+              let fileSystemWriteSucceeded = false
               let historyWriteCompleted = !shouldRecordZookeeperHistory
               let postWriteCompleted = !shouldRecordZookeeperHistory
               const settleRequest = () => {
-                if (requestSettled) return
-                if (!historyWriteCompleted || !postWriteCompleted) return
+                if (requestSettled) {
+                  return
+                }
+                if (!historyWriteCompleted || !postWriteCompleted) {
+                  return
+                }
                 requestSettled = true
+                if (fileSystemWriteSucceeded) {
+                  notifyProjectEdited()
+                }
                 resolve()
               }
 
@@ -255,6 +269,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                       settleRequest()
                     },
                     onFileSystemSuccess: () => {
+                      fileSystemWriteSucceeded = true
                       if (historyRecorded) {
                         historyWriteCompleted = true
                         settleRequest()
@@ -377,15 +392,17 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
     <LayoutPanel
       title={props.layout.label}
       id={`${props.layout.id}-pane`}
-      className="border-none"
+      className={`h-full min-h-0 border-none ${
+        mode === 'ai' ? 'ai-scroll-separator dark:!bg-[#181818]' : ''
+      }`}
     >
-      <LayoutPanelHeader
-        id={props.layout.id}
-        icon="sparkles"
-        title="Zookeeper"
-        onClose={props.onClose}
-        Menu={MlEphantConversationMenu}
-      />
+      <CleanPaneHeader title="Chat">
+        <UndoRedoButtons
+          className="flex items-center"
+          data-testid="chat-header-undo-redo"
+          kclManager={kclManager}
+        />
+      </CleanPaneHeader>
       <MlEphantConversationPane
         {...{
           mlEphantManagerActor: mlEphantManagerActor,

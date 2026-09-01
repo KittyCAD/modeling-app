@@ -2,7 +2,8 @@ import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorer
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { ToastInsert } from '@src/components/ToastInsert'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { LayoutPanel } from '@src/components/layout/Panel'
+import { CleanPaneHeader } from '@src/components/layout/Panel/CleanPaneHeader'
 import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -223,35 +224,26 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   return (
     <LayoutPanel
       title={props.layout.label}
-      onClose={props.onClose}
       id={`${props.layout.id}-pane`}
       className="border-none"
     >
-      <LayoutPanelHeader
-        id={props.layout.id}
-        icon="folder"
-        title={props.layout.label}
-        Menu={
-          <FileExplorerHeaderActions
-            onCreateFile={() => {
-              setCreateFilePressed(performance.now())
-            }}
-            onCreateFolder={() => {
-              setCreateFolderPressed(performance.now())
-            }}
-            onRefreshExplorer={() => {
-              setRefresFolderPressed(performance.now())
-            }}
-            onCollapseExplorer={() => {
-              setCollapsedPressed(performance.now())
-            }}
-            onDownloadProject={
-              !window.electron ? downloadProjectZip : undefined
-            }
-          />
-        }
-        onClose={props.onClose}
-      />
+      <CleanPaneHeader title={props.layout.label}>
+        <FileExplorerHeaderActions
+          onCreateFile={() => {
+            setCreateFilePressed(performance.now())
+          }}
+          onCreateFolder={() => {
+            setCreateFolderPressed(performance.now())
+          }}
+          onRefreshExplorer={() => {
+            setRefresFolderPressed(performance.now())
+          }}
+          onCollapseExplorer={() => {
+            setCollapsedPressed(performance.now())
+          }}
+          onDownloadProject={!window.electron ? downloadProjectZip : undefined}
+        />
+      </CleanPaneHeader>
       {theProject && file ? (
         <div className={'w-full h-full flex flex-col'}>
           <ProjectExplorer

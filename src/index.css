@@ -84,6 +84,14 @@ textarea,
   @apply bg-chalkboard-70;
 }
 
+.ai-scroll-separator {
+  box-shadow: inset -0.5rem 0 var(--chalkboard-20);
+}
+
+.dark .ai-scroll-separator {
+  box-shadow: inset -0.5rem 0 var(--chalkboard-90);
+}
+
 /* This is used to hide the reasoning scrollbar until the user interacts */
 .scrollbar-hide {
   scrollbar-width: none !important;
@@ -97,6 +105,81 @@ textarea,
 .scrollbar-hide::-webkit-scrollbar-track,
 .scrollbar-hide::-webkit-scrollbar-thumb {
   display: none !important;
+}
+
+.hover-reveal-scrollbar,
+.hover-reveal-scrollbar .cm-scroller {
+  scrollbar-color: transparent transparent;
+}
+
+.hover-reveal-scrollbar::-webkit-scrollbar,
+.hover-reveal-scrollbar .cm-scroller::-webkit-scrollbar,
+.dark .hover-reveal-scrollbar::-webkit-scrollbar,
+.dark .hover-reveal-scrollbar .cm-scroller::-webkit-scrollbar,
+.hover-reveal-scrollbar::-webkit-scrollbar-thumb,
+.hover-reveal-scrollbar .cm-scroller::-webkit-scrollbar-thumb,
+.dark .hover-reveal-scrollbar::-webkit-scrollbar-thumb,
+.dark .hover-reveal-scrollbar .cm-scroller::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+.hover-reveal-scrollbar:hover,
+.hover-reveal-scrollbar:hover .cm-scroller {
+  scrollbar-color: var(--color-chalkboard-40) var(--color-chalkboard-20);
+}
+
+.dark .hover-reveal-scrollbar:hover,
+.dark .hover-reveal-scrollbar:hover .cm-scroller {
+  scrollbar-color: var(--color-chalkboard-70) var(--color-chalkboard-90);
+}
+
+.hover-reveal-scrollbar:hover::-webkit-scrollbar,
+.hover-reveal-scrollbar:hover .cm-scroller::-webkit-scrollbar {
+  @apply bg-chalkboard-20;
+}
+
+.hover-reveal-scrollbar:hover::-webkit-scrollbar-thumb,
+.hover-reveal-scrollbar:hover .cm-scroller::-webkit-scrollbar-thumb {
+  @apply bg-chalkboard-40;
+}
+
+/* The feature tree floats over the Scene, so only its visible controls should
+ * intercept pointer input. Compact rows keep the rest of the model clickable. */
+.scene-feature-tree-compact [data-pane-section] {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.scene-feature-tree-compact [data-pane-section] button,
+.scene-feature-tree-compact [data-testid="feature-tree-operation-item"] {
+  width: fit-content;
+  max-width: 100%;
+  pointer-events: auto;
+}
+
+.scene-feature-tree-compact
+  [data-testid="feature-tree-operation-item"]
+  > button,
+.scene-feature-tree-compact
+  [data-testid="feature-tree-operation-item"]
+  > button
+  > div {
+  flex: 0 1 auto;
+}
+
+.scene-feature-tree-compact [data-testid="feature-tree-visibility-toggle"] {
+  flex: none;
+  margin-left: 0.125rem;
+}
+
+.dark .hover-reveal-scrollbar:hover::-webkit-scrollbar,
+.dark .hover-reveal-scrollbar:hover .cm-scroller::-webkit-scrollbar {
+  @apply bg-chalkboard-90;
+}
+
+.dark .hover-reveal-scrollbar:hover::-webkit-scrollbar-thumb,
+.dark .hover-reveal-scrollbar:hover .cm-scroller::-webkit-scrollbar-thumb {
+  @apply bg-chalkboard-70;
 }
 
 button {

@@ -56,6 +56,7 @@ const stringHash = (value: string) => {
 
 interface ConnectionStreamProps {
   authToken: string | undefined
+  hidden?: boolean
   sketchSolveStreamDimming?: number
   streamClassName?: string
   streamLayers: readonly EngineSceneStreamLayer[]
@@ -565,7 +566,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     <div
       role="presentation"
       ref={videoWrapperRef}
-      className={props.streamClassName ?? 'absolute inset-[-4px] z-0'}
+      className={`${props.streamClassName ?? 'absolute inset-[-4px] z-0'} ${
+        props.hidden ? 'invisible' : ''
+      }`}
       style={style}
       id="stream"
       data-testid="stream"

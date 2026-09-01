@@ -1,5 +1,6 @@
 import { ActionButton } from '@src/components/ActionButton'
 import Tooltip from '@src/components/Tooltip'
+import { cleanPaneHeaderButtonClassName } from '@src/components/layout/Panel/CleanPaneHeader'
 
 /**
  * The set of action buttons that are displayed in the file explorer header
@@ -28,9 +29,9 @@ export const FileExplorerHeaderActions = ({
         iconStart={{
           icon: 'filePlus',
           iconClassName: '!text-current',
-          bgClassName: 'bg-transparent',
+          bgClassName: '!bg-transparent dark:!bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        className={cleanPaneHeaderButtonClassName}
         onClick={onCreateFile}
       >
         <Tooltip position="bottom-right">New File...</Tooltip>
@@ -42,9 +43,9 @@ export const FileExplorerHeaderActions = ({
         iconStart={{
           icon: 'folderPlus',
           iconClassName: '!text-current',
-          bgClassName: 'bg-transparent',
+          bgClassName: '!bg-transparent dark:!bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        className={cleanPaneHeaderButtonClassName}
         onClick={onCreateFolder}
       >
         <Tooltip position="bottom-right">New Folder...</Tooltip>
@@ -56,9 +57,9 @@ export const FileExplorerHeaderActions = ({
         iconStart={{
           icon: 'subtract',
           iconClassName: '!text-current',
-          bgClassName: 'bg-transparent',
+          bgClassName: '!bg-transparent dark:!bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        className={cleanPaneHeaderButtonClassName}
         onClick={onRefreshExplorer}
       >
         <Tooltip position="bottom-right">Refresh Explorer</Tooltip>
@@ -71,9 +72,9 @@ export const FileExplorerHeaderActions = ({
           iconStart={{
             icon: 'download',
             iconClassName: '!text-current',
-            bgClassName: 'bg-transparent',
+            bgClassName: '!bg-transparent dark:!bg-transparent',
           }}
-          className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+          className={cleanPaneHeaderButtonClassName}
           onClick={onDownloadProject}
         >
           <Tooltip position="bottom-right">Download project files</Tooltip>
@@ -86,9 +87,9 @@ export const FileExplorerHeaderActions = ({
         iconStart={{
           icon: 'collapse',
           iconClassName: '!text-current',
-          bgClassName: 'bg-transparent',
+          bgClassName: '!bg-transparent dark:!bg-transparent',
         }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        className={cleanPaneHeaderButtonClassName}
         onClick={onCollapseExplorer}
       >
         <Tooltip position="bottom-right">Collapse Folders in Explorer</Tooltip>

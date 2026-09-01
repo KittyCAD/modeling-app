@@ -18,6 +18,11 @@ export type OperationTreeBranch = {
 
 export type OperationTreeNode = Operation | Operation[] | OperationTreeBranch
 
+export type PartitionedOperationTree = {
+  features: OperationTreeNode[]
+  parameters: OperationTreeNode[]
+}
+
 export function isOperationTreeBranch(
   node: OperationTreeNode
 ): node is OperationTreeBranch {
@@ -40,6 +45,56 @@ export function getOperationTreeNodeKey(node: OperationTreeNode): string {
   }
 
   return getOperationKey(node)
+}
+
+export function partitionOperationTree(
+  nodes: OperationTreeNode[]
+): PartitionedOperationTree {
+  const partitioned: PartitionedOperationTree = {
+    features: [],
+    parameters: [],
+  }
+
+  for (const node of nodes) {
+    if (isArray(node)) {
+      const parameters = node.filter(
+        (operation) => operation.type === 'VariableDeclaration'
+      )
+      const features = node.filter(
+        (operation) => operation.type !== 'VariableDeclaration'
+      )
+      if (parameters.length > 0) {
+        partitioned.parameters.push(parameters)
+      }
+      if (features.length > 0) {
+        partitioned.features.push(features)
+      }
+      continue
+    }
+
+    if (isOperationTreeBranch(node)) {
+      const children = partitionOperationTree(node.children)
+      if (children.parameters.length > 0) {
+        partitioned.parameters.push({
+          parent: node.parent,
+          children: children.parameters,
+        })
+      }
+      partitioned.features.push({
+        parent: node.parent,
+        children: children.features,
+      })
+      continue
+    }
+
+    if (node.type === 'VariableDeclaration') {
+      partitioned.parameters.push(node)
+    } else {
+      partitioned.features.push(node)
+    }
+  }
+
+  return partitioned
 }
 
 export function getOperationKey(operation: Operation): string {

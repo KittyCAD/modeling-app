@@ -41,6 +41,13 @@ export function homeProjectEntryStatusFromProject(
   return 'local'
 }
 
+export function homeProjectThumbnailFromProject(project: Project) {
+  return {
+    type: 'local' as const,
+    path: fsZds.join(project.path, PROJECT_IMAGE_NAME),
+  }
+}
+
 export function homeProjectEntryFromProject(
   project: Project
 ): HomeProjectEntryContribution {
@@ -59,10 +66,7 @@ export function homeProjectEntryFromProject(
     kclFileCount: project.kcl_file_count,
     directoryCount: project.directory_count,
     readWriteAccess: project.readWriteAccess,
-    thumbnail: {
-      type: 'local',
-      path: fsZds.join(project.path, PROJECT_IMAGE_NAME),
-    },
+    thumbnail: homeProjectThumbnailFromProject(project),
     conflict: project.cloudConflict,
   }
 }

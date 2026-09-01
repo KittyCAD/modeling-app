@@ -27,5 +27,5 @@
 }
 
 :global(.dark) .header {
-  @apply bg-chalkboard-90 text-chalkboard-30 border-chalkboard-80;
+  @apply bg-chalkboard-100 text-chalkboard-30 border-chalkboard-80;
 }

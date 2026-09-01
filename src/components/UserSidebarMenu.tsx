@@ -218,12 +218,12 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
         data-testid="user-sidebar-toggle"
       >
         <div className="flex items-center">
-          <div className="avatar">
+          <div className="avatar rounded-full">
             {user?.image && !imageLoadFailed ? (
               <img
                 src={user?.image || ''}
                 alt={user?.name || ''}
-                className="h-6 w-6"
+                className="h-6 w-6 rounded-full"
                 referrerPolicy="no-referrer"
                 onError={() => setImageLoadFailed(true)}
               />

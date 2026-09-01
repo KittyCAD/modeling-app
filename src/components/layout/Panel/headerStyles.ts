@@ -1,0 +1,2 @@
+export const cleanPaneHeaderButtonClassName =
+  '!m-0 !grid !h-7 !w-7 !place-content-center !rounded !border !border-transparent !p-0 !bg-transparent text-chalkboard-70 hover:!border-chalkboard-30 hover:!bg-chalkboard-20 hover:text-chalkboard-100 dark:text-chalkboard-30 dark:hover:!border-chalkboard-70 dark:hover:!bg-chalkboard-90 dark:hover:text-chalkboard-10 ui-open:!border-primary !outline-none'

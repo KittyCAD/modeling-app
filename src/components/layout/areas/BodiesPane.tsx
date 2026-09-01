@@ -3,7 +3,8 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { ContextMenuItem } from '@src/components/ContextMenu'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { LayoutPanel } from '@src/components/layout/Panel'
+import { CleanPaneHeader } from '@src/components/layout/Panel/CleanPaneHeader'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { toUtf16 } from '@src/lang/errors'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
@@ -31,6 +32,23 @@ import toast from 'react-hot-toast'
 type SolidArtifact = Artifact & { type: 'compositeSolid' | 'sweep' | 'pattern' }
 
 export function BodiesPane(props: AreaTypeComponentProps) {
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <CleanPaneHeader title={props.layout.label} />
+      <BodiesPaneContents />
+    </LayoutPanel>
+  )
+}
+
+export function BodiesPaneContents({
+  scrollable = true,
+}: {
+  scrollable?: boolean
+} = {}) {
   useSignals()
   const { kclManager } = useSingletons()
   const execState = kclManager.execStateSignal.value
@@ -63,26 +81,17 @@ export function BodiesPane(props: AreaTypeComponentProps) {
     }
   }
 
-  return (
-    <LayoutPanel
-      title={props.layout.label}
-      id={`${props.layout.id}-pane`}
-      className="border-none"
-    >
-      <LayoutPanelHeader
-        id={props.layout.id}
-        icon="model"
-        title={props.layout.label}
-      />
-      {bodies && <BodiesList bodies={bodiesWithProps} />}
-    </LayoutPanel>
-  )
+  return bodies ? (
+    <BodiesList bodies={bodiesWithProps} scrollable={scrollable} />
+  ) : null
 }
 
 function BodiesList({
   bodies,
+  scrollable,
 }: {
   bodies: Map<string, PropsOf<typeof BodyItem>>
+  scrollable: boolean
 }) {
   const { userFeatures } = useApp()
   const showExperimentalPointAndClick = userFeatures.useHas(
@@ -91,7 +100,7 @@ function BodiesList({
   )
 
   return (
-    <section className="overflow-auto mr-1 pb-8">
+    <section className={scrollable ? 'mr-1 overflow-auto pb-8' : 'pb-8'}>
       <ul>
         {Array.from(bodies.entries()).map(([id, props], i) => (
           <BodyItem

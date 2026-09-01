@@ -5,6 +5,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
 import { executeAstMock as executeAstMockImpl } from '@src/lang/executeAstMock'
+import { isInterruptedExecutionErrorMessage } from '@src/lang/executionInterrupts'
 import {
   type Z0006RefactorCache,
   resolveRefactorLintActions,
@@ -18,12 +19,10 @@ import type {
   Program,
 } from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
-import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/lib/engineConnection/utils'
 import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
@@ -100,14 +99,7 @@ function handleExecuteError(e: unknown): ExecutionResult {
 
   if (e instanceof KCLError) {
     // Detect if it is a force interrupt error which is not a KCL processing error.
-    if (
-      e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING) ||
-      e.msg.includes('Failed to wait for promise from send modeling command') ||
-      e.msg.includes(
-        'no connection to send on, connection manager called tearDown()'
-      ) ||
-      e.msg.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
-    ) {
+    if (isInterruptedExecutionErrorMessage(e.msg)) {
       isInterrupted = true
     }
     const execState = emptyExecState()
@@ -124,14 +116,7 @@ function handleExecuteError(e: unknown): ExecutionResult {
   } else {
     const executionErrorMessage = getFirstExecutionErrorMessage(e)
     if (executionErrorMessage) {
-      isInterrupted =
-        executionErrorMessage.includes(
-          'no connection to send on, connection manager called tearDown()'
-        ) ||
-        executionErrorMessage.includes(
-          'Failed to wait for promise from send modeling command'
-        ) ||
-        executionErrorMessage.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
+      isInterrupted = isInterruptedExecutionErrorMessage(executionErrorMessage)
     }
 
     console.log(e)

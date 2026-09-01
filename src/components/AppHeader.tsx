@@ -19,7 +19,11 @@ interface AppHeaderProps extends React.PropsWithChildren {
   enableMenu?: boolean
   style?: React.CSSProperties
   nativeFileMenuCreated: boolean
-  projectMenuChildren?: ReactNode
+  centerActions?: ReactNode
+  headerActions?: ReactNode
+  hiddenItemIds?: readonly string[]
+  leadingActions?: ReactNode
+  showProjectSelector?: boolean
 }
 
 export const AppHeader = ({
@@ -30,7 +34,11 @@ export const AppHeader = ({
   style,
   enableMenu = false,
   nativeFileMenuCreated,
-  projectMenuChildren,
+  centerActions,
+  headerActions,
+  hiddenItemIds = [],
+  leadingActions,
+  showProjectSelector = true,
 }: AppHeaderProps) => {
   useSignals()
   const app = useApp()
@@ -57,7 +65,7 @@ export const AppHeader = ({
       data-testid="app-header"
       className={`w-full flex ${styles.header || ''} ${
         isDesktop() ? styles.desktopApp : ''
-      } overlaid-panes sticky top-0 z-20 px-2 justify-between ${className || ''} bg-chalkboard-10 dark:bg-chalkboard-90 border-b border-chalkboard-30 dark:border-chalkboard-70`}
+      } overlaid-panes sticky top-0 z-20 px-2 justify-between ${className || ''} bg-chalkboard-10 dark:bg-chalkboard-100`}
       data-native-file-menu={nativeFileMenuCreated}
       style={style}
     >
@@ -77,14 +85,30 @@ export const AppHeader = ({
         onHomeNavigate={() => {
           kclManager.switchedFiles = true
         }}
+        showProjectSelector={showProjectSelector}
       >
-        {projectMenuChildren}
+        {leadingActions}
       </ProjectSidebarMenu>
-      <div className="flex items-center gap-2 py-1.5 ml-auto">
+      {centerActions ? (
+        <div
+          className="flex min-w-0 flex-[10] items-center justify-center overflow-visible py-1"
+          data-testid="app-header-center-actions"
+        >
+          {centerActions}
+        </div>
+      ) : null}
+      <div className="ml-auto flex min-w-0 flex-none items-center gap-2 py-1.5">
         {children ||
-          appHeaderItems.map(({ id, Component }) => (
-            <Component key={id} app={app} className={appHeaderItemClassName} />
-          ))}
+          appHeaderItems
+            .filter(({ id }) => !hiddenItemIds.includes(id))
+            .map(({ id, Component }) => (
+              <Component
+                key={id}
+                app={app}
+                className={appHeaderItemClassName}
+              />
+            ))}
+        {headerActions}
         <UserSidebarMenu user={user} />
       </div>
     </header>

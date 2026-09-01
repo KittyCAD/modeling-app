@@ -13,7 +13,8 @@ import {
 } from '@codemirror/view'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { LayoutPanel } from '@src/components/layout/Panel'
+import { CleanPaneHeader } from '@src/components/layout/Panel/CleanPaneHeader'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import {
   editorMarkdownHighlight,
@@ -63,15 +64,28 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
       id={`${props.layout.id}-pane`}
       className="border-none"
     >
-      <LayoutPanelHeader
-        id={props.layout.id}
-        icon="code"
-        title={props.layout.label}
-        Menu={KclEditorMenu}
-        onClose={props.onClose}
-      />
+      <CleanPaneHeader title={props.layout.label}>
+        <KclEditorMenu />
+      </CleanPaneHeader>
       <KclEditorPaneContents />
     </LayoutPanel>
+  )
+}
+
+export const CodeCadEditorOverlay = () => {
+  return (
+    <aside
+      aria-label="Code Editor"
+      className="hover-reveal-scrollbar flex h-full min-h-0 flex-col overflow-hidden bg-default"
+      data-testid="code-cad-editor-overlay"
+    >
+      <CleanPaneHeader title="Code Editor">
+        <KclEditorMenu />
+      </CleanPaneHeader>
+      <div className="min-h-0 flex-1">
+        <KclEditorPaneContents />
+      </div>
+    </aside>
   )
 }
 

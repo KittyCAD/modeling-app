@@ -525,7 +525,6 @@ export const MlEphantConversationPane = (props: {
       queue={queue}
       onRemoveFromQueue={onRemoveFromQueue}
       onSteer={onSteer}
-      userAvatarSrc={props.user?.image}
       showMakeathonAnnouncement={props.showMakeathonAnnouncement}
       blockedReason={userBlockedOnPaymentReason}
       defaultPrompt={defaultPrompt}

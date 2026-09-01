@@ -1005,38 +1005,22 @@ export function buildToolbarConfig(
         },
         'break',
         {
-          id: 'planes',
-          array: [
+          id: 'plane-offset',
+          command: 'modeling:Offset plane',
+          onClick: () => {
+            commands.send({
+              type: 'Find and select command',
+              data: { name: 'Offset plane', groupId: 'modeling' },
+            })
+          },
+          icon: 'plane',
+          status: 'available',
+          title: 'Offset Plane',
+          description: 'Create a plane parallel to an existing plane.',
+          links: [
             {
-              id: 'plane-offset',
-              command: 'modeling:Offset plane',
-              onClick: () => {
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Offset plane', groupId: 'modeling' },
-                })
-              },
-              icon: 'plane',
-              status: 'available',
-              title: 'Offset Plane',
-              description: 'Create a plane parallel to an existing plane.',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-offsetPlane'
-                  ),
-                },
-              ],
-            },
-            {
-              id: 'plane-points',
-              onClick: () =>
-                console.error('Plane through points not yet implemented'),
-              status: 'unavailable',
-              title: '3-Point Plane',
-              description: 'Create a plane from three points.',
-              links: [],
+              label: 'KCL docs',
+              url: withSiteBaseURL('/docs/kcl-std/functions/std-offsetPlane'),
             },
           ],
         },

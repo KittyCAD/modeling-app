@@ -7,27 +7,46 @@ import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import styles from './KclEditorMenu.module.css'
 
-export const FeatureTreeMenu = () => {
+export const ParametersMenu = () => {
+  return (
+    <HeaderMenu>
+      <CreateParameterMenuItem />
+    </HeaderMenu>
+  )
+}
+
+function CreateParameterMenuItem() {
+  const { commands } = useApp()
+  return (
+    <Menu.Item>
+      <button
+        type="button"
+        onClick={() =>
+          commands.send({
+            type: 'Find and select command',
+            data: {
+              groupId: 'code',
+              name: 'parameter.create',
+            },
+          })
+        }
+        className={styles.button}
+      >
+        <span>Create parameter</span>
+      </button>
+    </Menu.Item>
+  )
+}
+
+export const FeatureTreeMenu = ({
+  includeCreateParameter = true,
+}: {
+  includeCreateParameter?: boolean
+}) => {
   const { commands } = useApp()
   return (
     <HeaderMenu>
-      <Menu.Item>
-        <button
-          type="button"
-          onClick={() =>
-            commands.send({
-              type: 'Find and select command',
-              data: {
-                groupId: 'code',
-                name: 'parameter.create',
-              },
-            })
-          }
-          className={styles.button}
-        >
-          <span>Create parameter</span>
-        </button>
-      </Menu.Item>
+      {includeCreateParameter ? <CreateParameterMenuItem /> : null}
       <Menu.Item>
         <button
           type="button"
