@@ -1,11 +1,13 @@
 import { defineRegistryItem, Registry } from '@kittycad/registry'
 import { SessionExpiredDialogHostContent } from '@src/components/SessionExpiredDialog'
-import { SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import {
   clearSessionExpiredNotice,
+  consumeSessionExpiredSignIn,
   fetchWithSessionExpiration,
+  requestSessionExpiredSignIn,
   sessionExpiredNotice,
+  sessionExpiredSignInIntent,
 } from '@src/lib/sessionExpired'
 import { Themes } from '@src/lib/theme'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -111,6 +113,9 @@ function AuthShell() {
         },
         sessionExpiredNotice,
         clearSessionExpiredNotice,
+        sessionExpiredSignInIntent,
+        requestSessionExpiredSignIn,
+        consumeSessionExpiredSignIn,
         useAuthState: () => createAuthSnapshot(authStateName),
       }) as AuthRegistryService,
     [authStateName]
@@ -139,6 +144,7 @@ afterEach(() => {
   registry?.[Symbol.dispose]()
   registry = undefined
   clearSessionExpiredNotice()
+  sessionExpiredSignInIntent.value = false
   expireFakeAuthSession = undefined
   sentAuthEvents.length = 0
   sessionExpiredDialogSpecMocks.app = undefined
@@ -234,10 +240,12 @@ describe('SessionExpiredDialog', () => {
     await waitFor(() => {
       expect(router.state.location.pathname).toBe(PATHS.SIGN_IN)
     })
-    expect(router.state.location.state).toEqual({
-      [SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]: true,
-    })
+    // The intent travels on the auth service, so the navigation itself
+    // carries nothing: nothing is smuggled through `history.state`.
+    expect(router.state.location.state).toBeNull()
     await waitFor(() => expect(startDeviceFlow).toHaveBeenCalledTimes(1))
+    // Reading it cleared it, so a remount cannot start a second flow.
+    expect(sessionExpiredSignInIntent.value).toBe(false)
     await waitFor(() => expect(loginWithDeviceFlow).toHaveBeenCalledTimes(1))
     expect(sentAuthEvents).toContainEqual({ type: 'Session expired' })
     expect(sentAuthEvents).toContainEqual({

@@ -8,7 +8,10 @@ import {
 import { computed, signal } from '@preact/signals-core'
 import {
   clearSessionExpiredNotice,
+  consumeSessionExpiredSignIn,
+  requestSessionExpiredSignIn,
   sessionExpiredNotice,
+  sessionExpiredSignInIntent,
 } from '@src/lib/sessionExpired'
 import { reportRejection } from '@src/lib/trap'
 import { authMachine } from '@src/machines/authMachine'
@@ -49,6 +52,9 @@ export const authExtension = defineRegistryItemFactory((ctx) => {
     isLoggedIn,
     sessionExpiredNotice,
     clearSessionExpiredNotice,
+    sessionExpiredSignInIntent,
+    requestSessionExpiredSignIn,
+    consumeSessionExpiredSignIn,
     useAuthState: () => useSelector(authActor, (state) => state),
     useToken: () => useSelector(authActor, (state) => state.context.token),
     useUser: () => useSelector(authActor, (state) => state.context.user),
