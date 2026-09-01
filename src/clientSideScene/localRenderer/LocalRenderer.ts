@@ -12,7 +12,10 @@ import {
   type LocalRenderPacketSketchSegment,
 } from '@src/clientSideScene/localRenderer/renderPacketBinary'
 import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
-import type { WebGpuSurfaceResources } from '@src/clientSideScene/webgpuTrim'
+import type {
+  createWebGpuSurfaceResources,
+  WebGpuSurfaceResources,
+} from '@src/clientSideScene/webgpuTrim'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import type { ArtifactGraph, PathToNode, SourceRange } from '@src/lang/wasm'
@@ -50,6 +53,9 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+import type { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
+import type { pass, vec3, vec4 } from 'three/tsl'
+import type { RenderPipeline, WebGPURenderer } from 'three/webgpu'
 
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
@@ -63,6 +69,28 @@ const previewMaterialBaseColors = new WeakMap<Material, Color>()
 const NATIVE_LINE_RAYCAST_THRESHOLD_GLTF_METERS = 0.001
 const EDGE_RAYCAST_THRESHOLD_PX = 2
 
+type AoFactory = typeof ao
+type AmbientOcclusionPass = ReturnType<AoFactory> & { dispose: () => void }
+type CreateAmbientOcclusion = (
+  depthNode: Parameters<AoFactory>[0],
+  normalNode: Parameters<AoFactory>[1] | null,
+  camera: Parameters<AoFactory>[2]
+) => AmbientOcclusionPass
+type AmbientOcclusionPipeline = {
+  camera: PerspectiveCamera | OrthographicCamera
+  pipeline: RenderPipeline
+  scenePass: ReturnType<typeof pass>
+  aoPass: AmbientOcclusionPass
+}
+type WebGpuRuntimeModules = {
+  RenderPipeline: typeof RenderPipeline
+  createWebGpuSurfaceResources: typeof createWebGpuSurfaceResources
+  pass: typeof pass
+  vec3: typeof vec3
+  vec4: typeof vec4
+  createAmbientOcclusion: CreateAmbientOcclusion
+}
+
 export interface LocalRendererProps {
   backgroundColor: string
   enableSSAO: boolean
@@ -74,6 +102,7 @@ export interface LocalRendererProps {
 
 export class LocalRenderer {
   private readonly container: HTMLDivElement
+  private readonly kclManager: KclManager
   private backgroundColor: string
   private enableSSAO: boolean
   private forceHide: boolean
@@ -82,10 +111,35 @@ export class LocalRenderer {
   private onExportReady: LocalRendererProps['onExportReady']
   private isVisible = false
   private requestRender: (() => void) | null = null
+  private renderer: WebGPURenderer | null = null
   private scene: Scene | null = null
+  private envMapLoader: EnvMapLoader | null = null
   private exportScene: (() => Promise<void>) | null = null
-  private cleanup: (() => void) | null = null
   private edgeRenderer: EdgeRenderer | null = null
+  private runtimeModules: WebGpuRuntimeModules | null = null
+  private resizeObserver: ResizeObserver | null = null
+  private animationFrameId = -1
+  private currentModel: Object3D | null = null
+  private currentSurfaceResources: WebGpuSurfaceResources | null = null
+  private previewCamera: PerspectiveCamera | OrthographicCamera | null = null
+  private readonly previewTarget = new Vector3()
+  private readonly convertedSharedPosition = new Vector3()
+  private readonly convertedSharedTarget = new Vector3()
+  private readonly convertedSharedUp = new Vector3()
+  private hoveredObject: Object3D | null = null
+  private selectedObjects = new Set<Object3D>()
+  private selectionEntityIdToObject = new Map<string, Object3D>()
+  private parserState: GltfParserState | RenderPacketParserState | null = null
+  private activeSketchModePlane: GetSketchModePlane | null = null
+  private readonly raycaster = new Raycaster()
+  private readonly pointer = new Vector2()
+  private unregisterLocalSelectionProvider: (() => void) | null = null
+  private unregisterSharedCameraListener: (() => void) | null = null
+  private ambientOcclusionRadius = 0.01
+  private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
+  private currentRefreshId = 0
+  private pendingRefreshRequest = false
+  private refreshModel: (() => Promise<void>) | null = null
   private disposed = false
 
   constructor(
@@ -94,13 +148,26 @@ export class LocalRenderer {
     props: LocalRendererProps
   ) {
     this.container = container
+    this.kclManager = kclManager
     this.backgroundColor = props.backgroundColor
     this.enableSSAO = props.enableSSAO
     this.forceHide = props.forceHide ?? false
     this.commandProxyEnabled = props.commandProxyEnabled ?? true
     this.onVisibilityChange = props.onVisibilityChange
     this.onExportReady = props.onExportReady
-    this.cleanup = this.mount(kclManager)
+
+    if (!LOCAL_WEBGPU_RENDERING_ENABLED) {
+      this.onVisibilityChange(false)
+      return
+    }
+
+    logLocalWebGpuPreview('initializing preview')
+    this.container.style.opacity = '0'
+    this.kclManager.addEventListener(
+      KclManagerEvents.ExecutionDone,
+      this.onExecutionDone
+    )
+    void this.initialize().catch(this.handleInitializationError)
   }
 
   setBackgroundColor(backgroundColor: string) {
@@ -155,1306 +222,1244 @@ export class LocalRenderer {
     }
 
     this.disposed = true
-    this.cleanup?.()
-    this.cleanup = null
+    this.currentRefreshId += 1
+    this.refreshModel = null
+    this.kclManager.removeEventListener(
+      KclManagerEvents.ExecutionDone,
+      this.onExecutionDone
+    )
+    this.container.style.opacity = '0'
+    this.isVisible = false
+    this.exportScene = null
+    this.onExportReady?.(null)
+    this.unregisterLocalSelectionProvider?.()
+    this.unregisterLocalSelectionProvider = null
+    this.unregisterSharedCameraListener?.()
+    this.unregisterSharedCameraListener = null
+    this.clearHover()
+    const previousSelectedObjects = [...this.selectedObjects]
+    this.selectedObjects.clear()
+    previousSelectedObjects.forEach(this.applyObjectState)
+    this.clearModel()
+    this.edgeRenderer?.dispose()
+    this.edgeRenderer = null
+    this.resizeObserver?.disconnect()
+    this.resizeObserver = null
+    if (this.animationFrameId !== -1) {
+      cancelAnimationFrame(this.animationFrameId)
+      this.animationFrameId = -1
+    }
+    this.requestRender = null
+    this.disposeAmbientOcclusionPipeline()
+    this.envMapLoader?.dispose()
+    this.envMapLoader = null
+    this.renderer?.domElement.remove()
+    this.renderer?.dispose()
+    this.renderer = null
+    this.scene = null
+    this.previewCamera = null
+    this.runtimeModules = null
+    this.parserState = null
+    this.activeSketchModePlane = null
   }
 
-  private mount(kclManager: KclManager) {
-    if (!LOCAL_WEBGPU_RENDERING_ENABLED) {
-      this.onVisibilityChange(false)
-      return () => {}
-    }
-
-    const { container } = this
-
-    logLocalWebGpuPreview('mounting preview component')
-    container.style.opacity = '0'
-
-    let disposed = false
-    let animationFrameId = -1
-    let resizeObserver: ResizeObserver | null = null
-    let currentModel: Object3D | null = null
-    let currentSurfaceResources: WebGpuSurfaceResources | null = null
-    let currentRefreshId = 0
-    let isVisible = false
-    let pendingRefreshRequest = false
-    let refreshModel: (() => Promise<void>) | null = null
-    let previewCamera: PerspectiveCamera | OrthographicCamera | null = null
-    const previewTarget = new Vector3()
-    let hoveredObject: Object3D | null = null
-    let selectedObjects = new Set<Object3D>()
-    let selectionEntityIdToObject = new Map<string, Object3D>()
-    let parserState: GltfParserState | RenderPacketParserState | null = null
-    let activeSketchModePlane: GetSketchModePlane | null = null
-    const raycaster = new Raycaster()
-    const pointer = new Vector2()
-    let requestRender: (() => void) | null = null
-
-    const getResolvedSelectionEntity = (object: Object3D | null) => {
-      if (!object) {
-        return null
-      }
-
-      const metadata = getPickedObjectMetadata(object, parserState)
-      const extras = isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)
-        ? metadata.kittycadPrimitiveExtras
-        : null
-      if (extras) {
-        return resolveSelectionEntityFromPrimitiveExtras(
-          extras,
-          kclManager.artifactGraph
-        )
-      }
-
-      const edgeExtras = isKittycadEdgeExtras(metadata.kittycadEdgeExtras)
-        ? metadata.kittycadEdgeExtras
-        : null
-      if (edgeExtras) {
-        return resolveSelectionEntityFromEdgeExtras(
-          edgeExtras,
-          kclManager.artifactGraph
-        )
-      }
-
-      const sketchExtras = isKittycadSketchExtras(metadata.kittycadSketchExtras)
-        ? metadata.kittycadSketchExtras
-        : null
-      if (sketchExtras) {
-        return resolveSelectionEntityFromSketchExtras(
-          sketchExtras,
-          kclManager.artifactGraph
-        )
-      }
-
-      const regionExtras = isKittycadRegionExtras(metadata.kittycadRegionExtras)
-        ? metadata.kittycadRegionExtras
-        : null
-      if (regionExtras) {
-        return resolveSelectionEntityFromRegionExtras(regionExtras)
-      }
-
+  private readonly getResolvedSelectionEntity = (object: Object3D | null) => {
+    if (!object) {
       return null
     }
 
-    const setVisible = (nextVisible: boolean) => {
-      if (isVisible === nextVisible) {
-        return
-      }
+    const metadata = getPickedObjectMetadata(object, this.parserState)
+    const extras = isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)
+      ? metadata.kittycadPrimitiveExtras
+      : null
+    if (extras) {
+      return resolveSelectionEntityFromPrimitiveExtras(
+        extras,
+        this.kclManager.artifactGraph
+      )
+    }
 
-      isVisible = nextVisible
-      this.isVisible = nextVisible
-      container.style.opacity = nextVisible && !this.forceHide ? '1' : '0'
-      logLocalWebGpuPreview('preview visibility changed', {
-        isVisible: nextVisible,
+    const edgeExtras = isKittycadEdgeExtras(metadata.kittycadEdgeExtras)
+      ? metadata.kittycadEdgeExtras
+      : null
+    if (edgeExtras) {
+      return resolveSelectionEntityFromEdgeExtras(
+        edgeExtras,
+        this.kclManager.artifactGraph
+      )
+    }
+
+    const sketchExtras = isKittycadSketchExtras(metadata.kittycadSketchExtras)
+      ? metadata.kittycadSketchExtras
+      : null
+    if (sketchExtras) {
+      return resolveSelectionEntityFromSketchExtras(
+        sketchExtras,
+        this.kclManager.artifactGraph
+      )
+    }
+
+    const regionExtras = isKittycadRegionExtras(metadata.kittycadRegionExtras)
+      ? metadata.kittycadRegionExtras
+      : null
+    return regionExtras
+      ? resolveSelectionEntityFromRegionExtras(regionExtras)
+      : null
+  }
+
+  private readonly setVisible = (nextVisible: boolean) => {
+    if (this.isVisible === nextVisible) {
+      return
+    }
+
+    this.isVisible = nextVisible
+    this.container.style.opacity = nextVisible && !this.forceHide ? '1' : '0'
+    logLocalWebGpuPreview('preview visibility changed', {
+      isVisible: nextVisible,
+    })
+    this.onVisibilityChange(nextVisible)
+    this.requestRender?.()
+  }
+
+  private readonly syncPreviewCameraFromShared = () => {
+    const sharedCamera = this.kclManager.sceneInfra.camControls.camera
+    const sharedTarget = this.kclManager.sceneInfra.camControls.target
+    if (!this.previewCamera) {
+      return
+    }
+
+    this.convertedSharedPosition.copy(
+      convertEngineWorldVectorToGltfWorld(
+        sharedCamera.position,
+        ENGINE_MILLIMETERS_TO_GLTF_METERS
+      )
+    )
+    this.convertedSharedTarget.copy(
+      convertEngineWorldVectorToGltfWorld(
+        sharedTarget,
+        ENGINE_MILLIMETERS_TO_GLTF_METERS
+      )
+    )
+    this.convertedSharedUp.copy(
+      convertEngineWorldVectorToGltfWorld(sharedCamera.up)
+    )
+
+    if (
+      sharedCamera instanceof PerspectiveCamera &&
+      !(this.previewCamera instanceof PerspectiveCamera)
+    ) {
+      this.previewCamera = new PerspectiveCamera()
+    } else if (
+      sharedCamera instanceof OrthographicCamera &&
+      !(this.previewCamera instanceof OrthographicCamera)
+    ) {
+      this.previewCamera = new OrthographicCamera()
+    }
+
+    this.previewCamera.layers.mask = sharedCamera.layers.mask
+    this.previewCamera.position.copy(this.convertedSharedPosition)
+    this.previewCamera.up.copy(this.convertedSharedUp)
+    this.previewCamera.near = Math.max(
+      sharedCamera.near * ENGINE_MILLIMETERS_TO_GLTF_METERS,
+      0.0001
+    )
+    this.previewCamera.far = Math.max(
+      sharedCamera.far * ENGINE_MILLIMETERS_TO_GLTF_METERS,
+      this.previewCamera.near + 0.0001
+    )
+    this.previewTarget.copy(this.convertedSharedTarget)
+
+    if (
+      sharedCamera instanceof PerspectiveCamera &&
+      this.previewCamera instanceof PerspectiveCamera
+    ) {
+      this.previewCamera.fov = sharedCamera.fov
+      this.previewCamera.aspect =
+        Math.max(this.container.clientWidth, 1) /
+        Math.max(this.container.clientHeight, 1)
+    } else if (
+      sharedCamera instanceof OrthographicCamera &&
+      this.previewCamera instanceof OrthographicCamera
+    ) {
+      this.previewCamera.left =
+        sharedCamera.left * ENGINE_MILLIMETERS_TO_GLTF_METERS
+      this.previewCamera.right =
+        sharedCamera.right * ENGINE_MILLIMETERS_TO_GLTF_METERS
+      this.previewCamera.top =
+        sharedCamera.top * ENGINE_MILLIMETERS_TO_GLTF_METERS
+      this.previewCamera.bottom =
+        sharedCamera.bottom * ENGINE_MILLIMETERS_TO_GLTF_METERS
+      this.previewCamera.zoom = sharedCamera.zoom
+    }
+
+    this.previewCamera.lookAt(this.previewTarget)
+    this.previewCamera.updateProjectionMatrix()
+    this.previewCamera.updateMatrixWorld(true)
+    this.requestRender?.()
+  }
+
+  private readonly applyObjectState = (object: Object3D | null) => {
+    if (!object) {
+      return
+    }
+
+    const mode = this.selectedObjects.has(object)
+      ? 'selected'
+      : object === this.hoveredObject
+        ? 'hover'
+        : 'base'
+    if (object instanceof Mesh) {
+      setMeshHighlight(object, mode)
+    } else if (object instanceof Line) {
+      setLineHighlight(object, mode)
+    }
+    this.requestRender?.()
+  }
+
+  private readonly clearHover = () => {
+    if (!this.hoveredObject) {
+      return
+    }
+
+    const previousHoveredObject = this.hoveredObject
+    this.hoveredObject = null
+    this.applyObjectState(previousHoveredObject)
+  }
+
+  private readonly pickRenderableFromWindowCoordinates = ({
+    x,
+    y,
+    streamWidth,
+    streamHeight,
+  }: {
+    x: number
+    y: number
+    streamWidth: number
+    streamHeight: number
+  }) => {
+    if (
+      !this.isVisible ||
+      !this.previewCamera ||
+      !this.currentModel ||
+      streamWidth <= 0 ||
+      streamHeight <= 0
+    ) {
+      return null
+    }
+
+    this.pointer.x = (x / streamWidth) * 2 - 1
+    this.pointer.y = -(y / streamHeight) * 2 + 1
+    this.raycaster.setFromCamera(this.pointer, this.previewCamera)
+    this.raycaster.params.Line = {
+      ...(this.raycaster.params.Line ?? {}),
+      threshold: NATIVE_LINE_RAYCAST_THRESHOLD_GLTF_METERS,
+    }
+    this.raycaster.params.Line2 = {
+      threshold: EDGE_RAYCAST_THRESHOLD_PX,
+    }
+
+    const intersection = this.raycaster
+      .intersectObject(this.currentModel, true)
+      .find((candidate) => {
+        if (this.edgeRenderer?.isLineObject(candidate.object)) {
+          return true
+        }
+        if (candidate.object instanceof Line) {
+          return true
+        }
+        if (!(candidate.object instanceof Mesh)) {
+          return false
+        }
+        if (!WEBGPU_TRIMMING_ENABLED) {
+          return true
+        }
+
+        const primitive =
+          this.parserState && 'primitiveByObject' in this.parserState
+            ? (this.parserState.primitiveByObject.get(candidate.object) ?? null)
+            : null
+        return isUvInsideTrimLoops(
+          candidate.uv ? { x: candidate.uv.x, y: candidate.uv.y } : null,
+          primitive?.trimLoops ?? null
+        )
       })
-      this.onVisibilityChange(nextVisible)
-      requestRender?.()
+
+    if (!intersection || intersection.faceIndex == null) {
+      return intersection
+    }
+    if (!this.edgeRenderer?.isLineObject(intersection.object)) {
+      return intersection
     }
 
-    const convertedSharedPosition = new Vector3()
-    const convertedSharedTarget = new Vector3()
-    const convertedSharedUp = new Vector3()
-    const syncPreviewCameraFromShared = () => {
-      const sharedCamera = kclManager.sceneInfra.camControls.camera
-      const sharedTarget = kclManager.sceneInfra.camControls.target
-      if (!previewCamera) {
-        return
-      }
+    const edgeObject = this.edgeRenderer.getEdgeObjectForSegment(
+      intersection.faceIndex
+    )
+    return edgeObject ? { ...intersection, object: edgeObject } : intersection
+  }
 
-      convertedSharedPosition.copy(
-        convertEngineWorldVectorToGltfWorld(
-          sharedCamera.position,
-          ENGINE_MILLIMETERS_TO_GLTF_METERS
+  private readonly updateHoverFromIntersection = (
+    intersection:
+      | { distance?: number; point?: Vector3; object?: Object3D }
+      | null
+      | undefined
+  ) => {
+    const nextHoveredObject = intersection?.object ?? null
+    if (nextHoveredObject === this.hoveredObject) {
+      return
+    }
+
+    const previousHoveredObject = this.hoveredObject
+    this.hoveredObject = null
+    this.applyObjectState(previousHoveredObject)
+    if (!nextHoveredObject) {
+      return
+    }
+
+    this.hoveredObject = nextHoveredObject
+    this.applyObjectState(this.hoveredObject)
+    const resolvedSelectionEntity =
+      this.getResolvedSelectionEntity(nextHoveredObject)
+    logLocalWebGpuPreview('local hover changed', {
+      distance: intersection?.distance,
+      point: intersection?.point?.toArray(),
+      ...summarizePickedObject(
+        nextHoveredObject,
+        this.parserState,
+        resolvedSelectionEntity
+      ),
+    })
+  }
+
+  private readonly updateSelectedMeshes = ({
+    nextSelectedMeshes,
+    selectionSummary,
+  }: {
+    nextSelectedMeshes: Set<Object3D>
+    selectionSummary: unknown
+  }) => {
+    if (
+      nextSelectedMeshes.size === this.selectedObjects.size &&
+      [...nextSelectedMeshes].every((mesh) => this.selectedObjects.has(mesh))
+    ) {
+      return
+    }
+
+    const previousSelectedMeshes = [...this.selectedObjects]
+    this.selectedObjects = nextSelectedMeshes
+    previousSelectedMeshes.forEach(this.applyObjectState)
+    this.applyObjectState(this.hoveredObject)
+    this.selectedObjects.forEach(this.applyObjectState)
+    ;(
+      window as typeof window & { __WEBGPU_POC_SELECTION__?: unknown }
+    ).__WEBGPU_POC_SELECTION__ = selectionSummary
+    logLocalWebGpuPreview('local selection changed', {
+      selection: selectionSummary,
+    })
+  }
+
+  private readonly exportCurrentScene = async () => {
+    if (!this.currentModel) {
+      logLocalWebGpuPreview('GLB export skipped; no current model')
+      return
+    }
+
+    const modelToExport = this.currentModel
+    const trimStates = new Map<Object3D, unknown>()
+    modelToExport.traverse((object) => {
+      if ('kittycadTrimState' in object.userData) {
+        trimStates.set(object, object.userData.kittycadTrimState)
+        delete object.userData.kittycadTrimState
+      }
+    })
+
+    try {
+      modelToExport.updateMatrixWorld(true)
+      const { GLTFExporter } = await import(
+        'three/examples/jsm/exporters/GLTFExporter.js'
+      )
+      const exporter = new GLTFExporter()
+      const result = await exporter.parseAsync(modelToExport, {
+        binary: true,
+        onlyVisible: true,
+      })
+      if (!(result instanceof ArrayBuffer)) {
+        return Promise.reject(
+          new Error('GLTFExporter did not produce a binary GLB')
         )
+      }
+
+      const blob = new Blob([result], { type: 'model/gltf-binary' })
+      const downloadUrl = URL.createObjectURL(blob)
+      const downloadLink = document.createElement('a')
+      const timestamp = new Date().toISOString().replaceAll(':', '-')
+      downloadLink.href = downloadUrl
+      downloadLink.download = `render-packet-scene-${timestamp}.glb`
+      downloadLink.style.display = 'none'
+      document.body.appendChild(downloadLink)
+      downloadLink.click()
+      downloadLink.remove()
+      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000)
+
+      logLocalWebGpuPreview('current Three.js scene exported as GLB', {
+        bytes: result.byteLength,
+        filename: downloadLink.download,
+      })
+    } finally {
+      trimStates.forEach((trimState, object) => {
+        object.userData.kittycadTrimState = trimState
+      })
+    }
+  }
+
+  private readonly handleInitializationError = (error: unknown) => {
+    logLocalWebGpuPreview('preview initialization failed', { error })
+    console.error('[LocalWebGPUScene] preview initialization failed', error)
+    reportRejection(error)
+  }
+
+  private configureAmbientOcclusion(aoPass: AmbientOcclusionPass) {
+    aoPass.radius.value = this.ambientOcclusionRadius
+    aoPass.thickness.value = this.ambientOcclusionRadius * 3
+    aoPass.distanceFallOff.value = 0.5
+    aoPass.scale.value = 1
+  }
+
+  private disposeAmbientOcclusionPipeline() {
+    this.ambientOcclusionPipeline?.pipeline.dispose()
+    this.ambientOcclusionPipeline?.scenePass.dispose()
+    this.ambientOcclusionPipeline?.aoPass.dispose()
+    this.ambientOcclusionPipeline = null
+  }
+
+  private updateAmbientOcclusionScale(modelBounds: Box3) {
+    if (modelBounds.isEmpty()) {
+      return
+    }
+
+    const size = modelBounds.getSize(new Vector3())
+    const modelScale = Math.max(size.x, size.y, size.z)
+    if (!Number.isFinite(modelScale) || modelScale <= 0) {
+      return
+    }
+
+    // Render-packet geometry is expressed in meters. Keep the sampling radius
+    // proportional to the part instead of GTAO's room-scale default.
+    this.ambientOcclusionRadius = Math.max(modelScale * 0.05, 0.00001)
+    if (this.ambientOcclusionPipeline) {
+      this.configureAmbientOcclusion(this.ambientOcclusionPipeline.aoPass)
+    }
+  }
+
+  private renderPreview() {
+    const previewCamera = this.previewCamera
+    const renderer = this.renderer
+    const runtimeModules = this.runtimeModules
+    const scene = this.scene
+    if (!previewCamera || !renderer || !runtimeModules || !scene) {
+      return
+    }
+
+    if (!this.enableSSAO || this.forceHide) {
+      renderer.render(scene, previewCamera)
+      return
+    }
+
+    if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
+      this.disposeAmbientOcclusionPipeline()
+
+      // GTAO expects a regular depth texture. The renderer itself can keep
+      // using MSAA, but this intermediate pass must be single-sampled.
+      const scenePass = runtimeModules.pass(scene, previewCamera, {
+        samples: 0,
+      })
+      const scenePassColor = scenePass.getTextureNode()
+      const scenePassDepth = scenePass.getTextureNode('depth')
+      const aoPass = runtimeModules.createAmbientOcclusion(
+        scenePassDepth,
+        null,
+        previewCamera
       )
-      convertedSharedTarget.copy(
-        convertEngineWorldVectorToGltfWorld(
-          sharedTarget,
-          ENGINE_MILLIMETERS_TO_GLTF_METERS
-        )
-      )
-      convertedSharedUp.copy(
-        convertEngineWorldVectorToGltfWorld(sharedCamera.up)
+      aoPass.resolutionScale = 0.5
+      this.configureAmbientOcclusion(aoPass)
+
+      const pipeline = new runtimeModules.RenderPipeline(renderer)
+      const aoOutput = aoPass.getTextureNode()
+      // Preserve some indirect light even at maximum occlusion while leaving
+      // enough contrast to make the setting visibly effective.
+      const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
+      pipeline.outputNode = scenePassColor.mul(
+        runtimeModules.vec4(runtimeModules.vec3(ambientOcclusion), 1)
       )
 
+      this.ambientOcclusionPipeline = {
+        camera: previewCamera,
+        pipeline,
+        scenePass,
+        aoPass,
+      }
+    }
+
+    this.ambientOcclusionPipeline.pipeline.render()
+  }
+
+  private readonly scheduleRender = () => {
+    if (this.disposed || !this.previewCamera || this.animationFrameId !== -1) {
+      return
+    }
+
+    this.animationFrameId = requestAnimationFrame(() => {
+      this.animationFrameId = -1
+      if (this.disposed || !this.previewCamera) {
+        return
+      }
+
+      this.renderPreview()
+    })
+  }
+
+  private readonly resize = () => {
+    const { renderer } = this
+    const width = this.container.clientWidth
+    const height = this.container.clientHeight
+    if (!renderer || width === 0 || height === 0) {
+      return
+    }
+
+    renderer.setSize(width, height, false)
+    if (this.previewCamera instanceof PerspectiveCamera) {
+      this.previewCamera.aspect = width / height
+      this.previewCamera.updateProjectionMatrix()
+    } else {
+      this.syncPreviewCameraFromShared()
+    }
+    this.requestRender?.()
+  }
+
+  private clearModel() {
+    if (this.currentModel) {
+      this.scene?.remove(this.currentModel)
+      this.edgeRenderer?.removeFromParent()
+      disposeObject3D(this.currentModel)
+      this.currentModel = null
+    }
+
+    if (this.currentSurfaceResources && this.renderer) {
+      this.currentSurfaceResources.dispose(this.renderer)
+    }
+    this.currentSurfaceResources = null
+    this.selectionEntityIdToObject.clear()
+    this.requestRender?.()
+  }
+
+  private hydrateCurrentModelMetadata() {
+    if (!this.currentModel) {
+      this.selectionEntityIdToObject.clear()
+      return
+    }
+
+    this.selectionEntityIdToObject = new Map<string, Object3D>()
+    this.currentModel.traverse((object) => {
+      object.layers.mask = this.previewCamera?.layers.mask ?? object.layers.mask
+
+      const metadata = getPickedObjectMetadata(object, this.parserState)
       if (
-        sharedCamera instanceof PerspectiveCamera &&
-        !(previewCamera instanceof PerspectiveCamera)
+        !(object instanceof Mesh) &&
+        !(object instanceof Line) &&
+        !metadata.kittycadEdgeExtras
       ) {
-        previewCamera = new PerspectiveCamera()
-      } else if (
-        sharedCamera instanceof OrthographicCamera &&
-        !(previewCamera instanceof OrthographicCamera)
-      ) {
-        previewCamera = new OrthographicCamera()
-      }
-
-      previewCamera.layers.mask = sharedCamera.layers.mask
-      previewCamera.position.copy(convertedSharedPosition)
-      previewCamera.up.copy(convertedSharedUp)
-      previewCamera.near = Math.max(
-        sharedCamera.near * ENGINE_MILLIMETERS_TO_GLTF_METERS,
-        0.0001
-      )
-      previewCamera.far = Math.max(
-        sharedCamera.far * ENGINE_MILLIMETERS_TO_GLTF_METERS,
-        previewCamera.near + 0.0001
-      )
-      previewTarget.copy(convertedSharedTarget)
-
-      if (
-        sharedCamera instanceof PerspectiveCamera &&
-        previewCamera instanceof PerspectiveCamera
-      ) {
-        previewCamera.fov = sharedCamera.fov
-        previewCamera.aspect =
-          Math.max(container.clientWidth, 1) /
-          Math.max(container.clientHeight, 1)
-      } else if (
-        sharedCamera instanceof OrthographicCamera &&
-        previewCamera instanceof OrthographicCamera
-      ) {
-        previewCamera.left =
-          sharedCamera.left * ENGINE_MILLIMETERS_TO_GLTF_METERS
-        previewCamera.right =
-          sharedCamera.right * ENGINE_MILLIMETERS_TO_GLTF_METERS
-        previewCamera.top = sharedCamera.top * ENGINE_MILLIMETERS_TO_GLTF_METERS
-        previewCamera.bottom =
-          sharedCamera.bottom * ENGINE_MILLIMETERS_TO_GLTF_METERS
-        previewCamera.zoom = sharedCamera.zoom
-      }
-
-      previewCamera.lookAt(previewTarget)
-      previewCamera.updateProjectionMatrix()
-      previewCamera.updateMatrixWorld(true)
-      requestRender?.()
-    }
-
-    const requestRefresh = () => {
-      if (refreshModel) {
-        void refreshModel()
         return
       }
 
-      pendingRefreshRequest = true
-      logLocalWebGpuPreview('refresh requested before renderer initialization')
-    }
-
-    const onExecutionDone = (event: Event) => {
-      const { detail } = event as CustomEvent<KclExecutionDoneDetail>
-      logLocalWebGpuPreview('received execution-done event', detail)
-      if (!detail.successful) {
-        return
+      if (object instanceof Mesh && metadata.primitiveExtras) {
+        object.userData.gltfPrimitiveExtras = metadata.primitiveExtras
       }
-
-      requestRefresh()
-    }
-
-    const applyObjectState = (object: Object3D | null) => {
-      if (!object) {
-        return
-      }
-
-      const mode = selectedObjects.has(object)
-        ? 'selected'
-        : object === hoveredObject
-          ? 'hover'
-          : 'base'
-      if (object instanceof Mesh) {
-        setMeshHighlight(object, mode)
-      } else if (object instanceof Line) {
-        setLineHighlight(object, mode)
-      }
-      requestRender?.()
-    }
-
-    const clearHover = () => {
-      if (!hoveredObject) {
-        return
-      }
-
-      const previousHoveredObject = hoveredObject
-      hoveredObject = null
-      applyObjectState(previousHoveredObject)
-    }
-
-    const pickRenderableFromWindowCoordinates = ({
-      x,
-      y,
-      streamWidth,
-      streamHeight,
-    }: {
-      x: number
-      y: number
-      streamWidth: number
-      streamHeight: number
-    }) => {
-      if (
-        !isVisible ||
-        !previewCamera ||
-        !currentModel ||
-        streamWidth <= 0 ||
-        streamHeight <= 0
-      ) {
-        return null
-      }
-
-      pointer.x = (x / streamWidth) * 2 - 1
-      pointer.y = -(y / streamHeight) * 2 + 1
-      raycaster.setFromCamera(pointer, previewCamera)
-
-      raycaster.params.Line = {
-        ...(raycaster.params.Line ?? {}),
-        threshold: NATIVE_LINE_RAYCAST_THRESHOLD_GLTF_METERS,
-      }
-      raycaster.params.Line2 = {
-        threshold: EDGE_RAYCAST_THRESHOLD_PX,
-      }
-
-      const intersection = raycaster
-        .intersectObject(currentModel, true)
-        .find((intersection) => {
-          if (this.edgeRenderer?.isLineObject(intersection.object)) {
-            return true
-          }
-
-          if (intersection.object instanceof Line) {
-            return true
-          }
-
-          if (!(intersection.object instanceof Mesh)) {
-            return false
-          }
-
-          if (!WEBGPU_TRIMMING_ENABLED) {
-            return true
-          }
-
-          const primitive =
-            parserState && 'primitiveByObject' in parserState
-              ? (parserState.primitiveByObject.get(intersection.object) ?? null)
-              : null
-
-          return isUvInsideTrimLoops(
-            intersection.uv
-              ? { x: intersection.uv.x, y: intersection.uv.y }
-              : null,
-            primitive?.trimLoops ?? null
+      if (object instanceof Mesh && metadata.kittycadPrimitiveExtras) {
+        object.userData.kittycadPrimitiveExtras =
+          metadata.kittycadPrimitiveExtras
+        if (isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)) {
+          const resolvedSelectionEntity =
+            resolveSelectionEntityFromPrimitiveExtras(
+              metadata.kittycadPrimitiveExtras,
+              this.kclManager.artifactGraph
+            )
+          object.userData.kittycadSelectionEntityId =
+            resolvedSelectionEntity.entityId
+          object.userData.kittycadParentEntityId =
+            resolvedSelectionEntity.parentEntityId
+          object.userData.kittycadPrimitiveIndex =
+            resolvedSelectionEntity.primitiveIndex
+          this.selectionEntityIdToObject.set(
+            resolvedSelectionEntity.entityId,
+            object
           )
-        })
-
-      if (!intersection || intersection.faceIndex == null) {
-        return intersection
+          this.selectionEntityIdToObject.set(
+            metadata.kittycadPrimitiveExtras.face_id,
+            object
+          )
+        }
       }
-
-      if (!this.edgeRenderer?.isLineObject(intersection.object)) {
-        return intersection
+      if (metadata.kittycadEdgeExtras) {
+        object.userData.kittycadEdgeExtras = metadata.kittycadEdgeExtras
+        if (isKittycadEdgeExtras(metadata.kittycadEdgeExtras)) {
+          const resolvedSelectionEntity = resolveSelectionEntityFromEdgeExtras(
+            metadata.kittycadEdgeExtras,
+            this.kclManager.artifactGraph
+          )
+          object.userData.kittycadSelectionEntityId =
+            resolvedSelectionEntity.entityId
+          object.userData.kittycadParentEntityId =
+            resolvedSelectionEntity.parentEntityId
+          object.userData.kittycadPrimitiveIndex =
+            resolvedSelectionEntity.primitiveIndex
+          this.selectionEntityIdToObject.set(
+            resolvedSelectionEntity.entityId,
+            object
+          )
+          this.selectionEntityIdToObject.set(
+            metadata.kittycadEdgeExtras.edge_id,
+            object
+          )
+        }
       }
-
-      const edgeObject = this.edgeRenderer.getEdgeObjectForSegment(
-        intersection.faceIndex
-      )
-      if (!edgeObject) {
-        return intersection
-      }
-
-      return {
-        ...intersection,
-        object: edgeObject,
-      }
-    }
-
-    const updateHoverFromIntersection = (
-      intersection:
-        | {
-            distance?: number
-            point?: Vector3
-            object?: Object3D
+      if (object instanceof Line && metadata.kittycadSketchExtras) {
+        object.userData.kittycadSketchExtras = metadata.kittycadSketchExtras
+        if (isKittycadSketchExtras(metadata.kittycadSketchExtras)) {
+          const resolvedSelectionEntity =
+            resolveSelectionEntityFromSketchExtras(
+              metadata.kittycadSketchExtras,
+              this.kclManager.artifactGraph
+            )
+          if (resolvedSelectionEntity) {
+            object.userData.kittycadSelectionEntityId =
+              resolvedSelectionEntity.entityId
+            object.userData.kittycadParentEntityId =
+              resolvedSelectionEntity.parentEntityId
+            object.userData.kittycadPrimitiveIndex =
+              resolvedSelectionEntity.primitiveIndex
+            this.selectionEntityIdToObject.set(
+              resolvedSelectionEntity.entityId,
+              object
+            )
           }
-        | null
-        | undefined
-    ) => {
-      const nextHoveredObject = intersection?.object ?? null
-      if (nextHoveredObject === hoveredObject) {
-        return
+        }
       }
-
-      const previousHoveredObject = hoveredObject
-      hoveredObject = null
-      applyObjectState(previousHoveredObject)
-      if (!nextHoveredObject) {
-        return
+      if (object instanceof Mesh && metadata.kittycadRegionExtras) {
+        object.userData.kittycadRegionExtras = metadata.kittycadRegionExtras
+        if (isKittycadRegionExtras(metadata.kittycadRegionExtras)) {
+          const resolvedSelectionEntity =
+            resolveSelectionEntityFromRegionExtras(
+              metadata.kittycadRegionExtras
+            )
+          object.userData.kittycadSelectionEntityId =
+            resolvedSelectionEntity.entityId
+          object.userData.kittycadParentEntityId =
+            resolvedSelectionEntity.parentEntityId
+          object.userData.kittycadPrimitiveIndex =
+            resolvedSelectionEntity.primitiveIndex
+          this.selectionEntityIdToObject.set(
+            resolvedSelectionEntity.entityId,
+            object
+          )
+        }
       }
+    })
+  }
 
-      hoveredObject = nextHoveredObject
-      applyObjectState(hoveredObject)
-      const resolvedSelectionEntity =
-        getResolvedSelectionEntity(nextHoveredObject)
-      logLocalWebGpuPreview('local hover changed', {
-        distance: intersection?.distance,
-        point: intersection?.point?.toArray(),
-        ...summarizePickedObject(
-          nextHoveredObject,
-          parserState,
-          resolvedSelectionEntity
-        ),
-      })
+  private async initialize() {
+    const { kclManager } = this
+    const { container } = this
+
+    logLocalWebGpuPreview('initializing preview renderer')
+    const [
+      { WebGPURenderer, RenderPipeline },
+      { EdgeRenderer },
+      { createWebGpuSurfaceResources },
+      { pass, vec3, vec4 },
+      { ao },
+    ] = await Promise.all([
+      import('three/webgpu'),
+      import('@src/clientSideScene/localRenderer/EdgeRenderer'),
+      import('@src/clientSideScene/webgpuTrim'),
+      import('three/tsl'),
+      import('three/examples/jsm/tsl/display/GTAONode.js'),
+    ])
+
+    if (this.disposed) {
+      logLocalWebGpuPreview('preview disposed before initialization completed')
+      return
     }
 
-    const updateSelectedMeshes = ({
-      nextSelectedMeshes,
-      selectionSummary,
-    }: {
-      nextSelectedMeshes: Set<Object3D>
-      selectionSummary: unknown
-    }) => {
-      if (
-        nextSelectedMeshes.size === selectedObjects.size &&
-        [...nextSelectedMeshes].every((mesh) => selectedObjects.has(mesh))
-      ) {
-        return
-      }
-
-      const previousSelectedMeshes = [...selectedObjects]
-      selectedObjects = nextSelectedMeshes
-      previousSelectedMeshes.forEach(applyObjectState)
-      applyObjectState(hoveredObject)
-      selectedObjects.forEach(applyObjectState)
-      ;(
-        window as typeof window & { __WEBGPU_POC_SELECTION__?: unknown }
-      ).__WEBGPU_POC_SELECTION__ = selectionSummary
-
-      logLocalWebGpuPreview('local selection changed', {
-        selection: selectionSummary,
-      })
+    const hasNavigatorGpu = typeof navigator !== 'undefined' && !!navigator.gpu
+    logLocalWebGpuPreview('navigator.gpu availability checked', {
+      isSecureContext: window.isSecureContext,
+      hasNavigatorGpu,
+    })
+    if (!hasNavigatorGpu) {
+      this.setVisible(false)
+      return
     }
 
-    kclManager.addEventListener(KclManagerEvents.ExecutionDone, onExecutionDone)
-
-    const initialize = async () => {
-      logLocalWebGpuPreview('initializing preview renderer')
-      const [
-        { WebGPURenderer, RenderPipeline },
-        { EdgeRenderer },
-        { createWebGpuSurfaceResources },
-        { pass, vec3, vec4 },
-        { ao },
-      ] = await Promise.all([
-        import('three/webgpu'),
-        import('@src/clientSideScene/localRenderer/EdgeRenderer'),
-        import('@src/clientSideScene/webgpuTrim'),
-        import('three/tsl'),
-        import('three/examples/jsm/tsl/display/GTAONode.js'),
+    const adapter = await navigator.gpu.requestAdapter()
+    logLocalWebGpuPreview('default adapter request completed', {
+      adapterFound: Boolean(adapter),
+      adapterInfo: adapter?.info
+        ? {
+            vendor: adapter.info.vendor,
+            architecture: adapter.info.architecture,
+            description: adapter.info.description,
+          }
+        : null,
+    })
+    if (!adapter) {
+      const [highPerformanceAdapter, lowPowerAdapter] = await Promise.all([
+        navigator.gpu.requestAdapter({ powerPreference: 'high-performance' }),
+        navigator.gpu.requestAdapter({ powerPreference: 'low-power' }),
       ])
-
-      if (disposed) {
-        logLocalWebGpuPreview(
-          'preview disposed before initialization completed'
-        )
-        return
-      }
-
-      const hasNavigatorGpu =
-        typeof navigator !== 'undefined' && !!navigator.gpu
-      logLocalWebGpuPreview('navigator.gpu availability checked', {
-        isSecureContext: window.isSecureContext,
-        hasNavigatorGpu,
+      logLocalWebGpuPreview('fallback adapter requests completed', {
+        highPerformanceAdapterFound: Boolean(highPerformanceAdapter),
+        lowPowerAdapterFound: Boolean(lowPowerAdapter),
       })
-      if (!hasNavigatorGpu) {
-        setVisible(false)
-        return
-      }
+      this.setVisible(false)
+      return
+    }
 
-      const adapter = await navigator.gpu.requestAdapter()
-      logLocalWebGpuPreview('default adapter request completed', {
-        adapterFound: Boolean(adapter),
-        adapterInfo: adapter?.info
+    let device: GPUDevice
+    try {
+      device = await adapter.requestDevice()
+    } catch (error) {
+      logLocalWebGpuPreview('device request failed', {
+        error,
+        adapterInfo: adapter.info
           ? {
               vendor: adapter.info.vendor,
               architecture: adapter.info.architecture,
               description: adapter.info.description,
             }
           : null,
+        adapterFeatures: Array.from(adapter.features.values()),
       })
-      if (!adapter) {
-        const [highPerformanceAdapter, lowPowerAdapter] = await Promise.all([
-          navigator.gpu.requestAdapter({ powerPreference: 'high-performance' }),
-          navigator.gpu.requestAdapter({ powerPreference: 'low-power' }),
-        ])
-        logLocalWebGpuPreview('fallback adapter requests completed', {
-          highPerformanceAdapterFound: Boolean(highPerformanceAdapter),
-          lowPowerAdapterFound: Boolean(lowPowerAdapter),
-        })
-        setVisible(false)
-        return
-      }
+      reportRejection(error)
+      this.setVisible(false)
+      return
+    }
+    logLocalWebGpuPreview('device request completed', {
+      label: device.label,
+    })
 
-      let device: GPUDevice
+    logLocalWebGpuPreview('creating WebGPU renderer')
+    const renderer = new WebGPURenderer({
+      antialias: true,
+      alpha: false,
+      device,
+    })
+    logLocalWebGpuPreview('renderer created')
+    logLocalWebGpuPreview('initializing renderer backend')
+    await renderer.init()
+    if (this.disposed) {
+      logLocalWebGpuPreview(
+        'preview disposed before renderer backend initialization completed'
+      )
+      renderer.dispose()
+      return
+    }
+    logLocalWebGpuPreview('renderer backend initialized')
+    renderer.toneMapping = NeutralToneMapping
+    renderer.toneMappingExposure = 1
+    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.domElement.className =
+      'absolute inset-0 z-20 h-full w-full pointer-events-none'
+    container.appendChild(renderer.domElement)
+    logLocalWebGpuPreview('renderer attached to DOM', {
+      width: container.clientWidth,
+      height: container.clientHeight,
+    })
+
+    const scene = new Scene()
+    this.scene = scene
+    scene.background = new Color(this.backgroundColor)
+    const envMapLoader = new EnvMapLoader(renderer, device)
+    const hdrEnvMapUrl = HDR_ENV_MAP_URL?.trim()
+    if (hdrEnvMapUrl) {
       try {
-        device = await adapter.requestDevice()
-      } catch (error) {
-        logLocalWebGpuPreview('device request failed', {
-          error,
-          adapterInfo: adapter.info
-            ? {
-                vendor: adapter.info.vendor,
-                architecture: adapter.info.architecture,
-                description: adapter.info.description,
-              }
-            : null,
-          adapterFeatures: Array.from(adapter.features.values()),
+        await envMapLoader.loadHdr(scene, hdrEnvMapUrl)
+        logLocalWebGpuPreview('HDR environment loaded', {
+          url: hdrEnvMapUrl,
         })
-        reportRejection(error)
-        setVisible(false)
-        return
-      }
-      logLocalWebGpuPreview('device request completed', {
-        label: device.label,
-      })
-
-      logLocalWebGpuPreview('creating WebGPU renderer')
-      const renderer = new WebGPURenderer({
-        antialias: true,
-        alpha: false,
-        device,
-      })
-      logLocalWebGpuPreview('renderer created')
-      logLocalWebGpuPreview('initializing renderer backend')
-      await renderer.init()
-      if (disposed) {
+      } catch (error) {
         logLocalWebGpuPreview(
-          'preview disposed before renderer backend initialization completed'
+          'HDR environment unavailable; using procedural fallback',
+          { url: hdrEnvMapUrl, error }
         )
-        renderer.dispose()
-        return
-      }
-      logLocalWebGpuPreview('renderer backend initialized')
-      renderer.toneMapping = NeutralToneMapping
-      renderer.toneMappingExposure = 1
-      renderer.setPixelRatio(window.devicePixelRatio)
-      renderer.domElement.className =
-        'absolute inset-0 z-20 h-full w-full pointer-events-none'
-      container.appendChild(renderer.domElement)
-      logLocalWebGpuPreview('renderer attached to DOM', {
-        width: container.clientWidth,
-        height: container.clientHeight,
-      })
-
-      const scene = new Scene()
-      this.scene = scene
-      scene.background = new Color(this.backgroundColor)
-      const envMapLoader = new EnvMapLoader(renderer, device)
-      const hdrEnvMapUrl = HDR_ENV_MAP_URL?.trim()
-      if (hdrEnvMapUrl) {
-        try {
-          await envMapLoader.loadHdr(scene, hdrEnvMapUrl)
-          logLocalWebGpuPreview('HDR environment loaded', {
-            url: hdrEnvMapUrl,
-          })
-        } catch (error) {
-          logLocalWebGpuPreview(
-            'HDR environment unavailable; using procedural fallback',
-            { url: hdrEnvMapUrl, error }
-          )
-          await envMapLoader.loadDefault(scene)
-        }
-      } else {
         await envMapLoader.loadDefault(scene)
       }
-      if (disposed) {
-        envMapLoader.dispose()
-        renderer.dispose()
+    } else {
+      await envMapLoader.loadDefault(scene)
+    }
+    if (this.disposed) {
+      envMapLoader.dispose()
+      renderer.domElement.remove()
+      renderer.dispose()
+      this.scene = null
+      return
+    }
+
+    const edgeRenderer = new EdgeRenderer(this.backgroundColor)
+    this.edgeRenderer = edgeRenderer
+
+    this.exportScene = this.exportCurrentScene
+    this.onExportReady?.(this.exportCurrentScene)
+
+    const sharedCamera = kclManager.sceneInfra.camControls.camera
+    const sharedTarget = kclManager.sceneInfra.camControls.target
+    if (sharedCamera instanceof PerspectiveCamera) {
+      this.previewCamera = sharedCamera.clone()
+      this.previewCamera.aspect =
+        Math.max(container.clientWidth, 1) / Math.max(container.clientHeight, 1)
+    } else if (sharedCamera instanceof OrthographicCamera) {
+      this.previewCamera = sharedCamera.clone()
+    } else {
+      this.previewCamera = new PerspectiveCamera(45, 1, 0.01, 1000)
+    }
+    this.previewCamera.layers.mask = sharedCamera.layers.mask
+    this.previewTarget.copy(sharedTarget)
+    logLocalWebGpuPreview('preview camera created', {
+      cameraType: this.previewCamera.type,
+      cameraPosition: this.previewCamera.position.toArray(),
+      target: this.previewTarget.toArray(),
+      layerMask: this.previewCamera.layers.mask,
+    })
+    this.unregisterSharedCameraListener =
+      kclManager.sceneInfra.camControls.cameraChange.add(() => {
+        this.syncPreviewCameraFromShared()
+      })
+
+    this.runtimeModules = {
+      RenderPipeline,
+      createWebGpuSurfaceResources,
+      pass,
+      vec3,
+      vec4,
+      createAmbientOcclusion: ao as CreateAmbientOcclusion,
+    }
+    this.renderer = renderer
+    this.envMapLoader = envMapLoader
+    this.requestRender = this.scheduleRender
+
+    this.unregisterLocalSelectionProvider =
+      registerLocalSelectionCommandProvider({
+        isActive: () => this.isVisible,
+        handleCommand: async (command, { streamDimensions }) => {
+          if (command.type !== 'modeling_cmd_req') {
+            return null
+          }
+
+          const { cmd, cmd_id } = command
+          switch (cmd.type) {
+            case 'highlight_set_entity': {
+              if (!this.commandProxyEnabled) {
+                return null
+              }
+              const intersection = this.pickRenderableFromWindowCoordinates({
+                x: cmd.selected_at_window.x,
+                y: cmd.selected_at_window.y,
+                streamWidth: streamDimensions.width,
+                streamHeight: streamDimensions.height,
+              })
+              this.updateHoverFromIntersection(intersection)
+              const object = intersection?.object ?? null
+              const resolvedSelectionEntity =
+                this.getResolvedSelectionEntity(object)
+              return {
+                unreliableModelingResponse: {
+                  type: 'highlight_set_entity',
+                  data: {
+                    entity_id: resolvedSelectionEntity?.entityId ?? '',
+                    sequence: 'sequence' in cmd ? cmd.sequence : undefined,
+                  },
+                },
+              }
+            }
+            case 'select_with_point': {
+              if (!this.commandProxyEnabled) {
+                return null
+              }
+              const intersection = this.pickRenderableFromWindowCoordinates({
+                x: cmd.selected_at_window.x,
+                y: cmd.selected_at_window.y,
+                streamWidth: streamDimensions.width,
+                streamHeight: streamDimensions.height,
+              })
+              const object = intersection?.object ?? null
+              const resolvedSelectionEntity =
+                this.getResolvedSelectionEntity(object)
+              const modelingResponse = {
+                type: 'select_with_point',
+                data: {
+                  entity_id: resolvedSelectionEntity?.entityId ?? '',
+                },
+              }
+              return {
+                modelingResponse,
+                websocketResponse: {
+                  success: true,
+                  request_id: cmd_id,
+                  resp: {
+                    type: 'modeling',
+                    data: {
+                      modeling_response: modelingResponse,
+                    },
+                  },
+                } as never,
+              }
+            }
+            case 'entity_get_parent_id': {
+              if (!this.commandProxyEnabled) {
+                return null
+              }
+              const object =
+                this.selectionEntityIdToObject.get(cmd.entity_id) ?? null
+              const metadata = object
+                ? getPickedObjectMetadata(object, this.parserState)
+                : null
+              const primitiveExtras = isKittycadPrimitiveExtras(
+                metadata?.kittycadPrimitiveExtras
+              )
+                ? metadata.kittycadPrimitiveExtras
+                : null
+              const edgeExtras = isKittycadEdgeExtras(
+                metadata?.kittycadEdgeExtras
+              )
+                ? metadata.kittycadEdgeExtras
+                : null
+              const resolvedSelectionEntity =
+                this.getResolvedSelectionEntity(object)
+              const modelingResponse = {
+                type: 'entity_get_parent_id',
+                data: {
+                  entity_id:
+                    resolvedSelectionEntity?.parentEntityId ??
+                    primitiveExtras?.object_id ??
+                    edgeExtras?.object_id ??
+                    '',
+                },
+              }
+              return {
+                websocketResponse: {
+                  success: true,
+                  request_id: cmd_id,
+                  resp: {
+                    type: 'modeling',
+                    data: {
+                      modeling_response: modelingResponse,
+                    },
+                  },
+                } as never,
+              }
+            }
+            case 'entity_get_primitive_index': {
+              if (!this.commandProxyEnabled) {
+                return null
+              }
+              const object =
+                this.selectionEntityIdToObject.get(cmd.entity_id) ?? null
+              const metadata = object
+                ? getPickedObjectMetadata(object, this.parserState)
+                : null
+              const primitiveExtras = isKittycadPrimitiveExtras(
+                metadata?.kittycadPrimitiveExtras
+              )
+                ? metadata.kittycadPrimitiveExtras
+                : null
+              const edgeExtras = isKittycadEdgeExtras(
+                metadata?.kittycadEdgeExtras
+              )
+                ? metadata.kittycadEdgeExtras
+                : null
+              const resolvedSelectionEntity =
+                this.getResolvedSelectionEntity(object)
+              const modelingResponse = {
+                type: 'entity_get_primitive_index',
+                data: {
+                  entity_type: resolvedSelectionEntity?.entityType ?? 'face',
+                  primitive_index:
+                    resolvedSelectionEntity?.primitiveIndex ??
+                    primitiveExtras?.primitive_index ??
+                    edgeExtras?.edge_index ??
+                    -1,
+                },
+              }
+              return {
+                websocketResponse: {
+                  success: true,
+                  request_id: cmd_id,
+                  resp: {
+                    type: 'modeling',
+                    data: {
+                      modeling_response: modelingResponse,
+                    },
+                  },
+                } as never,
+              }
+            }
+            case 'region_get_query_point': {
+              if (!this.commandProxyEnabled) {
+                return null
+              }
+              const object =
+                this.selectionEntityIdToObject.get(cmd.region_id) ?? null
+              const metadata = object
+                ? getPickedObjectMetadata(object, this.parserState)
+                : null
+              const regionExtras = isKittycadRegionExtras(
+                metadata?.kittycadRegionExtras
+              )
+                ? metadata.kittycadRegionExtras
+                : null
+              const modelingResponse = {
+                type: 'region_get_query_point',
+                data: {
+                  query_point: regionExtras?.query_point ?? { x: 0, y: 0 },
+                },
+              }
+              return {
+                websocketResponse: {
+                  success: true,
+                  request_id: cmd_id,
+                  resp: {
+                    type: 'modeling',
+                    data: {
+                      modeling_response: modelingResponse,
+                    },
+                  },
+                } as never,
+              }
+            }
+            case 'select_clear': {
+              if (!this.commandProxyEnabled) {
+                return null
+              }
+              this.updateSelectedMeshes({
+                nextSelectedMeshes: new Set<Object3D>(),
+                selectionSummary: null,
+              })
+              return { websocketResponse: null }
+            }
+            case 'select_add': {
+              if (!this.commandProxyEnabled) {
+                return null
+              }
+              const nextSelectedMeshes = new Set<Object3D>()
+              for (const entityId of cmd.entities) {
+                const object = this.selectionEntityIdToObject.get(entityId)
+                if (object) {
+                  nextSelectedMeshes.add(object)
+                }
+              }
+              const firstSelectedMesh =
+                nextSelectedMeshes.values().next().value ?? null
+              const resolvedSelectionEntity =
+                this.getResolvedSelectionEntity(firstSelectedMesh)
+              const selectionSummary = firstSelectedMesh
+                ? summarizePickedObject(
+                    firstSelectedMesh,
+                    this.parserState,
+                    resolvedSelectionEntity
+                  )
+                : null
+              this.updateSelectedMeshes({
+                nextSelectedMeshes,
+                selectionSummary,
+              })
+              return { websocketResponse: null }
+            }
+            case 'enable_sketch_mode': {
+              const mesh =
+                this.selectionEntityIdToObject.get(cmd.entity_id) ?? null
+              if (!mesh) {
+                logLocalWebGpuPreview('local sketch mode plane mesh missing', {
+                  entityId: cmd.entity_id,
+                  knownSelectionEntityIds: Array.from(
+                    this.selectionEntityIdToObject.keys()
+                  ).slice(0, 20),
+                })
+                return null
+              }
+              if (!(mesh instanceof Mesh)) {
+                logLocalWebGpuPreview(
+                  'local sketch mode plane derivation failed',
+                  {
+                    entityId: cmd.entity_id,
+                    meshName: mesh.name || null,
+                    meshType: mesh.type,
+                    reason: 'selected entity is not a face mesh',
+                  }
+                )
+                return null
+              }
+              this.activeSketchModePlane = deriveSketchModePlaneFromMesh(
+                mesh,
+                kclManager.sceneInfra.camControls.camera
+              )
+              if (!this.activeSketchModePlane) {
+                logLocalWebGpuPreview(
+                  'local sketch mode plane derivation failed',
+                  {
+                    entityId: cmd.entity_id,
+                    meshName: mesh.name || null,
+                    meshType: mesh.type,
+                    metadata: summarizePickedObject(
+                      mesh,
+                      this.parserState,
+                      this.getResolvedSelectionEntity(mesh)
+                    ),
+                  }
+                )
+                return null
+              }
+              logLocalWebGpuPreview('local sketch mode plane prepared', {
+                entityId: cmd.entity_id,
+                meshName: mesh.name || null,
+                meshDebug: {
+                  ...summarizeMeshWorldGeometry(mesh),
+                  metadata: summarizePickedObject(
+                    mesh,
+                    this.parserState,
+                    this.getResolvedSelectionEntity(mesh)
+                  ),
+                },
+                plane: summarizeSketchModePlane(this.activeSketchModePlane),
+              })
+              const modelingResponse = {
+                type: 'enable_sketch_mode',
+                data: {},
+              }
+              return {
+                modelingResponse,
+                websocketResponse: {
+                  success: true,
+                  request_id: cmd_id,
+                  resp: {
+                    type: 'modeling',
+                    data: {
+                      modeling_response: modelingResponse,
+                    },
+                  },
+                } as never,
+              }
+            }
+            case 'get_sketch_mode_plane': {
+              if (!this.activeSketchModePlane) {
+                logLocalWebGpuPreview(
+                  'local sketch mode plane missing for request'
+                )
+                return null
+              }
+              logLocalWebGpuPreview('local sketch mode plane requested', {
+                plane: summarizeSketchModePlane(this.activeSketchModePlane),
+              })
+              const modelingResponse = {
+                type: 'get_sketch_mode_plane',
+                data: this.activeSketchModePlane,
+              }
+              return {
+                modelingResponse,
+                websocketResponse: {
+                  success: true,
+                  request_id: cmd_id,
+                  resp: {
+                    type: 'modeling',
+                    data: {
+                      modeling_response: modelingResponse,
+                    },
+                  },
+                } as never,
+              }
+            }
+            case 'sketch_mode_disable': {
+              logLocalWebGpuPreview('local sketch mode disabled', {
+                plane: summarizeSketchModePlane(this.activeSketchModePlane),
+              })
+              this.activeSketchModePlane = null
+              const modelingResponse = {
+                type: 'sketch_mode_disable',
+                data: {},
+              }
+              return {
+                modelingResponse,
+                websocketResponse: {
+                  success: true,
+                  request_id: cmd_id,
+                  resp: {
+                    type: 'modeling',
+                    data: {
+                      modeling_response: modelingResponse,
+                    },
+                  },
+                } as never,
+              }
+            }
+            default:
+              return null
+          }
+        },
+      })
+
+    this.resize()
+    this.syncPreviewCameraFromShared()
+    this.resizeObserver = new ResizeObserver(this.resize)
+    this.resizeObserver.observe(container)
+
+    this.requestRender?.()
+    logLocalWebGpuPreview('render mode set to on-demand')
+
+    this.refreshModel = async () => {
+      const refreshId = ++this.currentRefreshId
+      logLocalWebGpuPreview('starting model refresh', {
+        refreshId,
+        hasLastSuccessfulCode: Boolean(kclManager.lastSuccessfulCode),
+      })
+      await kclManager.rustContext.waitForAllEngineModelingCommands()
+
+      if (this.disposed || refreshId !== this.currentRefreshId) {
+        logLocalWebGpuPreview('dropping stale refresh after engine wait', {
+          disposed: this.disposed,
+          refreshId,
+          currentRefreshId: this.currentRefreshId,
+        })
         return
       }
 
-      const edgeRenderer = new EdgeRenderer(this.backgroundColor)
-      this.edgeRenderer = edgeRenderer
+      const exportSettings = jsAppSettings(kclManager.rustContext.settingsActor)
+      let renderPacket: LocalRenderPacket | undefined
+      const maxRenderPacketAttempts = 3
+      for (let attempt = 1; attempt <= maxRenderPacketAttempts; attempt++) {
+        renderPacket = undefined
+        const encodedRenderPacket: RenderPacket | undefined =
+          await kclManager.rustContext.exportRenderPacket(exportSettings)
 
-      const exportCurrentScene = async () => {
-        if (!currentModel) {
-          logLocalWebGpuPreview('GLB export skipped; no current model')
-          return
-        }
-
-        const modelToExport = currentModel
-        const trimStates = new Map<Object3D, unknown>()
-        modelToExport.traverse((object) => {
-          if ('kittycadTrimState' in object.userData) {
-            trimStates.set(object, object.userData.kittycadTrimState)
-            delete object.userData.kittycadTrimState
-          }
-        })
-
-        try {
-          modelToExport.updateMatrixWorld(true)
-          const { GLTFExporter } = await import(
-            'three/examples/jsm/exporters/GLTFExporter.js'
-          )
-          const exporter = new GLTFExporter()
-          const result = await exporter.parseAsync(modelToExport, {
-            binary: true,
-            onlyVisible: true,
-          })
-          if (!(result instanceof ArrayBuffer)) {
-            return Promise.reject(
-              new Error('GLTFExporter did not produce a binary GLB')
-            )
-          }
-
-          const blob = new Blob([result], { type: 'model/gltf-binary' })
-          const downloadUrl = URL.createObjectURL(blob)
-          const downloadLink = document.createElement('a')
-          const timestamp = new Date().toISOString().replaceAll(':', '-')
-          downloadLink.href = downloadUrl
-          downloadLink.download = `render-packet-scene-${timestamp}.glb`
-          downloadLink.style.display = 'none'
-          document.body.appendChild(downloadLink)
-          downloadLink.click()
-          downloadLink.remove()
-          window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000)
-
-          logLocalWebGpuPreview('current Three.js scene exported as GLB', {
-            bytes: result.byteLength,
-            filename: downloadLink.download,
-          })
-        } finally {
-          trimStates.forEach((trimState, object) => {
-            object.userData.kittycadTrimState = trimState
-          })
-        }
-      }
-      this.exportScene = exportCurrentScene
-      this.onExportReady?.(exportCurrentScene)
-
-      const sharedCamera = kclManager.sceneInfra.camControls.camera
-      const sharedTarget = kclManager.sceneInfra.camControls.target
-      if (sharedCamera instanceof PerspectiveCamera) {
-        previewCamera = sharedCamera.clone()
-        previewCamera.aspect =
-          Math.max(container.clientWidth, 1) /
-          Math.max(container.clientHeight, 1)
-      } else if (sharedCamera instanceof OrthographicCamera) {
-        previewCamera = sharedCamera.clone()
-      } else {
-        previewCamera = new PerspectiveCamera(45, 1, 0.01, 1000)
-      }
-      previewCamera.layers.mask = sharedCamera.layers.mask
-      previewTarget.copy(sharedTarget)
-      logLocalWebGpuPreview('preview camera created', {
-        cameraType: previewCamera.type,
-        cameraPosition: previewCamera.position.toArray(),
-        target: previewTarget.toArray(),
-        layerMask: previewCamera.layers.mask,
-      })
-      const unregisterSharedCameraListener =
-        kclManager.sceneInfra.camControls.cameraChange.add(() => {
-          syncPreviewCameraFromShared()
-        })
-
-      // Three's WebGPU ambient-occlusion implementation is GTAO. Reconstruct
-      // normals from depth so edge and sketch line materials do not need to
-      // provide a normal output to an MRT render pass.
-      type AmbientOcclusionPass = ReturnType<typeof ao> & {
-        dispose: () => void
-      }
-      const createAmbientOcclusion = ao as (
-        depthNode: Parameters<typeof ao>[0],
-        normalNode: Parameters<typeof ao>[1] | null,
-        camera: Parameters<typeof ao>[2]
-      ) => AmbientOcclusionPass
-      let ambientOcclusionRadius = 0.01
-      let ambientOcclusionPipeline: {
-        camera: PerspectiveCamera | OrthographicCamera
-        pipeline: InstanceType<typeof RenderPipeline>
-        scenePass: ReturnType<typeof pass>
-        aoPass: AmbientOcclusionPass
-      } | null = null
-
-      const disposeAmbientOcclusionPipeline = () => {
-        ambientOcclusionPipeline?.pipeline.dispose()
-        ambientOcclusionPipeline?.scenePass.dispose()
-        ambientOcclusionPipeline?.aoPass.dispose()
-        ambientOcclusionPipeline = null
-      }
-
-      const configureAmbientOcclusion = (aoPass: AmbientOcclusionPass) => {
-        aoPass.radius.value = ambientOcclusionRadius
-        aoPass.thickness.value = ambientOcclusionRadius * 3
-        aoPass.distanceFallOff.value = 0.5
-        aoPass.scale.value = 1
-      }
-
-      const updateAmbientOcclusionScale = (modelBounds: Box3) => {
-        if (modelBounds.isEmpty()) {
-          return
-        }
-        const size = modelBounds.getSize(new Vector3())
-        const modelScale = Math.max(size.x, size.y, size.z)
-        if (!Number.isFinite(modelScale) || modelScale <= 0) {
-          return
-        }
-
-        // Render-packet geometry is expressed in meters. Keep the sampling
-        // radius proportional to the part instead of GTAO's room-scale default.
-        ambientOcclusionRadius = Math.max(modelScale * 0.05, 0.00001)
-        if (ambientOcclusionPipeline) {
-          configureAmbientOcclusion(ambientOcclusionPipeline.aoPass)
-        }
-      }
-
-      const renderPreview = () => {
-        if (!previewCamera) {
-          return
-        }
-
-        if (!this.enableSSAO || this.forceHide) {
-          renderer.render(scene, previewCamera)
-          return
-        }
-
-        if (ambientOcclusionPipeline?.camera !== previewCamera) {
-          disposeAmbientOcclusionPipeline()
-
-          // GTAO expects a regular depth texture. The renderer itself can keep
-          // using MSAA, but this intermediate pass must be single-sampled.
-          const scenePass = pass(scene, previewCamera, { samples: 0 })
-          const scenePassColor = scenePass.getTextureNode()
-          const scenePassDepth = scenePass.getTextureNode('depth')
-          const aoPass = createAmbientOcclusion(
-            scenePassDepth,
-            null,
-            previewCamera
-          )
-          aoPass.resolutionScale = 0.5
-          configureAmbientOcclusion(aoPass)
-
-          const pipeline = new RenderPipeline(renderer)
-          const aoOutput = aoPass.getTextureNode()
-          // Preserve some indirect light even at maximum occlusion while
-          // leaving enough contrast to make the setting visibly effective.
-          const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
-          pipeline.outputNode = scenePassColor.mul(
-            vec4(vec3(ambientOcclusion), 1)
-          )
-
-          ambientOcclusionPipeline = {
-            camera: previewCamera,
-            pipeline,
-            scenePass,
-            aoPass,
-          }
-        }
-
-        ambientOcclusionPipeline.pipeline.render()
-      }
-
-      requestRender = () => {
-        if (disposed || !previewCamera || animationFrameId !== -1) {
-          return
-        }
-
-        animationFrameId = requestAnimationFrame(() => {
-          animationFrameId = -1
-          if (disposed || !previewCamera) {
-            return
-          }
-
-          renderPreview()
-        })
-      }
-      this.requestRender = requestRender
-
-      const resize = () => {
-        const width = container.clientWidth
-        const height = container.clientHeight
-        if (width === 0 || height === 0) {
-          return
-        }
-        renderer.setSize(width, height, false)
-        if (previewCamera instanceof PerspectiveCamera) {
-          previewCamera.aspect = width / height
-          previewCamera.updateProjectionMatrix()
-        } else {
-          syncPreviewCameraFromShared()
-        }
-        requestRender?.()
-      }
-
-      const unregisterLocalSelectionProvider =
-        registerLocalSelectionCommandProvider({
-          isActive: () => isVisible,
-          handleCommand: async (command, { streamDimensions }) => {
-            if (command.type !== 'modeling_cmd_req') {
-              return null
-            }
-
-            const { cmd, cmd_id } = command
-            switch (cmd.type) {
-              case 'highlight_set_entity': {
-                if (!this.commandProxyEnabled) {
-                  return null
-                }
-                const intersection = pickRenderableFromWindowCoordinates({
-                  x: cmd.selected_at_window.x,
-                  y: cmd.selected_at_window.y,
-                  streamWidth: streamDimensions.width,
-                  streamHeight: streamDimensions.height,
-                })
-                updateHoverFromIntersection(intersection)
-                const object = intersection?.object ?? null
-                const resolvedSelectionEntity =
-                  getResolvedSelectionEntity(object)
-                return {
-                  unreliableModelingResponse: {
-                    type: 'highlight_set_entity',
-                    data: {
-                      entity_id: resolvedSelectionEntity?.entityId ?? '',
-                      sequence: 'sequence' in cmd ? cmd.sequence : undefined,
-                    },
-                  },
-                }
-              }
-              case 'select_with_point': {
-                if (!this.commandProxyEnabled) {
-                  return null
-                }
-                const intersection = pickRenderableFromWindowCoordinates({
-                  x: cmd.selected_at_window.x,
-                  y: cmd.selected_at_window.y,
-                  streamWidth: streamDimensions.width,
-                  streamHeight: streamDimensions.height,
-                })
-                const object = intersection?.object ?? null
-                const resolvedSelectionEntity =
-                  getResolvedSelectionEntity(object)
-                const modelingResponse = {
-                  type: 'select_with_point',
-                  data: {
-                    entity_id: resolvedSelectionEntity?.entityId ?? '',
-                  },
-                }
-                return {
-                  modelingResponse,
-                  websocketResponse: {
-                    success: true,
-                    request_id: cmd_id,
-                    resp: {
-                      type: 'modeling',
-                      data: {
-                        modeling_response: modelingResponse,
-                      },
-                    },
-                  } as never,
-                }
-              }
-              case 'entity_get_parent_id': {
-                if (!this.commandProxyEnabled) {
-                  return null
-                }
-                const object =
-                  selectionEntityIdToObject.get(cmd.entity_id) ?? null
-                const metadata = object
-                  ? getPickedObjectMetadata(object, parserState)
-                  : null
-                const primitiveExtras = isKittycadPrimitiveExtras(
-                  metadata?.kittycadPrimitiveExtras
-                )
-                  ? metadata.kittycadPrimitiveExtras
-                  : null
-                const edgeExtras = isKittycadEdgeExtras(
-                  metadata?.kittycadEdgeExtras
-                )
-                  ? metadata.kittycadEdgeExtras
-                  : null
-                const resolvedSelectionEntity =
-                  getResolvedSelectionEntity(object)
-                const modelingResponse = {
-                  type: 'entity_get_parent_id',
-                  data: {
-                    entity_id:
-                      resolvedSelectionEntity?.parentEntityId ??
-                      primitiveExtras?.object_id ??
-                      edgeExtras?.object_id ??
-                      '',
-                  },
-                }
-                return {
-                  websocketResponse: {
-                    success: true,
-                    request_id: cmd_id,
-                    resp: {
-                      type: 'modeling',
-                      data: {
-                        modeling_response: modelingResponse,
-                      },
-                    },
-                  } as never,
-                }
-              }
-              case 'entity_get_primitive_index': {
-                if (!this.commandProxyEnabled) {
-                  return null
-                }
-                const object =
-                  selectionEntityIdToObject.get(cmd.entity_id) ?? null
-                const metadata = object
-                  ? getPickedObjectMetadata(object, parserState)
-                  : null
-                const primitiveExtras = isKittycadPrimitiveExtras(
-                  metadata?.kittycadPrimitiveExtras
-                )
-                  ? metadata.kittycadPrimitiveExtras
-                  : null
-                const edgeExtras = isKittycadEdgeExtras(
-                  metadata?.kittycadEdgeExtras
-                )
-                  ? metadata.kittycadEdgeExtras
-                  : null
-                const resolvedSelectionEntity =
-                  getResolvedSelectionEntity(object)
-                const modelingResponse = {
-                  type: 'entity_get_primitive_index',
-                  data: {
-                    entity_type: resolvedSelectionEntity?.entityType ?? 'face',
-                    primitive_index:
-                      resolvedSelectionEntity?.primitiveIndex ??
-                      primitiveExtras?.primitive_index ??
-                      edgeExtras?.edge_index ??
-                      -1,
-                  },
-                }
-                return {
-                  websocketResponse: {
-                    success: true,
-                    request_id: cmd_id,
-                    resp: {
-                      type: 'modeling',
-                      data: {
-                        modeling_response: modelingResponse,
-                      },
-                    },
-                  } as never,
-                }
-              }
-              case 'region_get_query_point': {
-                if (!this.commandProxyEnabled) {
-                  return null
-                }
-                const object =
-                  selectionEntityIdToObject.get(cmd.region_id) ?? null
-                const metadata = object
-                  ? getPickedObjectMetadata(object, parserState)
-                  : null
-                const regionExtras = isKittycadRegionExtras(
-                  metadata?.kittycadRegionExtras
-                )
-                  ? metadata.kittycadRegionExtras
-                  : null
-                const modelingResponse = {
-                  type: 'region_get_query_point',
-                  data: {
-                    query_point: regionExtras?.query_point ?? { x: 0, y: 0 },
-                  },
-                }
-                return {
-                  websocketResponse: {
-                    success: true,
-                    request_id: cmd_id,
-                    resp: {
-                      type: 'modeling',
-                      data: {
-                        modeling_response: modelingResponse,
-                      },
-                    },
-                  } as never,
-                }
-              }
-              case 'select_clear': {
-                if (!this.commandProxyEnabled) {
-                  return null
-                }
-                updateSelectedMeshes({
-                  nextSelectedMeshes: new Set<Object3D>(),
-                  selectionSummary: null,
-                })
-                return { websocketResponse: null }
-              }
-              case 'select_add': {
-                if (!this.commandProxyEnabled) {
-                  return null
-                }
-                const nextSelectedMeshes = new Set<Object3D>()
-                for (const entityId of cmd.entities) {
-                  const object = selectionEntityIdToObject.get(entityId)
-                  if (object) {
-                    nextSelectedMeshes.add(object)
-                  }
-                }
-                const firstSelectedMesh =
-                  nextSelectedMeshes.values().next().value ?? null
-                const resolvedSelectionEntity =
-                  getResolvedSelectionEntity(firstSelectedMesh)
-                const selectionSummary = firstSelectedMesh
-                  ? summarizePickedObject(
-                      firstSelectedMesh,
-                      parserState,
-                      resolvedSelectionEntity
-                    )
-                  : null
-                updateSelectedMeshes({
-                  nextSelectedMeshes,
-                  selectionSummary,
-                })
-                return { websocketResponse: null }
-              }
-              case 'enable_sketch_mode': {
-                const mesh =
-                  selectionEntityIdToObject.get(cmd.entity_id) ?? null
-                if (!mesh) {
-                  logLocalWebGpuPreview(
-                    'local sketch mode plane mesh missing',
-                    {
-                      entityId: cmd.entity_id,
-                      knownSelectionEntityIds: Array.from(
-                        selectionEntityIdToObject.keys()
-                      ).slice(0, 20),
-                    }
-                  )
-                  return null
-                }
-                if (!(mesh instanceof Mesh)) {
-                  logLocalWebGpuPreview(
-                    'local sketch mode plane derivation failed',
-                    {
-                      entityId: cmd.entity_id,
-                      meshName: mesh.name || null,
-                      meshType: mesh.type,
-                      reason: 'selected entity is not a face mesh',
-                    }
-                  )
-                  return null
-                }
-                activeSketchModePlane = deriveSketchModePlaneFromMesh(
-                  mesh,
-                  kclManager.sceneInfra.camControls.camera
-                )
-                if (!activeSketchModePlane) {
-                  logLocalWebGpuPreview(
-                    'local sketch mode plane derivation failed',
-                    {
-                      entityId: cmd.entity_id,
-                      meshName: mesh.name || null,
-                      meshType: mesh.type,
-                      metadata: summarizePickedObject(
-                        mesh,
-                        parserState,
-                        getResolvedSelectionEntity(mesh)
-                      ),
-                    }
-                  )
-                  return null
-                }
-                logLocalWebGpuPreview('local sketch mode plane prepared', {
-                  entityId: cmd.entity_id,
-                  meshName: mesh.name || null,
-                  meshDebug: {
-                    ...summarizeMeshWorldGeometry(mesh),
-                    metadata: summarizePickedObject(
-                      mesh,
-                      parserState,
-                      getResolvedSelectionEntity(mesh)
-                    ),
-                  },
-                  plane: summarizeSketchModePlane(activeSketchModePlane),
-                })
-                const modelingResponse = {
-                  type: 'enable_sketch_mode',
-                  data: {},
-                }
-                return {
-                  modelingResponse,
-                  websocketResponse: {
-                    success: true,
-                    request_id: cmd_id,
-                    resp: {
-                      type: 'modeling',
-                      data: {
-                        modeling_response: modelingResponse,
-                      },
-                    },
-                  } as never,
-                }
-              }
-              case 'get_sketch_mode_plane': {
-                if (!activeSketchModePlane) {
-                  logLocalWebGpuPreview(
-                    'local sketch mode plane missing for request'
-                  )
-                  return null
-                }
-                logLocalWebGpuPreview('local sketch mode plane requested', {
-                  plane: summarizeSketchModePlane(activeSketchModePlane),
-                })
-                const modelingResponse = {
-                  type: 'get_sketch_mode_plane',
-                  data: activeSketchModePlane,
-                }
-                return {
-                  modelingResponse,
-                  websocketResponse: {
-                    success: true,
-                    request_id: cmd_id,
-                    resp: {
-                      type: 'modeling',
-                      data: {
-                        modeling_response: modelingResponse,
-                      },
-                    },
-                  } as never,
-                }
-              }
-              case 'sketch_mode_disable': {
-                logLocalWebGpuPreview('local sketch mode disabled', {
-                  plane: summarizeSketchModePlane(activeSketchModePlane),
-                })
-                activeSketchModePlane = null
-                const modelingResponse = {
-                  type: 'sketch_mode_disable',
-                  data: {},
-                }
-                return {
-                  modelingResponse,
-                  websocketResponse: {
-                    success: true,
-                    request_id: cmd_id,
-                    resp: {
-                      type: 'modeling',
-                      data: {
-                        modeling_response: modelingResponse,
-                      },
-                    },
-                  } as never,
-                }
-              }
-              default:
-                return null
-            }
-          },
-        })
-
-      resize()
-      syncPreviewCameraFromShared()
-      resizeObserver = new ResizeObserver(resize)
-      resizeObserver.observe(container)
-
-      const clearModel = () => {
-        if (currentModel) {
-          scene.remove(currentModel)
-          edgeRenderer.removeFromParent()
-          disposeObject3D(currentModel)
-          currentModel = null
-        }
-
-        currentSurfaceResources?.dispose(renderer)
-        currentSurfaceResources = null
-        selectionEntityIdToObject.clear()
-        requestRender?.()
-      }
-
-      const hydrateCurrentModelMetadata = () => {
-        if (!currentModel) {
-          selectionEntityIdToObject.clear()
-          return
-        }
-
-        selectionEntityIdToObject = new Map<string, Object3D>()
-        currentModel.traverse((object) => {
-          object.layers.mask = previewCamera?.layers.mask ?? object.layers.mask
-
-          const metadata = getPickedObjectMetadata(object, parserState)
-          if (
-            !(object instanceof Mesh) &&
-            !(object instanceof Line) &&
-            !metadata.kittycadEdgeExtras
-          ) {
-            return
-          }
-
-          if (object instanceof Mesh && metadata.primitiveExtras) {
-            object.userData.gltfPrimitiveExtras = metadata.primitiveExtras
-          }
-          if (object instanceof Mesh && metadata.kittycadPrimitiveExtras) {
-            object.userData.kittycadPrimitiveExtras =
-              metadata.kittycadPrimitiveExtras
-            if (isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)) {
-              const resolvedSelectionEntity =
-                resolveSelectionEntityFromPrimitiveExtras(
-                  metadata.kittycadPrimitiveExtras,
-                  kclManager.artifactGraph
-                )
-              object.userData.kittycadSelectionEntityId =
-                resolvedSelectionEntity.entityId
-              object.userData.kittycadParentEntityId =
-                resolvedSelectionEntity.parentEntityId
-              object.userData.kittycadPrimitiveIndex =
-                resolvedSelectionEntity.primitiveIndex
-              selectionEntityIdToObject.set(
-                resolvedSelectionEntity.entityId,
-                object
-              )
-              selectionEntityIdToObject.set(
-                metadata.kittycadPrimitiveExtras.face_id,
-                object
-              )
-            }
-          }
-          if (metadata.kittycadEdgeExtras) {
-            object.userData.kittycadEdgeExtras = metadata.kittycadEdgeExtras
-            if (isKittycadEdgeExtras(metadata.kittycadEdgeExtras)) {
-              const resolvedSelectionEntity =
-                resolveSelectionEntityFromEdgeExtras(
-                  metadata.kittycadEdgeExtras,
-                  kclManager.artifactGraph
-                )
-              object.userData.kittycadSelectionEntityId =
-                resolvedSelectionEntity.entityId
-              object.userData.kittycadParentEntityId =
-                resolvedSelectionEntity.parentEntityId
-              object.userData.kittycadPrimitiveIndex =
-                resolvedSelectionEntity.primitiveIndex
-              selectionEntityIdToObject.set(
-                resolvedSelectionEntity.entityId,
-                object
-              )
-              selectionEntityIdToObject.set(
-                metadata.kittycadEdgeExtras.edge_id,
-                object
-              )
-            }
-          }
-          if (object instanceof Line && metadata.kittycadSketchExtras) {
-            object.userData.kittycadSketchExtras = metadata.kittycadSketchExtras
-            if (isKittycadSketchExtras(metadata.kittycadSketchExtras)) {
-              const resolvedSelectionEntity =
-                resolveSelectionEntityFromSketchExtras(
-                  metadata.kittycadSketchExtras,
-                  kclManager.artifactGraph
-                )
-              if (resolvedSelectionEntity) {
-                object.userData.kittycadSelectionEntityId =
-                  resolvedSelectionEntity.entityId
-                object.userData.kittycadParentEntityId =
-                  resolvedSelectionEntity.parentEntityId
-                object.userData.kittycadPrimitiveIndex =
-                  resolvedSelectionEntity.primitiveIndex
-                selectionEntityIdToObject.set(
-                  resolvedSelectionEntity.entityId,
-                  object
-                )
-              }
-            }
-          }
-          if (object instanceof Mesh && metadata.kittycadRegionExtras) {
-            object.userData.kittycadRegionExtras = metadata.kittycadRegionExtras
-            if (isKittycadRegionExtras(metadata.kittycadRegionExtras)) {
-              const resolvedSelectionEntity =
-                resolveSelectionEntityFromRegionExtras(
-                  metadata.kittycadRegionExtras
-                )
-              object.userData.kittycadSelectionEntityId =
-                resolvedSelectionEntity.entityId
-              object.userData.kittycadParentEntityId =
-                resolvedSelectionEntity.parentEntityId
-              object.userData.kittycadPrimitiveIndex =
-                resolvedSelectionEntity.primitiveIndex
-              selectionEntityIdToObject.set(
-                resolvedSelectionEntity.entityId,
-                object
-              )
-            }
-          }
-        })
-      }
-      requestRender()
-      logLocalWebGpuPreview('render mode set to on-demand')
-
-      refreshModel = async () => {
-        const refreshId = ++currentRefreshId
-        logLocalWebGpuPreview('starting model refresh', {
-          refreshId,
-          hasLastSuccessfulCode: Boolean(kclManager.lastSuccessfulCode),
-        })
-        await kclManager.rustContext.waitForAllEngineModelingCommands()
-
-        if (disposed || refreshId !== currentRefreshId) {
-          logLocalWebGpuPreview('dropping stale refresh after engine wait', {
-            disposed,
-            refreshId,
-            currentRefreshId,
-          })
-          return
-        }
-
-        const exportSettings = jsAppSettings(
-          kclManager.rustContext.settingsActor
+        console.info(
+          `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet received`,
+          encodedRenderPacket
         )
-        let renderPacket: LocalRenderPacket | undefined
-        const maxRenderPacketAttempts = 3
-        for (let attempt = 1; attempt <= maxRenderPacketAttempts; attempt++) {
-          renderPacket = undefined
-          const encodedRenderPacket: RenderPacket | undefined =
-            await kclManager.rustContext.exportRenderPacket(exportSettings)
 
-          console.info(
-            `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet received`,
-            encodedRenderPacket
-          )
-
-          if (encodedRenderPacket) {
-            const decodedRenderPacket = decodeRenderPacket(encodedRenderPacket)
-            if (decodedRenderPacket instanceof Error) {
-              logLocalWebGpuPreview('render packet decoding failed', {
-                refreshId,
-                attempt,
-                error: decodedRenderPacket.message,
-              })
-            } else {
-              renderPacket = decodedRenderPacket
-            }
-          }
-
-          if (disposed || refreshId !== currentRefreshId) {
-            logLocalWebGpuPreview('dropping stale refresh result', {
-              disposed,
-              refreshId,
-              currentRefreshId,
-            })
-            return
-          }
-
-          if (
-            renderPacket &&
-            (renderPacket.primitives.length > 0 ||
-              renderPacket.edges.length > 0)
-          ) {
-            break
-          }
-
-          if (attempt < maxRenderPacketAttempts) {
-            logLocalWebGpuPreview('render packet unavailable, retrying', {
+        if (encodedRenderPacket) {
+          const decodedRenderPacket = decodeRenderPacket(encodedRenderPacket)
+          if (decodedRenderPacket instanceof Error) {
+            logLocalWebGpuPreview('render packet decoding failed', {
               refreshId,
               attempt,
-              maxRenderPacketAttempts,
+              error: decodedRenderPacket.message,
             })
-            await new Promise((resolve) => window.setTimeout(resolve, 150))
+          } else {
+            renderPacket = decodedRenderPacket
           }
         }
 
-        if (disposed || refreshId !== currentRefreshId) {
+        if (this.disposed || refreshId !== this.currentRefreshId) {
           logLocalWebGpuPreview('dropping stale refresh result', {
-            disposed,
+            disposed: this.disposed,
             refreshId,
-            currentRefreshId,
+            currentRefreshId: this.currentRefreshId,
           })
           return
         }
@@ -1463,123 +1468,112 @@ export class LocalRenderer {
           renderPacket &&
           (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
         ) {
-          clearModel()
-          currentSurfaceResources = createWebGpuSurfaceResources(
-            renderPacket.primitives,
-            renderPacket.bodyMaterials ?? [],
-            WEBGPU_TRIMMING_ENABLED
-          )
-          const packetModel = buildRenderPacketModel(
-            renderPacket,
-            currentSurfaceResources,
-            edgeRenderer
-          )
-          currentModel = packetModel.model
-          updateAmbientOcclusionScale(packetModel.modelBounds)
-          parserState = packetModel.parserState
-          hydrateCurrentModelMetadata()
-          scene.add(currentModel)
-          const loadedModelStats = prepareLoadedModelForPreview(currentModel)
-          console.info(
-            `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet trim stats`,
-            summarizeRenderPacketTrimModes(renderPacket.primitives)
-          )
-          if (loadedModelStats.meshCount === 0) {
-            clearModel()
-            setVisible(false)
-            return
-          }
-          logLocalWebGpuPreview('render packet applied to scene', {
+          break
+        }
+
+        if (attempt < maxRenderPacketAttempts) {
+          logLocalWebGpuPreview('render packet unavailable, retrying', {
             refreshId,
-            primitiveCount: renderPacket.primitives.length,
-            edgeCount: renderPacket.edges.length,
-            bodyMaterialCount: renderPacket.bodyMaterials?.length ?? 0,
-            meshCount: loadedModelStats.meshCount,
-            surfaceDrawCount:
-              currentSurfaceResources.batches.length +
-              currentSurfaceResources.complexSurfaces.length,
-            trimmingEnabled: WEBGPU_TRIMMING_ENABLED,
-            trimTriangleCount: currentSurfaceResources.triangleCount,
-            hybridMaskLayerCount: currentSurfaceResources.hybridMaskLayerCount,
-            complexMaskCount: currentSurfaceResources.complexMaskCount,
+            attempt,
+            maxRenderPacketAttempts,
           })
-          syncPreviewCameraFromShared()
-          setVisible(true)
-          requestRender?.()
+          await new Promise((resolve) => window.setTimeout(resolve, 150))
+        }
+      }
+
+      if (this.disposed || refreshId !== this.currentRefreshId) {
+        logLocalWebGpuPreview('dropping stale refresh result', {
+          disposed: this.disposed,
+          refreshId,
+          currentRefreshId: this.currentRefreshId,
+        })
+        return
+      }
+
+      if (
+        renderPacket &&
+        (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
+      ) {
+        this.clearModel()
+        this.currentSurfaceResources = createWebGpuSurfaceResources(
+          renderPacket.primitives,
+          renderPacket.bodyMaterials ?? [],
+          WEBGPU_TRIMMING_ENABLED
+        )
+        const packetModel = buildRenderPacketModel(
+          renderPacket,
+          this.currentSurfaceResources,
+          edgeRenderer
+        )
+        this.currentModel = packetModel.model
+        this.updateAmbientOcclusionScale(packetModel.modelBounds)
+        this.parserState = packetModel.parserState
+        this.hydrateCurrentModelMetadata()
+        scene.add(this.currentModel)
+        const loadedModelStats = prepareLoadedModelForPreview(this.currentModel)
+        console.info(
+          `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet trim stats`,
+          summarizeRenderPacketTrimModes(renderPacket.primitives)
+        )
+        if (loadedModelStats.meshCount === 0) {
+          this.clearModel()
+          this.setVisible(false)
           return
         }
-
-        logLocalWebGpuPreview(
-          'render packet unavailable; keeping stream active',
-          {
-            refreshId,
-          }
-        )
-        clearModel()
-        setVisible(false)
-        requestRender?.()
+        logLocalWebGpuPreview('render packet applied to scene', {
+          refreshId,
+          primitiveCount: renderPacket.primitives.length,
+          edgeCount: renderPacket.edges.length,
+          bodyMaterialCount: renderPacket.bodyMaterials?.length ?? 0,
+          meshCount: loadedModelStats.meshCount,
+          surfaceDrawCount:
+            this.currentSurfaceResources.batches.length +
+            this.currentSurfaceResources.complexSurfaces.length,
+          trimmingEnabled: WEBGPU_TRIMMING_ENABLED,
+          trimTriangleCount: this.currentSurfaceResources.triangleCount,
+          hybridMaskLayerCount:
+            this.currentSurfaceResources.hybridMaskLayerCount,
+          complexMaskCount: this.currentSurfaceResources.complexMaskCount,
+        })
+        this.syncPreviewCameraFromShared()
+        this.setVisible(true)
+        this.requestRender?.()
+        return
       }
 
-      if (kclManager.lastSuccessfulCode) {
-        await refreshModel()
-      } else if (pendingRefreshRequest) {
-        pendingRefreshRequest = false
-        await refreshModel()
-      }
-
-      return () => {
-        logLocalWebGpuPreview('cleaning up preview renderer')
-        this.exportScene = null
-        this.onExportReady?.(null)
-        kclManager.removeEventListener(
-          KclManagerEvents.ExecutionDone,
-          onExecutionDone
-        )
-        unregisterLocalSelectionProvider()
-        clearHover()
-        const previousSelectedObjects = [...selectedObjects]
-        selectedObjects.clear()
-        previousSelectedObjects.forEach(applyObjectState)
-        clearModel()
-        edgeRenderer.dispose()
-        this.edgeRenderer = null
-        resizeObserver?.disconnect()
-        unregisterSharedCameraListener()
-        if (animationFrameId !== -1) {
-          cancelAnimationFrame(animationFrameId)
+      logLocalWebGpuPreview(
+        'render packet unavailable; keeping stream active',
+        {
+          refreshId,
         }
-        requestRender = null
-        this.requestRender = null
-        this.scene = null
-        disposeAmbientOcclusionPipeline()
-        envMapLoader.dispose()
-        renderer.dispose()
-      }
+      )
+      this.clearModel()
+      this.setVisible(false)
+      this.requestRender?.()
     }
 
-    let cleanup: (() => void) | undefined
-
-    void initialize()
-      .then((returnedCleanup) => {
-        cleanup = returnedCleanup
-      })
-      .catch((error) => {
-        logLocalWebGpuPreview('preview initialization failed', { error })
-        console.error('[LocalWebGPUScene] preview initialization failed', error)
-        reportRejection(error)
-      })
-
-    return () => {
-      disposed = true
-      logLocalWebGpuPreview('effect cleanup')
-      setVisible(false)
-      refreshModel = null
-      this.requestRender = null
-      this.scene = null
-      this.exportScene = null
-      this.onExportReady?.(null)
-      cleanup?.()
+    if (kclManager.lastSuccessfulCode) {
+      await this.refreshModel()
+    } else if (this.pendingRefreshRequest) {
+      this.pendingRefreshRequest = false
+      await this.refreshModel()
     }
+  }
+
+  private readonly onExecutionDone = (event: Event) => {
+    const { detail } = event as CustomEvent<KclExecutionDoneDetail>
+    logLocalWebGpuPreview('received execution-done event', detail)
+    if (!detail.successful) {
+      return
+    }
+
+    if (this.refreshModel) {
+      void this.refreshModel()
+      return
+    }
+
+    this.pendingRefreshRequest = true
+    logLocalWebGpuPreview('refresh requested before renderer initialization')
   }
 }
 
