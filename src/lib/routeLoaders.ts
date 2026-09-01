@@ -26,6 +26,10 @@ import {
   webHomeRouteEnabled,
 } from '@src/lib/routeLoaderUtils'
 import {
+  getOnboardingChildRoute,
+  isRequestedFileLoaded,
+} from '@src/lib/routeLoaderNavigation'
+import {
   type AppSettings,
   loadAndValidateSettings,
 } from '@src/lib/settings/settingsUtils'
@@ -264,8 +268,13 @@ export const fileLoader =
           routerData.request.url,
           Boolean(window.electron)
         )
+        const onboardingChildRoute = params.id
+          ? getOnboardingChildRoute(routerData.request.url, params.id)
+          : ''
         return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${routerSearch}`
+          `${PATHS.FILE}/${encodeURIComponent(
+            fallbackFile
+          )}${onboardingChildRoute}${routerSearch}`
         )
       }
     }
@@ -311,7 +320,14 @@ export const fileLoader =
 
     const requestedFileName =
       app.systemIOActor.getSnapshot().context.requestedFileName
-    if (requestedFileName.project === projectName) {
+    if (
+      isRequestedFileLoaded({
+        requestedFileName,
+        projectName,
+        projectPath,
+        currentFilePath,
+      })
+    ) {
       requestedFileName.onProjectLoaderComplete?.()
     }
 

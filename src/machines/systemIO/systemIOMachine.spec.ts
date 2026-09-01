@@ -985,6 +985,69 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
+      it('should identify a completed bulk-created file navigation', async () => {
+        const onSuccess = vi.fn()
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+              [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]:
+                fromPromise(async ({ input }) => ({
+                  message: 'Created',
+                  projectName: 'tutorial-project',
+                  fileName: 'blank.kcl',
+                  subRoute: '/onboarding/desktop/scene',
+                  onProjectLoaderComplete: input.onSuccess,
+                })),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.navigateToProject,
+            data: {
+              requestedProjectName: 'tutorial-project',
+            },
+          })
+
+          actor.send({
+            type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+            data: {
+              files: [],
+              requestedProjectName: 'tutorial-project',
+              requestedFileNameWithExtension: 'blank.kcl',
+              requestedSubRoute: '/onboarding/desktop/scene',
+              onSuccess,
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(actor.getSnapshot().context).toMatchObject({
+            lastOperation:
+              SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
+            requestedFileName: {
+              project: 'tutorial-project',
+              file: 'blank.kcl',
+              subRoute: '/onboarding/desktop/scene',
+              onProjectLoaderComplete: onSuccess,
+            },
+          })
+          expect(onSuccess).not.toHaveBeenCalled()
+        } finally {
+          actor.stop()
+        }
+      })
     })
     describe('when setting project directory path', () => {
       it('should set new project directory path', async () => {
