@@ -13,8 +13,8 @@ description: Lints food-service-spatula.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      3752,
-      4022,
+      3770,
+      4040,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints food-service-spatula.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      5053,
-      5300,
+      5071,
+      5318,
       0
     ],
     "overridden": false,

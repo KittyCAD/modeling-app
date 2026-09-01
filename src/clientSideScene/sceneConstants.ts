@@ -51,6 +51,7 @@ export const PROFILE_START = 'profile-start'
 export const DRAFT_DASHED_LINE = 'draft-dashed-line'
 
 // Measurements
+export const CANVAS_DRAG_THRESHOLD_PX = 10
 export const EXTRA_SEGMENT_OFFSET_PX = 20
 export const SEGMENT_WIDTH_PX = 1.6
 export const HIDE_SEGMENT_LENGTH = 75

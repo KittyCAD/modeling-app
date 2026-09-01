@@ -4,11 +4,11 @@ import {
   clearLegacyConflictCopyReferences,
   clearOutboxEntriesTouchingProject,
   getAllOutboxEntries,
+  getCloudSyncProjectMetadataIndex,
   getProjectMetadata,
   putProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
 import { deleteCloudSyncTestDatabase } from '@src/lib/cloudSync/testUtils'
-import type { OutboxEntry } from '@src/lib/cloudSync/types'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 describe('cloud sync outbox persistence', () => {
@@ -80,33 +80,58 @@ describe('cloud sync outbox persistence', () => {
     ])
   })
 
-  it.fails(
-    'coalesces explicit file deletions without losing their paths',
-    async () => {
-      await appendOutboxEntry({
-        projectPath: '/projects/bracket',
-        kind: 'upsert',
-        targetPath: '/projects/bracket/first.kcl',
-        deletedPaths: ['first.kcl'],
-        createdAt: '2026-08-24T12:00:00.000Z',
-      } as Omit<OutboxEntry, 'id'> & { deletedPaths: string[] })
-      await appendOutboxEntry({
-        projectPath: '/projects/bracket',
-        kind: 'upsert',
-        targetPath: '/projects/bracket/second.kcl',
-        deletedPaths: ['second.kcl'],
-        createdAt: '2026-08-24T12:01:00.000Z',
-      } as Omit<OutboxEntry, 'id'> & { deletedPaths: string[] })
+  it('coalesces explicit file deletions without losing their paths', async () => {
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/first.kcl',
+      deletedPaths: ['first.kcl'],
+      createdAt: '2026-08-24T12:00:00.000Z',
+    })
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/second.kcl',
+      deletedPaths: ['second.kcl'],
+      createdAt: '2026-08-24T12:01:00.000Z',
+    })
 
-      await expect(getAllOutboxEntries()).resolves.toMatchObject([
-        {
-          projectPath: '/projects/bracket',
-          kind: 'upsert',
-          deletedPaths: ['first.kcl', 'second.kcl'],
-        },
-      ])
-    }
-  )
+    await expect(getAllOutboxEntries()).resolves.toMatchObject([
+      {
+        projectPath: '/projects/bracket',
+        kind: 'upsert',
+        deletedPaths: ['first.kcl', 'second.kcl'],
+      },
+    ])
+  })
+
+  it('exposes the oldest durable pending time in the project metadata index', async () => {
+    await putProjectMetadata({
+      schemaVersion: 1,
+      localProjectPath: '/projects/bracket',
+      projectName: 'bracket',
+    })
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/main.kcl',
+      createdAt: '2026-08-24T12:00:00.000Z',
+    })
+    await appendOutboxEntry({
+      projectPath: '/projects/bracket',
+      kind: 'upsert',
+      targetPath: '/projects/bracket/other.kcl',
+      createdAt: '2026-08-24T12:01:00.000Z',
+    })
+
+    const metadata = (await getCloudSyncProjectMetadataIndex()).get(
+      '/projects/bracket'
+    )
+    expect(metadata).toMatchObject({
+      hasPendingChanges: true,
+      pendingSince: '2026-08-24T12:00:00.000Z',
+    })
+  })
 
   it('keeps project delete work when a later upsert is registered for the tombstoned project', async () => {
     await appendOutboxEntry({

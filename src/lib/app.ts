@@ -432,6 +432,9 @@ export class App implements AppSubsystems {
       }
     })
 
+    this.lastSettings = getAllCurrentSettings(
+      getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
+    )
     this.unsubscribeFromSettings = this.settings.actor.subscribe(
       this.onSettingsUpdate
     )
@@ -828,6 +831,19 @@ export class App implements AppSubsystems {
       return // Everything in here only matters inside a project.
     }
     const { context } = snapshot
+    const sketchGridSettingsChanged =
+      this.lastSettings.modeling.showSketchGrid !==
+        context.modeling.showSketchGrid.current ||
+      this.lastSettings.modeling.fixedSizeGrid !==
+        context.modeling.fixedSizeGrid.current ||
+      this.lastSettings.modeling.majorGridSpacing !==
+        context.modeling.majorGridSpacing.current ||
+      this.lastSettings.modeling.minorGridsPerMajor !==
+        context.modeling.minorGridsPerMajor.current
+
+    if (sketchGridSettingsChanged) {
+      this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
+    }
 
     // Update line wrapping
     this.singletons.kclManager.setEditorLineWrapping(
@@ -855,9 +871,17 @@ export class App implements AppSubsystems {
 
     // Update theme
     const newTheme = context.app.theme.current
+    const themeChanged = this.lastSettings.app.theme !== newTheme
     const newBackfaceColor = context.modeling.backfaceColor.current
+    const themeUpdate = this.singletons.kclManager
+      .updateTheme(newTheme)
+      .then(() => {
+        if (themeChanged) {
+          this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
+        }
+      })
     Promise.all([
-      this.singletons.kclManager.updateTheme(newTheme),
+      themeUpdate,
       ...(this.singletons.kclManager.engineCommandManager.connection?.connected
         ? [
             this.singletons.kclManager.engineCommandManager.setDefaultSystemProperties(
@@ -867,27 +891,22 @@ export class App implements AppSubsystems {
         : []),
     ]).catch(reportRejection)
 
-    // Execute AST
+    // Reapply settings to the engine
     try {
-      const relevantSetting = (s: SaveSettingsPayload) => {
-        const hasScaleGrid =
-          s.modeling.showScaleGrid !== context.modeling.showScaleGrid.current
-        const hasHighlightEdges =
-          s.modeling.highlightEdges !== context.modeling.highlightEdges.current
-        const hasBackfaceColor =
-          s.modeling.backfaceColor !== context.modeling.backfaceColor.current
-        return hasScaleGrid || hasHighlightEdges || hasBackfaceColor
-      }
-
-      const settingsIncludeNewRelevantValues = relevantSetting(
-        this.lastSettings
-      )
-
-      // Relevant settings requiring a cleared scene and re-exec
-      if (
-        settingsIncludeNewRelevantValues &&
+      const engineSettingsChanged =
+        this.lastSettings.modeling.showScaleGrid !==
+          context.modeling.showScaleGrid.current ||
+        this.lastSettings.modeling.fixedSizeGrid !==
+          context.modeling.fixedSizeGrid.current ||
+        this.lastSettings.modeling.highlightEdges !==
+          context.modeling.highlightEdges.current
+      const backfaceColorChanged =
+        this.lastSettings.modeling.backfaceColor !==
+        context.modeling.backfaceColor.current
+      const engineConnection =
         this.singletons.kclManager.engineCommandManager.connection
-      ) {
+
+      if (backfaceColorChanged && engineConnection) {
         this.singletons.kclManager.rustContext
           .clearSceneAndBustCache(
             jsAppSettings(this.settings.actor),
@@ -895,6 +914,8 @@ export class App implements AppSubsystems {
           )
           .then(() => this.singletons.kclManager.executeCode())
           .catch(reportRejection)
+      } else if (engineSettingsChanged && engineConnection) {
+        this.singletons.kclManager.executeCode().catch(reportRejection)
       }
     } catch (e) {
       console.error('Error executing AST after settings change', e)

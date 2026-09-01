@@ -13,6 +13,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { BrowserContext, Page } from '@playwright/test'
+import { isStepFile } from '@src/lib/fileExtensions'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 async function insertPartIntoAssembly(
@@ -22,21 +23,66 @@ async function insertPartIntoAssembly(
   cmdBar: CmdBarFixture,
   page: Page
 ) {
+  const insertingStepFile = isStepFile(path)
+
   await toolbar.insertButton.click()
   await cmdBar.selectOption({ name: path }).click()
   await cmdBar.expectState({
     stage: 'arguments',
     currentArgKey: 'localName',
     currentArgValue: '',
-    headerArguments: { Path: path, LocalName: '' },
+    headerArguments: {
+      Path: path,
+      LocalName: '',
+      ...(insertingStepFile ? { Representation: '' } : {}),
+    },
     highlightedHeaderArg: 'localName',
     commandName: 'Insert',
   })
   await page.keyboard.insertText(alias)
   await cmdBar.progressCmdBar()
+
+  if (insertingStepFile) {
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'Representation',
+      currentArgValue: '',
+      headerArguments: {
+        Path: path,
+        LocalName: alias,
+        Representation: '',
+      },
+      highlightedHeaderArg: 'Representation',
+      commandName: 'Insert',
+    })
+    await expect(
+      page.getByText(
+        'Choose how this STEP file should be represented in your model.'
+      )
+    ).toBeVisible()
+    await expect(
+      page.getByText(
+        'Faster to import. Best when you only need visual reference geometry.'
+      )
+    ).toBeVisible()
+    await expect(
+      page.getByText('B-rep (experimental)', { exact: true })
+    ).toBeVisible()
+    await expect(
+      page.getByText(
+        'Under development and currently supports only simple shapes. Imported geometry is not editable; use Mesh for now.'
+      )
+    ).toBeVisible()
+    await cmdBar.progressCmdBar()
+  }
+
   await cmdBar.expectState({
     stage: 'review',
-    headerArguments: { Path: path, LocalName: alias },
+    headerArguments: {
+      Path: path,
+      LocalName: alias,
+      ...(insertingStepFile ? { Representation: 'mesh' } : {}),
+    },
     commandName: 'Insert',
   })
   await cmdBar.progressCmdBar()
@@ -663,6 +709,8 @@ test.describe(
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
+          @settings(experimentalFeatures = allow)
+          @(targetRepresentation = mesh)
           import "cube.step" as cube
         `,
           { shouldNormalise: true }

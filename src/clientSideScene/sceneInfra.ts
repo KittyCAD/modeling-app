@@ -17,7 +17,10 @@ import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 import { CameraControls } from '@src/clientSideScene/CameraControls'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
-import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
+import {
+  CANVAS_DRAG_THRESHOLD_PX,
+  PROFILE_START,
+} from '@src/clientSideScene/sceneConstants'
 import {
   AXIS_GROUP,
   DEBUG_SHOW_INTERSECTION_PLANE,
@@ -594,7 +597,7 @@ export class SceneInfra {
       const hasBeenDragged = !vec2WithinDistance(
         this.ndc2screenSpace(this.currentMouseVector),
         this.ndc2screenSpace(this.selected.mouseDownVector),
-        10 // Drag threshold in pixels
+        CANVAS_DRAG_THRESHOLD_PX
       )
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
@@ -641,7 +644,7 @@ export class SceneInfra {
       const hasBeenDragged = !vec2WithinDistance(
         this.ndc2screenSpace(this.currentMouseVector),
         this.ndc2screenSpace(this.areaSelect.mouseDownVector),
-        10 // Drag threshold in pixels
+        CANVAS_DRAG_THRESHOLD_PX
       )
       if (!this.areaSelect.hasBeenDragged && hasBeenDragged) {
         this.areaSelect.hasBeenDragged = true

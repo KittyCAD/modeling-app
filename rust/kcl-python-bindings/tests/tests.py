@@ -403,8 +403,8 @@ async def test_kcl_execute_and_measure():
         com = response.get_center_of_mass()
         print(com.x, com.y, com.z)
         assert com.x == pytest.approx(0.01788371801376342, rel=0, abs=1e-5)
-        assert com.y == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
-        assert com.z == pytest.approx(-0.0216667298227548, rel=0, abs=1e-5)
+        assert com.y == pytest.approx(0.02166672982275486, rel=0, abs=1e-5)
+        assert com.z == pytest.approx(0.24748362600803375, rel=0, abs=1e-5)
         assert response.get_center_of_mass_unit() == kcl.UnitLength.Centimeters
 
 
@@ -764,9 +764,8 @@ async def test_sketch_constraint_status_under_constrained():
 @requires_engine
 @pytest.mark.asyncio
 async def test_sketch_constraint_status_mixed():
-    report = await execute_with_retries(
-        kcl.get_sketch_constraint_status_code, mixed_sketches_code
-    )
+    outcome = await execute_with_retries(kcl.execute_code, mixed_sketches_code)
+    report = outcome.sketch_constraint_report()
     assert report.total_sketches() == 2
     assert len(report.fully_constrained) == 1
     assert len(report.under_constrained) == 1
@@ -775,6 +774,8 @@ async def test_sketch_constraint_status_mixed():
     assert report.kcl_error is None
     assert report.fully_constrained[0].name == "s1"
     assert report.under_constrained[0].name == "s2"
+    assert bytes(outcome.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
+    assert bytes(outcome.render_sketch_png("s2")).startswith(b"\x89PNG\r\n\x1a\n")
 
 
 @requires_engine

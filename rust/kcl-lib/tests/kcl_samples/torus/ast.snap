@@ -710,7 +710,7 @@ description: Result of parsing torus.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Science & Education; Parametric",
             "style": "line"
           }
         },

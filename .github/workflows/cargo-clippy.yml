@@ -2,37 +2,39 @@ on:
   push:
     branches:
       - main
-    paths:
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
-      - '**/rust-toolchain.toml'
-      - '**.rs'
-      - .github/workflows/cargo-clippy.yml
   pull_request:
-    paths:
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
-      - '**/rust-toolchain.toml'
-      - '**.rs'
-      - .github/workflows/cargo-clippy.yml
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 name: cargo clippy
 permissions:
   contents: read
+  pull-requests: read
 jobs:
   cargoclippy:
     name: cargo clippy
-    runs-on: namespace-profile-ubuntu-8-cores
+    # Keep host-user Cargo outputs separate from the root-run MUSL build.
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: taiki-e/install-action@just
+      - id: filter
+        name: Check for Rust changes
+        uses: dorny/paths-filter@v4.0.3
+        with:
+          filters: |
+            rust:
+              - 'rust/**'
+              - '.github/workflows/cargo-clippy.yml'
+              - '.github/ci-cd-scripts/verify-rust-cache-writable.sh'
+      - if: steps.filter.outputs.rust == 'true'
+        uses: taiki-e/install-action@just
       - name: Use correct Rust toolchain
+        if: steps.filter.outputs.rust == 'true'
         shell: bash
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
+        if: steps.filter.outputs.rust == 'true'
         uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           # Caching is handled by the Namespace cache volume below.
@@ -42,6 +44,7 @@ jobs:
           # We need this to run clippy for the wasm32 target.
           target: wasm32-unknown-unknown
       - name: Rust cache on the Namespace volume
+        if: steps.filter.outputs.rust == 'true'
         uses: namespacelabs/nscloud-cache-action@v1
         with:
           path: |
@@ -49,12 +52,18 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
 
+      - name: Verify Rust cache is writable
+        if: steps.filter.outputs.rust == 'true'
+        run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
+
       - name: Run clippy
+        if: steps.filter.outputs.rust == 'true'
         run: |
           cd rust
           just lint
       # If this fails, run "cargo check" to update Cargo.lock,
       # then add Cargo.lock to the PR.
       - name: Check Cargo.lock doesn't need updating
+        if: steps.filter.outputs.rust == 'true'
         run: |
           cargo check --locked || echo "Pls run cargo check and commit the changed Cargo.lock"
