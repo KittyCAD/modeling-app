@@ -1,4 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { KCLNode } from '@src/lang/queryAst'
 import { traverse } from '@src/lang/queryAst'
 import type {
   Name,
@@ -77,82 +78,27 @@ const buildDeletedToParentMap = (
   return deletedToParentMap
 }
 
-// Scopes whose bindings may shadow a deleted feature's name. Function scopes
-// are delimited by FunctionExpression enter/leave events. Block scopes (sketch
-// blocks and bare blocks) and, under KCL 3.0, if-expression arm scopes get no
-// enter/leave events of their own -- traverse visits their items directly --
-// so they are keyed by the path prefix shared by all of the scope's items and
-// synced against the current path on every enter.
-type ScopeFrame =
-  | { kind: 'function'; bindings: Set<string> }
-  | { kind: 'block' | 'arm'; bindings: Set<string>; pathPrefix: PathToNode }
-
-const isPathPrefix = (prefix: PathToNode, path: PathToNode): boolean => {
-  if (prefix.length > path.length) {
-    return false
-  }
-  return prefix.every((segment, i) => segment[0] === path[i][0])
+// Scopes whose bindings may shadow a deleted feature's name. traverse fires
+// enter/leave for every scope container -- FunctionExpression, Block (sketch
+// block bodies and bare blocks), and if-expression arm bodies -- so scope
+// tracking is a plain stack: push a frame on the container's enter and pop it
+// on the container's leave.
+type ScopeFrame = {
+  container: KCLNode
+  bindings: Set<string>
 }
 
-// Both sketch-block bodies and bare blocks tag their items with this segment.
-const isBlockItemsSegment = (segment: PathToNode[number]): boolean => {
-  return segment[0] === 'items' && segment[1] === 'Block'
-}
-
-// Every if/else-if/else arm body tags its items with this segment (right
-// after the arm's then_val/final_else segment, so distinct arms have distinct
-// prefixes). Conditions never carry it and therefore resolve in the enclosing
-// scope.
-const isIfArmBodySegment = (segment: PathToNode[number]): boolean => {
-  return segment[0] === 'body' && segment[1] === 'IfExpression'
-}
-
-// Bring path-keyed frames in line with the node being visited: close scopes
-// traversal has moved past and open scopes it has moved into. Function frames
-// are managed by their own enter/leave events, but a live function frame
-// guarantees every path-keyed frame below it is an enclosing scope, so
-// pruning stops at the first function frame or live path-keyed frame.
-const syncScopeFrames = (
-  frames: ScopeFrame[],
-  pathToNode: PathToNode,
-  useV3ArmScoping: boolean
-) => {
-  while (frames.length > 0) {
-    const top = frames[frames.length - 1]
-    if (top.kind === 'function' || isPathPrefix(top.pathPrefix, pathToNode)) {
-      break
-    }
-    frames.pop()
-  }
-
-  // Ascending prefix length keeps the stack ordered outermost-first. After
-  // pruning, every remaining path-keyed frame prefixes the current path, so
-  // matching on prefix length alone identifies an already-open scope.
-  for (let i = 0; i < pathToNode.length; i++) {
-    const segment = pathToNode[i]
-    let kind: 'block' | 'arm'
-    if (isBlockItemsSegment(segment)) {
-      kind = 'block'
-    } else if (useV3ArmScoping && isIfArmBodySegment(segment)) {
-      // KCL 3.0: each arm body is its own scope. Under older entry points
-      // arm bindings share the enclosing scope, so no frame is opened.
-      kind = 'arm'
-    } else {
-      continue
-    }
-    const prefixLength = i + 1
-    const alreadyOpen = frames.some(
-      (frame) =>
-        frame.kind !== 'function' && frame.pathPrefix.length === prefixLength
-    )
-    if (!alreadyOpen) {
-      frames.push({
-        kind,
-        bindings: new Set(),
-        pathPrefix: pathToNode.slice(0, prefixLength),
-      })
-    }
-  }
+// If-expression arm bodies are Program nodes without a `type` field, so they
+// are recognized by their path instead: traverse visits each arm container at
+// `['then_val'|'final_else', 'IfExpression']`, and nothing else is visited
+// with that final segment.
+const isIfArmBodyPath = (pathToNode: PathToNode): boolean => {
+  const segment = pathToNode[pathToNode.length - 1]
+  return (
+    segment !== undefined &&
+    (segment[0] === 'then_val' || segment[0] === 'final_else') &&
+    segment[1] === 'IfExpression'
+  )
 }
 
 const resolveRewireTarget = (
@@ -202,8 +148,6 @@ export function rewireAfterDelete(
   // parent chain.
   traverse(rewiredAst, {
     enter: (node, pathToNode) => {
-      syncScopeFrames(scopeFrames, pathToNode, useV3ArmScoping)
-
       if (node.type === 'FunctionExpression') {
         const bindings = new Set(
           node.params.map((param) => param.identifier.name)
@@ -211,7 +155,24 @@ export function rewireAfterDelete(
         if (node.name) {
           bindings.add(node.name.name)
         }
-        scopeFrames.push({ kind: 'function', bindings })
+        scopeFrames.push({ container: node, bindings })
+        return
+      }
+
+      // Sketch-block bodies and bare blocks are their own scope at runtime in
+      // every KCL version.
+      if (node.type === 'Block') {
+        scopeFrames.push({ container: node, bindings: new Set() })
+        return
+      }
+
+      // KCL 3.0: each if/else-if/else arm body is its own scope. Under older
+      // entry points arm bindings share the enclosing scope, so no frame is
+      // pushed (and the container's leave pops nothing). Conditions are
+      // visited outside the arm containers and resolve in the enclosing
+      // scope either way.
+      if (useV3ArmScoping && isIfArmBodyPath(pathToNode)) {
+        scopeFrames.push({ container: node, bindings: new Set() })
         return
       }
 
@@ -273,14 +234,11 @@ export function rewireAfterDelete(
         }
         return
       }
-      if (node.type === 'FunctionExpression') {
-        // Discard any path-keyed frames opened inside the function that had
-        // no later sibling visit to prune them.
-        while (scopeFrames.length > 0) {
-          if (scopeFrames.pop()?.kind === 'function') {
-            break
-          }
-        }
+      // Enter/leave pairs nest strictly, so a container's frame is on top of
+      // the stack when its leave fires. Nodes that pushed no frame never
+      // match.
+      if (scopeFrames[scopeFrames.length - 1]?.container === node) {
+        scopeFrames.pop()
       }
     },
   })
