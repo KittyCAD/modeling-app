@@ -565,6 +565,7 @@ export type CommandArgumentWithName<
 
 export type CommandArgumentOption<A> = {
   readonly name: string
+  readonly description?: string
   readonly isCurrent?: boolean
   readonly disabled?: boolean
   readonly value: A

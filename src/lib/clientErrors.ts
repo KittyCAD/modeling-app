@@ -23,6 +23,7 @@ export enum ClientErrorCode {
   CloudSyncConflict = 'cloud_sync_conflict',
   CloudSyncConflictCopyDetected = 'cloud_sync_conflict_copy_detected',
   CloudSyncFailure = 'cloud_sync_failure',
+  CloudSyncUntrackedLocalChanges = 'cloud_sync_untracked_local_changes',
   DesktopChildProcessGone = 'desktop_child_process_gone',
   DesktopRendererUnresponsive = 'desktop_renderer_unresponsive',
   DesktopRenderProcessGone = 'desktop_render_process_gone',
@@ -40,9 +41,26 @@ export enum ClientErrorCode {
 }
 
 const reportedClientErrors = new Set<string>()
+const FALLBACK_APP_RELEASE = 'unknown'
 
 const getAppRelease = () => {
-  return typeof __APP_VERSION__ === 'undefined' ? 'unknown' : __APP_VERSION__
+  if (typeof window !== 'undefined') {
+    const packageVersion = (
+      window.electron?.packageJson as { version?: string } | undefined
+    )?.version
+    if (packageVersion && packageVersion !== '0.0.0') {
+      return packageVersion
+    }
+  }
+
+  const commitSha = import.meta.env.MODELING_APP_COMMIT_SHA
+  if (commitSha && commitSha.length >= 7) {
+    return commitSha.slice(0, 7)
+  }
+
+  return typeof __APP_VERSION__ === 'undefined'
+    ? FALLBACK_APP_RELEASE
+    : __APP_VERSION__
 }
 
 const getCurrentRoute = () => {

@@ -1215,10 +1215,30 @@ impl ExecutorContext {
                         break;
                     }
                     let value = value_cf.into_value();
+                    if exec_state.use_kcl_v3_control_flow() {
+                        // KCL 3.0: early return. The value unwinds as control
+                        // flow to the nearest function-call boundary, which
+                        // absorbs it; see call_finish.
+                        last_expr = Some(value.return_());
+                        break;
+                    }
                     Self::bind_return_value(return_statement, value, exec_state)?;
                     last_expr = None;
                 }
             }
+        }
+
+        // A Return can reach a root block only by escaping an expression
+        // evaluated at the top level (e.g. an if-arm); a `return` statement
+        // here is rejected above before it evaluates.
+        if matches!(body_type, BodyType::Root)
+            && let Some(cf) = &last_expr
+            && cf.is_return()
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot return from outside a function.".to_owned(),
+                cf.source_ranges(),
+            )));
         }
 
         if matches!(body_type, BodyType::Root) {
@@ -1669,11 +1689,12 @@ impl ExecutorContext {
     }
 
     /// Record a return statement's evaluated value as the function result
-    /// (`__return`). NOTE: deliberately does NOT stop the enclosing block --
-    /// statements after a `return` still execute, exactly like the historical
-    /// behavior (see the ReturnStatement arm of exec_block); a second
-    /// executed `return` is the "Multiple returns" error. Shared by both
-    /// executors.
+    /// (`__return`). This is the pre-KCL-3.0 `return` semantics: it
+    /// deliberately does NOT stop the enclosing block -- statements after a
+    /// `return` still execute, exactly like the historical behavior (see the
+    /// ReturnStatement arm of exec_block); a second executed `return` is the
+    /// "Multiple returns" error. Under KCL 3.0, this is never called; `return`
+    /// unwinds as `Return` control flow instead. Shared by both executors.
     pub(super) fn bind_return_value(
         return_statement: &Node<ReturnStatement>,
         value: KclValue,
@@ -3392,6 +3413,21 @@ impl Node<Name> {
     }
 }
 
+fn mock_array_may_have_engine_dependent_cardinality(ty: &RuntimeType) -> bool {
+    match ty {
+        RuntimeType::Primitive(
+            PrimitiveType::Sketch
+            | PrimitiveType::Solid
+            | PrimitiveType::Face
+            | PrimitiveType::Edge
+            | PrimitiveType::BoundedEdge
+            | PrimitiveType::ImportedGeometry,
+        ) => true,
+        RuntimeType::Union(types) => types.iter().any(mock_array_may_have_engine_dependent_cardinality),
+        _ => false,
+    }
+}
+
 impl Node<MemberExpression> {
     async fn get_result(
         &self,
@@ -4300,7 +4336,7 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
-            (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
+            (KclValue::HomArray { value: arr, ty }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
                 // Out-of-bounds error.
                 let oob_error = KclError::new_undefined_value(
@@ -4313,12 +4349,15 @@ impl Node<MemberExpression> {
                 if let Some(value) = value_of_arr {
                     // Indexing into the array was successful.
                     Ok(value.to_owned().continue_())
-                } else if ctx.no_engine_commands().await && !exec_state.is_sketch_mode_execution() {
+                } else if ctx.no_engine_commands().await
+                    && !exec_state.is_sketch_mode_execution()
+                    && mock_array_may_have_engine_dependent_cardinality(&ty)
+                {
                     // In mock execution, we handle OOB errors
-                    // by trying to get index 0. This is because the array value might have
-                    // come from the engine, so the array's actual length isn't
-                    // known during mock execution runtime. Because it's mock execution
-                    // the specific value is hopefully not important.
+                    // by trying to get index 0 only for geometry-handle arrays. Those
+                    // values may have come from the engine, so their actual length is
+                    // not known during mock execution runtime. Frontend-only arrays
+                    // have exact cardinality and must preserve their OOB errors.
                     //
                     // We don't do this in sketch mode execution since it's
                     // forbidden from contacting the engine, meaning array
@@ -6772,7 +6811,8 @@ impl Node<IfExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
-        // Check the `if` branch.
+        // Check the `if` branch. Conditions are evaluated in the enclosing
+        // scope; only arm bodies get their own scope (under KCL 3.0).
         let cond_value = ctx
             .execute_expr(
                 &self.cond,
@@ -6784,11 +6824,7 @@ impl Node<IfExpression> {
             .await?;
         let cond_value = control_continue!(cond_value);
         if cond_value.get_bool()? {
-            let block_result = ctx.exec_block(&*self.then_val, exec_state, BodyType::Block).await?;
-            // Block must end in an expression, so this has to be Some.
-            // Enforced by the parser.
-            // See https://github.com/KittyCAD/modeling-app/issues/4015
-            return Ok(block_result.unwrap());
+            return exec_if_arm(ctx, &self.then_val, exec_state).await;
         }
 
         // Check any `else if` branches.
@@ -6804,19 +6840,60 @@ impl Node<IfExpression> {
                 .await?;
             let cond_value = control_continue!(cond_value);
             if cond_value.get_bool()? {
-                let block_result = ctx.exec_block(&*else_if.then_val, exec_state, BodyType::Block).await?;
-                // Block must end in an expression, so this has to be Some.
-                // Enforced by the parser.
-                // See https://github.com/KittyCAD/modeling-app/issues/4015
-                return Ok(block_result.unwrap());
+                return exec_if_arm(ctx, &else_if.then_val, exec_state).await;
             }
         }
 
         // Run the final `else` branch.
-        ctx.exec_block(&*self.final_else, exec_state, BodyType::Block)
-            .await
-            .map(|expr| expr.unwrap())
+        exec_if_arm(ctx, &self.final_else, exec_state).await
     }
+}
+
+/// Begin an if-arm scope. Under a KCL 3.0 entry point, each
+/// if/else-if/else arm body gets its own scope: bindings made inside the arm
+/// are visible from their declaration to the arm's closing brace, never
+/// outside it, and may shadow bindings from enclosing scopes. Under older
+/// entry points the arm shares the enclosing environment (bindings leak out
+/// and shadowing is a redefinition error). Returns whether a scope
+/// environment was pushed; the caller must pop it on every path. Shared by
+/// both executors.
+pub(super) fn if_arm_scope_begin(exec_state: &mut ExecState) -> Result<bool, KclError> {
+    if !exec_state.use_kcl_v3_control_flow() {
+        return Ok(false);
+    }
+    exec_state.mut_stack().push_new_env_for_block()?;
+    Ok(true)
+}
+
+/// Execute one if/else-if/else arm body in its own scope (under a
+/// KCL 3.0 entry point). Values escaping the arm -- including closures
+/// declared in it -- stay valid after the pop because environments that may
+/// still be referenced are preserved, exactly as for function returns.
+async fn exec_if_arm(
+    ctx: &ExecutorContext,
+    block: &Node<Program>,
+    exec_state: &mut ExecState,
+) -> Result<KclValueControlFlow, KclError> {
+    let scoped = if_arm_scope_begin(exec_state)?;
+    let result = ctx.exec_block(block, exec_state, BodyType::Block).await;
+    if scoped {
+        // Pop on success (including Return/Exit control flow escaping the
+        // arm) and error alike. A pop failure wins over the block's error,
+        // matching call_abort_on_arg_binding_failure.
+        exec_state.mut_stack().pop_env()?;
+    }
+    // Block must end in an expression, so this is always Some.
+    // Enforced by the parser.
+    // See https://github.com/KittyCAD/modeling-app/issues/4015
+    let Some(cf) = result? else {
+        let message = "if-expression arm produced no value";
+        debug_assert!(false, "{message}");
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            message.to_owned(),
+            vec![block.to_source_range()],
+        )));
+    };
+    Ok(cf)
 }
 
 #[derive(Debug)]

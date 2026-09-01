@@ -16,6 +16,7 @@ import {
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   commandScopeService,
 } from '@src/registry/contracts/commands'
+import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
@@ -172,14 +173,9 @@ export const CommandBar = () => {
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox
-                options={commands.filter((command: Command) => {
-                  return (
-                    // By default everything is undefined
-                    // If marked explicitly as false hide
-                    command.hideFromSearch === undefined ||
-                    command.hideFromSearch === false
-                  )
-                })}
+                options={commands.filter((command: Command) =>
+                  isCommandVisibleInSearch(command)
+                )}
               />
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument stepBack={stepBack} />

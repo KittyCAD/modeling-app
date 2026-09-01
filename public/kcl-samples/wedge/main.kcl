@@ -1,6 +1,6 @@
 // Wedge
 // A wedge is a triangular prism defined by it's length, width, and height.
-// Categories: Construction
+// Categories: Science & Education; Parametric
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0)
 

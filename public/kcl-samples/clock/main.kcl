@@ -1,6 +1,6 @@
 // Clock
 // A clock with roman numerals
-// Categories: Maker
+// Categories: Home & Lifestyle
 
 @settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
 

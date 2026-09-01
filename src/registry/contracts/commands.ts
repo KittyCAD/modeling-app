@@ -7,8 +7,11 @@ import {
 } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
+import { commandKey } from '@src/lib/commandUtils'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { SnapshotFrom } from 'xstate'
+
+export { commandKey } from '@src/lib/commandUtils'
 
 export const BASE_COMMAND_SCOPE = 'base'
 export const CODE_EDITOR_FOCUSED_COMMAND_SCOPE = 'code-editor-focused'
@@ -134,9 +137,6 @@ export type CommandSystemService = {
   send: CommandBarActorType['send']
   useState: () => SnapshotFrom<CommandBarActorType>
 }
-
-export const commandKey = (command: Command) =>
-  command.id ?? `${command.groupId}:${String(command.name)}`
 
 export function normalizeCommandScopeIds(
   scopes: readonly string[] | undefined

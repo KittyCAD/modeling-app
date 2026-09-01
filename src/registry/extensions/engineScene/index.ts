@@ -27,7 +27,7 @@ import {
 import { Suspense, createElement, lazy } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
-import { physicalAnalysisService } from './physicalAnalysisService'
+import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
 import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
@@ -143,7 +143,7 @@ const MeasurementStatusBarItem = lazy(async () => {
 
 const PhysicalAnalysisStatusBarItem = lazy(async () => {
   const { PhysicalAnalysisStatusBarItem } = await import(
-    './PhysicalAnalysisTool'
+    './physicalAnalysis/PhysicalAnalysisTool'
   )
   return { default: PhysicalAnalysisStatusBarItem }
 })

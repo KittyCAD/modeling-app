@@ -4224,7 +4224,7 @@ description: Result of parsing gingerbread-man-cookie-cutter.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Home & Lifestyle; Tools; 3D Printable",
             "style": "line"
           }
         },
