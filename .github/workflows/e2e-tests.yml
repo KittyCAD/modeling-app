@@ -204,7 +204,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: namespace-profile-ubuntu-8-cores
+          - os: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
           - os: namespace-profile-macos-8-cores
           - os: namespace-profile-windows-8-cores
     runs-on: ${{ matrix.os }}
@@ -310,7 +310,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [namespace-profile-ubuntu-8-cores]
+        os:
+          - namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
         shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
         shardTotal: [8]
         include:
@@ -442,7 +443,7 @@ jobs:
 
   vercel:
     name: e2e:web (vercel)
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
 
     steps:

@@ -4,10 +4,17 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  FILE_EXT,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as nodeFsP from 'fs/promises'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 const exists = async (
   fs: PromisifiedZooDesignStudioFS,
