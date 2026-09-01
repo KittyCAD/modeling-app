@@ -13,12 +13,10 @@
  * the navigation contract needs.
  */
 
-import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import {
-  getParentAbsolutePath,
   getRouterSearchFromRequestUrl,
   PATHS,
   parseProjectRoute,
@@ -26,27 +24,15 @@ import {
 } from '@src/lib/paths'
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { loadHomeProjects } from '@src/lib/routeLoaderUtils'
-import {
-  getOnboardingChildRoute,
-  isRequestedFileLoaded,
-} from '@src/lib/routeLoaderNavigation'
+import { getOnboardingChildRoute } from '@src/lib/routeLoaderNavigation'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import type {
-  FileLoaderData,
-  HomeLoaderData,
-  IndexLoaderData,
-} from '@src/lib/types'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { waitFor } from 'xstate'
 
 /**
  * What a route wants to happen, said rather than done.
@@ -121,9 +107,6 @@ export async function initFileRoute(
   }
 ): Promise<RouteInitResult<FileLoaderData>> {
   const assertCurrent = app.beginFileRouteLoad(requestSignal)
-  const {
-    settings: { actor: settingsActor },
-  } = app
   const { kclManager } = app.singletons
 
   // Must basically remain for all eternity, until the last person
@@ -221,115 +204,23 @@ export async function initFileRoute(
     }
   }
 
-  // Set the file system manager to the project path
-  // So that WASM gets an updated path for operations
-  projectFsManager.dir = projectPath
-
-  const defaultProjectData = {
-    name: projectName || 'unnamed',
-    path: projectPath,
-    children: [],
-    kcl_file_count: 0,
-    directory_count: 0,
-    metadata: null,
-    default_file: projectPath,
-    readWriteAccess: true,
-  }
-
-  const maybeProjectInfo = await getProjectInfo(
-    app.registry.get(fileOperationsService),
-    projectPath,
-    wasmInstance
-  )
-  assertCurrent()
-
-  const project = maybeProjectInfo ?? defaultProjectData
-
-  // Fire off the event to load the project settings
-  // once we know it's idle.
-  await waitFor(settingsActor, (state) => state.matches('idle'))
-  assertCurrent()
-  settingsActor.send({
-    type: 'load.project',
-    project,
+  const data = await app.openFile({
+    resolved: { projectName, projectPath, currentFileName, currentFilePath },
+    wasmInstance,
+    assertCurrent,
   })
-  await waitFor(settingsActor, (state) => state.matches('idle'))
-  assertCurrent()
 
-  const projectRef = await app.openProject(project, assertCurrent)
-  const editor = await projectRef.openEditor(
-    currentFilePath || PROJECT_ENTRYPOINT,
-    app.singletons.kclManager,
-    // If persistCode in localStorage is present, it'll persist that code
-    // through *anything*. INTENDED FOR TESTS.
-    window.electron?.process.env.NODE_ENV === 'test'
-      ? kclManager.localStoragePersistCode()
-      : undefined,
-    true,
-    assertCurrent
-  )
-  assertCurrent()
-
-  const requestedFileName =
-    app.systemIOActor.getSnapshot().context.requestedFileName
-  if (
-    isRequestedFileLoaded({
-      requestedFileName,
-      projectName,
-      projectPath,
-      currentFilePath,
-    })
-  ) {
-    requestedFileName.onProjectLoaderComplete?.()
-  }
-
-  const requestedProjectDirectoryPath =
-    projectRef.projectIORefSignal.value.libraryPath ??
-    getParentAbsolutePath(project.path)
-  const systemIOSnapshot = app.systemIOActor.getSnapshot()
-  // Same-directory file navigation should not restart SystemIO's own
-  // post-mutation folder refresh.
-  const shouldSyncProjectDirectory =
-    requestedProjectDirectoryPath !==
-      systemIOSnapshot.context.projectDirectoryPath ||
-    (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
-      systemIOSnapshot.context.folders === undefined)
-  if (shouldSyncProjectDirectory) {
-    app.systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath,
-      },
-    })
-  }
-
-  const projectData: IndexLoaderData = {
-    code: editor.code,
-    project,
-    file: {
-      name: currentFileName || '',
-      path: currentFilePath || '',
-      children: [],
-    },
-  }
-
-  return { kind: 'ok', data: { ...projectData } }
+  return { kind: 'ok', data }
 }
 
 /**
  * Initialization for `/home` and `/library/:libraryId`.
  *
- * Unflagged web has no home, so it bounces to `/`, which will redirect on to a
- * project. Otherwise this clears the currently-open project — the projects
- * listed there may be stale.
+ * This clears the currently-open project because the projects listed on Home
+ * may otherwise be stale.
  */
 export async function initHomeRoute(
   app: App
 ): Promise<RouteInitResult<HomeLoaderData>> {
-  // If on unflagged web, bump out to root, which will redirect to a project.
-  if (!window.electron && !(await webHomeRouteEnabled(app))) {
-    return { kind: 'redirect', to: PATHS.INDEX }
-  }
-
   return { kind: 'ok', data: loadHomeProjects(app) }
 }
