@@ -1,6 +1,6 @@
 // Exhaust Manifold
 // A welded exhaust header for an inline 4-cylinder engine
-// Categories: Automotive
+// Categories: Automotive & Transportation; Mechanical Components
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 2.0)

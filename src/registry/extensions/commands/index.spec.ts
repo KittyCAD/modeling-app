@@ -153,6 +153,31 @@ describe('commands extension', () => {
     ])
   })
 
+  it('runs the hovered sketch tool picker command', () => {
+    const sentEvents: unknown[] = []
+    const kclManager = {
+      modelingState: {
+        matches: (state: unknown) => state === 'sketchSolveMode',
+        context: { sketchSolveToolName: null },
+      },
+      sendModelingEvent: (event: unknown) => {
+        sentEvents.push(event)
+        return true
+      },
+    } as unknown as KclManager
+
+    const command = toolbarCommands.find(
+      (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.toolPicker
+    )
+
+    expect(
+      command?.onSubmit({
+        context: { kclManager } as CommandBarContext,
+      })
+    ).toBe(true)
+    expect(sentEvents).toEqual([{ type: 'pick hovered tool' }])
+  })
+
   it('does not run experimental toolbar commands without the user feature flag', () => {
     const sentEvents: unknown[] = []
     const kclManager = {

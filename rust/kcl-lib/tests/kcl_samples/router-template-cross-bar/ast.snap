@@ -16449,7 +16449,7 @@ description: Result of parsing router-template-cross-bar.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Construction",
+            "value": "Categories: Tools; 3D Printable",
             "style": "line"
           }
         },

@@ -11,7 +11,8 @@ permissions:
 
 jobs:
   build-wasm:
-    runs-on: namespace-profile-ubuntu-8-cores
+    # Keep host-user Cargo outputs separate from the root-run MUSL build.
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-rust-host-v2
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -37,7 +38,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v21
+        uses: dawidd6/action-download-artifact@v24
         continue-on-error: true
         with:
           name: prepared-wasm
@@ -105,6 +106,10 @@ jobs:
             rust/target
             ~/.cargo/registry
             ~/.cargo/git
+
+      - name: Verify Rust cache is writable
+        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
+        run: .github/ci-cd-scripts/verify-rust-cache-writable.sh
 
       - name: Build Wasm
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}

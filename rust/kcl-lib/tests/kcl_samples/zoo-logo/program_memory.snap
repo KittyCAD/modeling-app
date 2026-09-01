@@ -18,10 +18,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1229,
-                "end": 1236,
+                "commentStart": 1236,
+                "end": 1243,
                 "moduleId": 0,
-                "start": 1229,
+                "start": 1236,
                 "type": "TagDeclarator",
                 "value": "zLine01"
               },
@@ -32,10 +32,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1344,
-                "end": 1351,
+                "commentStart": 1351,
+                "end": 1358,
                 "moduleId": 0,
-                "start": 1344,
+                "start": 1351,
                 "type": "TagDeclarator",
                 "value": "zLine02"
               },
@@ -46,10 +46,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1459,
-                "end": 1466,
+                "commentStart": 1466,
+                "end": 1473,
                 "moduleId": 0,
-                "start": 1459,
+                "start": 1466,
                 "type": "TagDeclarator",
                 "value": "zLine03"
               },
@@ -60,10 +60,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1574,
-                "end": 1581,
+                "commentStart": 1581,
+                "end": 1588,
                 "moduleId": 0,
-                "start": 1574,
+                "start": 1581,
                 "type": "TagDeclarator",
                 "value": "zLine04"
               },
@@ -74,10 +74,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1689,
-                "end": 1696,
+                "commentStart": 1696,
+                "end": 1703,
                 "moduleId": 0,
-                "start": 1689,
+                "start": 1696,
                 "type": "TagDeclarator",
                 "value": "zLine05"
               },
@@ -88,10 +88,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1804,
-                "end": 1811,
+                "commentStart": 1811,
+                "end": 1818,
                 "moduleId": 0,
-                "start": 1804,
+                "start": 1811,
                 "type": "TagDeclarator",
                 "value": "zLine06"
               },
@@ -102,10 +102,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1919,
-                "end": 1926,
+                "commentStart": 1926,
+                "end": 1933,
                 "moduleId": 0,
-                "start": 1919,
+                "start": 1926,
                 "type": "TagDeclarator",
                 "value": "zLine07"
               },
@@ -116,10 +116,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2034,
-                "end": 2041,
+                "commentStart": 2041,
+                "end": 2048,
                 "moduleId": 0,
-                "start": 2034,
+                "start": 2041,
                 "type": "TagDeclarator",
                 "value": "zLine08"
               },
@@ -130,10 +130,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2149,
-                "end": 2156,
+                "commentStart": 2156,
+                "end": 2163,
                 "moduleId": 0,
-                "start": 2149,
+                "start": 2156,
                 "type": "TagDeclarator",
                 "value": "zLine09"
               },
@@ -144,10 +144,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2264,
-                "end": 2271,
+                "commentStart": 2271,
+                "end": 2278,
                 "moduleId": 0,
-                "start": 2264,
+                "start": 2271,
                 "type": "TagDeclarator",
                 "value": "zLine10"
               },
@@ -158,10 +158,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2379,
-                "end": 2386,
+                "commentStart": 2386,
+                "end": 2393,
                 "moduleId": 0,
-                "start": 2379,
+                "start": 2386,
                 "type": "TagDeclarator",
                 "value": "zLine11"
               },
@@ -172,10 +172,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2494,
-                "end": 2501,
+                "commentStart": 2501,
+                "end": 2508,
                 "moduleId": 0,
-                "start": 2494,
+                "start": 2501,
                 "type": "TagDeclarator",
                 "value": "zLine12"
               },
@@ -186,10 +186,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2609,
-                "end": 2616,
+                "commentStart": 2616,
+                "end": 2623,
                 "moduleId": 0,
-                "start": 2609,
+                "start": 2616,
                 "type": "TagDeclarator",
                 "value": "zLine13"
               },
@@ -200,10 +200,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2724,
-                "end": 2731,
+                "commentStart": 2731,
+                "end": 2738,
                 "moduleId": 0,
-                "start": 2724,
+                "start": 2731,
                 "type": "TagDeclarator",
                 "value": "zLine14"
               },
@@ -214,10 +214,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2839,
-                "end": 2846,
+                "commentStart": 2846,
+                "end": 2853,
                 "moduleId": 0,
-                "start": 2839,
+                "start": 2846,
                 "type": "TagDeclarator",
                 "value": "zLine15"
               },
@@ -228,10 +228,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2954,
-                "end": 2961,
+                "commentStart": 2961,
+                "end": 2968,
                 "moduleId": 0,
-                "start": 2954,
+                "start": 2961,
                 "type": "TagDeclarator",
                 "value": "zLine16"
               },
@@ -253,10 +253,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.025000000000000012
                 ],
                 "tag": {
-                  "commentStart": 1229,
-                  "end": 1236,
+                  "commentStart": 1236,
+                  "end": 1243,
                   "moduleId": 0,
-                  "start": 1229,
+                  "start": 1236,
                   "type": "TagDeclarator",
                   "value": "zLine01"
                 },
@@ -277,10 +277,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.16499999999999995
                 ],
                 "tag": {
-                  "commentStart": 1344,
-                  "end": 1351,
+                  "commentStart": 1351,
+                  "end": 1358,
                   "moduleId": 0,
-                  "start": 1344,
+                  "start": 1351,
                   "type": "TagDeclarator",
                   "value": "zLine02"
                 },
@@ -301,10 +301,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.76
                 ],
                 "tag": {
-                  "commentStart": 1459,
-                  "end": 1466,
+                  "commentStart": 1466,
+                  "end": 1473,
                   "moduleId": 0,
-                  "start": 1459,
+                  "start": 1466,
                   "type": "TagDeclarator",
                   "value": "zLine03"
                 },
@@ -325,10 +325,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.76
                 ],
                 "tag": {
-                  "commentStart": 1574,
-                  "end": 1581,
+                  "commentStart": 1581,
+                  "end": 1588,
                   "moduleId": 0,
-                  "start": 1574,
+                  "start": 1581,
                   "type": "TagDeclarator",
                   "value": "zLine04"
                 },
@@ -349,10 +349,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.975
                 ],
                 "tag": {
-                  "commentStart": 1689,
-                  "end": 1696,
+                  "commentStart": 1696,
+                  "end": 1703,
                   "moduleId": 0,
-                  "start": 1689,
+                  "start": 1696,
                   "type": "TagDeclarator",
                   "value": "zLine05"
                 },
@@ -373,10 +373,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.975
                 ],
                 "tag": {
-                  "commentStart": 1804,
-                  "end": 1811,
+                  "commentStart": 1811,
+                  "end": 1818,
                   "moduleId": 0,
-                  "start": 1804,
+                  "start": 1811,
                   "type": "TagDeclarator",
                   "value": "zLine06"
                 },
@@ -397,10 +397,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.8173489932885906
                 ],
                 "tag": {
-                  "commentStart": 1919,
-                  "end": 1926,
+                  "commentStart": 1926,
+                  "end": 1933,
                   "moduleId": 0,
-                  "start": 1919,
+                  "start": 1926,
                   "type": "TagDeclarator",
                   "value": "zLine07"
                 },
@@ -421,10 +421,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.975
                 ],
                 "tag": {
-                  "commentStart": 2034,
-                  "end": 2041,
+                  "commentStart": 2041,
+                  "end": 2048,
                   "moduleId": 0,
-                  "start": 2034,
+                  "start": 2041,
                   "type": "TagDeclarator",
                   "value": "zLine08"
                 },
@@ -445,10 +445,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.975
                 ],
                 "tag": {
-                  "commentStart": 2149,
-                  "end": 2156,
+                  "commentStart": 2156,
+                  "end": 2163,
                   "moduleId": 0,
-                  "start": 2149,
+                  "start": 2156,
                   "type": "TagDeclarator",
                   "value": "zLine09"
                 },
@@ -469,10 +469,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.835
                 ],
                 "tag": {
-                  "commentStart": 2264,
-                  "end": 2271,
+                  "commentStart": 2271,
+                  "end": 2278,
                   "moduleId": 0,
-                  "start": 2264,
+                  "start": 2271,
                   "type": "TagDeclarator",
                   "value": "zLine10"
                 },
@@ -493,10 +493,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.24
                 ],
                 "tag": {
-                  "commentStart": 2379,
-                  "end": 2386,
+                  "commentStart": 2386,
+                  "end": 2393,
                   "moduleId": 0,
-                  "start": 2379,
+                  "start": 2386,
                   "type": "TagDeclarator",
                   "value": "zLine11"
                 },
@@ -517,10 +517,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.24
                 ],
                 "tag": {
-                  "commentStart": 2494,
-                  "end": 2501,
+                  "commentStart": 2501,
+                  "end": 2508,
                   "moduleId": 0,
-                  "start": 2494,
+                  "start": 2501,
                   "type": "TagDeclarator",
                   "value": "zLine12"
                 },
@@ -541,10 +541,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.025000000000000012
                 ],
                 "tag": {
-                  "commentStart": 2609,
-                  "end": 2616,
+                  "commentStart": 2616,
+                  "end": 2623,
                   "moduleId": 0,
-                  "start": 2609,
+                  "start": 2616,
                   "type": "TagDeclarator",
                   "value": "zLine13"
                 },
@@ -565,10 +565,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.025000000000000012
                 ],
                 "tag": {
-                  "commentStart": 2724,
-                  "end": 2731,
+                  "commentStart": 2731,
+                  "end": 2738,
                   "moduleId": 0,
-                  "start": 2724,
+                  "start": 2731,
                   "type": "TagDeclarator",
                   "value": "zLine14"
                 },
@@ -589,10 +589,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.18265100671140946
                 ],
                 "tag": {
-                  "commentStart": 2839,
-                  "end": 2846,
+                  "commentStart": 2846,
+                  "end": 2853,
                   "moduleId": 0,
-                  "start": 2839,
+                  "start": 2846,
                   "type": "TagDeclarator",
                   "value": "zLine15"
                 },
@@ -613,10 +613,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.025000000000000012
                 ],
                 "tag": {
-                  "commentStart": 2954,
-                  "end": 2961,
+                  "commentStart": 2961,
+                  "end": 2968,
                   "moduleId": 0,
-                  "start": 2954,
+                  "start": 2961,
                   "type": "TagDeclarator",
                   "value": "zLine16"
                 },
@@ -764,10 +764,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6248,
-                "end": 6255,
+                "commentStart": 6255,
+                "end": 6262,
                 "moduleId": 0,
-                "start": 6248,
+                "start": 6255,
                 "type": "TagDeclarator",
                 "value": "o1Arc01"
               },
@@ -778,10 +778,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6428,
-                "end": 6435,
+                "commentStart": 6435,
+                "end": 6442,
                 "moduleId": 0,
-                "start": 6428,
+                "start": 6435,
                 "type": "TagDeclarator",
                 "value": "o1Arc02"
               },
@@ -792,10 +792,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6969,
-                "end": 6977,
+                "commentStart": 6976,
+                "end": 6984,
                 "moduleId": 0,
-                "start": 6969,
+                "start": 6976,
                 "type": "TagDeclarator",
                 "value": "o1Line01"
               },
@@ -806,10 +806,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7087,
-                "end": 7095,
+                "commentStart": 7094,
+                "end": 7102,
                 "moduleId": 0,
-                "start": 7087,
+                "start": 7094,
                 "type": "TagDeclarator",
                 "value": "o1Line02"
               },
@@ -837,10 +837,10 @@ description: Variables in memory after executing zoo-logo.kcl
                 ],
                 "radius": 0.500000000000002,
                 "tag": {
-                  "commentStart": 6248,
-                  "end": 6255,
+                  "commentStart": 6255,
+                  "end": 6262,
                   "moduleId": 0,
-                  "start": 6248,
+                  "start": 6255,
                   "type": "TagDeclarator",
                   "value": "o1Arc01"
                 },
@@ -867,10 +867,10 @@ description: Variables in memory after executing zoo-logo.kcl
                 ],
                 "radius": 0.2700000000000034,
                 "tag": {
-                  "commentStart": 6428,
-                  "end": 6435,
+                  "commentStart": 6435,
+                  "end": 6442,
                   "moduleId": 0,
-                  "start": 6428,
+                  "start": 6435,
                   "type": "TagDeclarator",
                   "value": "o1Arc02"
                 },
@@ -891,10 +891,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.34004985261845255
                 ],
                 "tag": {
-                  "commentStart": 6969,
-                  "end": 6977,
+                  "commentStart": 6976,
+                  "end": 6984,
                   "moduleId": 0,
-                  "start": 6969,
+                  "start": 6976,
                   "type": "TagDeclarator",
                   "value": "o1Line01"
                 },
@@ -915,10 +915,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.7281499833877909
                 ],
                 "tag": {
-                  "commentStart": 7087,
-                  "end": 7095,
+                  "commentStart": 7094,
+                  "end": 7102,
                   "moduleId": 0,
-                  "start": 7087,
+                  "start": 7094,
                   "type": "TagDeclarator",
                   "value": "o1Line02"
                 },
@@ -1018,10 +1018,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6609,
-                "end": 6616,
+                "commentStart": 6616,
+                "end": 6623,
                 "moduleId": 0,
-                "start": 6609,
+                "start": 6616,
                 "type": "TagDeclarator",
                 "value": "o1Arc03"
               },
@@ -1032,10 +1032,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6789,
-                "end": 6796,
+                "commentStart": 6796,
+                "end": 6803,
                 "moduleId": 0,
-                "start": 6789,
+                "start": 6796,
                 "type": "TagDeclarator",
                 "value": "o1Arc04"
               },
@@ -1046,10 +1046,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7204,
-                "end": 7212,
+                "commentStart": 7211,
+                "end": 7219,
                 "moduleId": 0,
-                "start": 7204,
+                "start": 7211,
                 "type": "TagDeclarator",
                 "value": "o1Line03"
               },
@@ -1060,10 +1060,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 7320,
-                "end": 7328,
+                "commentStart": 7327,
+                "end": 7335,
                 "moduleId": 0,
-                "start": 7320,
+                "start": 7327,
                 "type": "TagDeclarator",
                 "value": "o1Line04"
               },
@@ -1091,10 +1091,10 @@ description: Variables in memory after executing zoo-logo.kcl
                 ],
                 "radius": 0.5000000000000022,
                 "tag": {
-                  "commentStart": 6609,
-                  "end": 6616,
+                  "commentStart": 6616,
+                  "end": 6623,
                   "moduleId": 0,
-                  "start": 6609,
+                  "start": 6616,
                   "type": "TagDeclarator",
                   "value": "o1Arc03"
                 },
@@ -1121,10 +1121,10 @@ description: Variables in memory after executing zoo-logo.kcl
                 ],
                 "radius": 0.27000000000000507,
                 "tag": {
-                  "commentStart": 6789,
-                  "end": 6796,
+                  "commentStart": 6796,
+                  "end": 6803,
                   "moduleId": 0,
-                  "start": 6789,
+                  "start": 6796,
                   "type": "TagDeclarator",
                   "value": "o1Arc04"
                 },
@@ -1145,10 +1145,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.10205620940062177
                 ],
                 "tag": {
-                  "commentStart": 7204,
-                  "end": 7212,
+                  "commentStart": 7211,
+                  "end": 7219,
                   "moduleId": 0,
-                  "start": 7204,
+                  "start": 7211,
                   "type": "TagDeclarator",
                   "value": "o1Line03"
                 },
@@ -1169,10 +1169,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.6599501473815412
                 ],
                 "tag": {
-                  "commentStart": 7320,
-                  "end": 7328,
+                  "commentStart": 7327,
+                  "end": 7335,
                   "moduleId": 0,
-                  "start": 7320,
+                  "start": 7327,
                   "type": "TagDeclarator",
                   "value": "o1Line04"
                 },
@@ -1272,10 +1272,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10340,
-                "end": 10347,
+                "commentStart": 10347,
+                "end": 10354,
                 "moduleId": 0,
-                "start": 10340,
+                "start": 10347,
                 "type": "TagDeclarator",
                 "value": "o2Arc01"
               },
@@ -1286,10 +1286,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10696,
-                "end": 10703,
+                "commentStart": 10703,
+                "end": 10710,
                 "moduleId": 0,
-                "start": 10696,
+                "start": 10703,
                 "type": "TagDeclarator",
                 "value": "o2Arc03"
               },
@@ -1300,10 +1300,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11056,
-                "end": 11064,
+                "commentStart": 11063,
+                "end": 11071,
                 "moduleId": 0,
-                "start": 11056,
+                "start": 11063,
                 "type": "TagDeclarator",
                 "value": "o2Line01"
               },
@@ -1314,10 +1314,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11174,
-                "end": 11182,
+                "commentStart": 11181,
+                "end": 11189,
                 "moduleId": 0,
-                "start": 11174,
+                "start": 11181,
                 "type": "TagDeclarator",
                 "value": "o2Line02"
               },
@@ -1345,10 +1345,10 @@ description: Variables in memory after executing zoo-logo.kcl
                 ],
                 "radius": 0.4999999999999999,
                 "tag": {
-                  "commentStart": 10340,
-                  "end": 10347,
+                  "commentStart": 10347,
+                  "end": 10354,
                   "moduleId": 0,
-                  "start": 10340,
+                  "start": 10347,
                   "type": "TagDeclarator",
                   "value": "o2Arc01"
                 },
@@ -1375,10 +1375,10 @@ description: Variables in memory after executing zoo-logo.kcl
                 ],
                 "radius": 0.27,
                 "tag": {
-                  "commentStart": 10696,
-                  "end": 10703,
+                  "commentStart": 10703,
+                  "end": 10710,
                   "moduleId": 0,
-                  "start": 10696,
+                  "start": 10703,
                   "type": "TagDeclarator",
                   "value": "o2Arc03"
                 },
@@ -1399,10 +1399,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.34004985261845905
                 ],
                 "tag": {
-                  "commentStart": 11056,
-                  "end": 11064,
+                  "commentStart": 11063,
+                  "end": 11071,
                   "moduleId": 0,
-                  "start": 11056,
+                  "start": 11063,
                   "type": "TagDeclarator",
                   "value": "o2Line01"
                 },
@@ -1423,10 +1423,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.728149983387791
                 ],
                 "tag": {
-                  "commentStart": 11174,
-                  "end": 11182,
+                  "commentStart": 11181,
+                  "end": 11189,
                   "moduleId": 0,
-                  "start": 11174,
+                  "start": 11181,
                   "type": "TagDeclarator",
                   "value": "o2Line02"
                 },
@@ -1526,10 +1526,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10518,
-                "end": 10525,
+                "commentStart": 10525,
+                "end": 10532,
                 "moduleId": 0,
-                "start": 10518,
+                "start": 10525,
                 "type": "TagDeclarator",
                 "value": "o2Arc02"
               },
@@ -1540,10 +1540,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10876,
-                "end": 10883,
+                "commentStart": 10883,
+                "end": 10890,
                 "moduleId": 0,
-                "start": 10876,
+                "start": 10883,
                 "type": "TagDeclarator",
                 "value": "o2Arc04"
               },
@@ -1554,10 +1554,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11290,
-                "end": 11298,
+                "commentStart": 11297,
+                "end": 11305,
                 "moduleId": 0,
-                "start": 11290,
+                "start": 11297,
                 "type": "TagDeclarator",
                 "value": "o2Line03"
               },
@@ -1568,10 +1568,10 @@ description: Variables in memory after executing zoo-logo.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 11406,
-                "end": 11414,
+                "commentStart": 11413,
+                "end": 11421,
                 "moduleId": 0,
-                "start": 11406,
+                "start": 11413,
                 "type": "TagDeclarator",
                 "value": "o2Line04"
               },
@@ -1599,10 +1599,10 @@ description: Variables in memory after executing zoo-logo.kcl
                 ],
                 "radius": 0.5000000000000002,
                 "tag": {
-                  "commentStart": 10518,
-                  "end": 10525,
+                  "commentStart": 10525,
+                  "end": 10532,
                   "moduleId": 0,
-                  "start": 10518,
+                  "start": 10525,
                   "type": "TagDeclarator",
                   "value": "o2Arc02"
                 },
@@ -1629,10 +1629,10 @@ description: Variables in memory after executing zoo-logo.kcl
                 ],
                 "radius": 0.27000000000000024,
                 "tag": {
-                  "commentStart": 10876,
-                  "end": 10883,
+                  "commentStart": 10883,
+                  "end": 10890,
                   "moduleId": 0,
-                  "start": 10876,
+                  "start": 10883,
                   "type": "TagDeclarator",
                   "value": "o2Arc04"
                 },
@@ -1653,10 +1653,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.10205620940062617
                 ],
                 "tag": {
-                  "commentStart": 11290,
-                  "end": 11298,
+                  "commentStart": 11297,
+                  "end": 11305,
                   "moduleId": 0,
-                  "start": 11290,
+                  "start": 11297,
                   "type": "TagDeclarator",
                   "value": "o2Line03"
                 },
@@ -1677,10 +1677,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.6599501473815411
                 ],
                 "tag": {
-                  "commentStart": 11406,
-                  "end": 11414,
+                  "commentStart": 11413,
+                  "end": 11421,
                   "moduleId": 0,
-                  "start": 11406,
+                  "start": 11413,
                   "type": "TagDeclarator",
                   "value": "o2Line04"
                 },
@@ -2303,10 +2303,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   ],
                   "radius": 0.500000000000002,
                   "tag": {
-                    "commentStart": 6248,
-                    "end": 6255,
+                    "commentStart": 6255,
+                    "end": 6262,
                     "moduleId": 0,
-                    "start": 6248,
+                    "start": 6255,
                     "type": "TagDeclarator",
                     "value": "o1Arc01"
                   },
@@ -2350,10 +2350,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   ],
                   "radius": 0.2700000000000034,
                   "tag": {
-                    "commentStart": 6428,
-                    "end": 6435,
+                    "commentStart": 6435,
+                    "end": 6442,
                     "moduleId": 0,
-                    "start": 6428,
+                    "start": 6435,
                     "type": "TagDeclarator",
                     "value": "o1Arc02"
                   },
@@ -2374,10 +2374,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.34004985261845255
                   ],
                   "tag": {
-                    "commentStart": 6969,
-                    "end": 6977,
+                    "commentStart": 6976,
+                    "end": 6984,
                     "moduleId": 0,
-                    "start": 6969,
+                    "start": 6976,
                     "type": "TagDeclarator",
                     "value": "o1Line01"
                   },
@@ -2415,10 +2415,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.7281499833877909
                   ],
                   "tag": {
-                    "commentStart": 7087,
-                    "end": 7095,
+                    "commentStart": 7094,
+                    "end": 7102,
                     "moduleId": 0,
-                    "start": 7087,
+                    "start": 7094,
                     "type": "TagDeclarator",
                     "value": "o1Line02"
                   },
@@ -10811,10 +10811,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   ],
                   "radius": 0.5000000000000022,
                   "tag": {
-                    "commentStart": 6609,
-                    "end": 6616,
+                    "commentStart": 6616,
+                    "end": 6623,
                     "moduleId": 0,
-                    "start": 6609,
+                    "start": 6616,
                     "type": "TagDeclarator",
                     "value": "o1Arc03"
                   },
@@ -10858,10 +10858,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   ],
                   "radius": 0.27000000000000507,
                   "tag": {
-                    "commentStart": 6789,
-                    "end": 6796,
+                    "commentStart": 6796,
+                    "end": 6803,
                     "moduleId": 0,
-                    "start": 6789,
+                    "start": 6796,
                     "type": "TagDeclarator",
                     "value": "o1Arc04"
                   },
@@ -10899,10 +10899,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.10205620940062177
                   ],
                   "tag": {
-                    "commentStart": 7204,
-                    "end": 7212,
+                    "commentStart": 7211,
+                    "end": 7219,
                     "moduleId": 0,
-                    "start": 7204,
+                    "start": 7211,
                     "type": "TagDeclarator",
                     "value": "o1Line03"
                   },
@@ -10940,10 +10940,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.6599501473815412
                   ],
                   "tag": {
-                    "commentStart": 7320,
-                    "end": 7328,
+                    "commentStart": 7327,
+                    "end": 7335,
                     "moduleId": 0,
-                    "start": 7320,
+                    "start": 7327,
                     "type": "TagDeclarator",
                     "value": "o1Line04"
                   },
@@ -18846,10 +18846,10 @@ description: Variables in memory after executing zoo-logo.kcl
           ],
           "radius": 0.500000000000002,
           "tag": {
-            "commentStart": 6248,
-            "end": 6255,
+            "commentStart": 6255,
+            "end": 6262,
             "moduleId": 0,
-            "start": 6248,
+            "start": 6255,
             "type": "TagDeclarator",
             "value": "o1Arc01"
           },
@@ -18876,10 +18876,10 @@ description: Variables in memory after executing zoo-logo.kcl
           ],
           "radius": 0.2700000000000034,
           "tag": {
-            "commentStart": 6428,
-            "end": 6435,
+            "commentStart": 6435,
+            "end": 6442,
             "moduleId": 0,
-            "start": 6428,
+            "start": 6435,
             "type": "TagDeclarator",
             "value": "o1Arc02"
           },
@@ -18900,10 +18900,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.34004985261845255
           ],
           "tag": {
-            "commentStart": 6969,
-            "end": 6977,
+            "commentStart": 6976,
+            "end": 6984,
             "moduleId": 0,
-            "start": 6969,
+            "start": 6976,
             "type": "TagDeclarator",
             "value": "o1Line01"
           },
@@ -18924,10 +18924,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.7281499833877909
           ],
           "tag": {
-            "commentStart": 7087,
-            "end": 7095,
+            "commentStart": 7094,
+            "end": 7102,
             "moduleId": 0,
-            "start": 7087,
+            "start": 7094,
             "type": "TagDeclarator",
             "value": "o1Line02"
           },
@@ -19032,10 +19032,10 @@ description: Variables in memory after executing zoo-logo.kcl
           ],
           "radius": 0.5000000000000022,
           "tag": {
-            "commentStart": 6609,
-            "end": 6616,
+            "commentStart": 6616,
+            "end": 6623,
             "moduleId": 0,
-            "start": 6609,
+            "start": 6616,
             "type": "TagDeclarator",
             "value": "o1Arc03"
           },
@@ -19062,10 +19062,10 @@ description: Variables in memory after executing zoo-logo.kcl
           ],
           "radius": 0.27000000000000507,
           "tag": {
-            "commentStart": 6789,
-            "end": 6796,
+            "commentStart": 6796,
+            "end": 6803,
             "moduleId": 0,
-            "start": 6789,
+            "start": 6796,
             "type": "TagDeclarator",
             "value": "o1Arc04"
           },
@@ -19086,10 +19086,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.10205620940062177
           ],
           "tag": {
-            "commentStart": 7204,
-            "end": 7212,
+            "commentStart": 7211,
+            "end": 7219,
             "moduleId": 0,
-            "start": 7204,
+            "start": 7211,
             "type": "TagDeclarator",
             "value": "o1Line03"
           },
@@ -19110,10 +19110,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.6599501473815412
           ],
           "tag": {
-            "commentStart": 7320,
-            "end": 7328,
+            "commentStart": 7327,
+            "end": 7335,
             "moduleId": 0,
-            "start": 7320,
+            "start": 7327,
             "type": "TagDeclarator",
             "value": "o1Line04"
           },
@@ -19708,10 +19708,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   ],
                   "radius": 0.4999999999999999,
                   "tag": {
-                    "commentStart": 10340,
-                    "end": 10347,
+                    "commentStart": 10347,
+                    "end": 10354,
                     "moduleId": 0,
-                    "start": 10340,
+                    "start": 10347,
                     "type": "TagDeclarator",
                     "value": "o2Arc01"
                   },
@@ -19755,10 +19755,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   ],
                   "radius": 0.27,
                   "tag": {
-                    "commentStart": 10696,
-                    "end": 10703,
+                    "commentStart": 10703,
+                    "end": 10710,
                     "moduleId": 0,
-                    "start": 10696,
+                    "start": 10703,
                     "type": "TagDeclarator",
                     "value": "o2Arc03"
                   },
@@ -19779,10 +19779,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.34004985261845905
                   ],
                   "tag": {
-                    "commentStart": 11056,
-                    "end": 11064,
+                    "commentStart": 11063,
+                    "end": 11071,
                     "moduleId": 0,
-                    "start": 11056,
+                    "start": 11063,
                     "type": "TagDeclarator",
                     "value": "o2Line01"
                   },
@@ -19820,10 +19820,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.728149983387791
                   ],
                   "tag": {
-                    "commentStart": 11174,
-                    "end": 11182,
+                    "commentStart": 11181,
+                    "end": 11189,
                     "moduleId": 0,
-                    "start": 11174,
+                    "start": 11181,
                     "type": "TagDeclarator",
                     "value": "o2Line02"
                   },
@@ -28216,10 +28216,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   ],
                   "radius": 0.5000000000000002,
                   "tag": {
-                    "commentStart": 10518,
-                    "end": 10525,
+                    "commentStart": 10525,
+                    "end": 10532,
                     "moduleId": 0,
-                    "start": 10518,
+                    "start": 10525,
                     "type": "TagDeclarator",
                     "value": "o2Arc02"
                   },
@@ -28263,10 +28263,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   ],
                   "radius": 0.27000000000000024,
                   "tag": {
-                    "commentStart": 10876,
-                    "end": 10883,
+                    "commentStart": 10883,
+                    "end": 10890,
                     "moduleId": 0,
-                    "start": 10876,
+                    "start": 10883,
                     "type": "TagDeclarator",
                     "value": "o2Arc04"
                   },
@@ -28304,10 +28304,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.10205620940062617
                   ],
                   "tag": {
-                    "commentStart": 11290,
-                    "end": 11298,
+                    "commentStart": 11297,
+                    "end": 11305,
                     "moduleId": 0,
-                    "start": 11290,
+                    "start": 11297,
                     "type": "TagDeclarator",
                     "value": "o2Line03"
                   },
@@ -28345,10 +28345,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.6599501473815411
                   ],
                   "tag": {
-                    "commentStart": 11406,
-                    "end": 11414,
+                    "commentStart": 11413,
+                    "end": 11421,
                     "moduleId": 0,
-                    "start": 11406,
+                    "start": 11413,
                     "type": "TagDeclarator",
                     "value": "o2Line04"
                   },
@@ -36251,10 +36251,10 @@ description: Variables in memory after executing zoo-logo.kcl
           ],
           "radius": 0.4999999999999999,
           "tag": {
-            "commentStart": 10340,
-            "end": 10347,
+            "commentStart": 10347,
+            "end": 10354,
             "moduleId": 0,
-            "start": 10340,
+            "start": 10347,
             "type": "TagDeclarator",
             "value": "o2Arc01"
           },
@@ -36281,10 +36281,10 @@ description: Variables in memory after executing zoo-logo.kcl
           ],
           "radius": 0.27,
           "tag": {
-            "commentStart": 10696,
-            "end": 10703,
+            "commentStart": 10703,
+            "end": 10710,
             "moduleId": 0,
-            "start": 10696,
+            "start": 10703,
             "type": "TagDeclarator",
             "value": "o2Arc03"
           },
@@ -36305,10 +36305,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.34004985261845905
           ],
           "tag": {
-            "commentStart": 11056,
-            "end": 11064,
+            "commentStart": 11063,
+            "end": 11071,
             "moduleId": 0,
-            "start": 11056,
+            "start": 11063,
             "type": "TagDeclarator",
             "value": "o2Line01"
           },
@@ -36329,10 +36329,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.728149983387791
           ],
           "tag": {
-            "commentStart": 11174,
-            "end": 11182,
+            "commentStart": 11181,
+            "end": 11189,
             "moduleId": 0,
-            "start": 11174,
+            "start": 11181,
             "type": "TagDeclarator",
             "value": "o2Line02"
           },
@@ -36437,10 +36437,10 @@ description: Variables in memory after executing zoo-logo.kcl
           ],
           "radius": 0.5000000000000002,
           "tag": {
-            "commentStart": 10518,
-            "end": 10525,
+            "commentStart": 10525,
+            "end": 10532,
             "moduleId": 0,
-            "start": 10518,
+            "start": 10525,
             "type": "TagDeclarator",
             "value": "o2Arc02"
           },
@@ -36467,10 +36467,10 @@ description: Variables in memory after executing zoo-logo.kcl
           ],
           "radius": 0.27000000000000024,
           "tag": {
-            "commentStart": 10876,
-            "end": 10883,
+            "commentStart": 10883,
+            "end": 10890,
             "moduleId": 0,
-            "start": 10876,
+            "start": 10883,
             "type": "TagDeclarator",
             "value": "o2Arc04"
           },
@@ -36491,10 +36491,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.10205620940062617
           ],
           "tag": {
-            "commentStart": 11290,
-            "end": 11298,
+            "commentStart": 11297,
+            "end": 11305,
             "moduleId": 0,
-            "start": 11290,
+            "start": 11297,
             "type": "TagDeclarator",
             "value": "o2Line03"
           },
@@ -36515,10 +36515,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.6599501473815411
           ],
           "tag": {
-            "commentStart": 11406,
-            "end": 11414,
+            "commentStart": 11413,
+            "end": 11421,
             "moduleId": 0,
-            "start": 11406,
+            "start": 11413,
             "type": "TagDeclarator",
             "value": "o2Line04"
           },
@@ -36697,10 +36697,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.025000000000000012
           ],
           "tag": {
-            "commentStart": 1229,
-            "end": 1236,
+            "commentStart": 1236,
+            "end": 1243,
             "moduleId": 0,
-            "start": 1229,
+            "start": 1236,
             "type": "TagDeclarator",
             "value": "zLine01"
           },
@@ -36721,10 +36721,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.16499999999999995
           ],
           "tag": {
-            "commentStart": 1344,
-            "end": 1351,
+            "commentStart": 1351,
+            "end": 1358,
             "moduleId": 0,
-            "start": 1344,
+            "start": 1351,
             "type": "TagDeclarator",
             "value": "zLine02"
           },
@@ -36745,10 +36745,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.76
           ],
           "tag": {
-            "commentStart": 1459,
-            "end": 1466,
+            "commentStart": 1466,
+            "end": 1473,
             "moduleId": 0,
-            "start": 1459,
+            "start": 1466,
             "type": "TagDeclarator",
             "value": "zLine03"
           },
@@ -36769,10 +36769,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.76
           ],
           "tag": {
-            "commentStart": 1574,
-            "end": 1581,
+            "commentStart": 1581,
+            "end": 1588,
             "moduleId": 0,
-            "start": 1574,
+            "start": 1581,
             "type": "TagDeclarator",
             "value": "zLine04"
           },
@@ -36793,10 +36793,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.975
           ],
           "tag": {
-            "commentStart": 1689,
-            "end": 1696,
+            "commentStart": 1696,
+            "end": 1703,
             "moduleId": 0,
-            "start": 1689,
+            "start": 1696,
             "type": "TagDeclarator",
             "value": "zLine05"
           },
@@ -36817,10 +36817,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.975
           ],
           "tag": {
-            "commentStart": 1804,
-            "end": 1811,
+            "commentStart": 1811,
+            "end": 1818,
             "moduleId": 0,
-            "start": 1804,
+            "start": 1811,
             "type": "TagDeclarator",
             "value": "zLine06"
           },
@@ -36841,10 +36841,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.8173489932885906
           ],
           "tag": {
-            "commentStart": 1919,
-            "end": 1926,
+            "commentStart": 1926,
+            "end": 1933,
             "moduleId": 0,
-            "start": 1919,
+            "start": 1926,
             "type": "TagDeclarator",
             "value": "zLine07"
           },
@@ -36865,10 +36865,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.975
           ],
           "tag": {
-            "commentStart": 2034,
-            "end": 2041,
+            "commentStart": 2041,
+            "end": 2048,
             "moduleId": 0,
-            "start": 2034,
+            "start": 2041,
             "type": "TagDeclarator",
             "value": "zLine08"
           },
@@ -36889,10 +36889,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.975
           ],
           "tag": {
-            "commentStart": 2149,
-            "end": 2156,
+            "commentStart": 2156,
+            "end": 2163,
             "moduleId": 0,
-            "start": 2149,
+            "start": 2156,
             "type": "TagDeclarator",
             "value": "zLine09"
           },
@@ -36913,10 +36913,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.835
           ],
           "tag": {
-            "commentStart": 2264,
-            "end": 2271,
+            "commentStart": 2271,
+            "end": 2278,
             "moduleId": 0,
-            "start": 2264,
+            "start": 2271,
             "type": "TagDeclarator",
             "value": "zLine10"
           },
@@ -36937,10 +36937,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.24
           ],
           "tag": {
-            "commentStart": 2379,
-            "end": 2386,
+            "commentStart": 2386,
+            "end": 2393,
             "moduleId": 0,
-            "start": 2379,
+            "start": 2386,
             "type": "TagDeclarator",
             "value": "zLine11"
           },
@@ -36961,10 +36961,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.24
           ],
           "tag": {
-            "commentStart": 2494,
-            "end": 2501,
+            "commentStart": 2501,
+            "end": 2508,
             "moduleId": 0,
-            "start": 2494,
+            "start": 2501,
             "type": "TagDeclarator",
             "value": "zLine12"
           },
@@ -36985,10 +36985,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.025000000000000012
           ],
           "tag": {
-            "commentStart": 2609,
-            "end": 2616,
+            "commentStart": 2616,
+            "end": 2623,
             "moduleId": 0,
-            "start": 2609,
+            "start": 2616,
             "type": "TagDeclarator",
             "value": "zLine13"
           },
@@ -37009,10 +37009,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.025000000000000012
           ],
           "tag": {
-            "commentStart": 2724,
-            "end": 2731,
+            "commentStart": 2731,
+            "end": 2738,
             "moduleId": 0,
-            "start": 2724,
+            "start": 2731,
             "type": "TagDeclarator",
             "value": "zLine14"
           },
@@ -37033,10 +37033,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.18265100671140946
           ],
           "tag": {
-            "commentStart": 2839,
-            "end": 2846,
+            "commentStart": 2846,
+            "end": 2853,
             "moduleId": 0,
-            "start": 2839,
+            "start": 2846,
             "type": "TagDeclarator",
             "value": "zLine15"
           },
@@ -37057,10 +37057,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.025000000000000012
           ],
           "tag": {
-            "commentStart": 2954,
-            "end": 2961,
+            "commentStart": 2961,
+            "end": 2968,
             "moduleId": 0,
-            "start": 2954,
+            "start": 2961,
             "type": "TagDeclarator",
             "value": "zLine16"
           },
@@ -37697,10 +37697,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.025000000000000012
                   ],
                   "tag": {
-                    "commentStart": 1229,
-                    "end": 1236,
+                    "commentStart": 1236,
+                    "end": 1243,
                     "moduleId": 0,
-                    "start": 1229,
+                    "start": 1236,
                     "type": "TagDeclarator",
                     "value": "zLine01"
                   },
@@ -37721,10 +37721,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.16499999999999995
                   ],
                   "tag": {
-                    "commentStart": 1344,
-                    "end": 1351,
+                    "commentStart": 1351,
+                    "end": 1358,
                     "moduleId": 0,
-                    "start": 1344,
+                    "start": 1351,
                     "type": "TagDeclarator",
                     "value": "zLine02"
                   },
@@ -37745,10 +37745,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.76
                   ],
                   "tag": {
-                    "commentStart": 1459,
-                    "end": 1466,
+                    "commentStart": 1466,
+                    "end": 1473,
                     "moduleId": 0,
-                    "start": 1459,
+                    "start": 1466,
                     "type": "TagDeclarator",
                     "value": "zLine03"
                   },
@@ -37769,10 +37769,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.76
                   ],
                   "tag": {
-                    "commentStart": 1574,
-                    "end": 1581,
+                    "commentStart": 1581,
+                    "end": 1588,
                     "moduleId": 0,
-                    "start": 1574,
+                    "start": 1581,
                     "type": "TagDeclarator",
                     "value": "zLine04"
                   },
@@ -37793,10 +37793,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.975
                   ],
                   "tag": {
-                    "commentStart": 1689,
-                    "end": 1696,
+                    "commentStart": 1696,
+                    "end": 1703,
                     "moduleId": 0,
-                    "start": 1689,
+                    "start": 1696,
                     "type": "TagDeclarator",
                     "value": "zLine05"
                   },
@@ -37817,10 +37817,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.975
                   ],
                   "tag": {
-                    "commentStart": 1804,
-                    "end": 1811,
+                    "commentStart": 1811,
+                    "end": 1818,
                     "moduleId": 0,
-                    "start": 1804,
+                    "start": 1811,
                     "type": "TagDeclarator",
                     "value": "zLine06"
                   },
@@ -37841,10 +37841,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.8173489932885906
                   ],
                   "tag": {
-                    "commentStart": 1919,
-                    "end": 1926,
+                    "commentStart": 1926,
+                    "end": 1933,
                     "moduleId": 0,
-                    "start": 1919,
+                    "start": 1926,
                     "type": "TagDeclarator",
                     "value": "zLine07"
                   },
@@ -37865,10 +37865,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.975
                   ],
                   "tag": {
-                    "commentStart": 2034,
-                    "end": 2041,
+                    "commentStart": 2041,
+                    "end": 2048,
                     "moduleId": 0,
-                    "start": 2034,
+                    "start": 2041,
                     "type": "TagDeclarator",
                     "value": "zLine08"
                   },
@@ -37889,10 +37889,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.975
                   ],
                   "tag": {
-                    "commentStart": 2149,
-                    "end": 2156,
+                    "commentStart": 2156,
+                    "end": 2163,
                     "moduleId": 0,
-                    "start": 2149,
+                    "start": 2156,
                     "type": "TagDeclarator",
                     "value": "zLine09"
                   },
@@ -37913,10 +37913,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.835
                   ],
                   "tag": {
-                    "commentStart": 2264,
-                    "end": 2271,
+                    "commentStart": 2271,
+                    "end": 2278,
                     "moduleId": 0,
-                    "start": 2264,
+                    "start": 2271,
                     "type": "TagDeclarator",
                     "value": "zLine10"
                   },
@@ -37937,10 +37937,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.24
                   ],
                   "tag": {
-                    "commentStart": 2379,
-                    "end": 2386,
+                    "commentStart": 2386,
+                    "end": 2393,
                     "moduleId": 0,
-                    "start": 2379,
+                    "start": 2386,
                     "type": "TagDeclarator",
                     "value": "zLine11"
                   },
@@ -37961,10 +37961,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.24
                   ],
                   "tag": {
-                    "commentStart": 2494,
-                    "end": 2501,
+                    "commentStart": 2501,
+                    "end": 2508,
                     "moduleId": 0,
-                    "start": 2494,
+                    "start": 2501,
                     "type": "TagDeclarator",
                     "value": "zLine12"
                   },
@@ -37985,10 +37985,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.025000000000000012
                   ],
                   "tag": {
-                    "commentStart": 2609,
-                    "end": 2616,
+                    "commentStart": 2616,
+                    "end": 2623,
                     "moduleId": 0,
-                    "start": 2609,
+                    "start": 2616,
                     "type": "TagDeclarator",
                     "value": "zLine13"
                   },
@@ -38009,10 +38009,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.025000000000000012
                   ],
                   "tag": {
-                    "commentStart": 2724,
-                    "end": 2731,
+                    "commentStart": 2731,
+                    "end": 2738,
                     "moduleId": 0,
-                    "start": 2724,
+                    "start": 2731,
                     "type": "TagDeclarator",
                     "value": "zLine14"
                   },
@@ -38033,10 +38033,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.18265100671140946
                   ],
                   "tag": {
-                    "commentStart": 2839,
-                    "end": 2846,
+                    "commentStart": 2846,
+                    "end": 2853,
                     "moduleId": 0,
-                    "start": 2839,
+                    "start": 2846,
                     "type": "TagDeclarator",
                     "value": "zLine15"
                   },
@@ -38057,10 +38057,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.025000000000000012
                   ],
                   "tag": {
-                    "commentStart": 2954,
-                    "end": 2961,
+                    "commentStart": 2961,
+                    "end": 2968,
                     "moduleId": 0,
-                    "start": 2954,
+                    "start": 2961,
                     "type": "TagDeclarator",
                     "value": "zLine16"
                   },

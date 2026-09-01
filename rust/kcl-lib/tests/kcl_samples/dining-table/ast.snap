@@ -12518,7 +12518,7 @@ description: Result of parsing dining-table.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Home & Lifestyle",
             "style": "line"
           }
         },

@@ -1472,7 +1472,7 @@ description: Result of parsing wedge.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Construction",
+            "value": "Categories: Science & Education; Parametric",
             "style": "line"
           }
         },

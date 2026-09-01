@@ -8,7 +8,10 @@ import {
   useProjectStatus,
 } from '@src/hooks/useProjectStatus'
 import type { App } from '@src/lib/app'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
+import { CLOUD_PROJECT_LIBRARY_TYPE } from '@src/lib/projectLibraries'
+import { moveOpenedProjectToCloudLibrary } from '@src/lib/projectLibraries/moveOpenedProjectToCloudLibrary'
 import {
   type CurrentProjectPublicationDetails,
   getCurrentProjectPublicationDetails,
@@ -29,6 +32,8 @@ import {
   useMemo,
   useState,
 } from 'react'
+import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 type PublishButtonProps = {
   app: App
@@ -65,6 +70,7 @@ function PublishPopoverContent({
   useSignals()
   const { auth } = app
   const { kclManager } = app.singletons
+  const navigate = useNavigate()
   const ast = kclManager.astSignal.value
   const kclEmpty = kclManager.isAstBodyEmpty(ast)
   const hasKclErrors = kclManager.hasErrors()
@@ -85,6 +91,15 @@ function PublishPopoverContent({
   const publishRequiresUsername = !isCheckingUser && !!token && !username
   const accountUrl = withSiteBaseURL('/account')
   const buttonDisabled = kclEmpty || hasKclErrors
+  const hasCloudSyncFeature = app.userFeatures.useHas(
+    OPFS_CLOUD_FEATURE_FLAG,
+    false
+  )
+  const willMoveProjectToCloud = Boolean(
+    hasCloudSyncFeature &&
+      project &&
+      project.libraryType !== CLOUD_PROJECT_LIBRARY_TYPE
+  )
   const projectStatus =
     submittedProjectStatus &&
     submittedProjectStatus.projectId === project?.cloudProjectId
@@ -155,6 +170,10 @@ function PublishPopoverContent({
   >(
     async (submission) => {
       const wasmInstance = await kclManager.wasmInstancePromise
+      const saved = await kclManager.writeToFile(kclManager.code)
+      if (err(saved)) {
+        return false
+      }
       const published = await publishCurrentProject({
         token,
         project,
@@ -183,9 +202,38 @@ function PublishPopoverContent({
           },
         })
       }
+
+      if (willMoveProjectToCloud && project) {
+        const moved = await moveOpenedProjectToCloudLibrary({
+          app,
+          project,
+          navigate,
+        })
+        if (err(moved)) {
+          console.error(
+            'Project was submitted to Aquarium but could not be moved to Personal Cloud',
+            moved
+          )
+          toast.error(
+            'Project submitted to Aquarium, but it could not be moved to Personal Cloud.',
+            { duration: 5000 }
+          )
+          return false
+        }
+      }
+
       return true
     },
-    [fetchPublicationDetails, fetchedProjectStatus, kclManager, project, token]
+    [
+      app,
+      fetchPublicationDetails,
+      fetchedProjectStatus,
+      kclManager,
+      navigate,
+      project,
+      token,
+      willMoveProjectToCloud,
+    ]
   )
 
   return (
@@ -215,6 +263,7 @@ function PublishPopoverContent({
           initialTitle={''}
           publishDisabled={isCheckingUser || publishRequiresUsername}
           publishRequiresUsername={publishRequiresUsername}
+          willMoveProjectToCloud={willMoveProjectToCloud}
           accountUrl={accountUrl}
           publicationDetails={publicationDetails}
           isLoadingPublicationDetails={isLoadingPublicationDetails}

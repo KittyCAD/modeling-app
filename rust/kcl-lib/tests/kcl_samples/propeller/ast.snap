@@ -20001,7 +20001,7 @@ description: Result of parsing propeller.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Aerospace",
+            "value": "Categories: Aerospace; Mechanical Components",
             "style": "line"
           }
         },

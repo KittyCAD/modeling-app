@@ -3317,7 +3317,7 @@ description: Result of parsing pipe-flange-assembly.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Manufacturing, Construction",
+            "value": "Categories: Architecture & Construction; Mechanical Components",
             "style": "line"
           }
         },
