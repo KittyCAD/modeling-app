@@ -1,6 +1,11 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { traverse } from '@src/lang/queryAst'
-import type { Name, Program, VariableDeclaration } from '@src/lang/wasm'
+import type {
+  Name,
+  PathToNode,
+  Program,
+  VariableDeclaration,
+} from '@src/lang/wasm'
 
 const isVariableDeclaration = (
   statement: Program['body'][number]
@@ -72,6 +77,64 @@ const buildDeletedToParentMap = (
   return deletedToParentMap
 }
 
+// Scopes whose bindings may shadow a deleted feature's name. Function scopes
+// are delimited by FunctionExpression enter/leave events. Block scopes (sketch
+// blocks and bare blocks) get no enter/leave events of their own -- traverse
+// visits their items directly -- so they are keyed by the path prefix shared
+// by all of the block's items and synced against the current path on every
+// enter.
+type ScopeFrame =
+  | { kind: 'function'; bindings: Set<string> }
+  | { kind: 'block'; bindings: Set<string>; pathPrefix: PathToNode }
+
+const isPathPrefix = (prefix: PathToNode, path: PathToNode): boolean => {
+  if (prefix.length > path.length) {
+    return false
+  }
+  return prefix.every((segment, i) => segment[0] === path[i][0])
+}
+
+// Both sketch-block bodies and bare blocks tag their items with this segment.
+const isBlockItemsSegment = (segment: PathToNode[number]): boolean => {
+  return segment[0] === 'items' && segment[1] === 'Block'
+}
+
+// Bring path-keyed frames in line with the node being visited: close scopes
+// traversal has moved past and open scopes it has moved into. Function frames
+// are managed by their own enter/leave events, but a live function frame
+// guarantees every path-keyed frame below it is an enclosing scope, so
+// pruning stops at the first function frame or live block frame.
+const syncScopeFrames = (frames: ScopeFrame[], pathToNode: PathToNode) => {
+  while (frames.length > 0) {
+    const top = frames[frames.length - 1]
+    if (top.kind === 'function' || isPathPrefix(top.pathPrefix, pathToNode)) {
+      break
+    }
+    frames.pop()
+  }
+
+  // Ascending prefix length keeps the stack ordered outermost-first. After
+  // pruning, every remaining path-keyed frame prefixes the current path, so
+  // matching on prefix length alone identifies an already-open scope.
+  for (let i = 0; i < pathToNode.length; i++) {
+    if (!isBlockItemsSegment(pathToNode[i])) {
+      continue
+    }
+    const prefixLength = i + 1
+    const alreadyOpen = frames.some(
+      (frame) =>
+        frame.kind !== 'function' && frame.pathPrefix.length === prefixLength
+    )
+    if (!alreadyOpen) {
+      frames.push({
+        kind: 'block',
+        bindings: new Set(),
+        pathPrefix: pathToNode.slice(0, prefixLength),
+      })
+    }
+  }
+}
+
 const resolveRewireTarget = (
   name: string,
   deletedToParentMap: Map<string, string>
@@ -105,13 +168,15 @@ export function rewireAfterDelete(
 
   const rewiredAst = structuredClone(afterDeleteAst)
   let didRewire = false
-  const functionScopes: Set<string>[] = []
+  const scopeFrames: ScopeFrame[] = []
 
   // First pass is intentionally generic: if a deleted feature had a parent
   // reference, every unshadowed downstream reference gets rebound through that
   // parent chain.
   traverse(rewiredAst, {
     enter: (node, pathToNode) => {
+      syncScopeFrames(scopeFrames, pathToNode)
+
       if (node.type === 'FunctionExpression') {
         const bindings = new Set(
           node.params.map((param) => param.identifier.name)
@@ -119,12 +184,16 @@ export function rewireAfterDelete(
         if (node.name) {
           bindings.add(node.name.name)
         }
-        functionScopes.push(bindings)
+        scopeFrames.push({ kind: 'function', bindings })
         return
       }
 
-      if (node.type === 'VariableDeclaration' && functionScopes.length > 0) {
-        functionScopes[functionScopes.length - 1].add(node.declaration.id.name)
+      // Top-level declarations are deliberately left unregistered: they are
+      // the rewire targets themselves, not shadows.
+      if (node.type === 'VariableDeclaration' && scopeFrames.length > 0) {
+        scopeFrames[scopeFrames.length - 1].bindings.add(
+          node.declaration.id.name
+        )
         return
       }
 
@@ -140,7 +209,7 @@ export function rewireAfterDelete(
       if (pathToNode[pathToNode.length - 1]?.[0] === 'callee') {
         return
       }
-      if (functionScopes.some((scope) => scope.has(node.name.name))) {
+      if (scopeFrames.some((frame) => frame.bindings.has(node.name.name))) {
         return
       }
 
@@ -157,7 +226,13 @@ export function rewireAfterDelete(
     },
     leave: (node) => {
       if (node.type === 'FunctionExpression') {
-        functionScopes.pop()
+        // Discard any block frames opened inside the function that had no
+        // later sibling visit to prune them.
+        while (scopeFrames.length > 0) {
+          if (scopeFrames.pop()?.kind === 'function') {
+            break
+          }
+        }
       }
     },
   })

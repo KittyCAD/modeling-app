@@ -161,4 +161,94 @@ keep001 = deleted001 + 1`)
       'keep001 = deleted001 + 1'
     )
   })
+
+  // Sketch-block bodies are their own scope at runtime in every KCL version,
+  // so these frames are not gated on the language version. Bare blocks share
+  // the same path shape and are covered by the same rule.
+  describe.each([
+    ['2.0', '@settings(kclVersion = 2.0)'],
+    ['3.0-preview', '@settings(kclVersion = "3.0-preview")'],
+  ])('sketch block scope under KCL %s', (_version, header) => {
+    it('does not rewire references shadowed by a sketch block binding', () => {
+      const beforeDeleteAst = parseProgram(`${header}
+sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 5)
+extrude001 = extrude(profile001, length = 5)
+profile002 = sketch(on = XY) {
+  extrude001 = circle(start = [var 1, var 0], center = [var 0, var 0])
+  coincident([extrude001.center, ORIGIN])
+}
+result001 = fillet(extrude001, radius = 1)`)
+
+      const afterDeleteAst = parseProgram(`${header}
+sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 5)
+profile002 = sketch(on = XY) {
+  extrude001 = circle(start = [var 1, var 0], center = [var 0, var 0])
+  coincident([extrude001.center, ORIGIN])
+}
+result001 = fillet(extrude001, radius = 1)`)
+
+      const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+      const recasted = recast(rewiredAst, getInstance())
+
+      // The block-local extrude001 shadows the deleted feature inside the
+      // body, but the reference after the block refers to the deleted
+      // top-level feature and must be rewired.
+      expect(recasted).toContain('coincident([extrude001.center, ORIGIN])')
+      expect(recasted).toContain('fillet(profile001, radius = 1)')
+    })
+
+    it('rewires a sketch block argument referencing the deleted feature', () => {
+      const beforeDeleteAst = parseProgram(`${header}
+plane001 = offsetPlane(XY, offset = 5)
+profile001 = sketch(on = plane001) {
+  circle1 = circle(start = [var 1, var 0], center = [var 0, var 0])
+}`)
+
+      const afterDeleteAst = parseProgram(`${header}
+profile001 = sketch(on = plane001) {
+  circle1 = circle(start = [var 1, var 0], center = [var 0, var 0])
+}`)
+
+      const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+
+      // Sketch block arguments are evaluated in the enclosing scope.
+      expect(recast(rewiredAst, getInstance())).toContain('sketch(on = XY)')
+    })
+
+    it('rewires references in a sibling statement after the sketch block', () => {
+      const beforeDeleteAst = parseProgram(`${header}
+sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 5)
+extrude001 = extrude(profile001, length = 5)
+fn wrap() {
+  profile002 = sketch(on = XY) {
+    extrude001 = circle(start = [var 1, var 0], center = [var 0, var 0])
+  }
+  result001 = fillet(extrude001, radius = 1)
+  return result001
+}`)
+
+      const afterDeleteAst = parseProgram(`${header}
+sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 5)
+fn wrap() {
+  profile002 = sketch(on = XY) {
+    extrude001 = circle(start = [var 1, var 0], center = [var 0, var 0])
+  }
+  result001 = fillet(extrude001, radius = 1)
+  return result001
+}`)
+
+      const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+
+      // The block frame is discarded when traversal moves to the next
+      // statement in the function body, so the reference there sees only the
+      // deleted top-level feature.
+      expect(recast(rewiredAst, getInstance())).toContain(
+        'fillet(profile001, radius = 1)'
+      )
+    })
+  })
 })
