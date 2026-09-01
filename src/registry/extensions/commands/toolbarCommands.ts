@@ -5,7 +5,10 @@ import {
 } from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
-import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
+import {
+  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+} from '@src/lib/constants'
 import { selectSketchPlane } from '@src/lib/selections'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {
@@ -42,6 +45,7 @@ export const TOOLBAR_COMMAND_IDS = {
   sketchSolve: {
     exit: 'zds.toolbar.sketch.exit',
     cancel: 'zds.toolbar.sketch.cancel',
+    toolPicker: 'zds.toolbar.sketch.toolPicker',
     line: 'zds.toolbar.sketch.line',
     point: 'zds.toolbar.sketch.point',
     spline: 'zds.toolbar.sketch.spline',
@@ -162,6 +166,12 @@ function hasSketchExperimentalFeatures(input: unknown): boolean {
   return (
     getUserFeatures(input)?.has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false) ??
     false
+  )
+}
+
+function hasLegacySketchMode(input: unknown): boolean {
+  return (
+    getUserFeatures(input)?.has(LEGACY_SKETCH_MODE_FEATURE_FLAG, false) ?? false
   )
 }
 
@@ -304,6 +314,14 @@ async function enterSketch(input: unknown) {
   )
 
   if ((kclManager.editorView.hasFocus && sketchPathId) || isSketchBlock) {
+    if (
+      kclManager.editorView.hasFocus &&
+      sketchPathId &&
+      !isSketchBlock &&
+      !hasLegacySketchMode(input)
+    ) {
+      return
+    }
     return sendModelingEvent(input, { type: 'Enter sketch' })
   }
 
@@ -448,6 +466,13 @@ export const toolbarCommands: readonly Command[] = [
     displayName: 'Cancel sketch solve action',
     description: 'Cancel the active sketch solve action.',
     onSubmit: (input) => sendModelingEvent(input, { type: 'Cancel' }),
+  }),
+  createToolbarCommand({
+    id: TOOLBAR_COMMAND_IDS.sketchSolve.toolPicker,
+    displayName: 'Pick hovered sketch tool',
+    description: 'Equip the sketch tool matching the object under the cursor.',
+    onSubmit: (input) =>
+      sendModelingEvent(input, { type: 'pick hovered tool' }),
   }),
   createSketchSolveToolCommand({
     id: TOOLBAR_COMMAND_IDS.sketchSolve.line,

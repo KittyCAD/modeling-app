@@ -479,6 +479,98 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await editor.expectEditor.toContain('circle(start = [')
     })
+
+    await test.step('Equip the center arc tool with its keybinding and draw an arc', async () => {
+      await page.keyboard.press('a')
+      await expect(page.getByTestId('center-arc')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+
+      let previousCode = await editor.getCurrentCode()
+      const [arcCenter] = scene.makeMouseHelpers(0.25, 0.7, {
+        format: 'ratio',
+      })
+      const [arcStart] = scene.makeMouseHelpers(0.35, 0.7, {
+        format: 'ratio',
+      })
+      const [arcEnd] = scene.makeMouseHelpers(0.31, 0.62, {
+        format: 'ratio',
+      })
+
+      await arcCenter()
+      await arcStart()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await arcEnd()
+      await waitForCodeChange(page, previousCode)
+
+      await editor.expectEditor.toContain('arc(start = [')
+    })
+
+    await test.step('Pick hovered tools with P and unequip over empty space', async () => {
+      const [, moveToLine] = scene.makeMouseHelpers(0.45, 0.45, {
+        format: 'ratio',
+      })
+      const [, moveToCircle] = scene.makeMouseHelpers(0.78, 0.62, {
+        format: 'ratio',
+      })
+      const [, moveToArc] = scene.makeMouseHelpers(0.35, 0.7, {
+        format: 'ratio',
+      })
+      const [, moveToEmptySpace] = scene.makeMouseHelpers(0.1, 0.85, {
+        format: 'ratio',
+      })
+      const getPlanePointerKey = () =>
+        page.evaluate(() => {
+          const point =
+            window.app.singletons.kclManager.sceneInfra.getPlaneIntersectPoint()
+          return point?.twoD ? `${point.twoD.x}:${point.twoD.y}` : null
+        })
+      const moveAndWaitForScenePointer = async (
+        move: () => Promise<unknown>
+      ) => {
+        const previousPointer = await getPlanePointerKey()
+        await move()
+        await expect.poll(getPlanePointerKey).not.toBe(previousPointer)
+      }
+
+      await moveAndWaitForScenePointer(moveToEmptySpace)
+      await page.keyboard.press('p')
+      await expect(page.getByTestId('center-arc')).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
+
+      await moveAndWaitForScenePointer(moveToLine)
+      await page.keyboard.press('p')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+      await moveAndWaitForScenePointer(moveToEmptySpace)
+      await page.keyboard.press('p')
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+
+      await moveAndWaitForScenePointer(moveToCircle)
+      await page.keyboard.press('p')
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+
+      await moveAndWaitForScenePointer(moveToEmptySpace)
+      await page.keyboard.press('p')
+      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'false')
+
+      await moveAndWaitForScenePointer(moveToArc)
+      await page.keyboard.press('p')
+      await expect(page.getByTestId('center-arc')).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+
+      await moveAndWaitForScenePointer(moveToEmptySpace)
+      await page.keyboard.press('p')
+      await expect(page.getByTestId('center-arc')).toHaveAttribute(
+        'aria-pressed',
+        'false'
+      )
+    })
   })
 
   test('horizontal and vertical hotkeys constrain the draft line while drawing', async ({

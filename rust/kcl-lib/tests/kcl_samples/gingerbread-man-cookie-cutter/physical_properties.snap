@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties gingerbread-man-cookie-cutter.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 239.33391954388208,
+      "z": 50.00000000000001
+    },
+    "dimensions": {
+      "x": 728.5114023374399,
+      "y": 1006.71712044763,
+      "z": 100.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 735037.2304263146
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 3340.4760996518235
+  }
+}
