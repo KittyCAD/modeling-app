@@ -3,7 +3,6 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useApp } from '@src/lib/boot'
-import { SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
@@ -39,11 +38,11 @@ export function SessionExpiredDialogHostContent({
     auth.send({ type: 'Acknowledge session expired' })
 
     if (window.electron) {
-      void navigate(PATHS.SIGN_IN, {
-        state: {
-          [SESSION_EXPIRED_SIGN_IN_ROUTE_STATE_KEY]: true,
-        },
-      })
+      // The intent to start signing in immediately is application state, not
+      // something the URL can express, so it travels on the auth service rather
+      // than in `history.state`.
+      auth.requestSessionExpiredSignIn()
+      void navigate(PATHS.SIGN_IN)
       return
     }
 
