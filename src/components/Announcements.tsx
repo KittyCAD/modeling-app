@@ -4,7 +4,7 @@ import { MarkdownText } from '@src/components/MarkdownText'
 import { createKCClient } from '@src/lib/kcClient'
 import { useEffect, useState } from 'react'
 
-export const LEGACY_SKETCH_MODE_BANNER =
+export const LEGACY_SKETCH_MODE_DEPRECATION_MESSAGE =
   'This older sketch opens in legacy mode. New projects use the redesigned sketch mode with a fully-integrated constraint solver.'
 
 export function Announcements({ token }: { token?: string }) {
@@ -69,7 +69,7 @@ export function LegacySketchModeBanner() {
       className="mt-2 w-[min(34rem,calc(100vw-2rem))] py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg whitespace-normal"
     >
       <p className="text-xs text-center whitespace-normal break-words">
-        {LEGACY_SKETCH_MODE_BANNER}
+        {LEGACY_SKETCH_MODE_DEPRECATION_MESSAGE}
       </p>
     </div>
   )

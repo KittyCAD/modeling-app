@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties beam_sweeps.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 2540.0,
+      "y": 1066.8,
+      "z": 1270.0000000000002
+    },
+    "dimensions": {
+      "x": 5892.799999999999,
+      "y": 2946.4,
+      "z": 3352.8000000000006
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 105443067.6830234
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 666735.5014942586
+  }
+}
