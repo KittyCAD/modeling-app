@@ -4,10 +4,6 @@ import type {
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
-import { markOnce } from '@src/lib/performance'
-import { notifySessionExpired } from '@src/lib/sessionExpired'
-import { promiseFactory, uuidv4 } from '@src/lib/utils'
-import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import {
   createOnConnectionStateChange,
   createOnDataChannel,
@@ -20,6 +16,7 @@ import {
   createOnTrack,
 } from '@src/lib/engineConnection/peerConnection'
 import type {
+  EngineConnectionError,
   IEventListenerTracked,
   ManagerTearDown,
 } from '@src/lib/engineConnection/utils'
@@ -37,6 +34,10 @@ import {
   createOnWebSocketMessage,
   createOnWebSocketOpen,
 } from '@src/lib/engineConnection/websocketConnection'
+import { markOnce } from '@src/lib/performance'
+import { notifySessionExpired } from '@src/lib/sessionExpired'
+import { promiseFactory, uuidv4 } from '@src/lib/utils'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly
@@ -66,6 +67,7 @@ export class Connection extends EventTarget {
   websocket: WebSocket | undefined
   apiCallId: string | undefined
   sdpAnswer: RTCSessionDescriptionInit | undefined
+  private _connectionError: EngineConnectionError | undefined
 
   // Promises to write sync code and await the multiple levels of
   // initialization across Websocket -> peerConnection and their event handler
@@ -218,6 +220,10 @@ export class Connection extends EventTarget {
 
   get token() {
     return this._token
+  }
+
+  get connectionError() {
+    return this._connectionError
   }
 
   get pingIntervalId() {
@@ -630,6 +636,10 @@ export class Connection extends EventTarget {
         this.apiCallId = apiCallId
       },
       getCloudProjectId: this.getCloudProjectId,
+      setConnectionError: (connectionError) => {
+        this._connectionError = connectionError
+      },
+      tearDownManager: this.tearDownManager.bind(this),
     })
     const onWebSocketClose = createOnWebSocketClose({
       websocket: this.websocket,
@@ -638,6 +648,7 @@ export class Connection extends EventTarget {
       onWebSocketMessage: onWebSocketMessage,
       tearDownManager: this.tearDownManager.bind(this),
       dispatchEvent: this.dispatchEvent.bind(this),
+      getConnectionError: () => this._connectionError,
     })
 
     // Meta close will remove all the internal events itself but then the this.websocket.close

@@ -1,5 +1,8 @@
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
+import {
+  EngineConnectionErrorKind,
+  EngineConnectionManagerEvents,
+} from '@src/lib/engineConnection/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
@@ -9,22 +12,26 @@ describe('useOnWebsocketClose', () => {
     test('should not run any callbacks', async () => {
       const callback = vi.fn(() => 1)
       const infiniteLoopCallback = vi.fn(() => 1)
+      const terminalErrorCallback = vi.fn(() => 1)
       const { engineCommandManager } =
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
+          terminalErrorCallback,
           engineCommandManager,
         })
       )
       unmount()
       expect(callback).toHaveBeenCalledTimes(0)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(0)
+      expect(terminalErrorCallback).toHaveBeenCalledTimes(0)
     })
     test('should attach and remove event listeners', async () => {
       const callback = vi.fn(() => 1)
       const infiniteLoopCallback = vi.fn(() => 1)
+      const terminalErrorCallback = vi.fn(() => 1)
       const { engineCommandManager } =
         await buildTheWorldAndNoEngineConnection(true)
       const spyAdd = vi.spyOn(engineCommandManager, 'addEventListener')
@@ -33,6 +40,7 @@ describe('useOnWebsocketClose', () => {
         useOnWebsocketClose({
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
+          terminalErrorCallback,
           engineCommandManager,
         })
       )
@@ -43,12 +51,14 @@ describe('useOnWebsocketClose', () => {
     test('should call callback on close event', async () => {
       const callback = vi.fn(() => 1)
       const infiniteLoopCallback = vi.fn(() => 1)
+      const terminalErrorCallback = vi.fn(() => 1)
       const { engineCommandManager } =
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
+          terminalErrorCallback,
           engineCommandManager,
         })
       )
@@ -62,12 +72,14 @@ describe('useOnWebsocketClose', () => {
     test('should call infinite detection loop callback on close event', async () => {
       const callback = vi.fn(() => 1)
       const infiniteLoopCallback = vi.fn(() => 1)
+      const terminalErrorCallback = vi.fn(() => 1)
       const { engineCommandManager } =
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() =>
         useOnWebsocketClose({
           callback,
           infiniteDetectionLoopCallback: infiniteLoopCallback,
+          terminalErrorCallback,
           engineCommandManager,
         })
       )
@@ -84,6 +96,44 @@ describe('useOnWebsocketClose', () => {
       expect(callback).toHaveBeenCalledTimes(0)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
       expect(infiniteLoopCallback).toHaveBeenCalledWith('1006')
+    })
+    test('routes terminal errors without invoking automatic reconnect callbacks', async () => {
+      const callback = vi.fn(() => 1)
+      const infiniteLoopCallback = vi.fn(() => 1)
+      const terminalErrorCallback = vi.fn(() => 1)
+      const { engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection(true)
+      const { unmount } = renderHook(() =>
+        useOnWebsocketClose({
+          callback,
+          infiniteDetectionLoopCallback: infiniteLoopCallback,
+          terminalErrorCallback,
+          engineCommandManager,
+        })
+      )
+      const connectionError = {
+        kind: EngineConnectionErrorKind.BackendDisconnect,
+        message: 'backend disconnected',
+        terminal: true,
+      }
+
+      engineCommandManager.dispatchEvent(
+        new CustomEvent(EngineConnectionManagerEvents.WebsocketClosed, {
+          detail: {
+            code: '1011',
+            connectionError,
+          },
+        })
+      )
+      unmount()
+
+      expect(terminalErrorCallback).toHaveBeenCalledOnce()
+      expect(terminalErrorCallback).toHaveBeenCalledWith(
+        connectionError,
+        '1011'
+      )
+      expect(callback).not.toHaveBeenCalled()
+      expect(infiniteLoopCallback).not.toHaveBeenCalled()
     })
   })
 })

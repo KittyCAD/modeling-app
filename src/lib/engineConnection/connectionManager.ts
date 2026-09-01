@@ -30,6 +30,7 @@ import {
   createOnEngineOffline,
 } from '@src/lib/engineConnection/connectionManagerEvents'
 import type {
+  EngineConnectionError,
   IEventListenerTracked,
   ManagerTearDown,
   ModelTypes,
@@ -102,6 +103,7 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  lastConnectionError: EngineConnectionError | undefined
 
   get apiCallId(): string | undefined {
     return this.connection?.apiCallId
@@ -161,6 +163,7 @@ export class ConnectionManager extends EventTarget {
     this.allEventListeners = new Map()
     this.id = uuidv4()
     this.callbackOnUnitTestingConnection = null
+    this.lastConnectionError = undefined
   }
 
   setInSequence(sequence: number) {
@@ -209,6 +212,7 @@ export class ConnectionManager extends EventTarget {
       return Promise.reject(invalidStreamDimensions)
     }
 
+    this.lastConnectionError = undefined
     this.started = true
     this.rejectAllPendingCommands()
 
@@ -1064,31 +1068,46 @@ export class ConnectionManager extends EventTarget {
       })
     }
 
+    const connectionError =
+      options?.connectionError ?? this.connection?.connectionError
+    if (connectionError) {
+      this.lastConnectionError = connectionError
+    }
+
     // It was torn down from a websocket close.
     if (options?.websocketClosed) {
       this.dispatchEvent(
         new CustomEvent(EngineConnectionManagerEvents.WebsocketClosed, {
-          detail: { code: options.code },
+          detail: {
+            code: options.code,
+            connectionError,
+          },
         })
       )
     } else if (options?.peerConnectionClosed) {
       this.dispatchEvent(
-        new CustomEvent(EngineConnectionManagerEvents.peerConnectionClosed, {})
+        new CustomEvent(EngineConnectionManagerEvents.peerConnectionClosed, {
+          detail: { connectionError },
+        })
       )
     } else if (options?.peerConnectionDisconnected) {
       this.dispatchEvent(
         new CustomEvent(
           EngineConnectionManagerEvents.peerConnectionDisconnected,
-          {}
+          { detail: { connectionError } }
         )
       )
     } else if (options?.peerConnectionFailed) {
       this.dispatchEvent(
-        new CustomEvent(EngineConnectionManagerEvents.peerConnectionFailed, {})
+        new CustomEvent(EngineConnectionManagerEvents.peerConnectionFailed, {
+          detail: { connectionError },
+        })
       )
     } else if (options?.dataChannelClosed) {
       this.dispatchEvent(
-        new CustomEvent(EngineConnectionManagerEvents.dataChannelClose, {})
+        new CustomEvent(EngineConnectionManagerEvents.dataChannelClose, {
+          detail: { connectionError },
+        })
       )
     }
 
