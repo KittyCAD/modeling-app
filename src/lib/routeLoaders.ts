@@ -13,10 +13,7 @@ import {
   initHomeRoute,
   initIndexRoute,
 } from '@src/lib/routeInit'
-import type {
-  FileLoaderData,
-  HomeLoaderData,
-} from '@src/lib/types'
+import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 

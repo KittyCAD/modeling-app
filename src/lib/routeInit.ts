@@ -14,7 +14,6 @@
  */
 
 import { projectSkeletonCreate } from '@src/lang/project'
-import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -23,7 +22,6 @@ import {
 import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
-  getParentAbsolutePath,
   getRouterSearchFromRequestUrl,
   PATHS,
   parseProjectRoute,
@@ -44,21 +42,12 @@ import {
   type AppSettings,
   loadAndValidateSettings,
 } from '@src/lib/settings/settingsUtils'
-import type {
-  FileLoaderData,
-  HomeLoaderData,
-  IndexLoaderData,
-} from '@src/lib/types'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+import type { FileLoaderData, HomeLoaderData } from '@src/lib/types'
 import {
   projectLibrarySettingDefaultPoliciesValueSpec,
   projectLibrarySettingDefaultsValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { waitFor } from 'xstate'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -215,9 +204,6 @@ export async function initFileRoute(
   app: App,
   { id, requestUrl }: { id: string | undefined; requestUrl: string }
 ): Promise<RouteInitResult<FileLoaderData>> {
-  const {
-    settings: { actor: settingsActor },
-  } = app
   const { kclManager } = app.singletons
 
   // Must basically remain for all eternity, until the last person
@@ -306,82 +292,12 @@ export async function initFileRoute(
     }
   }
 
-  // Set the file system manager to the project path
-  // So that WASM gets an updated path for operations
-  projectFsManager.dir = projectPath
-
-  const defaultProjectData = {
-    name: projectName || 'unnamed',
-    path: projectPath,
-    children: [],
-    kcl_file_count: 0,
-    directory_count: 0,
-    metadata: null,
-    default_file: projectPath,
-    readWriteAccess: true,
-  }
-
-  const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
-
-  const project = maybeProjectInfo ?? defaultProjectData
-
-  // Fire off the event to load the project settings
-  // once we know it's idle.
-  await waitFor(settingsActor, (state) => state.matches('idle'))
-  settingsActor.send({
-    type: 'load.project',
-    project,
+  const data = await app.openFile({
+    resolved: { projectName, projectPath, currentFileName, currentFilePath },
+    wasmInstance,
   })
-  await waitFor(settingsActor, (state) => state.matches('idle'))
 
-  const projectRef = await app.openProject(project)
-  const editor = await projectRef.openEditor(
-    currentFilePath || PROJECT_ENTRYPOINT,
-    app.singletons.kclManager,
-    // If persistCode in localStorage is present, it'll persist that code
-    // through *anything*. INTENDED FOR TESTS.
-    window.electron?.process.env.NODE_ENV === 'test'
-      ? kclManager.localStoragePersistCode()
-      : undefined
-  )
-
-  const requestedFileName =
-    app.systemIOActor.getSnapshot().context.requestedFileName
-  if (requestedFileName.project === projectName) {
-    requestedFileName.onProjectLoaderComplete?.()
-  }
-
-  const requestedProjectDirectoryPath =
-    projectRef.projectIORefSignal.value.libraryPath ??
-    getParentAbsolutePath(project.path)
-  const systemIOSnapshot = app.systemIOActor.getSnapshot()
-  // Same-directory file navigation should not restart SystemIO's own
-  // post-mutation folder refresh.
-  const shouldSyncProjectDirectory =
-    requestedProjectDirectoryPath !==
-      systemIOSnapshot.context.projectDirectoryPath ||
-    (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
-      systemIOSnapshot.context.folders === undefined)
-  if (shouldSyncProjectDirectory) {
-    app.systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath,
-      },
-    })
-  }
-
-  const projectData: IndexLoaderData = {
-    code: editor.code,
-    project,
-    file: {
-      name: currentFileName || '',
-      path: currentFilePath || '',
-      children: [],
-    },
-  }
-
-  return { kind: 'ok', data: { ...projectData } }
+  return { kind: 'ok', data }
 }
 
 /**
