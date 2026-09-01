@@ -379,8 +379,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     .flatten(),
             );
 
-            // Filter out Z0005 (old sketch syntax) from test snapshots
-            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            // Filter out Z0005 (old sketch syntax) from test snapshots.
             lint_findings.retain(|finding| finding.finding.code != "Z0005");
 
             let (outcome, module_state, responses) =
@@ -7569,6 +7568,90 @@ mod import_nested_foreign_error {
 }
 mod import_error_in_other_module_with_overflow {
     const TEST_NAME: &str = "import_error_in_other_module_with_overflow";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod early_return_v3 {
+    const TEST_NAME: &str = "early_return_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod early_return_cross_module {
+    const TEST_NAME: &str = "early_return_cross_module";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod early_return_geometry {
+    const TEST_NAME: &str = "early_return_geometry";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod clone_a_blend {
+    const TEST_NAME: &str = "clone_a_blend";
 
     /// Test parsing KCL.
     #[test]

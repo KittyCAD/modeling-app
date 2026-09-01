@@ -287,6 +287,7 @@ describe('MeasurementTool helpers', () => {
     const edge = measurementEntity('edge')
     const face = measurementEntity('face')
     const body = measurementEntity('body')
+    const other = measurementEntity('other')
 
     expect(
       measurementCapabilities.map((capability) => ({
@@ -315,6 +316,9 @@ describe('MeasurementTool helpers', () => {
       type: 'distance',
       entities: [body, face],
     })
+    expect(getMeasurementTarget([body, other])).toBeNull()
+    expect(getMeasurementTarget([edge, other])).toBeNull()
+    expect(getMeasurementTarget([other, other])).toBeNull()
     expect(getMeasurementTarget([body, face, edge])).toBeNull()
   })
 

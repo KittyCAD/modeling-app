@@ -23,7 +23,7 @@ jobs:
 
   prepare-files:
     needs: [build-wasm]
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: namespace-profile-ubuntu-8-cores;overrides.cache-tag=modeling-app-general-v2
     outputs:
       version: ${{ steps.export_version.outputs.version }}
       notes: ${{ steps.export_notes.outputs.notes }}
