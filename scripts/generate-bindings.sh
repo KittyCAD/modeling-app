@@ -6,7 +6,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-rm -rf rust/kcl-lib/bindings rust/kcl-language-server/bindings
+rm -rf rust/kcl-lib/bindings rust/kcl-lsp-server/bindings
 cd rust
 cargo test -p kcl-lib --features artifact-graph export_bindings
 cargo test -p kcl-language-server export_bindings
@@ -15,5 +15,5 @@ cargo test -p kcl-language-server export_bindings
 # are generated beside their new crate, then merged with kcl-lib's bindings.
 # Do not replace a full kcl-lib binding with the language server's smaller
 # foreign-type shim (for example, ModelingCmd.ts generated for UnitLength).
-rsync -a --ignore-existing kcl-language-server/bindings/ kcl-lib/bindings/
-rm -rf kcl-language-server/bindings
+rsync -a --ignore-existing kcl-lsp-server/bindings/ kcl-lib/bindings/
+rm -rf kcl-lsp-server/bindings

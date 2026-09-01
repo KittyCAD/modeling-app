@@ -2845,10 +2845,11 @@ async fn test_lsp_initialized() {
     let kcl_server = kcl_lsp_server(false).await.unwrap();
 
     // Send initialize request.
-    kcl_server
+    let initialize_result = kcl_server
         .initialize(tower_lsp::lsp_types::InitializeParams::default())
         .await
         .unwrap();
+    assert_eq!(initialize_result.capabilities.diagnostic_provider, None);
 
     // Send initialized request.
     kcl_server.initialized(tower_lsp::lsp_types::InitializedParams {}).await;
