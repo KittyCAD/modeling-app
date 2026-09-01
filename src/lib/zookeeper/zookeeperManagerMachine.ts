@@ -849,7 +849,10 @@ export const zookeeperManagerMachine = setup({
           event.type === ZookeeperManagerTransitions.ResumeSuperseded,
         ...zookeeperErrorContext(context),
       })
-      if (closeReason && accessDeniedCode === undefined) {
+      if (
+        closeReason === ZOOKEEPER_PROJECT_TOO_LARGE_CLOSE_REASON &&
+        accessDeniedCode === undefined
+      ) {
         toast.error(closeReason)
       }
       return {
@@ -970,7 +973,6 @@ export const zookeeperManagerMachine = setup({
         closeReason: undefined,
         lastMessageId: undefined,
         lastMessageType: undefined,
-        conversation: undefined,
         conversationId: event.conversationId || undefined,
         defaultMode: undefined,
         modeOptions: undefined,

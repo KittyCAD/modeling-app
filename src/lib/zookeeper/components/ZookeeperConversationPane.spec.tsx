@@ -324,6 +324,15 @@ describe('ZookeeperConversationPane', () => {
     )
 
     expect(latestConversationProps().needsReconnect).toBe(false)
+    expect(latestConversationProps().disabled).toBe(false)
+
+    act(() => {
+      fake.setSnapshot({}, ZookeeperManagerStates.Setup)
+    })
+
+    expect(latestConversationProps().conversation).toBe(completedConversation)
+    expect(latestConversationProps().needsReconnect).toBe(false)
+    expect(latestConversationProps().disabled).toBe(true)
 
     act(() => {
       fake.manualConnectSignal.value = true
@@ -334,10 +343,13 @@ describe('ZookeeperConversationPane', () => {
           attachments: [],
         },
       ]
-      fake.setSnapshot({
-        awaitingResponse: true,
-        conversation: undefined,
-      })
+      fake.setSnapshot(
+        {
+          awaitingResponse: true,
+          conversation: undefined,
+        },
+        ZookeeperManagerStates.Ready
+      )
     })
 
     const props = latestConversationProps()

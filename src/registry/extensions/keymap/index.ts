@@ -398,7 +398,7 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     const command = commandSystem?.actor
       .getSnapshot()
       .context.commands.find((cmd) => commandKey(cmd) === item.command)
-    if (!command || !commandSystem) {
+    if (!command || command.disabled || !commandSystem) {
       return
     }
 

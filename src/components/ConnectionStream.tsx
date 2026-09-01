@@ -495,7 +495,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onWindowOnlineOfflineParams = useMemo(
     () => ({
       close: () => {
-        setShowManualConnect(true)
+        // A browser-level offline event is recoverable without user action.
+        // Keep the last valid frame visible until the matching online event
+        // starts the automatic reconnect flow.
+        setShowManualConnect(false)
         EngineDebugger.addLog({
           label: 'ConnectionStream.tsx',
           message: 'window offline, calling tearDown()',
@@ -568,6 +571,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       style={style}
       id="stream"
       data-testid="stream"
+      inert={isSceneReady && !isNetworkOkay && !showManualConnect}
       onMouseUp={handleMouseUp}
       onDoubleClick={enterEditModeForViewportSelection}
       onContextMenu={(e) => e.preventDefault()}
@@ -609,11 +613,13 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           </div>
         )
       })}
-      <ViewControlContextMenu
-        event="mouseup"
-        guard={viewControlContextMenuGuard}
-        menuTargetElement={videoWrapperRef}
-      />
+      {isNetworkOkay && (
+        <ViewControlContextMenu
+          event="mouseup"
+          guard={viewControlContextMenuGuard}
+          menuTargetElement={videoWrapperRef}
+        />
+      )}
       {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}

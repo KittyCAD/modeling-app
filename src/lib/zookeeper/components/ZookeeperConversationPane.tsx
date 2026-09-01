@@ -59,6 +59,9 @@ export const ZookeeperConversationPane = (props: {
   const isSettingUp = useSelector(actor, (snapshot) => {
     return snapshot.matches(ZookeeperManagerStates.Setup)
   })
+  const isReady = useSelector(actor, (snapshot) => {
+    return snapshot.matches(ZookeeperManagerStates.Ready)
+  })
   const isAwaitingConnection = useSelector(actor, (snapshot) => {
     return snapshot.matches(S.Await)
   })
@@ -183,6 +186,7 @@ export const ZookeeperConversationPane = (props: {
       onCancel={() => controller.cancel()}
       disabled={
         needsReconnect ||
+        !isReady ||
         isClearingChat ||
         interruptedTurnAwaitingResume ||
         isResumingInterruptedTurn
