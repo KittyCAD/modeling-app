@@ -3700,7 +3700,7 @@ description: Artifact commands cpu-cooler.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": 10.000395909820833,
+            "y": 10.000096728576365,
             "z": 0.0
           },
           "relative": false
@@ -3716,8 +3716,8 @@ description: Artifact commands cpu-cooler.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.939999998508158,
-            "y": 10.000395909820833,
+            "x": -14.939999999999202,
+            "y": 10.000096728576365,
             "z": 0.0
           },
           "relative": false
@@ -3733,17 +3733,17 @@ description: Artifact commands cpu-cooler.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.940833424688792,
-            "y": 24.99882473236208
+            "x": -14.940672206599936,
+            "y": 24.998872684343887
           },
-          "radius": 14.998428845696981,
+          "radius": 14.998775970830808,
           "start": {
             "unit": "degrees",
-            "value": -89.99681621300459
+            "value": -89.99743215037876
           },
           "end": {
             "unit": "degrees",
-            "value": -244.99704202431866
+            "value": -244.9977023735193
           },
           "relative": false
         }
@@ -3758,17 +3758,17 @@ description: Artifact commands cpu-cooler.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -27.619625126502754,
-            "y": 52.18621103551492
+            "x": -27.619793026516685,
+            "y": 52.18648852284745
           },
-          "radius": 15.000000001728171,
+          "radius": 15.000000000000005,
           "start": {
             "unit": "degrees",
-            "value": -64.99913141985893
+            "value": -64.9977023735193
           },
           "end": {
             "unit": "degrees",
-            "value": 0.014472621227222097
+            "value": 0.013412854702239676
           },
           "relative": false
         }

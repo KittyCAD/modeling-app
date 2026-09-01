@@ -1482,14 +1482,14 @@ description: Variables in memory after executing camshaft.kcl
             },
             "ccw": true,
             "center": [
-              -0.0,
-              -0.00000000000000005551115123125783
+              0.00000000000000011102230246251565,
+              0.00000000006633815718970482
             ],
             "from": [
-              -0.58313831628,
-              0.329923785269
+              -0.5831383162542413,
+              0.3299237852402864
             ],
-            "radius": 0.6700000000000735,
+            "radius": 0.6699999999308487,
             "tag": {
               "commentStart": 914,
               "end": 921,
@@ -1499,8 +1499,8 @@ description: Variables in memory after executing camshaft.kcl
               "value": "baseArc"
             },
             "to": [
-              0.5831383162799997,
-              0.32992378526900057
+              0.5831383162542416,
+              0.3299237852402862
             ],
             "type": "Arc",
             "units": "in"
@@ -1512,14 +1512,14 @@ description: Variables in memory after executing camshaft.kcl
             },
             "ccw": true,
             "center": [
-              -1.0635681545760005,
-              -0.6017379096069995
+              -1.0635681547401614,
+              -0.6017379094853955
             ],
             "from": [
-              0.5831383162799997,
-              0.32992378526900057
+              0.5831383162542416,
+              0.3299237852402862
             ],
-            "radius": 1.8919925250534801,
+            "radius": 1.8919925250999197,
             "tag": {
               "commentStart": 1119,
               "end": 1129,
@@ -1529,8 +1529,8 @@ description: Variables in memory after executing camshaft.kcl
               "value": "rightFlank"
             },
             "to": [
-              0.13450367432397203,
-              0.8625911543859672
+              0.13450367360328985,
+              0.8625911550229034
             ],
             "type": "Arc",
             "units": "in"
@@ -1542,14 +1542,14 @@ description: Variables in memory after executing camshaft.kcl
             },
             "ccw": true,
             "center": [
-              -0.000000000000028005375796169574,
-              0.6981956399999673
+              0.00000000000000011102230246251565,
+              0.6981956372576923
             ],
             "from": [
-              0.13450367432397203,
-              0.8625911543859672
+              0.13450367360328985,
+              0.8625911550229034
             ],
-            "radius": 0.2124079178300427,
+            "radius": 0.21240791998904407,
             "tag": {
               "commentStart": 1418,
               "end": 1425,
@@ -1559,8 +1559,8 @@ description: Variables in memory after executing camshaft.kcl
               "value": "noseArc"
             },
             "to": [
-              -0.134503674324028,
-              0.8625911543859672
+              -0.13450367360328958,
+              0.8625911550229035
             ],
             "type": "Arc",
             "units": "in"
@@ -1572,14 +1572,14 @@ description: Variables in memory after executing camshaft.kcl
             },
             "ccw": true,
             "center": [
-              1.0635681545759719,
-              -0.6017379096070328
+              1.0635681547401612,
+              -0.6017379094853958
             ],
             "from": [
-              -0.134503674324028,
-              0.8625911543859672
+              -0.13450367360328958,
+              0.8625911550229035
             ],
-            "radius": 1.8919925250535232,
+            "radius": 1.8919925250999197,
             "tag": {
               "commentStart": 1682,
               "end": 1691,
@@ -1589,8 +1589,8 @@ description: Variables in memory after executing camshaft.kcl
               "value": "leftFlank"
             },
             "to": [
-              -0.5831383162800658,
-              0.32992378526898825
+              -0.5831383162542412,
+              0.32992378524028687
             ],
             "type": "Arc",
             "units": "in"
@@ -1629,12 +1629,12 @@ description: Variables in memory after executing camshaft.kcl
         },
         "start": {
           "from": [
-            -0.58313831628,
-            0.329923785269
+            -0.5831383162542413,
+            0.3299237852402864
           ],
           "to": [
-            -0.58313831628,
-            0.329923785269
+            -0.5831383162542413,
+            0.3299237852402864
           ],
           "units": "in",
           "tag": null,
@@ -1714,7 +1714,7 @@ description: Variables in memory after executing camshaft.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.58313831628,
+                        "n": -0.5831383162542413,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1722,7 +1722,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": 0.329923785269,
+                        "n": 0.3299237852402864,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1732,7 +1732,7 @@ description: Variables in memory after executing camshaft.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.58313831628,
+                        "n": 0.5831383162542416,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1740,7 +1740,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": 0.329923785269,
+                        "n": 0.3299237852402861,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1750,7 +1750,7 @@ description: Variables in memory after executing camshaft.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0,
+                        "n": 0.0000000000000001207815441301223,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1758,7 +1758,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": 0.0,
+                        "n": 0.00000000006633804865400055,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1866,7 +1866,7 @@ description: Variables in memory after executing camshaft.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.134503674324,
+                        "n": -0.13450367360328938,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1874,7 +1874,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": 0.862591154386,
+                        "n": 0.8625911550229032,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1884,7 +1884,7 @@ description: Variables in memory after executing camshaft.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.58313831628,
+                        "n": -0.5831383162542413,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1892,7 +1892,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": 0.329923785269,
+                        "n": 0.3299237852402864,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1902,7 +1902,7 @@ description: Variables in memory after executing camshaft.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.063568154576,
+                        "n": 1.0635681547401612,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1910,7 +1910,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": -0.601737909607,
+                        "n": -0.6017379094853962,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2022,14 +2022,14 @@ description: Variables in memory after executing camshaft.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.0,
-                    -0.00000000000000005551115123125783
+                    0.00000000000000011102230246251565,
+                    0.00000000006633815718970482
                   ],
                   "from": [
-                    -0.58313831628,
-                    0.329923785269
+                    -0.5831383162542413,
+                    0.3299237852402864
                   ],
-                  "radius": 0.6700000000000735,
+                  "radius": 0.6699999999308487,
                   "tag": {
                     "commentStart": 914,
                     "end": 921,
@@ -2039,8 +2039,8 @@ description: Variables in memory after executing camshaft.kcl
                     "value": "baseArc"
                   },
                   "to": [
-                    0.5831383162799997,
-                    0.32992378526900057
+                    0.5831383162542416,
+                    0.3299237852402862
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2052,14 +2052,14 @@ description: Variables in memory after executing camshaft.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -1.0635681545760005,
-                    -0.6017379096069995
+                    -1.0635681547401614,
+                    -0.6017379094853955
                   ],
                   "from": [
-                    0.5831383162799997,
-                    0.32992378526900057
+                    0.5831383162542416,
+                    0.3299237852402862
                   ],
-                  "radius": 1.8919925250534801,
+                  "radius": 1.8919925250999197,
                   "tag": {
                     "commentStart": 1119,
                     "end": 1129,
@@ -2069,8 +2069,8 @@ description: Variables in memory after executing camshaft.kcl
                     "value": "rightFlank"
                   },
                   "to": [
-                    0.13450367432397203,
-                    0.8625911543859672
+                    0.13450367360328985,
+                    0.8625911550229034
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2082,14 +2082,14 @@ description: Variables in memory after executing camshaft.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.000000000000028005375796169574,
-                    0.6981956399999673
+                    0.00000000000000011102230246251565,
+                    0.6981956372576923
                   ],
                   "from": [
-                    0.13450367432397203,
-                    0.8625911543859672
+                    0.13450367360328985,
+                    0.8625911550229034
                   ],
-                  "radius": 0.2124079178300427,
+                  "radius": 0.21240791998904407,
                   "tag": {
                     "commentStart": 1418,
                     "end": 1425,
@@ -2099,8 +2099,8 @@ description: Variables in memory after executing camshaft.kcl
                     "value": "noseArc"
                   },
                   "to": [
-                    -0.134503674324028,
-                    0.8625911543859672
+                    -0.13450367360328958,
+                    0.8625911550229035
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2112,14 +2112,14 @@ description: Variables in memory after executing camshaft.kcl
                   },
                   "ccw": true,
                   "center": [
-                    1.0635681545759719,
-                    -0.6017379096070328
+                    1.0635681547401612,
+                    -0.6017379094853958
                   ],
                   "from": [
-                    -0.134503674324028,
-                    0.8625911543859672
+                    -0.13450367360328958,
+                    0.8625911550229035
                   ],
-                  "radius": 1.8919925250535232,
+                  "radius": 1.8919925250999197,
                   "tag": {
                     "commentStart": 1682,
                     "end": 1691,
@@ -2129,8 +2129,8 @@ description: Variables in memory after executing camshaft.kcl
                     "value": "leftFlank"
                   },
                   "to": [
-                    -0.5831383162800658,
-                    0.32992378526898825
+                    -0.5831383162542412,
+                    0.32992378524028687
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -2169,12 +2169,12 @@ description: Variables in memory after executing camshaft.kcl
               },
               "start": {
                 "from": [
-                  -0.58313831628,
-                  0.329923785269
+                  -0.5831383162542413,
+                  0.3299237852402864
                 ],
                 "to": [
-                  -0.58313831628,
-                  0.329923785269
+                  -0.5831383162542413,
+                  0.3299237852402864
                 ],
                 "units": "in",
                 "tag": null,
@@ -2222,7 +2222,7 @@ description: Variables in memory after executing camshaft.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.134503674324,
+                        "n": 0.13450367360329007,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2230,7 +2230,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": 0.862591154386,
+                        "n": 0.8625911550229032,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2240,7 +2240,7 @@ description: Variables in memory after executing camshaft.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.134503674324,
+                        "n": -0.13450367360328938,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2248,7 +2248,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": 0.862591154386,
+                        "n": 0.8625911550229032,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2258,7 +2258,7 @@ description: Variables in memory after executing camshaft.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0,
+                        "n": 0.00000000000000030283933274284253,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2266,7 +2266,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": 0.69819564,
+                        "n": 0.6981956372576921,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2374,7 +2374,7 @@ description: Variables in memory after executing camshaft.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.58313831628,
+                        "n": 0.5831383162542416,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2382,7 +2382,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": 0.329923785269,
+                        "n": 0.3299237852402861,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2392,7 +2392,7 @@ description: Variables in memory after executing camshaft.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.134503674324,
+                        "n": 0.13450367360329007,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2400,7 +2400,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": 0.862591154386,
+                        "n": 0.8625911550229032,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2410,7 +2410,7 @@ description: Variables in memory after executing camshaft.kcl
                     ],
                     "center": [
                       {
-                        "n": -1.063568154576,
+                        "n": -1.0635681547401614,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2418,7 +2418,7 @@ description: Variables in memory after executing camshaft.kcl
                         }
                       },
                       {
-                        "n": -0.601737909607,
+                        "n": -0.6017379094853956,
                         "ty": {
                           "in": null,
                           "type": "Known",

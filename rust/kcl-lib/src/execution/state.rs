@@ -49,6 +49,7 @@ use crate::execution::memory::ProgramMemory;
 use crate::execution::memory::Stack;
 use crate::execution::sketch_solve::Solved;
 use crate::execution::types::NumericType;
+use crate::front::ArcDirection;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -157,6 +158,21 @@ pub(crate) enum TangencyMode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ConstraintState {
     Tangency(TangencyMode),
+}
+
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct ArcVars {
+    pub center: [SketchVarId; 2],
+    pub start: [SketchVarId; 2],
+    pub end: Option<[SketchVarId; 2]>,
+    pub direction: ArcDirection,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct PendingArcArcTangency {
+    pub circular0: ArcVars,
+    pub circular1: ArcVars,
+    pub range: SourceRange,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -487,6 +503,7 @@ pub(crate) struct SketchBlockState {
     pub sketch_constraints: Vec<ObjectId>,
     pub solver_constraints: Vec<ezpz::Constraint>,
     pub solver_optional_constraints: Vec<ezpz::Constraint>,
+    pub pending_arc_arc_tangencies: Vec<PendingArcArcTangency>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
     pub segment_tags: IndexMap<ObjectId, TagNode>,
     pub pending_legacy_angle_refactor_metadata: Vec<PendingLegacyAngleRefactorMeta>,
