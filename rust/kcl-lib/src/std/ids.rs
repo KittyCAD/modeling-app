@@ -15,10 +15,9 @@ use crate::execution::EdgeRefactorStdlibFn;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::GeoMeta;
-use crate::execution::Geometry;
+use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
-use crate::execution::Solid;
 use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::types::RuntimeType;
@@ -29,7 +28,11 @@ use crate::std::edge;
 
 /// Translates face indices to face IDs.
 pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
+    let body = args.get_unlabeled_kw_arg(
+        "body",
+        &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::imported()]),
+        exec_state,
+    )?;
     let face_index: u32 = args.get_kw_arg("index", &RuntimeType::count(), exec_state)?;
 
     inner_face_id(body, face_index, exec_state, args).await
@@ -37,11 +40,12 @@ pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 /// Translates face indices to face IDs.
 async fn inner_face_id(
-    body: Solid,
+    mut body: GeometryWithImportedGeometry,
     face_index: u32,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {
+    let body_id = body.id(&args.ctx).await?;
     let no_engine_commands = args.ctx.no_engine_commands().await;
     // Handle mock execution
     let face_id = if no_engine_commands {
@@ -53,7 +57,7 @@ async fn inner_face_id(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::Solid3dGetFaceUuid::builder()
-                        .object_id(body.id)
+                        .object_id(body_id)
                         .face_index(face_index)
                         .build(),
                 ),
@@ -77,10 +81,8 @@ async fn inner_face_id(
     let new_tag_node = TagDeclarator::new(&new_tag_name);
 
     let mut tagged_surface = body
-        .value
-        .iter()
-        .find(|surface| surface.face_id() == face_id)
-        .cloned()
+        .as_solid()
+        .and_then(|solid| solid.value.iter().find(|surface| surface.face_id() == face_id).cloned())
         .unwrap_or_else(|| {
             // Booleans and imported solids can have engine face IDs that we don't track in
             // `body.value`, but `faceId` should still return a usable tagged face.
@@ -101,7 +103,7 @@ async fn inner_face_id(
             exec_state.stack().current_epoch(),
             TagEngineInfo {
                 id: tagged_surface.get_id(),
-                geometry: Geometry::Solid(body),
+                geometry: body,
                 path: None,
                 surface: Some(tagged_surface),
             },
@@ -116,7 +118,11 @@ async fn inner_face_id(
 
 /// Translates edge indices to edge IDs.
 pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let body = args.get_unlabeled_kw_arg("body", &RuntimeType::solid(), exec_state)?;
+    let body = args.get_unlabeled_kw_arg(
+        "body",
+        &RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::imported()]),
+        exec_state,
+    )?;
     let edge_index: Option<u32> = args.get_kw_arg_opt("index", &RuntimeType::count(), exec_state)?;
     let closest_to: Option<[TyF64; 3]> = args.get_kw_arg_opt("closestTo", &RuntimeType::point3d(), exec_state)?;
     let closest_to = closest_to
@@ -138,11 +144,12 @@ pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 /// Translates edge indices to edge IDs.
 async fn inner_edge_id(
-    body: Solid,
+    mut body: GeometryWithImportedGeometry,
     edge_index: u32,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {
+    let body_id = body.id(&args.ctx).await?;
     // Handle mock execution
     let no_engine_commands = args.ctx.no_engine_commands().await;
     let edge_id = if no_engine_commands {
@@ -153,7 +160,7 @@ async fn inner_edge_id(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::Solid3dGetEdgeUuid::builder()
-                        .object_id(body.id)
+                        .object_id(body_id)
                         .edge_index(edge_index)
                         .build(),
                 ),
@@ -197,11 +204,12 @@ async fn inner_edge_id(
 
 /// Finds ID of edge closest to this point.
 async fn inner_edge_id_by_point(
-    body: Solid,
+    mut body: GeometryWithImportedGeometry,
     closest_point: Point3d<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {
+    let body_id = body.id(&args.ctx).await?;
     // Handle mock execution
     let no_engine_commands = args.ctx.no_engine_commands().await;
     let edge_id = if no_engine_commands {
@@ -212,7 +220,7 @@ async fn inner_edge_id_by_point(
                 ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(
                     mcmd::ClosestEdge::builder()
-                        .object_id(body.id)
+                        .object_id(body_id)
                         .closest_to(closest_point)
                         .build(),
                 ),

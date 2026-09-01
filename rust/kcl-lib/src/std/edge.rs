@@ -244,7 +244,7 @@ async fn inner_get_opposite_edge(
 
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
     let tagged_path_id = tagged_path.id;
-    let sketch_id = tagged_path.geometry.id();
+    let sketch_id = tagged_path.geometry.raw_id();
 
     let resp = exec_state
         .send_modeling_cmd(
@@ -298,7 +298,7 @@ async fn inner_get_next_adjacent_edge(
 
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
     let tagged_path_id = tagged_path.id;
-    let sketch_id = tagged_path.geometry.id();
+    let sketch_id = tagged_path.geometry.raw_id();
 
     let resp = exec_state
         .send_modeling_cmd(
@@ -358,7 +358,7 @@ async fn inner_get_previous_adjacent_edge(
 
     let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
     let tagged_path_id = tagged_path.id;
-    let sketch_id = tagged_path.geometry.id();
+    let sketch_id = tagged_path.geometry.raw_id();
 
     let resp = exec_state
         .send_modeling_cmd(
@@ -452,7 +452,7 @@ async fn inner_get_common_edge(
     let first_tagged_path = args.get_tag_engine_info(exec_state, &face1)?.clone();
     let second_tagged_path = args.get_tag_engine_info(exec_state, &face2)?;
 
-    if first_tagged_path.geometry.id() != second_tagged_path.geometry.id() {
+    if first_tagged_path.geometry.raw_id() != second_tagged_path.geometry.raw_id() {
         return Err(KclError::new_type(KclErrorDetails::new(
             "getCommonEdge requires the faces to be in the same original sketch".to_string(),
             vec![args.source_range],
@@ -478,7 +478,7 @@ async fn inner_get_common_edge(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::Solid3dGetCommonEdge::builder()
-                    .object_id(first_tagged_path.geometry.id())
+                    .object_id(first_tagged_path.geometry.raw_id())
                     .face_ids([first_face_id, second_face_id])
                     .build(),
             ),
@@ -911,7 +911,7 @@ pub(super) fn face_id_from_first_side_face(
         TagOrUuid::Uuid(u) => Ok(*u),
         TagOrUuid::Tag(t) => {
             let info = args.get_tag_engine_info(exec_state, t)?;
-            Ok(info.geometry.id())
+            Ok(info.geometry.raw_id())
         }
     }
 }

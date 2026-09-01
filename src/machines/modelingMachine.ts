@@ -169,6 +169,7 @@ import type RustContext from '@src/lib/rustContext'
 import {
   getDefaultSketchPlaneData,
   getEventForSegmentSelection,
+  getKclBodyIdFromEnginePrimitiveSelection,
   getOffsetSketchPlaneData,
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
@@ -3273,13 +3274,16 @@ export const modelingMachine = setup({
           )
         }
         let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
+        const primitiveKclBodyId = primitiveFaceSelection
+          ? getKclBodyIdFromEnginePrimitiveSelection(primitiveFaceSelection)
+          : undefined
         const primitiveFace =
-          primitiveFaceSelection?.parentEntityId === undefined
-            ? null
-            : {
-                solidId: primitiveFaceSelection.parentEntityId,
+          primitiveFaceSelection && primitiveKclBodyId
+            ? {
+                solidId: primitiveKclBodyId,
                 index: primitiveFaceSelection.primitiveIndex,
               }
+            : null
 
         if (primitiveFaceSelection && !primitiveFace) {
           return reject(

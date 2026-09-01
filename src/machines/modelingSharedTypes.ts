@@ -30,7 +30,10 @@ export type DefaultPlaneSelection = {
 export type EnginePrimitiveSelection = {
   type: 'enginePrimitive'
   entityId: string
+  /** Immediate engine body which owns the selected primitive. */
   parentEntityId?: string
+  /** Nearest engine ancestor which can be expressed as a KCL body. */
+  kclBodyId?: ArtifactId
   primitiveIndex: number
   primitiveType: EntityType
 }

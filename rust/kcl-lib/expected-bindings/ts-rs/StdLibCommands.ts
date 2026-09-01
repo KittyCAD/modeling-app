@@ -1232,7 +1232,7 @@ export default {
     "preferredName": "deleteFace",
     "qualName": "std::solid::deleteFace",
     "moduleName": "solid",
-    "returnType": "Solid",
+    "returnType": "Solid | ImportedGeometry",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": false,
@@ -1240,7 +1240,7 @@ export default {
     "args": [
       {
         "name": "body",
-        "ty": "Solid",
+        "ty": "Solid | ImportedGeometry",
         "docs": "Target to delete a surface from.",
         "required": true,
         "special": true,
@@ -1283,8 +1283,8 @@ export default {
     "args": [
       {
         "name": "body",
-        "ty": "Solid",
-        "docs": "The solid whose edges we're trying to find",
+        "ty": "Solid | ImportedGeometry",
+        "docs": "The body whose edges we're trying to find.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -1720,8 +1720,8 @@ export default {
     "args": [
       {
         "name": "body",
-        "ty": "Solid",
-        "docs": "The solid whose faces we're trying to find",
+        "ty": "Solid | ImportedGeometry",
+        "docs": "The body whose faces we're trying to find.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -1753,8 +1753,8 @@ export default {
     "args": [
       {
         "name": "solid",
-        "ty": "Solid",
-        "docs": "The solid that has the face.",
+        "ty": "Solid | ImportedGeometry",
+        "docs": "The body that has the face.",
         "required": true,
         "special": true,
         "experimental": false,
@@ -6095,8 +6095,8 @@ export default {
     "args": [
       {
         "name": "solid",
-        "ty": "Solid",
-        "docs": "The solid whose face is being queried.",
+        "ty": "Solid | ImportedGeometry",
+        "docs": "The body whose face is being queried.",
         "required": true,
         "special": true,
         "experimental": false,

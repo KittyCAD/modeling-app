@@ -1907,14 +1907,14 @@ export fn isSurface(
 @(impl = std_rust, feature_tree = true)
 export fn deleteFace(
   /// Target to delete a surface from.
-  @body: Solid,
+  @body: Solid | ImportedGeometry,
   /// Face to delete. This is the usual face representation, e.g. a tagged face.
   faces?: [TaggedFace; 1+],
   /// Face to delete.
   /// The index is a stable ordering of faces, used when you can't get the
   /// usual ID (UUID) of a face.
   faceIndices?: [number(Count); 1+],
-): Solid {}
+): Solid | ImportedGeometry {}
 
 /// Blend two surfaces together.
 /// Use [bounded edges](/docs/kcl-std/types/std-types-BoundedEdge) to control the extents of the newly created surface, or tagged edges to use the full edge span.

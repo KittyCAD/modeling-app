@@ -53,7 +53,9 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
+  getKclBodyIdFromEnginePrimitiveSelection,
   isEnginePrimitiveSelection,
+  TOPOLOGY_BODY_ARTIFACT_TYPES,
 } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
@@ -175,7 +177,7 @@ export function addDeleteFace({
     mNodeToEdit,
     {
       lastChildLookup: true,
-      artifactTypeFilter: ['sweep', 'compositeSolid', 'edgeCut'],
+      artifactTypeFilter: [...TOPOLOGY_BODY_ARTIFACT_TYPES, 'edgeCut'],
     }
   )
   if (err(result)) {
@@ -879,7 +881,7 @@ export function getPlaneExprFromSelection({
       {
         // Keep lookup aligned with deleteFace so selected parent solids map directly.
         lastChildLookup: false,
-        artifactTypeFilter: ['sweep', 'compositeSolid'],
+        artifactTypeFilter: TOPOLOGY_BODY_ARTIFACT_TYPES,
       }
     )
     if (err(result)) {
@@ -1370,13 +1372,15 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
   const faceExprs: Expr[] = []
 
   for (const primitiveSelection of dedupedSelections) {
-    if (!primitiveSelection.parentEntityId) {
+    const kclBodyId =
+      getKclBodyIdFromEnginePrimitiveSelection(primitiveSelection)
+    if (!kclBodyId) {
       continue
     }
 
     // Step 1. Retrieve the body
     const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-      primitiveSelection.parentEntityId,
+      kclBodyId,
       artifactGraph
     )
     if (!bodySelection) {
@@ -1395,7 +1399,7 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
       wasmInstance,
       undefined,
       {
-        artifactTypeFilter: ['sweep', 'compositeSolid'],
+        artifactTypeFilter: TOPOLOGY_BODY_ARTIFACT_TYPES,
       }
     )
     if (err(bodyVars)) {

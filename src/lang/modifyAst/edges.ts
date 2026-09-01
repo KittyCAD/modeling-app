@@ -65,7 +65,9 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
+  getKclBodyIdFromEnginePrimitiveSelection,
   isEnginePrimitiveSelection,
+  TOPOLOGY_BODY_ARTIFACT_TYPES,
 } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
@@ -412,7 +414,7 @@ function buildEdgeExpr(
     'type' in edgeSelection &&
     edgeSelection.type === 'enginePrimitive'
   ) {
-    if (!edgeSelection.parentEntityId) {
+    if (!getKclBodyIdFromEnginePrimitiveSelection(edgeSelection)) {
       return new Error(
         'Blend primitive edge selections must include a parent entity.'
       )
@@ -2622,12 +2624,13 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
 
   // Step 1. Gather all the indices by body
   for (const selection of primitiveEdgeSelections) {
-    if (!selection.parentEntityId) {
+    const kclBodyId = getKclBodyIdFromEnginePrimitiveSelection(selection)
+    if (!kclBodyId) {
       continue
     }
 
     const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-      selection.parentEntityId,
+      kclBodyId,
       artifactGraph
     )
     if (!bodySelection?.artifact) {
@@ -2680,7 +2683,7 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
         nodeToEdit,
         {
           lastChildLookup: true,
-          artifactTypeFilter: ['compositeSolid', 'sweep'],
+          artifactTypeFilter: TOPOLOGY_BODY_ARTIFACT_TYPES,
         }
       )
       if (err(vars)) return vars
