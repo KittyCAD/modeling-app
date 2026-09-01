@@ -454,7 +454,7 @@ mod test {
         assert_eq!(issues[0].severity, crate::errors::Severity::Error);
         assert_eq!(
             issues[0].message,
-            "Use of the `targetRepresentation` import annotation is experimental and may change or be removed."
+            "Use of the `targetRepresentation` import attribute is experimental and may change or be removed."
         );
 
         // no annotations

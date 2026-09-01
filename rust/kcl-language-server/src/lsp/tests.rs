@@ -2416,6 +2416,64 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_rename_local_in_if_arm_is_refused() {
+    // Renaming a declaration inside an if-expression arm isn't supported. The rename must
+    // return no edit, and prepare_rename must refuse, instead of producing a whole-document
+    // edit that only reformats the code.
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"x = if true {
+  local_value = 1
+  local_value
+} else {
+  0
+}
+"#
+                .to_string(),
+            },
+        })
+        .await;
+
+    // The position is on `local_value`'s declaration inside the `if` arm.
+    let position = tower_lsp::lsp_types::Position { line: 1, character: 3 };
+
+    // Send rename request.
+    let rename = server
+        .rename(tower_lsp::lsp_types::RenameParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position,
+            },
+            new_name: "localValue".to_string(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+    assert_eq!(rename, None);
+
+    // Send prepare rename request.
+    let prepared = server
+        .prepare_rename(tower_lsp::lsp_types::TextDocumentPositionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            position,
+        })
+        .await
+        .unwrap();
+    assert_eq!(prepared, None);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_diagnostic_no_errors() {
     let server = kcl_lsp_server(false).await.unwrap();
 

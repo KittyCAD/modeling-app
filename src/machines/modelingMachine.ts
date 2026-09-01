@@ -684,7 +684,9 @@ export type ModelingMachineEvent =
       type: 'equip tool'
       data: { tool: EquipTool }
       keepSelection?: boolean
+      forceEquip?: boolean
     }
+  | { type: 'pick hovered tool' }
   | {
       type: 'Dimension' | 'construction'
       keepSelection?: boolean
@@ -6483,6 +6485,9 @@ export const modelingMachine = setup({
               // Exit sketch immediately, bypassing tool unequip logic
             },
             'equip tool': {
+              actions: ['forward event to sketch solve if active'],
+            },
+            'pick hovered tool': {
               actions: ['forward event to sketch solve if active'],
             },
             'unequip tool': {

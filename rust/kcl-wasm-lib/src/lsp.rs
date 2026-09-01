@@ -45,9 +45,8 @@ pub async fn lsp_run_kcl(config: LspServerConfig, token: String, baseurl: String
         fs,
     } = config;
 
-    // Create an executor context for code actions (like transpilation)
-    // We use a mock engine since we don't have a live engine connection in the LSP worker.
-    // This is sufficient for transpilation which only needs to execute code to get ExecOutcome.
+    // Create an executor context so the LSP worker can execute programs without a live engine
+    // connection.
     let executor_ctx =
         match kcl_lib::ExecutorContext::new_mock_for_lsp(fs.clone(), kcl_lib::ExecutorSettings::default()) {
             Ok(ctx) => {
