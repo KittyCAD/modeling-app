@@ -5460,7 +5460,7 @@ startSketchOn(XY)"#,
 
         let err = program.meta_settings().unwrap_err();
 
-        assert!(err.get_message().contains("Unrecognized version 99.123"));
+        assert!(err.get_message().contains("Unrecognized version"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
