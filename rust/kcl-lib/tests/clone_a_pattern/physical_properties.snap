@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties clone_a_pattern.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -1.2787647962758033,
+      "y": -1.7799999999999998,
+      "z": 0.25
+    },
+    "dimensions": {
+      "x": 5.822470407448394,
+      "y": 1.42,
+      "z": 0.5
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 25.71017049586219
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.0032311133482510203
+  }
+}

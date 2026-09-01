@@ -1,5 +1,8 @@
 import path, { join } from 'path'
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import {
+  KCL_DEFAULT_LENGTH,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+} from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
@@ -7,6 +10,9 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
+  // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
