@@ -55,17 +55,30 @@ pub struct Snapshot3d {
     pub gltf: Vec<RawFile>,
 }
 
+async fn export_gltf_if_requested<F, Fut>(request_gltf: bool, export: F) -> Result<Vec<RawFile>, KclError>
+where
+    F: FnOnce() -> Fut,
+    Fut: std::future::Future<Output = Result<Vec<RawFile>, KclError>>,
+{
+    if request_gltf { export().await } else { Ok(Vec::new()) }
+}
+
 /// Executes a kcl program and takes a snapshot of the result.
-pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) -> Result<Snapshot3d, ExecError> {
+pub async fn execute_and_snapshot_3d(
+    code: &str,
+    current_file: Option<PathBuf>,
+    request_gltf: bool,
+) -> Result<Snapshot3d, ExecError> {
     let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     let image = do_execute_and_snapshot(&ctx, program, None)
         .await
         .map(|(_, _, snap)| snap)
         .map_err(|err| err.error)?;
-    let gltf_res = ctx
-        .export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()))
-        .await;
+    let gltf_res = export_gltf_if_requested(request_gltf, || {
+        ctx.export(kittycad_modeling_cmds::format::OutputFormat3d::Gltf(Default::default()))
+    })
+    .await;
     let gltf = match gltf_res {
         Err(err) if err.message() == "Nothing to export" => Vec::new(),
         Err(err) => {
@@ -77,6 +90,29 @@ pub async fn execute_and_snapshot_3d(code: &str, current_file: Option<PathBuf>) 
     ctx.close().await;
     Ok(Snapshot3d { image, gltf })
 }
+
+#[cfg(test)]
+mod tests {
+    use std::cell::Cell;
+
+    use super::*;
+
+    #[tokio::test]
+    async fn disabled_gltf_export_does_not_call_exporter() {
+        let called = Cell::new(false);
+
+        let files = export_gltf_if_requested(false, || async {
+            called.set(true);
+            Ok::<_, KclError>(Vec::new())
+        })
+        .await
+        .unwrap();
+
+        assert!(files.is_empty());
+        assert!(!called.get());
+    }
+}
+
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 #[cfg(test)]
