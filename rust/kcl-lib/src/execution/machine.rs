@@ -8,7 +8,9 @@
 //!
 //! - C (control): [`Control`] -- either descend into an expression
 //!   ([`Control::Eval`]), hand a finished value to the innermost continuation
-//!   ([`Control::Apply`]), or unwind an `exit()` ([`Control::Exit`]).
+//!   ([`Control::Apply`]), unwind a KCL 3.0 `return` to the nearest call
+//!   boundary ([`Control::Return`]), or unwind an `exit()`
+//!   ([`Control::Exit`]).
 //! - E (environment): already reified as `EnvironmentRef` plus the mutable
 //!   env-stack arena, exactly as the recursive executor uses it.
 //! - K (continuations): a `Vec<Kont>`, one defunctionalized variant per
@@ -26,9 +28,10 @@
 //! Semantics contract: this machine replicates the recursive executor
 //! byte-for-byte -- including evaluation order (ids and engine commands are
 //! order-dependent), the operations log, ambient-state save/restore, error
-//! paths (including their historical asymmetries), and the deliberate
-//! write-and-continue behavior of `return` statements. The simulation-test
-//! suite runs under both executors and requires identical snapshots.
+//! paths (including their historical asymmetries), and the version-gated
+//! `return` semantics (write-and-continue before KCL 3.0; early return under
+//! it). The simulation-test suite runs under both executors and requires
+//! identical snapshots.
 //!
 //! Bounded native re-entry still exists in two places, by design:
 //! - Module execution (imports, module-value results) runs the module body in
