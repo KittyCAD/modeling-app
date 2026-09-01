@@ -6882,10 +6882,18 @@ async fn exec_if_arm(
         // matching call_abort_on_arg_binding_failure.
         exec_state.mut_stack().pop_env()?;
     }
-    // Block must end in an expression, so this has to be Some.
+    // Block must end in an expression, so this is always Some.
     // Enforced by the parser.
     // See https://github.com/KittyCAD/modeling-app/issues/4015
-    result.map(|block_result| block_result.unwrap())
+    let Some(cf) = result? else {
+        let message = "if-expression arm produced no value";
+        debug_assert!(false, "{message}");
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            message.to_owned(),
+            vec![block.to_source_range()],
+        )));
+    };
+    Ok(cf)
 }
 
 #[derive(Debug)]
