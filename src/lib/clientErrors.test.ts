@@ -1,9 +1,14 @@
+import { cloudSyncStatus } from '@src/lib/cloudSync/status'
+import type * as SyncDb from '@src/lib/cloudSync/syncDb'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mockState = vi.hoisted(() => ({
   createKCClient: vi.fn(() => ({ mocked: true })),
   kcCall: vi.fn(async (fn: () => Promise<unknown>) => await fn()),
   reportUserClientError: vi.fn(async () => ({ accepted: true })),
+  getCloudSyncProjectMetadata: vi.fn<typeof SyncDb.getCloudSyncProjectMetadata>(
+    async () => undefined
+  ),
 }))
 
 vi.mock('@src/lib/kcClient', () => ({
@@ -17,6 +22,10 @@ vi.mock('@kittycad/lib', () => ({
   },
 }))
 
+vi.mock('@src/lib/cloudSync/syncDb', () => ({
+  getCloudSyncProjectMetadata: mockState.getCloudSyncProjectMetadata,
+}))
+
 import {
   reportClientError,
   resetReportedClientErrorsForTests,
@@ -26,6 +35,11 @@ describe('reportClientError', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     resetReportedClientErrorsForTests()
+    cloudSyncStatus.value = {
+      enabled: false,
+      state: 'disabled',
+      pendingCount: 0,
+    }
     Object.defineProperty(globalThis, '__APP_VERSION__', {
       configurable: true,
       value: 'test-version',
@@ -49,6 +63,21 @@ describe('reportClientError', () => {
   })
 
   it('posts a normalized client error through the kittycad client', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+      scopedProjectPath: '/projects/example',
+      scopedProjectCloudProjectId: 'cloud-project-123',
+    }
+    mockState.getCloudSyncProjectMetadata.mockResolvedValueOnce({
+      schemaVersion: 1,
+      localProjectPath: '/projects/example',
+      projectName: 'example',
+      remoteProjectId: 'cloud-project-123',
+      remoteRevision: 'revision-456',
+    })
+
     await reportClientError({
       code: 'opfs_missing_create_writable',
       errorName: 'MissingBrowserFeature',
@@ -79,6 +108,8 @@ describe('reportClientError', () => {
     }
     expect(JSON.parse(firstArg.body.stack)).toMatchObject({
       hasCreateWritable: false,
+      cloudProjectId: 'cloud-project-123',
+      cloudProjectRevision: 'revision-456',
     })
   })
 

@@ -1,4 +1,6 @@
 import { type ClientErrorReport, users } from '@kittycad/lib'
+import { cloudSyncStatus } from '@src/lib/cloudSync/status'
+import { getCloudSyncProjectMetadata } from '@src/lib/cloudSync/syncDb'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 type ReportClientErrorParams = {
@@ -83,6 +85,26 @@ const getAuthToken = () => {
   }
 }
 
+const getCloudProjectErrorContext = async () => {
+  const status = cloudSyncStatus.value
+  const cloudProjectId = status.scopedProjectCloudProjectId
+  const metadata =
+    cloudProjectId && status.scopedProjectPath
+      ? await getCloudSyncProjectMetadata(status.scopedProjectPath).catch(
+          () => undefined
+        )
+      : undefined
+  const cloudProjectRevision =
+    metadata?.remoteProjectId === cloudProjectId
+      ? metadata?.remoteRevision
+      : undefined
+
+  return {
+    ...(cloudProjectId ? { cloudProjectId } : {}),
+    ...(cloudProjectRevision ? { cloudProjectRevision } : {}),
+  }
+}
+
 export const errorToMessage = (
   error: unknown,
   fallback = 'Unknown client error'
@@ -158,10 +180,15 @@ export const reportClientError = async (params: ReportClientErrorParams) => {
   }
 
   const client = createKCClient(getAuthToken())
+  const cloudProjectContext = await getCloudProjectErrorContext()
+  const reportParams = {
+    ...params,
+    extra: { ...cloudProjectContext, ...params.extra },
+  }
   const result = await kcCall(() =>
     users.report_user_client_error({
       client,
-      body: buildClientErrorReport(params),
+      body: buildClientErrorReport(reportParams),
     })
   )
 

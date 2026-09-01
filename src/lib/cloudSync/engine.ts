@@ -35,6 +35,7 @@ import {
   withRemoteProjectMetadataInArchiveFiles,
   withUpdatedProjectTomlInArchiveFiles,
 } from '@src/lib/cloudSync/projectArchive'
+import { cloudSyncStatus } from '@src/lib/cloudSync/status'
 import {
   appendOutboxEntry as appendSyncDbOutboxEntry,
   clearLegacyConflictCopyReferences,
@@ -97,6 +98,7 @@ export {
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
 } from '@src/lib/cloudSync/projectArchive'
+export { cloudSyncStatus } from '@src/lib/cloudSync/status'
 export {
   getCloudSyncProjectMetadata,
   getCloudSyncProjectMetadataIndex,
@@ -167,11 +169,6 @@ type CloudSyncProjectApiRequestThrottle = () => Promise<void>
 const unthrottledCloudSyncProjectApiRequest: CloudSyncProjectApiRequestThrottle =
   async () => undefined
 
-export const cloudSyncStatus = signal<CloudSyncStatus>({
-  enabled: false,
-  state: 'disabled',
-  pendingCount: 0,
-})
 export const cloudSyncRemoteProjects = signal<RemoteProjectSummary[]>([])
 
 function updateStatus(next: Partial<CloudSyncStatus>) {
