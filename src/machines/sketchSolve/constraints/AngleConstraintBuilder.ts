@@ -28,15 +28,17 @@ import {
   updateArcDimensionLine,
 } from '@src/machines/sketchSolve/constraints/ArcDimensionLine'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
-import { createDimensionLine } from '@src/machines/sketchSolve/constraints/DimensionLine'
+import {
+  createDimensionLine,
+  createGuideLine,
+} from '@src/machines/sketchSolve/constraints/DimensionLine'
 import {
   type AngleConstraint,
   getLinePoints,
   isAngleConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { Group } from 'three'
-import { Line2 } from 'three/examples/jsm/lines/Line2'
-import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
+import type { Line2 } from 'three/examples/jsm/lines/Line2'
 
 const OVERLAP_EPSILON = 1e-8
 export const MIN_NON_OVERLAP_ANGLE_CONSTRAINT_RADIUS_PX = 20
@@ -94,14 +96,7 @@ function initializeAngleConstraintLines(
   }
 
   for (let index = 0; index < 2; index++) {
-    const guideGeometry = new LineGeometry()
-    guideGeometry.setPositions([0, 0, 0, 0, 0, 0])
-
-    const guideLine = new Line2(guideGeometry, resources.materials.default.line)
-    guideLine.userData.type = DISTANCE_CONSTRAINT_BODY
-    guideLine.userData.role = ANGLE_CONSTRAINT_GUIDE_BODY_ROLE
-    guideLine.visible = false
-    group.add(guideLine)
+    createGuideLine(group, resources, ANGLE_CONSTRAINT_GUIDE_BODY_ROLE)
   }
 }
 

@@ -1,6 +1,6 @@
 // Stylized Toy Fire Truck
 // A toy parametric fire truck with extended rear compartment and roof ladder. Optimized for real-time rendering or schematic use in stylized design scenes.
-// Categories: Maker
+// Categories: Toys, Games, & Recreation; Art & Design; Parametric
 
 // Set units and version
 @settings(defaultLengthUnit = m, kclVersion = 2.0)

@@ -250,7 +250,7 @@ export function getAxisExpression(
     if (bodies.size !== 1) {
       return new Error('No edges found in the selection')
     }
-    const expr = bodies.values().toArray()[0].tagsExpr
+    const expr = Array.from(bodies.values())[0].tagsExpr
     return { generatedAxis: expr, modifiedAst }
   } else {
     return new Error('Must provide either an axis or an edge selection')

@@ -52,10 +52,10 @@ description: Variables in memory after executing hex-nut.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 677,
-            "end": 682,
+            "commentStart": 689,
+            "end": 694,
             "moduleId": 0,
-            "start": 677,
+            "start": 689,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -66,10 +66,10 @@ description: Variables in memory after executing hex-nut.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 757,
-            "end": 762,
+            "commentStart": 769,
+            "end": 774,
             "moduleId": 0,
-            "start": 757,
+            "start": 769,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -80,10 +80,10 @@ description: Variables in memory after executing hex-nut.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 879,
-            "end": 884,
+            "commentStart": 891,
+            "end": 896,
             "moduleId": 0,
-            "start": 879,
+            "start": 891,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -94,10 +94,10 @@ description: Variables in memory after executing hex-nut.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1042,
-            "end": 1047,
+            "commentStart": 1054,
+            "end": 1059,
             "moduleId": 0,
-            "start": 1042,
+            "start": 1054,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -108,10 +108,10 @@ description: Variables in memory after executing hex-nut.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1165,
-            "end": 1170,
+            "commentStart": 1177,
+            "end": 1182,
             "moduleId": 0,
-            "start": 1165,
+            "start": 1177,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -122,10 +122,10 @@ description: Variables in memory after executing hex-nut.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1289,
-            "end": 1294,
+            "commentStart": 1301,
+            "end": 1306,
             "moduleId": 0,
-            "start": 1289,
+            "start": 1301,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -136,10 +136,10 @@ description: Variables in memory after executing hex-nut.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1923,
-            "end": 1930,
+            "commentStart": 1935,
+            "end": 1942,
             "moduleId": 0,
-            "start": 1923,
+            "start": 1935,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -161,10 +161,10 @@ description: Variables in memory after executing hex-nut.kcl
               0.000000000006627845368373535
             ],
             "tag": {
-              "commentStart": 677,
-              "end": 682,
+              "commentStart": 689,
+              "end": 694,
               "moduleId": 0,
-              "start": 677,
+              "start": 689,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -185,10 +185,10 @@ description: Variables in memory after executing hex-nut.kcl
               0.2706329386849498
             ],
             "tag": {
-              "commentStart": 757,
-              "end": 762,
+              "commentStart": 769,
+              "end": 774,
               "moduleId": 0,
-              "start": 757,
+              "start": 769,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -209,10 +209,10 @@ description: Variables in memory after executing hex-nut.kcl
               0.270632938681624
             ],
             "tag": {
-              "commentStart": 879,
-              "end": 884,
+              "commentStart": 891,
+              "end": 896,
               "moduleId": 0,
-              "start": 879,
+              "start": 891,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -233,10 +233,10 @@ description: Variables in memory after executing hex-nut.kcl
               0.00000000000000006449785215614436
             ],
             "tag": {
-              "commentStart": 1042,
-              "end": 1047,
+              "commentStart": 1054,
+              "end": 1059,
               "moduleId": 0,
-              "start": 1042,
+              "start": 1054,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -257,10 +257,10 @@ description: Variables in memory after executing hex-nut.kcl
               -0.27063293868904736
             ],
             "tag": {
-              "commentStart": 1165,
-              "end": 1170,
+              "commentStart": 1177,
+              "end": 1182,
               "moduleId": 0,
-              "start": 1165,
+              "start": 1177,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -281,10 +281,10 @@ description: Variables in memory after executing hex-nut.kcl
               -0.27063293867857413
             ],
             "tag": {
-              "commentStart": 1289,
-              "end": 1294,
+              "commentStart": 1301,
+              "end": 1306,
               "moduleId": 0,
-              "start": 1289,
+              "start": 1301,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -311,10 +311,10 @@ description: Variables in memory after executing hex-nut.kcl
             ],
             "radius": 0.15625,
             "tag": {
-              "commentStart": 1923,
-              "end": 1930,
+              "commentStart": 1935,
+              "end": 1942,
               "moduleId": 0,
-              "start": 1923,
+              "start": 1935,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -1557,10 +1557,10 @@ description: Variables in memory after executing hex-nut.kcl
                     0.000000000006627845368373535
                   ],
                   "tag": {
-                    "commentStart": 677,
-                    "end": 682,
+                    "commentStart": 689,
+                    "end": 694,
                     "moduleId": 0,
-                    "start": 677,
+                    "start": 689,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1581,10 +1581,10 @@ description: Variables in memory after executing hex-nut.kcl
                     0.2706329386849498
                   ],
                   "tag": {
-                    "commentStart": 757,
-                    "end": 762,
+                    "commentStart": 769,
+                    "end": 774,
                     "moduleId": 0,
-                    "start": 757,
+                    "start": 769,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1605,10 +1605,10 @@ description: Variables in memory after executing hex-nut.kcl
                     0.270632938681624
                   ],
                   "tag": {
-                    "commentStart": 879,
-                    "end": 884,
+                    "commentStart": 891,
+                    "end": 896,
                     "moduleId": 0,
-                    "start": 879,
+                    "start": 891,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1629,10 +1629,10 @@ description: Variables in memory after executing hex-nut.kcl
                     0.00000000000000006449785215614436
                   ],
                   "tag": {
-                    "commentStart": 1042,
-                    "end": 1047,
+                    "commentStart": 1054,
+                    "end": 1059,
                     "moduleId": 0,
-                    "start": 1042,
+                    "start": 1054,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1653,10 +1653,10 @@ description: Variables in memory after executing hex-nut.kcl
                     -0.27063293868904736
                   ],
                   "tag": {
-                    "commentStart": 1165,
-                    "end": 1170,
+                    "commentStart": 1177,
+                    "end": 1182,
                     "moduleId": 0,
-                    "start": 1165,
+                    "start": 1177,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -1677,10 +1677,10 @@ description: Variables in memory after executing hex-nut.kcl
                     -0.27063293867857413
                   ],
                   "tag": {
-                    "commentStart": 1289,
-                    "end": 1294,
+                    "commentStart": 1301,
+                    "end": 1306,
                     "moduleId": 0,
-                    "start": 1289,
+                    "start": 1301,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -1724,10 +1724,10 @@ description: Variables in memory after executing hex-nut.kcl
                   ],
                   "radius": 0.15625,
                   "tag": {
-                    "commentStart": 1923,
-                    "end": 1930,
+                    "commentStart": 1935,
+                    "end": 1942,
                     "moduleId": 0,
-                    "start": 1923,
+                    "start": 1935,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -1844,10 +1844,10 @@ description: Variables in memory after executing hex-nut.kcl
             0.000000000006627845368373535
           ],
           "tag": {
-            "commentStart": 677,
-            "end": 682,
+            "commentStart": 689,
+            "end": 694,
             "moduleId": 0,
-            "start": 677,
+            "start": 689,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1868,10 +1868,10 @@ description: Variables in memory after executing hex-nut.kcl
             0.2706329386849498
           ],
           "tag": {
-            "commentStart": 757,
-            "end": 762,
+            "commentStart": 769,
+            "end": 774,
             "moduleId": 0,
-            "start": 757,
+            "start": 769,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1892,10 +1892,10 @@ description: Variables in memory after executing hex-nut.kcl
             0.270632938681624
           ],
           "tag": {
-            "commentStart": 879,
-            "end": 884,
+            "commentStart": 891,
+            "end": 896,
             "moduleId": 0,
-            "start": 879,
+            "start": 891,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1916,10 +1916,10 @@ description: Variables in memory after executing hex-nut.kcl
             0.00000000000000006449785215614436
           ],
           "tag": {
-            "commentStart": 1042,
-            "end": 1047,
+            "commentStart": 1054,
+            "end": 1059,
             "moduleId": 0,
-            "start": 1042,
+            "start": 1054,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1940,10 +1940,10 @@ description: Variables in memory after executing hex-nut.kcl
             -0.27063293868904736
           ],
           "tag": {
-            "commentStart": 1165,
-            "end": 1170,
+            "commentStart": 1177,
+            "end": 1182,
             "moduleId": 0,
-            "start": 1165,
+            "start": 1177,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1964,10 +1964,10 @@ description: Variables in memory after executing hex-nut.kcl
             -0.27063293867857413
           ],
           "tag": {
-            "commentStart": 1289,
-            "end": 1294,
+            "commentStart": 1301,
+            "end": 1306,
             "moduleId": 0,
-            "start": 1289,
+            "start": 1301,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1994,10 +1994,10 @@ description: Variables in memory after executing hex-nut.kcl
           ],
           "radius": 0.15625,
           "tag": {
-            "commentStart": 1923,
-            "end": 1930,
+            "commentStart": 1935,
+            "end": 1942,
             "moduleId": 0,
-            "start": 1923,
+            "start": 1935,
             "type": "TagDeclarator",
             "value": "circle2"
           },

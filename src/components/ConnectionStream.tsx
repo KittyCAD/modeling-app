@@ -27,6 +27,10 @@ import { getAllOperations } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+import {
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
+} from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { prepareEditCommand } from '@src/lib/featureTree'
@@ -43,6 +47,7 @@ import type {
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
 
@@ -63,7 +68,11 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, wasmPromise, commands } = useApp()
+  const { settings, project, wasmPromise, commands, userFeatures } = useApp()
+  const hasLegacySketchMode = userFeatures.useHas(
+    LEGACY_SKETCH_MODE_FEATURE_FLAG,
+    false
+  )
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -120,7 +129,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           dataChannelReadyState: connection?.unreliableDataChannel?.readyState,
           ...extra,
           kclSourceLength: kclSource.length,
-          kclSource,
         },
       })
     },
@@ -255,6 +263,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             if (err(path)) {
               return path
             }
+            // Anything left here belongs to a KCL 1.0 sketch, since sketch
+            // blocks and undeclared regions were handled above.
+            if (!hasLegacySketchMode) {
+              toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE)
+              return
+            }
             sceneInfra.modelingSend({ type: 'Enter sketch' })
           })
           .catch(reportRejection)
@@ -263,6 +277,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       [
         commands.actor,
         engineCommandManager,
+        hasLegacySketchMode,
         isNetworkOkay,
         kclManager.artifactGraph,
         kclManager.ast,

@@ -1,7 +1,7 @@
 import path from 'path'
-import { bracket } from '@e2e/playwright/fixtures/bracket'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { Page } from '@playwright/test'
+import fs from 'fs'
 import * as fsp from 'fs/promises'
 
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
@@ -13,7 +13,16 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+
+const bracket = fs.readFileSync(
+  path.resolve('public', 'kcl-samples', 'bracket', 'main.kcl'),
+  'utf8'
+)
 
 test.describe('Regression tests', { tag: '@desktop' }, () => {
   // bugs we found that don't fit neatly into other categories

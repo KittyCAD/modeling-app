@@ -74,16 +74,6 @@ export default class RustContext {
     return ctxInstance
   }
 
-  /** Create a new Context instance for operations that need a separate context (e.g., transpilation) */
-  async createNewContext(): Promise<Context> {
-    const instance = await this.wasmInstancePromise
-    return new instance.Context(
-      this.engineCommandManager,
-      projectFsManager,
-      undefined
-    )
-  }
-
   private createFromInstance(instance: ModuleType) {
     this.rustInstance = instance
 
@@ -663,7 +653,7 @@ export default class RustContext {
   }
 
   /** Edit a constraint value in a sketch. */
-  async editConstraint(
+  async editConstraintValue(
     version: ApiVersion,
     sketch: ApiObjectId,
     constraintId: ApiObjectId,
@@ -678,7 +668,7 @@ export default class RustContext {
         sourceDelta: SourceDelta
         sceneGraphDelta: SceneGraphDelta
         checkpointId?: number | null
-      } = await instance.edit_constraint(
+      } = await instance.edit_constraint_value(
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(constraintId),
@@ -721,6 +711,52 @@ export default class RustContext {
       }
 
       const result = await instance.edit_angle_constraint(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(constraintId),
+        JSON.stringify(constraint),
+        JSON.stringify(settings),
+        createCheckpoint,
+        commitSolverResults
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  async editDistanceConstraint(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    constraintId: ApiObjectId,
+    constraint: Extract<
+      ApiConstraint,
+      { type: 'Distance' | 'HorizontalDistance' | 'VerticalDistance' }
+    >,
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false,
+    commitSolverResults = true
+  ): Promise<SketchMutationResult> {
+    const instance =
+      (await this._checkContextInstance()) as ContextWithDistanceConstraintEdit
+
+    try {
+      if (!commitSolverResults && createCheckpoint) {
+        return Promise.reject(
+          new Error('Preview distance edits cannot create sketch checkpoints')
+        )
+      }
+
+      const result = await instance.edit_distance_constraint(
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(constraintId),
@@ -953,6 +989,22 @@ type SketchMutationResult = {
 
 type ContextWithAngleConstraintEdit = Context & {
   edit_angle_constraint(
+    versionJson: string,
+    sketchJson: string,
+    constraintIdJson: string,
+    constraintJson: string,
+    settings: string,
+    createCheckpoint: boolean,
+    commitSolverResults: boolean
+  ): Promise<{
+    sourceDelta: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    checkpointId?: number | null
+  }>
+}
+
+type ContextWithDistanceConstraintEdit = Context & {
+  edit_distance_constraint(
     versionJson: string,
     sketchJson: string,
     constraintIdJson: string,

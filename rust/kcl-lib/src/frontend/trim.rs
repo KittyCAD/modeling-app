@@ -402,14 +402,14 @@ fn rewrite_constraint_with_map(
             segments: rewrite_constraint_segments(&coincident.segments, rewrite_map),
         })),
         Constraint::Distance(distance) => Some(Constraint::Distance(crate::frontend::sketch::Distance {
-            points: rewrite_constraint_segments(&distance.points, rewrite_map),
+            segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
             distance: distance.distance,
             label_position: distance.label_position.clone(),
             source: distance.source.clone(),
         })),
         Constraint::HorizontalDistance(distance) => {
             Some(Constraint::HorizontalDistance(crate::frontend::sketch::Distance {
-                points: rewrite_constraint_segments(&distance.points, rewrite_map),
+                segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
                 distance: distance.distance,
                 label_position: distance.label_position.clone(),
                 source: distance.source.clone(),
@@ -417,7 +417,7 @@ fn rewrite_constraint_with_map(
         }
         Constraint::VerticalDistance(distance) => {
             Some(Constraint::VerticalDistance(crate::frontend::sketch::Distance {
-                points: rewrite_constraint_segments(&distance.points, rewrite_map),
+                segments: rewrite_constraint_segments(&distance.segments, rewrite_map),
                 distance: distance.distance,
                 label_position: distance.label_position.clone(),
                 source: distance.source.clone(),
@@ -594,6 +594,18 @@ fn sketch_segment_ids_for_segment(objects: &[Object], segment_id: ObjectId) -> V
             sketch.segments.contains(&segment_id).then(|| sketch.segments.clone())
         })
         .unwrap_or_default()
+}
+
+fn sketch_segment_ids(objects: &[Object], sketch_id: ObjectId) -> Result<IndexSet<ObjectId>, String> {
+    let sketch_object = objects
+        .iter()
+        .find(|object| object.id == sketch_id)
+        .ok_or_else(|| format!("Sketch {} not found", sketch_id.0))?;
+    let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+        return Err(format!("Object {} is not a sketch", sketch_id.0));
+    };
+
+    Ok(sketch.segments.iter().copied().collect())
 }
 
 #[derive(Debug, Clone)]
@@ -2340,10 +2352,12 @@ fn trim_stroke_intersection_counts(
     points: &[Coords2d],
     objects: &[Object],
     default_unit: UnitLength,
+    eligible_segment_ids: &IndexSet<ObjectId>,
 ) -> IndexMap<ArtifactId, usize> {
     objects
         .iter()
         .filter_map(|object| load_curve_handle(object, objects, default_unit).ok())
+        .filter(|curve| eligible_segment_ids.contains(&curve.segment_id))
         .filter_map(|curve| {
             let intersection_count = curve_polyline_intersections(&curve, points, EPSILON_POINT_ON_SEGMENT).len();
             (intersection_count > 0).then(|| {
@@ -2365,6 +2379,7 @@ fn trim_stroke_intersection_counts(
  *
  * The function searches for candidates in each direction and selects the closest one,
  * with the following priority when distances are equal: coincident > intersection > endpoint.
+ * Only segments in `eligible_segment_ids` participate in the termination search.
  *
  * ## segEndPoint: The segment's own endpoint
  *
@@ -2412,12 +2427,20 @@ fn trim_stroke_intersection_counts(
 /// For the trim spawn segment and the intersection point on that segment,
 /// finds the "trim terminations" in both directions (left and right from the intersection point).
 /// A trim termination is the point where trimming should stop in each direction.
-pub fn get_trim_spawn_terminations(
+fn get_trim_spawn_terminations(
     trim_spawn_seg_id: ObjectId,
     trim_spawn_coords: &[Coords2d],
     objects: &[Object],
     default_unit: UnitLength,
+    eligible_segment_ids: &IndexSet<ObjectId>,
 ) -> Result<TrimTerminations, String> {
+    if !eligible_segment_ids.contains(&trim_spawn_seg_id) {
+        return Err(format!(
+            "Trim spawn segment {} is not eligible for termination analysis",
+            trim_spawn_seg_id.0
+        ));
+    }
+
     // Find the trim spawn segment
     let trim_spawn_seg = objects.iter().find(|obj| obj.id == trim_spawn_seg_id);
 
@@ -2478,6 +2501,7 @@ pub fn get_trim_spawn_terminations(
         TrimDirection::Left,
         objects,
         default_unit,
+        eligible_segment_ids,
     )?;
 
     let right_termination = find_termination_in_direction(
@@ -2487,6 +2511,7 @@ pub fn get_trim_spawn_terminations(
         TrimDirection::Right,
         objects,
         default_unit,
+        eligible_segment_ids,
     )?;
 
     Ok(TrimTerminations {
@@ -2554,6 +2579,7 @@ fn find_termination_in_direction(
     direction: TrimDirection,
     objects: &[Object],
     default_unit: UnitLength,
+    eligible_segment_ids: &IndexSet<ObjectId>,
 ) -> Result<TrimTermination, String> {
     // Use native types
     let ObjectKind::Segment { segment } = &trim_spawn_seg.kind else {
@@ -2648,7 +2674,7 @@ fn find_termination_in_direction(
     // Find intersections and coincident endpoint candidates against all other segments.
     for other_seg in objects.iter() {
         let other_id = other_seg.id;
-        if other_id == trim_spawn_seg_id {
+        if other_id == trim_spawn_seg_id || !eligible_segment_ids.contains(&other_id) {
             continue;
         }
 
@@ -2951,8 +2977,21 @@ where
     ));
     let mut invalidates_ids = false;
     let mut current_scene_graph_delta = initial_scene_graph_delta;
-    let selected_intersection_counts =
-        trim_stroke_intersection_counts(points, &current_scene_graph_delta.new_graph.objects, default_unit);
+    // This test-only generic loop has no sketch context, so every segment in
+    // its synthetic scene is explicitly eligible for the initial snapshot.
+    let initial_segment_ids: IndexSet<ObjectId> = current_scene_graph_delta
+        .new_graph
+        .objects
+        .iter()
+        .filter(|object| matches!(object.kind, ObjectKind::Segment { .. }))
+        .map(|object| object.id)
+        .collect();
+    let selected_intersection_counts = trim_stroke_intersection_counts(
+        points,
+        &current_scene_graph_delta.new_graph.objects,
+        default_unit,
+        &initial_segment_ids,
+    );
     let initial_intersection_count: usize = selected_intersection_counts.values().sum();
     let mut processed_intersection_counts: IndexMap<ArtifactId, usize> = IndexMap::new();
     let circle_delete_fallback_strategy =
@@ -3032,11 +3071,21 @@ where
                 ..
             } => {
                 // Get terminations
+                // This test-only generic loop has no sketch context, so every
+                // segment in its synthetic scene is explicitly eligible.
+                let termination_segment_ids: IndexSet<ObjectId> = current_scene_graph_delta
+                    .new_graph
+                    .objects
+                    .iter()
+                    .filter(|object| matches!(object.kind, ObjectKind::Segment { .. }))
+                    .map(|object| object.id)
+                    .collect();
                 let terminations = match get_trim_spawn_terminations(
                     *trim_spawn_seg_id,
                     points,
                     &current_scene_graph_delta.new_graph.objects,
                     default_unit,
+                    &termination_segment_ids,
                 ) {
                     Ok(terms) => terms,
                     Err(e) => {
@@ -3212,20 +3261,6 @@ async fn execute_trim_flow(
             initial_scene_graph.objects = exec_outcome.scene_objects.clone();
         }
 
-        // Get the sketch ID from the scene graph
-        // First try sketch_mode, then try to find a sketch object, then fall back to provided sketch_id
-        let actual_sketch_id = if let Some(sketch_mode) = initial_scene_graph.sketch_mode {
-            sketch_mode
-        } else {
-            // Try to find a sketch object in the scene graph
-            initial_scene_graph
-                .objects
-                .iter()
-                .find(|obj| matches!(obj.kind, crate::frontend::api::ObjectKind::Sketch { .. }))
-                .map(|obj| obj.id)
-                .unwrap_or(sketch_id) // Fall back to provided sketch_id
-        };
-
         let version = Version(0);
         let initial_scene_graph_delta = crate::frontend::api::SceneGraphDelta {
             new_graph: initial_scene_graph,
@@ -3244,7 +3279,7 @@ async fn execute_trim_flow(
             &mut frontend,
             &mock_ctx,
             version,
-            actual_sketch_id,
+            sketch_id,
         )
         .await?;
 
@@ -3328,8 +3363,13 @@ pub async fn execute_trim_loop_with_context(
         };
 
     let points = normalized_points.as_slice();
-    let selected_intersection_counts =
-        trim_stroke_intersection_counts(points, &current_scene_graph_delta.new_graph.objects, default_unit);
+    let active_sketch_segment_ids = sketch_segment_ids(&current_scene_graph_delta.new_graph.objects, sketch_id)?;
+    let selected_intersection_counts = trim_stroke_intersection_counts(
+        points,
+        &current_scene_graph_delta.new_graph.objects,
+        default_unit,
+        &active_sketch_segment_ids,
+    );
     let initial_intersection_count: usize = selected_intersection_counts.values().sum();
     let mut processed_intersection_counts: IndexMap<ArtifactId, usize> = IndexMap::new();
 
@@ -3337,20 +3377,22 @@ pub async fn execute_trim_loop_with_context(
         iteration_count += 1;
 
         // Get next trim result
+        let active_sketch_segment_ids = sketch_segment_ids(&current_scene_graph_delta.new_graph.objects, sketch_id)?;
         let eligible_segment_ids: IndexSet<ObjectId> = current_scene_graph_delta
             .new_graph
             .objects
             .iter()
             .filter(|object| {
-                initial_intersection_count > 1
-                    || selected_intersection_counts
-                        .get(&object.artifact_id)
-                        .copied()
-                        .unwrap_or(0)
-                        > processed_intersection_counts
+                active_sketch_segment_ids.contains(&object.id)
+                    && (initial_intersection_count > 1
+                        || selected_intersection_counts
                             .get(&object.artifact_id)
                             .copied()
                             .unwrap_or(0)
+                            > processed_intersection_counts
+                                .get(&object.artifact_id)
+                                .copied()
+                                .unwrap_or(0))
             })
             .map(|object| object.id)
             .collect();
@@ -3386,6 +3428,7 @@ pub async fn execute_trim_loop_with_context(
                     points,
                     &current_scene_graph_delta.new_graph.objects,
                     default_unit,
+                    &active_sketch_segment_ids,
                 ) {
                     Ok(terms) => terms,
                     Err(e) => {
@@ -3713,7 +3756,7 @@ fn spline_constraint_ids_to_delete(
             Constraint::Distance(distance)
             | Constraint::HorizontalDistance(distance)
             | Constraint::VerticalDistance(distance)
-                if distance.point_ids().any(|id| spline_control_ids.contains(&id)) =>
+                if distance.segment_ids().any(|id| spline_control_ids.contains(&id)) =>
             {
                 deletions.insert(obj.id);
             }
@@ -3806,7 +3849,7 @@ fn build_trim_plan(
             // even when this segment is trimmed. Only constraints that measure distances between
             // points on the same segment (e.g., segment length constraints) should be deleted.
             let points_owned_by_segment: Vec<bool> = distance
-                .point_ids()
+                .segment_ids()
                 .map(|point_id| {
                     if let Some(point_obj) = objects.iter().find(|o| o.id == point_id)
                         && let ObjectKind::Segment { segment } = &point_obj.kind
@@ -5160,7 +5203,7 @@ fn build_trim_plan(
                 if let Some(constraint_obj) = objects.iter().find(|o| o.id == constraint_id)
                     && let ObjectKind::Constraint { constraint } = &constraint_obj.kind
                     && let Constraint::Distance(distance) = constraint
-                    && distance.contains_point(center_id)
+                    && distance.contains_segment(center_id)
                 {
                     // This is a center point constraint - skip deletion, it will be migrated
                     continue;
@@ -5835,7 +5878,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             migrated_constraints.push(Constraint::Coincident(migrated_coincident));
                         }
                         Constraint::Distance(distance) => {
-                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
+                            if !constraint_segments_reference_any(&distance.segments, &rewrite_ids) {
                                 continue;
                             }
                             if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
@@ -5843,7 +5886,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             }
                         }
                         Constraint::HorizontalDistance(distance) => {
-                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
+                            if !constraint_segments_reference_any(&distance.segments, &rewrite_ids) {
                                 continue;
                             }
                             if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
@@ -5851,7 +5894,7 @@ pub(crate) async fn execute_trim_operations_simple(
                             }
                         }
                         Constraint::VerticalDistance(distance) => {
-                            if !constraint_segments_reference_any(&distance.points, &rewrite_ids) {
+                            if !constraint_segments_reference_any(&distance.segments, &rewrite_ids) {
                                 continue;
                             }
                             if let Some(migrated) = rewrite_constraint_with_map(constraint, &rewrite_map) {
@@ -5963,7 +6006,7 @@ pub(crate) async fn execute_trim_operations_simple(
 
                         // Find distance constraints that reference the original center point
                         if let Constraint::Distance(distance) = constraint
-                            && distance.contains_point(original_center_id)
+                            && distance.contains_segment(original_center_id)
                         {
                             center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
                         }
@@ -6324,8 +6367,8 @@ pub(crate) async fn execute_trim_operations_simple(
                             continue;
                         };
 
-                        let references_start = distance.contains_point(original_start_id);
-                        let references_end = distance.contains_point(original_end_id);
+                        let references_start = distance.contains_segment(original_start_id);
+                        let references_end = distance.contains_segment(original_end_id);
 
                         if references_start && references_end {
                             distance_constraints_to_re_add.push((
@@ -6341,7 +6384,7 @@ pub(crate) async fn execute_trim_operations_simple(
                 if let Some(original_start_id) = original_segment_start_point_id {
                     for (distance_value, label_position, source) in distance_constraints_to_re_add {
                         batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
-                            points: vec![original_start_id.into(), new_segment_end_point_id.into()],
+                            segments: vec![original_start_id.into(), new_segment_end_point_id.into()],
                             distance: distance_value,
                             label_position,
                             source,

@@ -331,8 +331,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     fail_path.to_string_lossy()
                 )
             }
-            if render_to_png {
-                twenty_twenty::assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99);
+            if render_to_png
+                && let Err(err) = twenty_twenty::try_assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99)
+            {
+                panic!(
+                    "Image assertion failed: {err}; input KCL file: {}",
+                    test.entry_point.display()
+                );
             }
 
             // Ensure the step has data.
@@ -374,8 +379,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     .flatten(),
             );
 
-            // Filter out Z0005 (old sketch syntax) from test snapshots
-            // TODO: Remove this filter once the transpiler is complete and all tests are updated
+            // Filter out Z0005 (old sketch syntax) from test snapshots.
             lint_findings.retain(|finding| finding.finding.code != "Z0005");
 
             let (outcome, module_state, responses) =
@@ -1612,6 +1616,27 @@ mod export_var_only_at_top_level {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, false).await
+    }
+}
+mod import_nested_runtime_error {
+    const TEST_NAME: &str = "import_nested_runtime_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
     }
 }
 mod assembly_non_default_units {
@@ -7480,6 +7505,153 @@ mod clone_dodecahedron {
 }
 mod mirror3d_and_boolean {
     const TEST_NAME: &str = "mirror3d_and_boolean";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod use_point_from_other_sketch {
+    const TEST_NAME: &str = "use_point_from_other_sketch";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod import_nested_foreign_error {
+    const TEST_NAME: &str = "import_nested_foreign_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod import_error_in_other_module_with_overflow {
+    const TEST_NAME: &str = "import_error_in_other_module_with_overflow";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod early_return_v3 {
+    const TEST_NAME: &str = "early_return_v3";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod early_return_cross_module {
+    const TEST_NAME: &str = "early_return_cross_module";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod early_return_geometry {
+    const TEST_NAME: &str = "early_return_geometry";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod clone_a_blend {
+    const TEST_NAME: &str = "clone_a_blend";
 
     /// Test parsing KCL.
     #[test]

@@ -323,7 +323,7 @@ const BODY_REFERENCE_ARTIFACT_TYPES: Artifact['type'][] = [
   'helix',
 ]
 
-function isReferenceablePrimitiveSelection(
+export function isReferenceableEnginePrimitiveSelection(
   selection: EnginePrimitiveSelection
 ): selection is ReferenceablePrimitiveSelection {
   return (
@@ -1013,7 +1013,7 @@ export async function getSelectionReferences({
     )
     if (
       primitiveSelection &&
-      isReferenceablePrimitiveSelection(primitiveSelection)
+      isReferenceableEnginePrimitiveSelection(primitiveSelection)
     ) {
       primitiveSelections.push({
         ...primitiveSelection,
@@ -1023,7 +1023,7 @@ export async function getSelectionReferences({
   }
 
   for (const selection of enginePrimitives) {
-    if (isReferenceablePrimitiveSelection(selection)) {
+    if (isReferenceableEnginePrimitiveSelection(selection)) {
       primitiveSelections.push({
         ...selection,
         graphSelection: graphSelectionByEntityId.get(selection.entityId),
@@ -1072,6 +1072,20 @@ export async function getSelectionReferences({
   ]
 }
 
+export function getUnresolvedEnginePrimitiveSelections(
+  enginePrimitives: EnginePrimitiveSelection[],
+  references: SelectionReference[]
+): EnginePrimitiveSelection[] {
+  return enginePrimitives.filter(
+    (selection) =>
+      isReferenceableEnginePrimitiveSelection(selection) &&
+      !references.some(
+        (reference) =>
+          reference.enginePrimitiveSelection?.entityId === selection.entityId
+      )
+  )
+}
+
 function isSameCodeRange(left: Selection, right: Selection) {
   return (
     left.codeRef.range[0] === right.codeRef.range[0] &&
@@ -1103,6 +1117,25 @@ function isSameDefaultPlaneSelection(
   right: DefaultPlaneSelection
 ) {
   return left.id === right.id
+}
+
+export function removeEnginePrimitiveSelectionFromSelections(
+  selections: Selections,
+  enginePrimitiveSelectionToRemove: EnginePrimitiveSelection
+): Selections {
+  return {
+    graphSelections: selections.graphSelections,
+    otherSelections: selections.otherSelections.filter(
+      (selection) =>
+        !(
+          isEnginePrimitiveSelection(selection) &&
+          isSameEnginePrimitiveSelection(
+            selection,
+            enginePrimitiveSelectionToRemove
+          )
+        )
+    ),
+  }
 }
 
 export function removeReferenceFromSelections(
@@ -2644,14 +2677,13 @@ export function selectAllInCurrentSketch(
   sceneEntitiesManager: SceneEntities
 ): Selections {
   const graphSelections: Selection[] = []
+  const artifacts = Array.from(artifactGraph.values())
 
   Object.keys(sceneEntitiesManager.activeSegments).forEach((pathToNode) => {
-    const artifact = artifactGraph
-      .values()
-      .find(
-        (g) =>
-          'codeRef' in g && JSON.stringify(g.codeRef.pathToNode) === pathToNode
-      )
+    const artifact = artifacts.find(
+      (g) =>
+        'codeRef' in g && JSON.stringify(g.codeRef.pathToNode) === pathToNode
+    )
     if (artifact && ['path', 'segment'].includes(artifact.type)) {
       const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
       if (codeRefs?.length) {
