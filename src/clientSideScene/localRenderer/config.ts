@@ -1,0 +1,1 @@
+export const LOCAL_WEBGPU_RENDERING_ENABLED = true
