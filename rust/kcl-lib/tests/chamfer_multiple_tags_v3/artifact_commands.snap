@@ -33,6 +33,15 @@ description: Artifact commands chamfer_multiple_tags_v3.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -127,8 +136,30 @@ description: Artifact commands chamfer_multiple_tags_v3.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -10.0,
+            "y": -10.0,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "version": "V1"
       }
     },
     {
@@ -197,40 +228,48 @@ description: Artifact commands chamfer_multiple_tags_v3.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_next_adjacent_edge",
+        "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
       }
     },
     {

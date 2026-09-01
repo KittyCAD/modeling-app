@@ -13,8 +13,8 @@ description: Lints chamfer_multiple_tags_v3.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      495,
-      702,
+      756,
+      1110,
       0
     ],
     "overridden": false,

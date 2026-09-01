@@ -1,12 +1,21 @@
 // KCL 3.0 removed chamfer's version parameter; specifying it is an error.
-@settings(kclVersion = "3.0-preview")
+@settings(defaultLengthUnit = mm, kclVersion = "3.0-preview", experimentalFeatures = allow)
 
-boxSketch = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [10, 0], tag = $edge1)
-  |> line(end = [0, 10])
-  |> line(end = [-10, 0])
-  |> close()
+boxProfile = sketch(on = XY) {
+  bottom = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  right = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  top = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  left = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+}
 
-box = extrude(boxSketch, length = 5)
-chamfered = chamfer(box, length = 1, tags = [getNextAdjacentEdge(edge1)], version = 2)
+boxRegion = region(point = [5mm, 5mm], sketch = boxProfile)
+box = extrude(boxRegion, length = 5mm)
+
+chamfered = chamfer(
+  box,
+  length = 1mm,
+  tags = [
+    getCommonEdge(faces = [boxRegion.tags.bottom, boxRegion.tags.right])
+  ],
+  version = 2,
+)
