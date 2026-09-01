@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { programUsesKclV3 } from '@src/lang/kclLanguageVersion'
 import { rewireAfterDelete } from '@src/lang/modifyAst/rewire'
 import { parse, recast } from '@src/lang/wasm'
 import type { Program } from '@src/lang/wasm'
@@ -248,6 +249,330 @@ fn wrap() {
       // deleted top-level feature.
       expect(recast(rewiredAst, getInstance())).toContain(
         'fillet(profile001, radius = 1)'
+      )
+    })
+  })
+
+  // KCL 3.0: each if/else-if/else arm body is its own scope, and a binding is
+  // in scope only from its declaration to the arm's closing brace.
+  describe('if-arm scope under KCL 3.0', () => {
+    const V3_HEADER = '@settings(kclVersion = "3.0-preview")'
+    const V3_OPTIONS = { useV3ArmScoping: true }
+
+    const rewireV3 = (beforeCode: string, afterCode: string): string => {
+      const beforeDeleteAst = parseProgram(`${V3_HEADER}
+parent001 = 1
+deleted001 = parent001 + 1
+${beforeCode}`)
+      const afterDeleteAst = parseProgram(`${V3_HEADER}
+parent001 = 1
+${afterCode}`)
+      const rewiredAst = rewireAfterDelete(
+        beforeDeleteAst,
+        afterDeleteAst,
+        V3_OPTIONS
+      )
+      const recasted = recast(rewiredAst, getInstance())
+      if (err(recasted)) {
+        throw recasted
+      }
+      return recasted
+    }
+
+    it('does not rewire references after an arm-local shadow in the same arm', () => {
+      const code = `result = if true {
+  deleted001 = 100
+  deleted001 + 1
+} else {
+  0
+}`
+      const recasted = rewireV3(code, code)
+
+      expect(recasted).toContain('deleted001 + 1')
+      expect(recasted).not.toContain('parent001 + 1')
+    })
+
+    it('rewires references before the shadow declaration in the same arm', () => {
+      const code = `result = if true {
+  before001 = deleted001 + 1
+  deleted001 = 100
+  deleted001 + before001
+} else {
+  0
+}`
+      const recasted = rewireV3(code, code)
+
+      // The binding is not in scope yet at the earlier reference.
+      expect(recasted).toContain('before001 = parent001 + 1')
+      // After the declaration, the shadow wins.
+      expect(recasted).toContain('deleted001 + before001')
+    })
+
+    it('keeps arms independent of a sibling arm shadow', () => {
+      const code = `result = if true {
+  deleted001 = 100
+  deleted001 + 1
+} else if false {
+  deleted001 + 2
+} else {
+  deleted001 + 3
+}`
+      const recasted = rewireV3(code, code)
+
+      // Shadowed in the first arm, unshadowed in its siblings.
+      expect(recasted).toContain('deleted001 + 1')
+      expect(recasted).toContain('parent001 + 2')
+      expect(recasted).toContain('parent001 + 3')
+    })
+
+    it('rewires an else-if condition even when an earlier arm shadows', () => {
+      const code = `result = if true {
+  deleted001 = 100
+  deleted001
+} else if deleted001 > 0 {
+  1
+} else {
+  2
+}`
+      const recasted = rewireV3(code, code)
+
+      // Conditions are evaluated in the enclosing scope.
+      expect(recasted).toContain('parent001 > 0')
+    })
+
+    it('rewires references after the if-expression', () => {
+      const code = `result = if true {
+  deleted001 = 100
+  deleted001
+} else {
+  0
+}
+after001 = deleted001 + result`
+      const recasted = rewireV3(code, code)
+
+      expect(recasted).toContain('after001 = parent001 + result')
+    })
+
+    it('does not leak a nested arm shadow into the outer arm', () => {
+      const code = `result = if true {
+  inner = if true {
+    deleted001 = 100
+    deleted001
+  } else {
+    0
+  }
+  deleted001 + inner
+} else {
+  0
+}`
+      const recasted = rewireV3(code, code)
+
+      expect(recasted).toContain('deleted001 = 100')
+      expect(recasted).toContain('parent001 + inner')
+    })
+
+    it('rewires a reference after an if-expression inside a function', () => {
+      const code = `fn build() {
+  result = if true {
+    deleted001 = 100
+    deleted001
+  } else {
+    0
+  }
+  after001 = deleted001 + result
+  return after001
+}`
+      const recasted = rewireV3(code, code)
+
+      // The arm binding is dropped at the arm's closing brace instead of
+      // leaking into the function scope.
+      expect(recasted).toContain('after001 = parent001 + result')
+    })
+
+    it("rewires the shadow declaration's own initializer", () => {
+      const code = `result = if true {
+  deleted001 = deleted001 + 1
+  deleted001
+} else {
+  0
+}`
+      const recasted = rewireV3(code, code)
+
+      expect(recasted).toContain('deleted001 = parent001 + 1')
+    })
+
+    it("rewires a function-body shadow declaration's own initializer", () => {
+      // Pins the KCL 3.0 declaration timing outside arms: the binding takes
+      // effect after its initializer, in function bodies too.
+      const code = `fn build() {
+  deleted001 = deleted001 + 1
+  return deleted001
+}`
+      const recasted = rewireV3(code, code)
+
+      expect(recasted).toContain('deleted001 = parent001 + 1')
+    })
+
+    it('does not rewire a function parameter shadow', () => {
+      const code = `fn keepLocal(deleted001) {
+  copy = deleted001
+  return copy
+}`
+      const recasted = rewireV3(code, code)
+
+      expect(recasted).toContain('copy = deleted001')
+    })
+  })
+
+  // Pre-3.0 entry points share the enclosing scope with arm bodies, so the
+  // legacy behavior must stay exactly as it is today.
+  describe('if-arm references under pre-3.0 KCL', () => {
+    it('rewires in-arm and post-if references at top level', () => {
+      const beforeDeleteAst = parseProgram(`parent001 = 1
+deleted001 = parent001 + 1
+result = if true {
+  deleted001 = 100
+  x = deleted001 + 1
+  x
+} else {
+  0
+}
+after001 = deleted001 + 1`)
+
+      const afterDeleteAst = parseProgram(`parent001 = 1
+result = if true {
+  deleted001 = 100
+  x = deleted001 + 1
+  x
+} else {
+  0
+}
+after001 = deleted001 + 1`)
+
+      const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+      const recasted = recast(rewiredAst, getInstance())
+
+      expect(recasted).toContain('x = parent001 + 1')
+      expect(recasted).toContain('after001 = parent001 + 1')
+    })
+
+    it('keeps the function-frame leak for arm declarations in functions', () => {
+      const beforeDeleteAst = parseProgram(`parent001 = 1
+deleted001 = parent001 + 1
+fn build() {
+  result = if true {
+    deleted001 = 100
+    deleted001
+  } else {
+    0
+  }
+  after001 = deleted001 + result
+  return after001
+}`)
+
+      const afterDeleteAst = parseProgram(`parent001 = 1
+fn build() {
+  result = if true {
+    deleted001 = 100
+    deleted001
+  } else {
+    0
+  }
+  after001 = deleted001 + result
+  return after001
+}`)
+
+      const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+
+      // The arm declaration registers into the function scope pre-3.0, so
+      // the post-if reference stays shadowed.
+      expect(recast(rewiredAst, getInstance())).toContain(
+        'after001 = deleted001 + result'
+      )
+    })
+
+    it("does not rewire a function-body shadow declaration's own initializer", () => {
+      const beforeDeleteAst = parseProgram(`parent001 = 1
+deleted001 = parent001 + 1
+fn build() {
+  deleted001 = deleted001 + 1
+  return deleted001
+}`)
+
+      const afterDeleteAst = parseProgram(`parent001 = 1
+fn build() {
+  deleted001 = deleted001 + 1
+  return deleted001
+}`)
+
+      const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+
+      expect(recast(rewiredAst, getInstance())).toContain(
+        'deleted001 = deleted001 + 1'
+      )
+    })
+  })
+
+  // Mirrors the deleteSelection wiring: the gate is derived from the
+  // before-delete program's settings and passed through.
+  describe('deriving the arm-scoping gate from program settings', () => {
+    const beforeCode = (header: string) => `${header}
+parent001 = 1
+deleted001 = parent001 + 1
+result = if true {
+  deleted001 = 100
+  local001 = deleted001 + 1
+  local001
+} else {
+  0
+}`
+    const afterCode = (header: string) => `${header}
+parent001 = 1
+result = if true {
+  deleted001 = 100
+  local001 = deleted001 + 1
+  local001
+} else {
+  0
+}`
+
+    it('applies arm scoping for a 3.0-preview program', () => {
+      const beforeDeleteAst = parseProgram(
+        beforeCode('@settings(kclVersion = "3.0-preview")')
+      )
+      const afterDeleteAst = parseProgram(
+        afterCode('@settings(kclVersion = "3.0-preview")')
+      )
+
+      const useV3ArmScoping = programUsesKclV3(beforeDeleteAst, getInstance())
+      expect(useV3ArmScoping).toBe(true)
+
+      const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst, {
+        useV3ArmScoping,
+      })
+
+      expect(recast(rewiredAst, getInstance())).toContain(
+        'local001 = deleted001 + 1'
+      )
+    })
+
+    it('keeps legacy behavior for a 2.0 program', () => {
+      const beforeDeleteAst = parseProgram(
+        beforeCode('@settings(kclVersion = 2.0)')
+      )
+      const afterDeleteAst = parseProgram(
+        afterCode('@settings(kclVersion = 2.0)')
+      )
+
+      const useV3ArmScoping = programUsesKclV3(beforeDeleteAst, getInstance())
+      expect(useV3ArmScoping).toBe(false)
+
+      const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst, {
+        useV3ArmScoping,
+      })
+
+      expect(recast(rewiredAst, getInstance())).toContain(
+        'local001 = parent001 + 1'
       )
     })
   })

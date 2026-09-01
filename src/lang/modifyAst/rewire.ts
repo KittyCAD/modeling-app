@@ -79,13 +79,13 @@ const buildDeletedToParentMap = (
 
 // Scopes whose bindings may shadow a deleted feature's name. Function scopes
 // are delimited by FunctionExpression enter/leave events. Block scopes (sketch
-// blocks and bare blocks) get no enter/leave events of their own -- traverse
-// visits their items directly -- so they are keyed by the path prefix shared
-// by all of the block's items and synced against the current path on every
-// enter.
+// blocks and bare blocks) and, under KCL 3.0, if-expression arm scopes get no
+// enter/leave events of their own -- traverse visits their items directly --
+// so they are keyed by the path prefix shared by all of the scope's items and
+// synced against the current path on every enter.
 type ScopeFrame =
   | { kind: 'function'; bindings: Set<string> }
-  | { kind: 'block'; bindings: Set<string>; pathPrefix: PathToNode }
+  | { kind: 'block' | 'arm'; bindings: Set<string>; pathPrefix: PathToNode }
 
 const isPathPrefix = (prefix: PathToNode, path: PathToNode): boolean => {
   if (prefix.length > path.length) {
@@ -99,12 +99,24 @@ const isBlockItemsSegment = (segment: PathToNode[number]): boolean => {
   return segment[0] === 'items' && segment[1] === 'Block'
 }
 
+// Every if/else-if/else arm body tags its items with this segment (right
+// after the arm's then_val/final_else segment, so distinct arms have distinct
+// prefixes). Conditions never carry it and therefore resolve in the enclosing
+// scope.
+const isIfArmBodySegment = (segment: PathToNode[number]): boolean => {
+  return segment[0] === 'body' && segment[1] === 'IfExpression'
+}
+
 // Bring path-keyed frames in line with the node being visited: close scopes
 // traversal has moved past and open scopes it has moved into. Function frames
 // are managed by their own enter/leave events, but a live function frame
 // guarantees every path-keyed frame below it is an enclosing scope, so
-// pruning stops at the first function frame or live block frame.
-const syncScopeFrames = (frames: ScopeFrame[], pathToNode: PathToNode) => {
+// pruning stops at the first function frame or live path-keyed frame.
+const syncScopeFrames = (
+  frames: ScopeFrame[],
+  pathToNode: PathToNode,
+  useV3ArmScoping: boolean
+) => {
   while (frames.length > 0) {
     const top = frames[frames.length - 1]
     if (top.kind === 'function' || isPathPrefix(top.pathPrefix, pathToNode)) {
@@ -117,7 +129,15 @@ const syncScopeFrames = (frames: ScopeFrame[], pathToNode: PathToNode) => {
   // pruning, every remaining path-keyed frame prefixes the current path, so
   // matching on prefix length alone identifies an already-open scope.
   for (let i = 0; i < pathToNode.length; i++) {
-    if (!isBlockItemsSegment(pathToNode[i])) {
+    const segment = pathToNode[i]
+    let kind: 'block' | 'arm'
+    if (isBlockItemsSegment(segment)) {
+      kind = 'block'
+    } else if (useV3ArmScoping && isIfArmBodySegment(segment)) {
+      // KCL 3.0: each arm body is its own scope. Under older entry points
+      // arm bindings share the enclosing scope, so no frame is opened.
+      kind = 'arm'
+    } else {
       continue
     }
     const prefixLength = i + 1
@@ -127,7 +147,7 @@ const syncScopeFrames = (frames: ScopeFrame[], pathToNode: PathToNode) => {
     )
     if (!alreadyOpen) {
       frames.push({
-        kind: 'block',
+        kind,
         bindings: new Set(),
         pathPrefix: pathToNode.slice(0, prefixLength),
       })
@@ -156,8 +176,10 @@ const resolveRewireTarget = (
 
 export function rewireAfterDelete(
   beforeDeleteAst: Node<Program>,
-  afterDeleteAst: Node<Program>
+  afterDeleteAst: Node<Program>,
+  options: { useV3ArmScoping: boolean } = { useV3ArmScoping: false }
 ): Node<Program> {
+  const { useV3ArmScoping } = options
   const deletedToParentMap = buildDeletedToParentMap(
     beforeDeleteAst,
     afterDeleteAst
@@ -169,13 +191,18 @@ export function rewireAfterDelete(
   const rewiredAst = structuredClone(afterDeleteAst)
   let didRewire = false
   const scopeFrames: ScopeFrame[] = []
+  // KCL 3.0: declarations whose binding takes effect on leave. See below.
+  const pendingBindings: {
+    declaration: Node<VariableDeclaration>
+    frame: ScopeFrame
+  }[] = []
 
   // First pass is intentionally generic: if a deleted feature had a parent
   // reference, every unshadowed downstream reference gets rebound through that
   // parent chain.
   traverse(rewiredAst, {
     enter: (node, pathToNode) => {
-      syncScopeFrames(scopeFrames, pathToNode)
+      syncScopeFrames(scopeFrames, pathToNode, useV3ArmScoping)
 
       if (node.type === 'FunctionExpression') {
         const bindings = new Set(
@@ -191,9 +218,19 @@ export function rewireAfterDelete(
       // Top-level declarations are deliberately left unregistered: they are
       // the rewire targets themselves, not shadows.
       if (node.type === 'VariableDeclaration' && scopeFrames.length > 0) {
-        scopeFrames[scopeFrames.length - 1].bindings.add(
-          node.declaration.id.name
-        )
+        const frame = scopeFrames[scopeFrames.length - 1]
+        if (useV3ArmScoping) {
+          // KCL 3.0: a binding is in scope only from its declaration onward,
+          // so the declaration's own initializer still sees the enclosing
+          // scope and must be rewired (`deleted001 = deleted001 + 1` becomes
+          // `deleted001 = parent001 + 1`). Register on leave, after the
+          // initializer subtree has been visited. This intentionally applies
+          // to function bodies too, not just arm bodies, matching runtime
+          // evaluation order.
+          pendingBindings.push({ declaration: node, frame })
+        } else {
+          frame.bindings.add(node.declaration.id.name)
+        }
         return
       }
 
@@ -225,9 +262,20 @@ export function rewireAfterDelete(
       didRewire = true
     },
     leave: (node) => {
+      if (node.type === 'VariableDeclaration') {
+        // The captured frame is an enclosing scope of the declaration, so it
+        // is still live here. Top-level declarations never registered a
+        // pending binding, so identity matching skips them.
+        const pending = pendingBindings[pendingBindings.length - 1]
+        if (pending?.declaration === node) {
+          pendingBindings.pop()
+          pending.frame.bindings.add(node.declaration.id.name)
+        }
+        return
+      }
       if (node.type === 'FunctionExpression') {
-        // Discard any block frames opened inside the function that had no
-        // later sibling visit to prune them.
+        // Discard any path-keyed frames opened inside the function that had
+        // no later sibling visit to prune them.
         while (scopeFrames.length > 0) {
           if (scopeFrames.pop()?.kind === 'function') {
             break

@@ -4,6 +4,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
 import { executeAstMock } from '@src/lang/executeAstMock'
+import { programUsesKclV3 } from '@src/lang/kclLanguageVersion'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { rewireAfterDelete } from '@src/lang/modifyAst/rewire'
@@ -89,12 +90,13 @@ export async function deleteSelectionPromise({
   }
 
   // AST based deletion, we should stop adding cases in there
+  const wasmInstance = await systemDeps.kclManager.wasmInstancePromise
   const modifiedAst = await deleteFromSelection(
     ast,
     selection,
     systemDeps.kclManager.variables,
     systemDeps.kclManager.artifactGraph,
-    await systemDeps.kclManager.wasmInstancePromise,
+    wasmInstance,
     systemDeps.kclManager.sceneEntitiesManager.getFaceDetails.bind(
       systemDeps.kclManager.sceneEntitiesManager
     )
@@ -103,7 +105,12 @@ export async function deleteSelectionPromise({
     return new Error(deletionErrorMessage)
   }
 
-  const rewiredAst = rewireAfterDelete(ast, modifiedAst)
+  // KCL 3.0 if-arm scoping follows the language version of the executed
+  // entry point, which is the open file's program for in-app execution.
+  // (When editing a sub-module whose project entry point declares a
+  // different version, this can diverge; accepted for now.)
+  const useV3ArmScoping = programUsesKclV3(ast, wasmInstance)
+  const rewiredAst = rewireAfterDelete(ast, modifiedAst, { useV3ArmScoping })
   let astToApply = rewiredAst
 
   const rewiredExecute = await executeAstMock({
