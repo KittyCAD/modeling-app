@@ -1742,7 +1742,12 @@ sketch001 = sketch(on = YZ) {
 
       const sendSceneCommandSpy = vi
         .spyOn(engineCommandManager, 'sendSceneCommand')
-        .mockRejectedValue(new Error('sketch exit failed'))
+        .mockImplementation(async () => {
+          expect(kclManager.sceneInfra.camControls.enableRotate).toBe(false)
+          expect(kclManager.sceneInfra.camControls.enablePan).toBe(false)
+          expect(kclManager.sceneInfra.camControls.enableZoom).toBe(false)
+          throw new Error('sketch exit failed')
+        })
 
       const context = generateModelingMachineDefaultContext({
         kclManager,
@@ -1804,12 +1809,14 @@ sketch001 = sketch(on = YZ) {
       expect(sendSceneCommandSpy).toHaveBeenCalled()
       expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
       expect(kclManager.sceneInfra.camControls.enablePan).toBe(true)
+      expect(kclManager.sceneInfra.camControls.enableZoom).toBe(true)
       expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
         'engineToClient'
       )
+      expect(kclManager.sceneInfra.camControls.cameraOrbitOverride).toBeNull()
     })
 
-    it('disables camera orbit controls in sketch solve mode', async () => {
+    it('uses engine-owned camera orbit controls in sketch solve mode', async () => {
       const {
         instance,
         kclManager,
@@ -1865,9 +1872,12 @@ sketch001 = sketch(on = YZ) {
         )
       })
 
-      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(false)
+      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
       expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
-        'clientToEngine'
+        'engineToClient'
+      )
+      expect(kclManager.sceneInfra.camControls.cameraOrbitOverride).toBe(
+        'trackball'
       )
     })
   })

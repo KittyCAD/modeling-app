@@ -1546,16 +1546,17 @@ export const modelingMachine = setup({
       camControls.enablePan = true
       camControls.enableRotate = true
       camControls.syncDirection = 'engineToClient'
+      camControls.cameraOrbitOverride = null
+    },
+    'set sketch solve camera controls': ({ context }) => {
+      const camControls = context.kclManager.sceneInfra.camControls
+      camControls.enablePan = true
+      camControls.enableRotate = true
+      camControls.syncDirection = 'engineToClient'
+      camControls.cameraOrbitOverride = 'trackball'
     },
     'clientToEngine cam sync direction': ({ context }) => {
       context.kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-    },
-    'disable rotate for sketch solve mode': ({ context }) => {
-      // Sketch solve currently has sync issues with engine and trouble translating world space to sketch space,
-      // so block orbit input until those controls are synchronized.
-      // When that is the case, the hidden setting "allow orbit in sketch mode" will be shown to users.
-      context.kclManager.sceneInfra.camControls.enableRotate =
-        context.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
@@ -2237,7 +2238,21 @@ export const modelingMachine = setup({
       async (args: { input: { context: ModelingMachineContext } }) => {
         const context = args.input.context
         const { store, engineCommandManager, kclManager } = context
+        const camControls = kclManager.sceneInfra.camControls
+        const previousInteractionState = {
+          enablePan: camControls.enablePan,
+          enableRotate: camControls.enableRotate,
+          enableZoom: camControls.enableZoom,
+        }
+        camControls.enablePan = false
+        camControls.enableRotate = false
+        camControls.enableZoom = false
         try {
+          camControls.syncDirection = 'clientToEngine'
+          if (camControls.configuredCameraOrbit === 'spherical') {
+            await camControls.tweenToSphericalOrbitOrientation()
+          }
+
           // When cancelling the sketch mode we should disable sketch mode within the engine.
           await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
@@ -2245,13 +2260,11 @@ export const modelingMachine = setup({
             cmd: { type: 'sketch_mode_disable' },
           })
 
-          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
-
           if (store.cameraProjection?.current === 'perspective') {
-            await kclManager.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            await camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
           }
 
-          kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
+          camControls.syncDirection = 'engineToClient'
 
           // TODO: Re-evaluate if this pause/play logic is needed.
           // TODO: Do I need this video element?
@@ -2273,11 +2286,11 @@ export const modelingMachine = setup({
             })
             .catch(reportRejection)
         } finally {
-          const camControls = kclManager.sceneInfra.camControls
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           kclManager.sceneEntitiesManager.removeSketchGrid()
-          camControls.enablePan = true
-          camControls.enableRotate = true
+          camControls.enablePan = previousInteractionState.enablePan
+          camControls.enableRotate = previousInteractionState.enableRotate
+          camControls.enableZoom = previousInteractionState.enableZoom
           camControls.syncDirection = 'engineToClient'
           kclManager.sceneEntitiesManager.resetOverlays()
           kclManager.sceneInfra.stop()
@@ -3211,8 +3224,7 @@ export const modelingMachine = setup({
           await kclManager.wasmInstancePromise
         )
         await kclManager.updateAst(modifiedAst, false)
-        kclManager.sceneInfra.camControls.enableRotate =
-          kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
+        kclManager.sceneInfra.camControls.enableRotate = true
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
         await letEngineAnimateAndSyncCamAfter(
@@ -6463,10 +6475,7 @@ export const modelingMachine = setup({
 
     sketchSolveMode: {
       id: 'sketchSolveMode',
-      entry: [
-        'clientToEngine cam sync direction',
-        'disable rotate for sketch solve mode',
-      ],
+      entry: ['set sketch solve camera controls'],
       initial: 'active',
       states: {
         active: {

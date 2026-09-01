@@ -22,6 +22,7 @@ import {
 } from 'three'
 
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 
 import {
   DEBUG_SHOW_INTERSECTION_PLANE,
@@ -110,11 +111,13 @@ class CameraRateLimiter {
 export class CameraControls {
   engineCommandManager: ConnectionManager
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
+  cameraOrbitOverride: CameraOrbitType | null = null
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
   isDragging: boolean
   wasDragging: boolean
+  activeDragInteraction: CameraDragInteractionType | null = null
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
   worldDownPosition: Vector3
@@ -204,6 +207,15 @@ export class CameraControls {
     return this.camera instanceof OrthographicCamera
       ? 'orthographic'
       : 'perspective'
+  }
+  private get cameraOrbit(): CameraOrbitType | undefined {
+    return (
+      this.cameraOrbitOverride ??
+      this.getSettings?.().modeling.cameraOrbit.current
+    )
+  }
+  get configuredCameraOrbit(): CameraOrbitType | undefined {
+    return this.getSettings?.().modeling.cameraOrbit.current
   }
   set engineCameraProjection(projection: CameraProjectionType) {
     if (projection === 'orthographic') {
@@ -335,6 +347,7 @@ export class CameraControls {
     this.domElement.addEventListener('pointerdown', this.onMouseDown)
     this.domElement.addEventListener('pointermove', this.onMouseMove)
     this.domElement.addEventListener('pointerup', this.onMouseUp)
+    this.domElement.addEventListener('pointercancel', this.onMouseUp)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
     this.initTouchControls(this.enableTouchControls)
 
@@ -436,6 +449,10 @@ export class CameraControls {
     this._isCamMovingCallback = cb
   }
 
+  setEngineCameraAnimationInProgress(isMoving: boolean) {
+    this._isCamMovingCallback(isMoving, true)
+  }
+
   public readonly cameraChange = new LegacySignal()
 
   onWindowResize = () => {
@@ -454,15 +471,23 @@ export class CameraControls {
   }
 
   onMouseDown = (event: PointerEvent) => {
+    const interaction = this.getInteractionType(event)
+    if (interaction === 'none') {
+      // A non-camera gesture (for example, sketch area select) must not become
+      // a camera gesture if its modifiers change while the pointer is down.
+      this.activeDragInteraction = null
+      this.isDragging = false
+      return
+    }
+
     this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
+    this.activeDragInteraction = interaction
     // Reset the wasDragging flag to false when starting a new drag
     this.wasDragging = false
     this.mouseDownPosition.set(event.clientX, event.clientY)
     this.worldDownPosition = this.screenToWorld(event).clone()
     this.cameraDown = this.camera.clone()
-    let interaction = this.getInteractionType(event)
-    if (interaction === 'none') return
     this.handleStart()
 
     if (this.syncDirection === 'engineToClient') {
@@ -494,8 +519,8 @@ export class CameraControls {
         .sub(this.mouseDownPosition)
       this.mouseDownPosition.copy(this.mouseNewPosition)
 
-      const interaction = this.getInteractionType(event)
-      if (interaction === 'none') {
+      const interaction = this.activeDragInteraction
+      if (!interaction) {
         return
       }
 
@@ -581,12 +606,17 @@ export class CameraControls {
   }
 
   onMouseUpInner = (event: PointerEvent) => {
+    const interaction = this.activeDragInteraction
+    if (!interaction) {
+      this.isDragging = false
+      return
+    }
+
     this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
+    this.activeDragInteraction = null
     this.handleEnd()
     if (this.syncDirection === 'engineToClient') {
-      const interaction = this.getInteractionType(event)
-      if (interaction === 'none') return
       const window = this.streamToEngineWindowCoordinates({
         clientX: event.clientX,
         clientY: event.clientY,
@@ -1284,6 +1314,50 @@ export class CameraControls {
       duration
     )
   }
+
+  async tweenToSphericalOrbitOrientation(duration = 500): Promise<void> {
+    const eyeDirection = this.camera.position
+      .clone()
+      .sub(this.target)
+      .normalize()
+    const globalUp = new Vector3(0, 0, 1)
+    const targetUp =
+      Math.abs(eyeDirection.dot(globalUp)) > 0.999
+        ? new Vector3(0, Math.sign(eyeDirection.z) || 1, 0)
+        : globalUp
+    const targetQuaternion = _lookAt(
+      this.camera.position,
+      this.target,
+      targetUp
+    )
+
+    if (this.camera.quaternion.angleTo(targetQuaternion) > deg2Rad(0.1)) {
+      await this.tweenCameraToQuaternion(
+        targetQuaternion,
+        this.target.clone(),
+        duration
+      )
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam(
+          {
+            quaternion: this.camera.quaternion,
+            position: this.camera.position,
+            zoom: this.camera.zoom,
+            isPerspective: this.isPerspective,
+            target: this.target,
+          },
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+        ),
+      },
+    })
+  }
+
   _tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition: Vector3,
@@ -1451,7 +1525,7 @@ export class CameraControls {
           )
     if (
       initialInteractionType === 'rotate' &&
-      this.getSettings?.().modeling.cameraOrbit.current === 'trackball'
+      this.cameraOrbit === 'trackball'
     ) {
       return 'rotatetrackball'
     }
@@ -1522,9 +1596,7 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient' && ev.maxPointers === 1) {
         if (this.enableRotate) {
           const orbitMode =
-            this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
-              ? 'rotatetrackball'
-              : 'rotate'
+            this.cameraOrbit === 'trackball' ? 'rotatetrackball' : 'rotate'
           this.moveSender.send(() => {
             this.doMove(orbitMode, [ev.center.x, ev.center.y])
           })
@@ -1545,9 +1617,7 @@ export class CameraControls {
         velocity > 0
       ) {
         const orbitMode =
-          this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
-            ? 'rotatetrackball'
-            : 'rotate'
+          this.cameraOrbit === 'trackball' ? 'rotatetrackball' : 'rotate'
 
         const decayInterval = setInterval(() => {
           const decayedVelocity = velocity - velocityFlickDecay

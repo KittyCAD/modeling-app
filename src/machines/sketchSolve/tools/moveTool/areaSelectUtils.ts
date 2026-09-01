@@ -5,6 +5,8 @@ import {
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
+import { Themes, getResolvedTheme } from '@src/lib/theme'
+import { isArray } from '@src/lib/utils'
 import { TAU, getAngleDiff } from '@src/lib/utils2d'
 import {
   getArcPoints,
@@ -16,17 +18,27 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { htmlHelper } from '@src/machines/sketchSolve/segments'
 import {
+  BufferGeometry,
+  DoubleSide,
+  Float32BufferAttribute,
   Group,
+  Material,
+  Mesh,
+  MeshBasicMaterial,
   type OrthographicCamera,
   type PerspectiveCamera,
   Vector2,
   Vector3,
 } from 'three'
+import { Line2 } from 'three/examples/jsm/lines/Line2.js'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 export const AREA_SELECT_BORDER_WIDTH = 2
 export const LINE_EXTENSION_SIZE = 12
-const LABEL_VERTICAL_OFFSET = 12
+const AREA_SELECT_DASH_SIZE_PX = 4
+const AREA_SELECT_GAP_SIZE_PX = 3
 
 export type SelectionBoxVisualState = {
   getSelectionBoxObject: () => CSS2DObject | null
@@ -35,12 +47,15 @@ export type SelectionBoxVisualState = {
   setSelectionBoxGroup: (value: Group | null) => void
   getLabelsWrapper: () => HTMLElement | null
   setLabelsWrapper: (value: HTMLElement | null) => void
-  getBoxDiv: () => HTMLElement | null
-  setBoxDiv: (value: HTMLElement | null) => void
-  getVerticalLine: () => HTMLElement | null
-  setVerticalLine: (value: HTMLElement | null) => void
-  getHorizontalLine: () => HTMLElement | null
-  setHorizontalLine: (value: HTMLElement | null) => void
+}
+
+const SELECTION_BOX_FILL = 'selectionBoxFill'
+const SELECTION_BOX_OUTLINE = 'selectionBoxOutline'
+const SELECTION_BOX_TAIL = 'selectionBoxTail'
+const SELECTION_BOX_RENDER_ORDER = 101
+const SELECTION_BOX_COLORS = {
+  [Themes.Light]: 0xd9d9d9,
+  [Themes.Dark]: 0x5e5e5e,
 }
 
 /**
@@ -65,30 +80,6 @@ export function project3DToScreen(
 }
 
 /**
- * Calculates the bounding box in screen space from two screen points.
- * Pure function that determines the min/max bounds of a selection box.
- *
- * @param point1 - First screen point
- * @param point2 - Second screen point
- * @returns Object containing min and max bounds of the box
- */
-export function calculateBoxBounds(
-  point1: Vector2,
-  point2: Vector2
-): { min: Vector2; max: Vector2 } {
-  return {
-    min: new Vector2(
-      Math.min(point1.x, point2.x),
-      Math.min(point1.y, point2.y)
-    ),
-    max: new Vector2(
-      Math.max(point1.x, point2.x),
-      Math.max(point1.y, point2.y)
-    ),
-  }
-}
-
-/**
  * Determines the area selection mode based on drag direction.
  * Pure function that returns true for intersection mode (right-to-left drag),
  * false for contains mode (left-to-right drag).
@@ -102,176 +93,6 @@ export function isIntersectionSelectionMode(
   currentPoint: Vector2
 ): boolean {
   return startPoint.x > currentPoint.x
-}
-
-/**
- * Pure function: Calculates all selection box properties from 3D points
- * Returns all computed values needed to render and position the selection box
- */
-export function calculateSelectionBoxProperties(
-  startPoint3D: Vector3,
-  currentPoint3D: Vector3,
-  camera: OrthographicCamera | PerspectiveCamera,
-  viewportSize: Vector2
-): {
-  widthPx: number
-  heightPx: number
-  boxMinPx: Vector2
-  boxMaxPx: Vector2
-  startPx: Vector2
-  currentPx: Vector2
-  isIntersectionBox: boolean
-  isDraggingUpward: boolean
-  borderStyle: 'dashed' | 'solid'
-  center3D: Vector3
-} {
-  const startPx = project3DToScreen(startPoint3D, camera, viewportSize)
-  const currentPx = project3DToScreen(currentPoint3D, camera, viewportSize)
-
-  const { min: boxMinPx, max: boxMaxPx } = calculateBoxBounds(
-    startPx,
-    currentPx
-  )
-
-  const widthPx = boxMaxPx.x - boxMinPx.x
-  const heightPx = boxMaxPx.y - boxMinPx.y
-
-  const isIntersectionBox = isIntersectionSelectionMode(startPx, currentPx)
-  const isDraggingUpward = startPx.y > currentPx.y
-  const borderStyle = isIntersectionBox ? 'dashed' : 'solid'
-
-  const center3D = new Vector3()
-    .addVectors(startPoint3D, currentPoint3D)
-    .multiplyScalar(0.5)
-
-  return {
-    widthPx,
-    heightPx,
-    boxMinPx,
-    boxMaxPx,
-    startPx,
-    currentPx,
-    isIntersectionBox,
-    isDraggingUpward,
-    borderStyle,
-    center3D,
-  }
-}
-
-/**
- * Pure function: Calculates label positioning relative to box center
- * Determines where labels should be positioned based on drag start point
- */
-export function calculateLabelPositioning(
-  startPx: Vector2,
-  boxMinPx: Vector2,
-  boxMaxPx: Vector2,
-  isDraggingUpward: boolean
-): {
-  offsetX: number
-  offsetY: number
-  finalOffsetY: number
-  startX: number
-  startY: number
-} {
-  const centerPx = new Vector2(
-    (boxMinPx.x + boxMaxPx.x) / 2,
-    (boxMinPx.y + boxMaxPx.y) / 2
-  )
-
-  const offsetX = startPx.x - centerPx.x
-  const offsetY = startPx.y - centerPx.y
-
-  const verticalOffset = isDraggingUpward
-    ? LABEL_VERTICAL_OFFSET
-    : -LABEL_VERTICAL_OFFSET
-  const finalOffsetY = offsetY + verticalOffset
-
-  const startX = offsetX
-  const startY = offsetY
-
-  return {
-    offsetX,
-    offsetY,
-    finalOffsetY,
-    startX,
-    startY,
-  }
-}
-
-/**
- * Pure function: Calculates corner line styles and positions
- * Determines how corner lines should be positioned and sized
- */
-export function calculateCornerLineStyles(
-  startX: number,
-  startY: number,
-  lineExtensionSize: number,
-  borderWidth: number
-): {
-  verticalLine: {
-    height: string
-    bottom?: string
-    top?: string
-    left?: string
-    right?: string
-  }
-  horizontalLine: {
-    width: string
-    left?: string
-    right?: string
-    top?: string
-    bottom?: string
-  }
-} {
-  const verticalLine: {
-    height: string
-    bottom?: string
-    top?: string
-    left?: string
-    right?: string
-  } = {
-    height: `${lineExtensionSize}px`,
-  }
-
-  if (startY > 0) {
-    verticalLine.bottom = `-${lineExtensionSize + borderWidth}px`
-  } else {
-    verticalLine.top = `-${lineExtensionSize + borderWidth}px`
-  }
-
-  if (startX > 0) {
-    verticalLine.right = `-${borderWidth}px`
-  } else {
-    verticalLine.left = `-${borderWidth}px`
-  }
-
-  const horizontalLine: {
-    width: string
-    left?: string
-    right?: string
-    top?: string
-    bottom?: string
-  } = {
-    width: `${lineExtensionSize}px`,
-  }
-
-  if (startX < 0) {
-    horizontalLine.left = `-${lineExtensionSize + borderWidth}px`
-  } else {
-    horizontalLine.right = `-${lineExtensionSize + borderWidth}px`
-  }
-
-  if (startY > 0) {
-    horizontalLine.bottom = `-${borderWidth}px`
-  } else {
-    horizontalLine.top = `-${borderWidth}px`
-  }
-
-  return {
-    verticalLine,
-    horizontalLine,
-  }
 }
 
 /**
@@ -396,44 +217,12 @@ export function doesLineSegmentIntersectBox(
   return false
 }
 
-function createSelectionBoxElements(borderStyle: 'dashed' | 'solid'): {
-  boxDiv: HTMLElement
-  verticalLine: HTMLElement
-  horizontalLine: HTMLElement
+function createSelectionBoxElements(): {
+  labelAnchor: HTMLElement
   labelsWrapper: HTMLElement
 } {
-  const borderWidthPx = `${AREA_SELECT_BORDER_WIDTH}px`
-  const [boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
-          <div
-            ${{ key: 'id', value: 'selection-box' }}
-            class = "border-bg-3 bg-black/5 dark:bg-white/10"
-            style="
-              position: absolute;
-              pointer-events: none;
-              border-width: ${borderWidthPx};
-              border-style: ${borderStyle};
-              transform: translate(-50%, -50%);
-              box-sizing: border-box;
-            "
-          >
-            <div
-              ${{ key: 'id', value: 'vertical-line' }}
-              class="bg-3"
-              style="
-                position: absolute;
-                pointer-events: none;
-                width: ${borderWidthPx};
-              "
-            ></div>
-            <div
-              ${{ key: 'id', value: 'horizontal-line' }}
-              class="bg-3"
-              style="
-                position: absolute;
-                pointer-events: none;
-                height: ${borderWidthPx};
-              "
-            ></div>
+  const [labelAnchor, labelsWrapper] = htmlHelper`
+          <div ${{ key: 'id', value: 'selection-box' }} style="pointer-events: none;">
             <div
               ${{ key: 'id', value: 'labels-wrapper' }}
               style="
@@ -456,7 +245,7 @@ function createSelectionBoxElements(borderStyle: 'dashed' | 'solid'): {
                   margin: 0px;
                   text-align: right;
                 "
-              >Intersects</div>
+              ><span class="selection-box-label-backdrop">Intersects</span></div>
               <div
                 ${{ key: 'id', value: 'contains-label' }}
                 class="text-3 dark:text-3"
@@ -467,36 +256,15 @@ function createSelectionBoxElements(borderStyle: 'dashed' | 'solid'): {
                   padding: 6px;
                   margin: 0px;
                 "
-              >Within</div>
+              ><span class="selection-box-label-backdrop">Within</span></div>
             </div>
           </div>
         `
 
   return {
-    boxDiv,
-    verticalLine,
-    horizontalLine,
+    labelAnchor,
     labelsWrapper,
   }
-}
-
-function updateSelectionBoxPosition(
-  selectionBoxObject: CSS2DObject,
-  localCenter: Vector3
-): void {
-  selectionBoxObject.position.copy(localCenter)
-}
-
-function updateSelectionBoxSizeAndBorder(
-  boxDiv: HTMLElement,
-  widthPx: number,
-  heightPx: number,
-  borderStyle: 'dashed' | 'solid'
-): void {
-  boxDiv.style.width = `${widthPx}px`
-  boxDiv.style.height = `${heightPx}px`
-  boxDiv.style.borderWidth = `${AREA_SELECT_BORDER_WIDTH}px`
-  boxDiv.style.borderStyle = borderStyle
 }
 
 function updateLabelStylesInDom(
@@ -517,72 +285,107 @@ function updateLabelStylesInDom(
   }
 }
 
-function updateLabelPosition(
-  labelsWrapper: HTMLElement,
-  startX: number,
-  finalOffsetY: number
-): void {
-  labelsWrapper.style.left = `calc(50% + ${startX}px)`
-  labelsWrapper.style.top = `calc(50% + ${finalOffsetY}px)`
-  labelsWrapper.style.transform = 'translate(-50%, -50%)'
+export function calculateSelectionRectangleCorners(
+  startPoint: Vector3,
+  currentPoint: Vector3
+): [Vector3, Vector3, Vector3, Vector3] {
+  return [
+    new Vector3(startPoint.x, startPoint.y, 0),
+    new Vector3(currentPoint.x, startPoint.y, 0),
+    new Vector3(currentPoint.x, currentPoint.y, 0),
+    new Vector3(startPoint.x, currentPoint.y, 0),
+  ]
 }
 
-function updateCornerLinePositions(
-  verticalLine: HTMLElement,
-  horizontalLine: HTMLElement,
-  cornerLineStyles: {
-    verticalLine: {
-      height: string
-      bottom?: string
-      top?: string
-      left?: string
-      right?: string
-    }
-    horizontalLine: {
-      width: string
-      left?: string
-      right?: string
-      top?: string
-      bottom?: string
-    }
+export function calculateSelectionTailEndpoint(
+  startPoint: Vector3,
+  currentPoint: Vector3,
+  projectedStart: Vector2,
+  projectedStartEdgeEnd: Vector2
+): Vector3 {
+  const projectedEdgeLength = projectedStart.distanceTo(projectedStartEdgeEnd)
+  if (projectedEdgeLength < 1e-6) {
+    return startPoint.clone()
   }
+
+  const localEdgeLength = Math.abs(currentPoint.y - startPoint.y)
+  const tailLength =
+    (localEdgeLength * LINE_EXTENSION_SIZE) / projectedEdgeLength
+  const tailDirection = Math.sign(startPoint.y - currentPoint.y)
+
+  return startPoint.clone().add(new Vector3(0, tailDirection * tailLength, 0))
+}
+
+export function calculateLocalUnitsPerScreenPixel(
+  localCorners: [Vector3, Vector3, Vector3, Vector3],
+  projectedCorners: [Vector2, Vector2, Vector2, Vector2]
+): number {
+  let localPerimeter = 0
+  let projectedPerimeter = 0
+  for (let index = 0; index < localCorners.length; index++) {
+    const nextIndex = (index + 1) % localCorners.length
+    localPerimeter += localCorners[index].distanceTo(localCorners[nextIndex])
+    projectedPerimeter += projectedCorners[index].distanceTo(
+      projectedCorners[nextIndex]
+    )
+  }
+
+  return projectedPerimeter > 1e-6 ? localPerimeter / projectedPerimeter : 1
+}
+
+function updateSelectionBoxGeometry(
+  group: Group,
+  corners: [Vector3, Vector3, Vector3, Vector3],
+  tailEndpoint: Vector3,
+  isIntersectionBox: boolean,
+  viewportSize: Vector2,
+  localUnitsPerScreenPixel: number
 ): void {
-  verticalLine.style.top = ''
-  verticalLine.style.right = ''
-  verticalLine.style.bottom = ''
-  verticalLine.style.left = ''
-
-  verticalLine.style.height = cornerLineStyles.verticalLine.height
-  if (cornerLineStyles.verticalLine.bottom !== undefined) {
-    verticalLine.style.bottom = cornerLineStyles.verticalLine.bottom
-  }
-  if (cornerLineStyles.verticalLine.top !== undefined) {
-    verticalLine.style.top = cornerLineStyles.verticalLine.top
-  }
-  if (cornerLineStyles.verticalLine.left !== undefined) {
-    verticalLine.style.left = cornerLineStyles.verticalLine.left
-  }
-  if (cornerLineStyles.verticalLine.right !== undefined) {
-    verticalLine.style.right = cornerLineStyles.verticalLine.right
+  const positions = corners.flatMap((point) => [point.x, point.y, point.z])
+  const outline = group.getObjectByName(SELECTION_BOX_OUTLINE)
+  if (outline instanceof Line2) {
+    outline.geometry.setPositions([...positions, ...positions.slice(0, 3)])
+    outline.computeLineDistances()
+    if (outline.material instanceof LineMaterial) {
+      outline.material.dashed = isIntersectionBox
+      outline.material.dashSize =
+        AREA_SELECT_DASH_SIZE_PX * localUnitsPerScreenPixel
+      outline.material.gapSize =
+        AREA_SELECT_GAP_SIZE_PX * localUnitsPerScreenPixel
+      outline.material.resolution.copy(viewportSize)
+      outline.material.needsUpdate = true
+    }
   }
 
-  horizontalLine.style.top = ''
-  horizontalLine.style.right = ''
-  horizontalLine.style.bottom = ''
-  horizontalLine.style.left = ''
+  const tail = group.getObjectByName(SELECTION_BOX_TAIL)
+  if (tail instanceof Line2) {
+    tail.geometry.setPositions([
+      corners[0].x,
+      corners[0].y,
+      corners[0].z,
+      tailEndpoint.x,
+      tailEndpoint.y,
+      tailEndpoint.z,
+    ])
+    if (tail.material instanceof LineMaterial) {
+      tail.material.resolution.copy(viewportSize)
+    }
+  }
 
-  horizontalLine.style.width = cornerLineStyles.horizontalLine.width
-  if (cornerLineStyles.horizontalLine.left !== undefined) {
-    horizontalLine.style.left = cornerLineStyles.horizontalLine.left
-  }
-  if (cornerLineStyles.horizontalLine.right !== undefined) {
-    horizontalLine.style.right = cornerLineStyles.horizontalLine.right
-  }
-  if (cornerLineStyles.horizontalLine.top !== undefined) {
-    horizontalLine.style.top = cornerLineStyles.horizontalLine.top
-  }
-  if (cornerLineStyles.horizontalLine.bottom !== undefined) {
-    horizontalLine.style.bottom = cornerLineStyles.horizontalLine.bottom
+  const fill = group.getObjectByName(SELECTION_BOX_FILL)
+  if (fill instanceof Mesh && fill.geometry instanceof BufferGeometry) {
+    fill.geometry.setAttribute(
+      'position',
+      new Float32BufferAttribute(
+        [
+          ...positions.slice(0, 9),
+          ...positions.slice(0, 3),
+          ...positions.slice(6, 12),
+        ],
+        3
+      )
+    )
+    fill.geometry.computeBoundingSphere()
   }
 }
 
@@ -605,12 +408,9 @@ export function updateSelectionBox({
     renderer.domElement.clientHeight
   )
 
-  const properties = calculateSelectionBoxProperties(
-    startPoint3D,
-    currentPoint3D,
-    camera,
-    viewportSize
-  )
+  const startPx = project3DToScreen(startPoint3D, camera, viewportSize)
+  const currentPx = project3DToScreen(currentPoint3D, camera, viewportSize)
+  const isIntersectionBox = isIntersectionSelectionMode(startPx, currentPx)
 
   const sketchSceneObject = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   const sketchSceneGroup =
@@ -622,78 +422,121 @@ export function updateSelectionBox({
     newSelectionBoxGroup.userData.type = 'selectionBox'
     selectionBoxState.setSelectionBoxGroup(newSelectionBoxGroup)
 
-    const elements = createSelectionBoxElements(properties.borderStyle)
-    selectionBoxState.setBoxDiv(elements.boxDiv)
-    selectionBoxState.setVerticalLine(elements.verticalLine)
-    selectionBoxState.setHorizontalLine(elements.horizontalLine)
+    const resolvedTheme = getResolvedTheme(sceneInfra.theme) ?? Themes.Light
+    const selectionBoxColor = SELECTION_BOX_COLORS[resolvedTheme]
+    const fill = new Mesh(
+      new BufferGeometry(),
+      new MeshBasicMaterial({
+        color: resolvedTheme === Themes.Dark ? 0xffffff : 0x000000,
+        transparent: true,
+        opacity: resolvedTheme === Themes.Dark ? 0.1 : 0.05,
+        depthTest: false,
+        depthWrite: false,
+        side: DoubleSide,
+      })
+    )
+    fill.name = SELECTION_BOX_FILL
+    fill.renderOrder = SELECTION_BOX_RENDER_ORDER
+    const outline = new Line2(
+      new LineGeometry(),
+      new LineMaterial({
+        color: selectionBoxColor,
+        linewidth: AREA_SELECT_BORDER_WIDTH * window.devicePixelRatio,
+        worldUnits: false,
+        dashed: isIntersectionBox,
+        dashSize: AREA_SELECT_DASH_SIZE_PX,
+        gapSize: AREA_SELECT_GAP_SIZE_PX,
+        depthTest: false,
+        depthWrite: false,
+        resolution: viewportSize,
+      })
+    )
+    outline.name = SELECTION_BOX_OUTLINE
+    outline.renderOrder = SELECTION_BOX_RENDER_ORDER + 1
+    const tail = new Line2(
+      new LineGeometry(),
+      new LineMaterial({
+        color: selectionBoxColor,
+        linewidth: AREA_SELECT_BORDER_WIDTH * window.devicePixelRatio,
+        worldUnits: false,
+        depthTest: false,
+        depthWrite: false,
+        resolution: viewportSize,
+      })
+    )
+    tail.name = SELECTION_BOX_TAIL
+    tail.renderOrder = SELECTION_BOX_RENDER_ORDER + 1
+    newSelectionBoxGroup.add(fill, outline, tail)
+    newSelectionBoxGroup.traverse((child) => {
+      child.layers.set(SKETCH_LAYER)
+    })
+
+    const elements = createSelectionBoxElements()
     selectionBoxState.setLabelsWrapper(elements.labelsWrapper)
 
-    const newSelectionBoxObject = new CSS2DObject(elements.boxDiv)
+    const newSelectionBoxObject = new CSS2DObject(elements.labelAnchor)
     newSelectionBoxObject.userData.type = 'selectionBox'
     selectionBoxState.setSelectionBoxObject(newSelectionBoxObject)
     selectionBoxState.getSelectionBoxGroup()?.add(newSelectionBoxObject)
 
     if (sketchSceneGroup) {
-      sketchSceneGroup.add(selectionBoxState.getSelectionBoxGroup()!)
-      selectionBoxState.getSelectionBoxGroup()!.layers.set(SKETCH_LAYER)
+      sketchSceneGroup.add(newSelectionBoxGroup)
+      newSelectionBoxGroup.layers.set(SKETCH_LAYER)
       newSelectionBoxObject.layers.set(SKETCH_LAYER)
     }
   }
 
   const currentSelectionBoxObject = selectionBoxState.getSelectionBoxObject()
   if (currentSelectionBoxObject?.element instanceof HTMLElement) {
-    const localCenter = transformToLocalSpace(
-      properties.center3D,
-      sketchSceneGroup
+    const localStart = transformToLocalSpace(startPoint3D, sketchSceneGroup)
+    const localCurrent = transformToLocalSpace(currentPoint3D, sketchSceneGroup)
+    const corners = calculateSelectionRectangleCorners(localStart, localCurrent)
+    const worldCorners = corners.map((corner) => {
+      const worldCorner = corner.clone()
+      if (sketchSceneGroup) sketchSceneGroup.localToWorld(worldCorner)
+      return worldCorner
+    }) as [Vector3, Vector3, Vector3, Vector3]
+    const projectedCorners = worldCorners.map((corner) =>
+      project3DToScreen(corner, camera, viewportSize)
+    ) as [Vector2, Vector2, Vector2, Vector2]
+    const localUnitsPerScreenPixel = calculateLocalUnitsPerScreenPixel(
+      corners,
+      projectedCorners
     )
-    updateSelectionBoxPosition(currentSelectionBoxObject, localCenter)
-
-    const boxDivElement = selectionBoxState.getBoxDiv()
-    if (boxDivElement) {
-      updateSelectionBoxSizeAndBorder(
-        boxDivElement,
-        properties.widthPx,
-        properties.heightPx,
-        properties.borderStyle
+    const startEdgeEndWorld = corners[3].clone()
+    if (sketchSceneGroup) {
+      sketchSceneGroup.localToWorld(startEdgeEndWorld)
+    }
+    const projectedStartEdgeEnd = project3DToScreen(
+      startEdgeEndWorld,
+      camera,
+      viewportSize
+    )
+    const tailEndpoint = calculateSelectionTailEndpoint(
+      localStart,
+      localCurrent,
+      startPx,
+      projectedStartEdgeEnd
+    )
+    const group = selectionBoxState.getSelectionBoxGroup()
+    if (group) {
+      updateSelectionBoxGeometry(
+        group,
+        corners,
+        tailEndpoint,
+        isIntersectionBox,
+        viewportSize,
+        localUnitsPerScreenPixel
       )
     }
 
-    const labelPositioning = calculateLabelPositioning(
-      properties.startPx,
-      properties.boxMinPx,
-      properties.boxMaxPx,
-      properties.isDraggingUpward
-    )
+    currentSelectionBoxObject.position.copy(tailEndpoint)
 
-    const labelStyles = calculateLabelStyles(properties.isIntersectionBox)
+    const labelStyles = calculateLabelStyles(isIntersectionBox)
     const currentLabelsWrapper = selectionBoxState.getLabelsWrapper()
     if (currentLabelsWrapper) {
       updateLabelStylesInDom(currentLabelsWrapper, labelStyles)
-      updateLabelPosition(
-        currentLabelsWrapper,
-        labelPositioning.startX,
-        labelPositioning.finalOffsetY
-      )
-    }
-
-    const cornerLineStyles = calculateCornerLineStyles(
-      labelPositioning.startX,
-      labelPositioning.startY,
-      LINE_EXTENSION_SIZE,
-      AREA_SELECT_BORDER_WIDTH
-    )
-
-    const currentVerticalLine = selectionBoxState.getVerticalLine()
-    const currentHorizontalLine = selectionBoxState.getHorizontalLine()
-    if (
-      currentVerticalLine instanceof HTMLElement &&
-      currentHorizontalLine instanceof HTMLElement
-    ) {
-      updateCornerLinePositions(
-        currentVerticalLine,
-        currentHorizontalLine,
-        cornerLineStyles
-      )
+      currentLabelsWrapper.style.transform = 'translate(-50%, -50%)'
     }
   }
 }
@@ -704,6 +547,18 @@ export function removeSelectionBox(
   const currentSelectionBoxGroup = selectionBoxState.getSelectionBoxGroup()
   if (currentSelectionBoxGroup) {
     currentSelectionBoxGroup.removeFromParent()
+    currentSelectionBoxGroup.traverse((child) => {
+      if (child instanceof Mesh || child instanceof Line2) {
+        child.geometry.dispose()
+        if (isArray(child.material)) {
+          child.material.forEach((material) => {
+            if (material instanceof Material) material.dispose()
+          })
+        } else {
+          child.material.dispose()
+        }
+      }
+    })
     const currentSelectionBoxObject = selectionBoxState.getSelectionBoxObject()
     if (currentSelectionBoxObject?.element instanceof HTMLElement) {
       currentSelectionBoxObject.element.remove()
@@ -711,9 +566,6 @@ export function removeSelectionBox(
     selectionBoxState.setSelectionBoxGroup(null)
     selectionBoxState.setSelectionBoxObject(null)
     selectionBoxState.setLabelsWrapper(null)
-    selectionBoxState.setBoxDiv(null)
-    selectionBoxState.setVerticalLine(null)
-    selectionBoxState.setHorizontalLine(null)
   }
 }
 

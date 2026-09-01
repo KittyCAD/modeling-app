@@ -92,6 +92,7 @@ export interface Fixtures {
   copilot: CopilotFixture
   fs: ReturnType<typeof FsFixture>
   nativeMenu: NativeMenuFixture
+  enableMousePositionLogs: () => Promise<void>
   folderSetupFn: (
     cb: (dir: string) => Promise<void>
   ) => Promise<{ dir: string }>
@@ -460,6 +461,14 @@ const fixturesBasedOnProcessEnvPlatform = {
   },
   nativeMenu: async ({ tronApp }: { tronApp?: ElectronZoo }, use: FnUse) => {
     await use(new NativeMenuFixture(tronApp))
+  },
+  enableMousePositionLogs: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(async () => {
+      await page.waitForFunction(
+        () => typeof window.enableMousePositionLogs === 'function'
+      )
+      await page.evaluate(() => window.enableMousePositionLogs?.())
+    })
   },
   folderSetupFn: async (
     {
