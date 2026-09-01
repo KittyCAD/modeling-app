@@ -275,6 +275,7 @@ export const sketchSolveMachine = setup({
     setUpOnDragAndSelectionClickCallbacks,
     'clear hover callbacks': clearHoverCallbacks,
     'cleanup sketch solve group': ({ context }) => {
+      context.sceneEntitiesManager.removeSketchGrid()
       cleanupSketchSolveGroup(context.sceneInfra)
     },
     'send unequip to tool': ({ context }) => {

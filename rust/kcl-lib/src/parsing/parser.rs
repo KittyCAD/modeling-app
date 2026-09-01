@@ -604,7 +604,7 @@ fn annotation(i: &mut TokenSlice) -> ModalResult<Node<Annotation>> {
             .find(|property| property.key.name == annotations::IMPORT_TARGET_REPRESENTATION)
     }) {
         ParseContext::experimental(
-            "the `targetRepresentation` import annotation",
+            "the `targetRepresentation` import attribute",
             property.as_source_range(),
         );
     }

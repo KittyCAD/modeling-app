@@ -38,7 +38,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v23
+        uses: dawidd6/action-download-artifact@v24
         continue-on-error: true
         with:
           name: prepared-wasm

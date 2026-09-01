@@ -71,7 +71,7 @@ impl ResponseContext {
     }
 
     pub async fn send_response(&self, data: js_sys::Uint8Array) {
-        let ws_result: WebSocketResponse = match rmp_serde::from_slice(&data.to_vec()) {
+        let ws_result: WebSocketResponse = match kcl_engine_codec::deserialize_response_msgpack(&data.to_vec()) {
             Ok(res) => res,
             Err(_) => return,
         };
@@ -118,7 +118,7 @@ impl WasmTransport {
                 vec![source_range],
             ))
         })?;
-        let cmd_str = serde_json::to_string(cmd).map_err(|e| {
+        let cmd_str = kcl_engine_codec::serialize_request_json(cmd).map_err(|e| {
             KclError::new_engine(KclErrorDetails::new(
                 format!("Failed to serialize modeling command: {:?}", e),
                 vec![source_range],
@@ -218,12 +218,13 @@ impl EngineTransport for WasmTransport {
         }
 
         let data = js_sys::Uint8Array::from(value);
-        let ws_result: WebSocketResponse = rmp_serde::from_slice(&data.to_vec()).map_err(|e| {
-            KclError::new_engine(KclErrorDetails::new(
-                format!("Failed to deserialize msgpack response from engine: {:?}", e),
-                vec![source_range],
-            ))
-        })?;
+        let ws_result: WebSocketResponse =
+            kcl_engine_codec::deserialize_response_msgpack(&data.to_vec()).map_err(|e| {
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to deserialize msgpack response from engine: {:?}", e),
+                    vec![source_range],
+                ))
+            })?;
 
         Ok(ws_result)
     }

@@ -1215,10 +1215,30 @@ impl ExecutorContext {
                         break;
                     }
                     let value = value_cf.into_value();
+                    if exec_state.use_kcl_v3_control_flow() {
+                        // KCL 3.0: early return. The value unwinds as control
+                        // flow to the nearest function-call boundary, which
+                        // absorbs it; see call_finish.
+                        last_expr = Some(value.return_());
+                        break;
+                    }
                     Self::bind_return_value(return_statement, value, exec_state)?;
                     last_expr = None;
                 }
             }
+        }
+
+        // A Return can reach a root block only by escaping an expression
+        // evaluated at the top level (e.g. an if-arm); a `return` statement
+        // here is rejected above before it evaluates.
+        if matches!(body_type, BodyType::Root)
+            && let Some(cf) = &last_expr
+            && cf.is_return()
+        {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot return from outside a function.".to_owned(),
+                cf.source_ranges(),
+            )));
         }
 
         if matches!(body_type, BodyType::Root) {
@@ -1669,11 +1689,12 @@ impl ExecutorContext {
     }
 
     /// Record a return statement's evaluated value as the function result
-    /// (`__return`). NOTE: deliberately does NOT stop the enclosing block --
-    /// statements after a `return` still execute, exactly like the historical
-    /// behavior (see the ReturnStatement arm of exec_block); a second
-    /// executed `return` is the "Multiple returns" error. Shared by both
-    /// executors.
+    /// (`__return`). This is the pre-KCL-3.0 `return` semantics: it
+    /// deliberately does NOT stop the enclosing block -- statements after a
+    /// `return` still execute, exactly like the historical behavior (see the
+    /// ReturnStatement arm of exec_block); a second executed `return` is the
+    /// "Multiple returns" error. Under KCL 3.0, this is never called; `return`
+    /// unwinds as `Return` control flow instead. Shared by both executors.
     pub(super) fn bind_return_value(
         return_statement: &Node<ReturnStatement>,
         value: KclValue,

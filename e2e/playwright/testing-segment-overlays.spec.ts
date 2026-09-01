@@ -6,8 +6,12 @@ import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { deg, getUtils, wiggleMove } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 
 test.describe('Testing segment overlays', { tag: '@desktop' }, () => {
+  // These sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+
   test.describe('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it', () => {
     /**
      * Clicks on an constrained element
