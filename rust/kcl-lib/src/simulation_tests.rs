@@ -5,6 +5,14 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::each_cmd as mcmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::units::UnitArea;
+use kittycad_modeling_cmds::units::UnitDensity;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::units::UnitMass;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::websocket::WebSocketResponse;
 use uuid::Uuid;
 
@@ -44,12 +52,15 @@ struct Test {
     /// True to skip asserting the artifact graph and only write it. The default
     /// is false and to assert it.
     skip_assert_artifact_graph: bool,
+    /// Whether a successful execution should snapshot physical properties.
+    snapshot_physical_properties: bool,
     /// If set, assert that execution emits exactly this many deprecation warnings.
     expected_deprecation_warnings: Option<usize>,
 }
 
 const REPO_ROOT: &str = "../..";
 const KCL_SAMPLE_DEPRECATION_VERSION: &str = "2.0";
+const MATERIAL_DENSITY_KG_PER_CUBIC_METER: f64 = 1000.0;
 
 fn is_writing() -> bool {
     matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
@@ -63,8 +74,14 @@ impl Test {
             input_dir: Path::new("tests").join(name),
             output_dir: Path::new("tests").join(name),
             skip_assert_artifact_graph: false,
+            snapshot_physical_properties: true,
             expected_deprecation_warnings: None,
         }
+    }
+
+    fn without_physical_properties(mut self) -> Self {
+        self.snapshot_physical_properties = false;
+        self
     }
 
     /// Read in the entry point file and return its contents as a string.
@@ -283,6 +300,105 @@ async fn execute(test_name: &str, render_to_png: bool) {
     execute_test(&Test::new(test_name), render_to_png, false).await
 }
 
+async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value> {
+    // Ask for mass first because it returns "Nothing to export" without
+    // closing the engine connection when a successful KCL program produces no
+    // physical body. Bounding box requests close empty-scene connections.
+    let mass_response = match ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            crate::SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::Mass::builder()
+                    .material_density(MATERIAL_DENSITY_KG_PER_CUBIC_METER)
+                    .material_density_unit(UnitDensity::KilogramsPerCubicMeter)
+                    .output_unit(UnitMass::Grams)
+                    .build(),
+            ),
+        )
+        .await
+    {
+        Ok(response) => response,
+        Err(err)
+            if err.message() == "Nothing to export"
+                // Surface bodies have area and bounds, but no volume from
+                // which the engine can calculate mass.
+                || err.message() == "internal error: unknown" =>
+        {
+            return None;
+        }
+        Err(err) => panic!("simulation test should measure the model mass: {err}"),
+    };
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Mass(mass),
+    } = mass_response
+    else {
+        panic!("Expected a mass response, got {mass_response:?}");
+    };
+
+    let bounding_box_response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            crate::SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::BoundingBox::builder()
+                    .output_unit(UnitLength::Millimeters)
+                    .build(),
+            ),
+        )
+        .await
+        .expect("simulation test should measure the model bounding box");
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::BoundingBox(bounding_box),
+    } = bounding_box_response
+    else {
+        panic!("Expected a bounding box response, got {bounding_box_response:?}");
+    };
+
+    let surface_area_response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            crate::SourceRange::default(),
+            &ModelingCmd::from(
+                mcmd::SurfaceArea::builder()
+                    .output_unit(UnitArea::SquareMillimeters)
+                    .build(),
+            ),
+        )
+        .await
+        .expect("simulation test should measure the model surface area");
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::SurfaceArea(surface_area),
+    } = surface_area_response
+    else {
+        panic!("Expected a surface area response, got {surface_area_response:?}");
+    };
+
+    Some(serde_json::json!({
+        "bounding_box": {
+            "center": bounding_box.center,
+            "dimensions": bounding_box.dimensions,
+            "unit": UnitLength::Millimeters,
+        },
+        "weight": {
+            "value": mass.mass,
+            "unit": mass.output_unit,
+            "material_density": MATERIAL_DENSITY_KG_PER_CUBIC_METER,
+            "material_density_unit": UnitDensity::KilogramsPerCubicMeter,
+        },
+        "surface_area": {
+            "value": surface_area.surface_area,
+            "unit": surface_area.output_unit,
+        },
+    }))
+}
+
 async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
@@ -290,7 +406,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
     // Run the program.
     let exec_res = execute_with_retries(&RetryConfig::default(), || {
-        crate::test_server::execute_and_snapshot_ast(
+        crate::test_server::execute_and_snapshot_ast_no_close(
             ast.clone(),
             Some(test.entry_point.clone()),
             export_step,
@@ -384,8 +500,31 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
             let (outcome, module_state, responses) =
                 exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
+            let physical_properties = if test.snapshot_physical_properties {
+                physical_properties(&ctx).await
+            } else {
+                None
+            };
+            ctx.close().await;
 
-            let snapshot_results = common_snapshots(test, outcome.variables, responses);
+            let mut snapshot_results = common_snapshots(test, outcome.variables, responses);
+            if let Some(physical_properties) = physical_properties {
+                snapshot_results.push(catch_unwind(AssertUnwindSafe(|| {
+                    assert_snapshot(test, "Physical properties", || {
+                        insta::assert_json_snapshot!("physical_properties", physical_properties)
+                    })
+                })));
+            } else {
+                let physical_properties_snap_path = test.output_dir.join("physical_properties.snap");
+                if is_writing() {
+                    let _ = std::fs::remove_file(&physical_properties_snap_path);
+                } else if physical_properties_snap_path.exists() {
+                    panic!(
+                        "This test case produced no physical model, but it previously did. If this is intended, delete kcl-lib/{}.",
+                        physical_properties_snap_path.to_string_lossy()
+                    );
+                }
+            }
 
             assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
 
@@ -2141,7 +2280,7 @@ mod mike_stress_test {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
+        super::execute_test(&super::Test::new(TEST_NAME).without_physical_properties(), true, false).await
     }
 }
 mod pentagon_fillet_sugar {
@@ -7631,6 +7770,27 @@ mod early_return_cross_module {
 }
 mod early_return_geometry {
     const TEST_NAME: &str = "early_return_geometry";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod clone_a_blend {
+    const TEST_NAME: &str = "clone_a_blend";
 
     /// Test parsing KCL.
     #[test]

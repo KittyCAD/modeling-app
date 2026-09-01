@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties helium-tank.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 1.3101052611927455,
+      "y": 1.968500000000006,
+      "z": 368.69999999999993
+    },
+    "dimensions": {
+      "x": 288.75789474941917,
+      "y": 288.75789474941917,
+      "z": 837.3999999999999
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 799394.0078724644
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1458.594943377971
+  }
+}

@@ -92,7 +92,7 @@ export function prepareProjectFilesForCloudUpload(
   }
   if (
     typeof optionsOrExpectedRevision !== 'string' &&
-    optionsOrExpectedRevision?.deletedPaths
+    optionsOrExpectedRevision?.deletedPaths?.length
   ) {
     body.deleted_paths = Array.from(
       new Set(optionsOrExpectedRevision.deletedPaths.map(normalizeRelativePath))

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties router-template-slate.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.0003125000003123546,
+      "y": -47.18499999999999,
+      "z": -47.18499999999999
+    },
+    "dimensions": {
+      "x": 61.500625000000625,
+      "y": 150.61,
+      "z": 150.61
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 23474.541908353076
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 49.74584564898521
+  }
+}
