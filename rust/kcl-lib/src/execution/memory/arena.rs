@@ -246,18 +246,30 @@ pub(crate) struct Stack {
     call_stack: Vec<EnvironmentRef>,
 }
 
+/// An environment's own deferred obligation to its parent, executed when the
+/// environment is popped. This does not describe the overall pinning policy:
+/// a call frame's parent is pinned eagerly by the snapshot taken at closure
+/// creation, and `push_new_env_for_scope`'s parent is pinned eagerly by the
+/// snapshot at push, so both carry `None` here.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ParentPin {
+    /// This environment never pins its parent itself.
+    None,
+    /// Mark the parent as possibly-referenced when this environment is
+    /// popped, iff this environment itself might be referenced by then (e.g.
+    /// a closure was declared inside it). Used for block scopes (KCL 3.0
+    /// if-arm bodies; see `push_new_env_for_block`) so that an unreferenced
+    /// block doesn't pin its enclosing frame in memory.
+    OnPopIfRefed,
+}
+
 #[derive(Debug)]
 struct Environment {
     bindings: IndexMap<String, (usize, KclValue)>,
     // An outer scope, if one exists.
     parent: Option<EnvironmentRef>,
     might_be_refed: bool,
-    // True for block-scope environments (e.g. KCL 3.0 if-arm bodies): the
-    // parent is not marked as possibly-referenced at creation. Instead, popping
-    // this env marks the parent only if this env itself might be referenced by
-    // then (e.g. a closure was declared inside it). An unreferenced block thus
-    // doesn't pin its enclosing frame in memory.
-    pins_parent_when_refed: bool,
+    parent_pin: ParentPin,
     // The id of the `Stack` if this `Environment` is on a call stack. If this is >0 then it may
     // only be read or written by that `Stack`; if 0 then the env is read-only.
     owner: usize,
@@ -487,7 +499,7 @@ impl ProgramMemory {
         &self,
         parent: Option<EnvironmentRef>,
         is_root_env: bool,
-        pins_parent_when_refed: bool,
+        parent_pin: ParentPin,
         owner: usize,
         op: &str,
     ) -> Result<EnvironmentRef, KclError> {
@@ -499,7 +511,7 @@ impl ProgramMemory {
         envs.push(Arc::new(RwLock::new(Environment::new_checked(
             parent,
             is_root_env,
-            pins_parent_when_refed,
+            parent_pin,
             owner,
             op,
         )?)));
@@ -521,8 +533,8 @@ impl ProgramMemory {
         // A block-scope env that might be referenced keeps its parent chain
         // alive: mark the parent now, deferred from the block's creation so
         // that unreferenced blocks don't pin their enclosing frame (see
-        // `pins_parent_when_refed`).
-        if env.pins_parent_when_refed
+        // `ParentPin::OnPopIfRefed`).
+        if env.parent_pin == ParentPin::OnPopIfRefed
             && env.might_be_refed
             && let Some(parent) = env.parent
         {
@@ -610,9 +622,13 @@ impl Stack {
     /// `parent` is the environment where the function being called is declared (not the caller's
     /// environment, which is probably `self.current_env`).
     pub fn push_new_env_for_call(&mut self, parent: EnvironmentRef) -> Result<(), KclError> {
-        let env_ref = self
-            .memory
-            .new_env_checked(Some(parent), false, false, self.id, "pushing a call environment")?;
+        let env_ref = self.memory.new_env_checked(
+            Some(parent),
+            false,
+            ParentPin::None,
+            self.id,
+            "pushing a call environment",
+        )?;
         self.call_stack.push(self.current_env);
         self.current_env = env_ref;
         Ok(())
@@ -644,9 +660,13 @@ impl Stack {
         let prev_epoch = self.memory.epoch.fetch_add(1, Ordering::Relaxed);
         let parent = EnvironmentRef::at_epoch(self.current_env.index(), prev_epoch);
 
-        let env_ref = self
-            .memory
-            .new_env_checked(Some(parent), false, true, self.id, "pushing a block environment")?;
+        let env_ref = self.memory.new_env_checked(
+            Some(parent),
+            false,
+            ParentPin::OnPopIfRefed,
+            self.id,
+            "pushing a block environment",
+        )?;
         self.call_stack.push(self.current_env);
         self.current_env = env_ref;
         Ok(())
@@ -667,9 +687,9 @@ impl Stack {
         } else {
             None
         };
-        let env_ref = self
-            .memory
-            .new_env_checked(parent, true, false, self.id, "pushing a root environment")?;
+        let env_ref =
+            self.memory
+                .new_env_checked(parent, true, ParentPin::None, self.id, "pushing a root environment")?;
         self.call_stack.push(self.current_env);
         self.current_env = env_ref;
         Ok(())
@@ -738,7 +758,9 @@ impl Stack {
             env.read_only();
             // A preserved env stays alive by definition, so honor a block env's
             // deferred parent pin unconditionally.
-            let parent_to_pin = env.pins_parent_when_refed.then_some(env.parent).flatten();
+            let parent_to_pin = (env.parent_pin == ParentPin::OnPopIfRefed)
+                .then_some(env.parent)
+                .flatten();
             drop(env);
             if let Some(parent) = parent_to_pin {
                 let parent_cell = self
@@ -1077,7 +1099,7 @@ impl Environment {
             bindings: self.bindings.clone(),
             parent: self.parent,
             might_be_refed: self.might_be_refed,
-            pins_parent_when_refed: self.pins_parent_when_refed,
+            parent_pin: self.parent_pin,
             owner: 0,
         })
     }
@@ -1087,7 +1109,7 @@ impl Environment {
     fn new_checked(
         parent: Option<EnvironmentRef>,
         might_be_refed: bool,
-        pins_parent_when_refed: bool,
+        parent_pin: ParentPin,
         owner: usize,
         op: &str,
     ) -> Result<Self, KclError> {
@@ -1104,7 +1126,7 @@ impl Environment {
             bindings: IndexMap::new(),
             parent,
             might_be_refed,
-            pins_parent_when_refed,
+            parent_pin,
             owner,
         })
     }
@@ -1114,7 +1136,7 @@ impl Environment {
             bindings: IndexMap::new(),
             parent: None,
             might_be_refed: false,
-            pins_parent_when_refed: false,
+            parent_pin: ParentPin::None,
             owner: 0,
         }
     }
