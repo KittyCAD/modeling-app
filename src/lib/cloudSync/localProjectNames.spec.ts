@@ -4,6 +4,7 @@ import {
   configureCloudSyncLocalFileSystem,
   deleteCloudSyncDuplicateProjectRealizations,
   deleteCloudSyncLocalProjectRealizations,
+  disableCloudSyncEngineForTest,
   ensureCloudProjectLocallySynced,
   getCloudSyncProjectMetadata,
   scheduleCloudProjectDirectoryNameSyncFromTitles,
@@ -185,7 +186,7 @@ describe('cloud sync local project names', () => {
   })
 
   afterEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     configureCloudSyncLocalFileSystem(
       createCloudSyncTestFs(new Map(), { projectDirectory })
     )

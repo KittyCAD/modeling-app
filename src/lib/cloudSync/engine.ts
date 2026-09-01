@@ -148,6 +148,7 @@ let config: CloudSyncConfig = {
 }
 let syncTimer: ReturnType<typeof setTimeout> | undefined
 let syncInProgress = false
+const syncIdleWaiters = new Set<() => void>()
 let syncRetryAttempt = 0
 let lastRemoteIndexSyncAt = 0
 let initialLocalScanComplete = false
@@ -3597,6 +3598,10 @@ async function runCloudSync() {
     failureRetryScheduled = true
   } finally {
     syncInProgress = false
+    for (const resolve of syncIdleWaiters) {
+      resolve()
+    }
+    syncIdleWaiters.clear()
     pendingStatusSyncedAt = undefined
     if (
       shouldScheduleCloudSyncPendingWork({
@@ -4170,6 +4175,25 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
   )
   void refreshPendingCount()
   scheduleSync(0)
+}
+
+/**
+ * Test-only teardown boundary. Cancel future work, then wait for an already
+ * running sync cycle to stop using shared filesystem and IndexedDB state.
+ */
+export async function disableCloudSyncEngineForTest() {
+  configureCloudSyncEngine({ enabled: false })
+  if (!syncInProgress) {
+    return
+  }
+
+  await new Promise<void>((resolve) => {
+    syncIdleWaiters.add(resolve)
+    if (!syncInProgress) {
+      syncIdleWaiters.delete(resolve)
+      resolve()
+    }
+  })
 }
 
 export function retryCloudSyncEngine() {
