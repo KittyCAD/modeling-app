@@ -389,7 +389,7 @@ export async function updateRemoteProject({
   files,
   expectedRevision,
   entrypointPath,
-  deletedPaths = [],
+  deletedPaths,
 }: {
   config: CloudSyncConfig
   projectPath: string
