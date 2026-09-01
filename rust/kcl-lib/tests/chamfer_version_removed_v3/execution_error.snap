@@ -1,0 +1,28 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing chamfer_version_removed_v3.kcl
+---
+KCL Semantic error
+
+  × semantic: The version parameter has been removed as of KCL 3.0. The newest
+  │ chamfer algorithm is always used; remove the argument.
+    ╭─[12:85]
+ 11 │ box = extrude(boxSketch, length = 5)
+ 12 │ chamfered = chamfer(box, length = 1, tags = [getNextAdjacentEdge(edge1)], version = 2)
+    ·                                                                                     ┬
+    ·                                                                                     ╰── tests/chamfer_version_removed_v3/input.kcl
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: The version parameter has been removed as of KCL 3.0. The
+        │ newest chamfer algorithm is always used; remove the argument.
+          ╭─[12:13]
+       11 │ box = extrude(boxSketch, length = 5)
+       12 │ chamfered = chamfer(box, length = 1, tags =
+      [getNextAdjacentEdge(edge1)], version = 2)
+          ·
+      ─────────────────────────────────────┬──────────────────────────────────
+      ──
+          ·                                                  ╰── tests/
+      chamfer_version_removed_v3/input.kcl
+          ╰────

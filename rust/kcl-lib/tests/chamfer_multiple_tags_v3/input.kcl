@@ -1,0 +1,21 @@
+// Under KCL 3.0, chamfering multiple edges cuts them all at once in a
+// single engine command, without needing to opt in via a version argument.
+@settings(kclVersion = "3.0-preview")
+
+mountingPlateSketch = startSketchOn(XY)
+  |> startProfile(at = [-10, -10])
+  |> line(endAbsolute = [10, -10], tag = $edge1)
+  |> line(endAbsolute = [10, 10], tag = $edge2)
+  |> line(endAbsolute = [-10, 10], tag = $edge3)
+  |> close(tag = $edge4)
+
+mountingPlate = extrude(mountingPlateSketch, length = 4)
+  |> chamfer(
+       length = 2,
+       tags = [
+         getNextAdjacentEdge(edge1),
+         getNextAdjacentEdge(edge2),
+         getNextAdjacentEdge(edge3),
+         getNextAdjacentEdge(edge4)
+       ],
+     )
