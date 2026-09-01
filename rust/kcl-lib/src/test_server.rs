@@ -110,7 +110,8 @@ pub async fn execute_and_snapshot_ast(
 }
 
 /// Executes a KCL program and takes a snapshot without closing the engine
-/// connection. The caller must close the returned context.
+/// connection. If OK, the caller must close the returned context.
+/// If Err, the context will already be closed within this function.
 #[cfg(test)]
 pub async fn execute_and_snapshot_ast_no_close(
     ast: Program,
