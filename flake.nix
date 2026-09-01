@@ -102,7 +102,7 @@
         pkgs,
         system,
       }: let
-        cargoToml = builtins.fromTOML (builtins.readFile ./rust/kcl-language-server/Cargo.toml);
+        cargoToml = builtins.fromTOML (builtins.readFile ./rust/kcl-lsp-server/Cargo.toml);
         rustPlatform = pkgs.makeRustPlatform {
           cargo = pkgs.rustToolchain;
           rustc = pkgs.rustToolchain;

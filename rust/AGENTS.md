@@ -8,7 +8,9 @@ This file applies to Rust development under `rust/`. It supplements the repo roo
 
 `rust/` contains the Rust crates that power KCL and related tooling, including:
 - `kcl-lib` (core language and stdlib)
-- `kcl-language-server` (LSP server + VSCode extension)
+- `kcl-lsp-server` (Rust LSP server)
+- `kcl-lsp-client-vscode` (VS Code TypeScript client)
+- `kcl-lsp-client-zed` (Zed extension)
 - `kcl-python-bindings` (PyO3 bindings)
 
 ## Dev environment tips
@@ -27,7 +29,8 @@ This file applies to Rust development under `rust/`. It supplements the repo roo
 ## Build and test
 
 - Many tests require an API token. If `ZOO_API_TOKEN` isn't already defined as an environment variable, ask to have the tests run with the token.
-- Build the LSP (from `rust/kcl-language-server`): `npm install` then `cargo build`.
+- Build the LSP server from `rust/kcl-lsp-server` with `cargo build`.
+- Build the VS Code client from `rust/kcl-lsp-client-vscode` with `npm install` then `npm run build`.
 - Run KCL snapshot tests (requires a Zoo dev token):
   - `export ZOO_API_TOKEN=your-token-here`
   - `TWENTY_TWENTY=update cargo nextest run --workspace --no-fail-fast`

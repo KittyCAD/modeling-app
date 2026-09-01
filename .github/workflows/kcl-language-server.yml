@@ -7,7 +7,9 @@ on:
       - "**/Cargo.toml"
       - "**/Cargo.lock"
       - "**/rust-toolchain.toml"
-      - "rust/kcl-language-server/**"
+      - "rust/kcl-lsp-server/**"
+      - "rust/kcl-lsp-client-vscode/**"
+      - "rust/kcl-lsp-client-zed/**"
       - "**.rs"
       - .github/workflows/kcl-language-server.yml
       - .github/ci-cd-scripts/verify-rust-cache-writable.sh
@@ -18,7 +20,9 @@ on:
       - "**/Cargo.toml"
       - "**/Cargo.lock"
       - "**/rust-toolchain.toml"
-      - "rust/kcl-language-server/**"
+      - "rust/kcl-lsp-server/**"
+      - "rust/kcl-lsp-client-vscode/**"
+      - "rust/kcl-lsp-client-zed/**"
       - "**.rs"
       - .github/workflows/kcl-language-server.yml
       - .github/ci-cd-scripts/verify-rust-cache-writable.sh
@@ -60,14 +64,14 @@ jobs:
           npm install
       - name: Run tests
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npm run build
           npm run test-compile
           xvfb-run -a npm run test
         if: runner.os == 'Linux'
       - name: Run tests
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npm run test
         if: runner.os != 'Linux'
   zed-extension:
@@ -81,9 +85,9 @@ jobs:
         with:
           target: wasm32-wasip2
       - name: Test extension logic
-        run: cargo test --manifest-path rust/kcl-language-server/zed/Cargo.toml
+        run: cargo test --manifest-path rust/kcl-lsp-client-zed/Cargo.toml
       - name: Check Zed WebAssembly build
-        run: cargo check --manifest-path rust/kcl-language-server/zed/Cargo.toml --target wasm32-wasip2
+        run: cargo check --manifest-path rust/kcl-lsp-client-zed/Cargo.toml --target wasm32-wasip2
   build-release:
     strategy:
       fail-fast: false
@@ -185,35 +189,35 @@ jobs:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
-          cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
+          cargo kcl-lsp-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
       - name: Install dependencies
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npm install --ignore-scripts
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npx vsce package --no-dependencies -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }}
       - name: Package Extension (nightly)
         if: startsWith(github.event.ref, 'refs/tags/') == false
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npx vsce package --no-dependencies -o "../build/kcl-language-server-${{ matrix.code-target }}.vsix" --target ${{ matrix.code-target }} --pre-release
       - name: remove server
         if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           rm -rf server
       - name: Package Extension (no server, release)
         if: matrix.target == 'x86_64-unknown-linux-gnu' && startsWith(github.event.ref, 'refs/tags/')
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npx vsce package --no-dependencies -o ../build/kcl-language-server-no-server.vsix
       - name: Package Extension (no server, nightly)
         if: matrix.target == 'x86_64-unknown-linux-gnu' && startsWith(github.event.ref, 'refs/tags/') == false
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npx vsce package --no-dependencies -o ../build/kcl-language-server-no-server.vsix --pre-release
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
@@ -283,20 +287,20 @@ jobs:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           cd rust
-          cargo kcl-language-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
+          cargo kcl-lsp-server-release build --client-patch-version "${GITHUB_RUN_NUMBER}"
       - name: Install dependencies
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npm install --ignore-scripts
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/')
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npx vsce package --no-dependencies -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64
       - name: Package Extension (release)
         if: startsWith(github.event.ref, 'refs/tags/') == false
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npx vsce package --no-dependencies -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
@@ -386,10 +390,10 @@ jobs:
       - name: Publish Extension (Code Marketplace, release)
         # token from https://dev.azure.com/kcl-language-server/
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npx vsce publish --pat ${{ secrets.VSCE_PAT }} --packagePath ../build/kcl-language-server-*.vsix
       - name: Publish Extension (OpenVSX, release)
         run: |
-          cd rust/kcl-language-server
+          cd rust/kcl-lsp-client-vscode
           npx ovsx publish --pat ${{ secrets.OPENVSX_TOKEN }} --packagePath ../build/kcl-language-server-*.vsix
         timeout-minutes: 2

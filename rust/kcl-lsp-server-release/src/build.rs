@@ -33,7 +33,7 @@ impl Build {
         sh.create_dir(&build)?;
 
         // Read the version from our root Cargo.toml.
-        let version = sh.read_file("kcl-language-server/Cargo.toml")?;
+        let version = sh.read_file("kcl-lsp-server/Cargo.toml")?;
         let mut version = version
             .lines()
             .find(|line| line.starts_with("version = "))
@@ -68,14 +68,14 @@ impl Build {
 }
 
 fn build_client(sh: &Shell, version: &str, release_tag: &str, target: &Target) -> anyhow::Result<()> {
-    let bundle_path = Path::new("kcl-language-server/server");
+    let bundle_path = Path::new("kcl-lsp-client-vscode/server");
     sh.create_dir(bundle_path)?;
     sh.copy_file(&target.server_path, bundle_path)?;
     if let Some(symbols_path) = &target.symbols_path {
         sh.copy_file(symbols_path, bundle_path)?;
     }
 
-    let mut patch = Patch::new(sh, "./kcl-language-server/package.json")?;
+    let mut patch = Patch::new(sh, "./kcl-lsp-client-vscode/package.json")?;
     patch
         .replace(r#""version": "0.0.0""#, &format!(r#""version": "{version}""#))
         .replace(r#""releaseTag": null"#, &format!(r#""releaseTag": "{release_tag}""#))

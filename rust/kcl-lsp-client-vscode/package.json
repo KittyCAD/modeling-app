@@ -110,7 +110,7 @@
     "watch": "npm run build-base -- --sourcemap --watch",
     "pretest": "npm run build && npm run test-compile",
     "test": "node ./dist/client/src/test/runTest.js",
-    "package": "vsce package -o kcl-language-server.vsix"
+    "package": "vsce package --no-dependencies -o kcl-language-server.vsix"
   },
   "devDependencies": {
     "@tsconfig/strictest": "^2.0.6",

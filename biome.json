@@ -54,7 +54,7 @@
       "!**/*.json",
       "!**/packages/ui-components/storybook-static/**",
       "!**/rust/kcl-lib/expected-bindings/**",
-      "!**/rust/kcl-language-server/zed/grammars/**"
+      "!**/rust/kcl-lsp-client-zed/grammars/**"
     ]
   }
 }

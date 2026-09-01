@@ -60,12 +60,12 @@ jobs:
         # wheel compiles differently per platform. This step tests that
         # premise on every run instead of assuming it. A hit forces the full
         # matrix. Unlisted crates are scanned, so a new crate fails safe.
-        # kcl-language-server is excluded because it is not in the wheel, and
+        # kcl-lsp-server is excluded because it is not in the wheel, and
         # wasm32 gates are excluded because no wheel targets wasm.
         run: |
           if rg -n 'cfg\([^)]*target_(os|family|env|arch)' \
                --glob '*.rs' \
-               --glob '!rust/kcl-language-server/**' \
+               --glob '!rust/kcl-lsp-server/**' \
                rust/ | rg -v wasm32; then
             echo 'Platform-gated code found; building every architecture.'
             echo 'found=true' >> "$GITHUB_OUTPUT"
