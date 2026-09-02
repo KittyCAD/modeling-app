@@ -19,10 +19,7 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import {
-  getInitialDefaultDir,
-  getProjectInfo,
-} from '@src/lib/desktop'
+import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { getRouterSearchFromRequestUrl, PATHS } from '@src/lib/paths'
 import {

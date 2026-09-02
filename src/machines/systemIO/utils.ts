@@ -65,7 +65,6 @@ import { SystemIOMachineStates } from '@src/machines/systemIO/states'
 
 export { SystemIOMachineStates }
 
-
 export enum SystemIOMachineActions {
   setFolders = 'set folders',
   setProjectDirectoryPath = 'set project directory path',
