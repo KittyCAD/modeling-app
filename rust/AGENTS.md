@@ -2,7 +2,7 @@
 
 ## Scope
 
-This file applies to Rust development under `rust/`. It complements the repo root `CONTRIBUTING.md` and `rust/kcl-lib/README.md`.
+This file applies to Rust development under `rust/`. It supplements the repo root `AGENTS.md`, `CONTRIBUTING.md`, and `rust/kcl-lib/README.md`.
 
 ## Project overview
 

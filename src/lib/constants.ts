@@ -44,7 +44,7 @@ export const NAMED_VIEWS_UI_FEATURE_FLAG: Feature = 'named_views_ui'
 /** Allows legacy sketches to be edited using point-and-click */
 export const LEGACY_SKETCH_MODE_FEATURE_FLAG: Feature = 'legacy_sketch_mode'
 export const LEGACY_SKETCH_MODE_REMOVED_MESSAGE =
-  '⚠ Editing of KCL 1.0 sketches is no longer supported.'
+  'Editing of KCL 1.0 sketches is no longer supported.'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */

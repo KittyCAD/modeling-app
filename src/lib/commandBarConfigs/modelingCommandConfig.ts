@@ -61,6 +61,7 @@ import type {
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { capitaliseFC, isArray } from '@src/lib/utils'
+import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
@@ -378,6 +379,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'change tool': [
     {
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       description: 'Start drawing straight lines.',
       icon: 'line',
       displayName: 'Line',
@@ -391,6 +393,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
     {
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       description: 'Start drawing an arc tangent to the current segment.',
       icon: 'arc',
       displayName: 'Tangential Arc',
@@ -404,6 +407,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
     {
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
       description: 'Start drawing a rectangle.',
       icon: 'rectangle',
       displayName: 'Rectangle',
@@ -1399,6 +1403,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Constrain length': {
+    scopes: [MODE_SKETCHING_COMMAND_SCOPE],
     description: 'Constrain the length of one or more segments.',
     icon: 'dimension',
     args: {
@@ -1442,6 +1447,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Constrain with named value': {
+    scopes: [MODE_SKETCHING_COMMAND_SCOPE],
     description: 'Constrain a value by making it a named constant.',
     icon: 'make-variable',
     args: {

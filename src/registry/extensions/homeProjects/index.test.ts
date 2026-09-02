@@ -214,6 +214,7 @@ function createCloudSyncService(
     retry: vi.fn(),
     setOpenedProject: vi.fn(),
     startProjectSync: vi.fn().mockResolvedValue(undefined),
+    syncNow: vi.fn().mockResolvedValue({ remoteProjectId: 'remote-123' }),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
     deleteRemoteProject: vi.fn().mockResolvedValue(undefined),
     deleteLocalProjectRealizations: vi.fn().mockResolvedValue(undefined),

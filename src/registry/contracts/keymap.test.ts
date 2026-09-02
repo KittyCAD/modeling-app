@@ -129,6 +129,48 @@ describe('keymap contract', () => {
     })
   })
 
+  it('falls back to an available binding without consuming the unavailable one', () => {
+    const baseItem = createKeymapItem({
+      id: 'base-command',
+      keystrokes: ['mod+k'],
+    })
+    const scopedItem = createKeymapItem({
+      id: 'scoped-command',
+      scopes: ['test-scope'],
+      keystrokes: ['mod+k'],
+    })
+    const tree = createKeymapTree([baseItem, scopedItem])
+
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        ['test-scope'],
+        ['mod+k'],
+        [],
+        (item) => item !== scopedItem
+      )
+    ).toEqual({ type: 'full', item: baseItem })
+  })
+
+  it('does not return a prefix for unavailable bindings', () => {
+    const item = createKeymapItem({
+      id: 'unavailable-command',
+      keystrokes: ['v', '1'],
+      scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+    })
+    const tree = createKeymapTree([item])
+
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+        ['v'],
+        [],
+        () => false
+      )
+    ).toEqual({ type: 'none' })
+  })
+
   it('matches scoped items from a single prefix tree', () => {
     const baseItem = createKeymapItem({
       id: 'command-palette.open',

@@ -5,6 +5,7 @@ import {
   PROJECT_DIR,
   projectTitles,
   projectToml,
+  readCloudSyncProjectMetadata,
   readOpfsTextFiles,
   routeCloudProjects,
   seedCloudSyncState,
@@ -132,7 +133,7 @@ test(
         updatedAt: '2026-06-02T20:00:00.000Z',
         files: {
           'main.kcl': 'remoteEmptyOne = 1\n',
-          'project.toml': projectToml('Remote empty one'),
+          'project.toml': projectToml('Remote empty one', 'remote-empty-one'),
         },
       },
       {
@@ -142,7 +143,10 @@ test(
         updatedAt: '2026-06-02T19:00:00.000Z',
         files: {
           'main.kcl': 'broken = 1\n',
-          'project.toml': projectToml('Remote empty broken'),
+          'project.toml': projectToml(
+            'Remote empty broken',
+            'remote-empty-broken'
+          ),
         },
       },
       {
@@ -152,7 +156,7 @@ test(
         updatedAt: '2026-06-02T18:00:00.000Z',
         files: {
           'main.kcl': 'remoteEmptyTwo = 1\n',
-          'project.toml': projectToml('Remote empty two'),
+          'project.toml': projectToml('Remote empty two', 'remote-empty-two'),
         },
       },
       {
@@ -162,7 +166,10 @@ test(
         updatedAt: '2026-06-02T17:00:00.000Z',
         files: {
           'main.kcl': 'remoteEmptyThree = 1\n',
-          'project.toml': projectToml('Remote empty three'),
+          'project.toml': projectToml(
+            'Remote empty three',
+            'remote-empty-three'
+          ),
         },
       },
     ]
@@ -249,6 +256,7 @@ test(
     const publicProjectTitle = '!!!'
     const publicProjectDirectoryName = 'shared-project'
     const publicProjectSettingsId = '29501ba6-dfa1-486f-b51d-aa9331ee441e'
+    const personalCloudSettingsId = '29501ba6-dfa1-486f-b51d-aa9331ee442f'
     const publicProjectFiles = {
       'main.kcl': 'aquariumShared = 1\n',
       'project.toml': [
@@ -261,7 +269,16 @@ test(
       id: 'personal-cloud-copy',
       title: publicProjectTitle,
       revision: 'personal-cloud-copy-rev-1',
-      files: publicProjectFiles,
+      files: {
+        'main.kcl': publicProjectFiles['main.kcl'],
+        'project.toml': [
+          'project_id = "personal-cloud-copy"',
+          '',
+          '[settings.meta]',
+          `id = "${personalCloudSettingsId}"`,
+          '',
+        ].join('\n'),
+      },
     }
     const publicProjectArchive = await zipProject(publicProjectFiles)
     let publicProjectDownloads = 0
@@ -325,10 +342,15 @@ test(
       .toBe(true)
     await expect
       .poll(async () => {
-        const files = await readOpfsTextFiles(page, {
-          projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
-        })
-        return files.projectToml
+        try {
+          const files = await readOpfsTextFiles(page, {
+            projectToml: `${PROJECT_DIR}/${publicProjectDirectoryName}/project.toml`,
+          })
+          return files.projectToml
+        } catch {
+          // Replacing a project archive briefly removes the old directory.
+          return ''
+        }
       })
       .toContain('project_id = "personal-cloud-copy"')
 
@@ -359,7 +381,10 @@ test(
       revision: 'remote-only-rev-1',
       files: {
         'main.kcl': 'remoteOnly = 1\n',
-        'project.toml': projectToml('Remote only project'),
+        'project.toml': projectToml(
+          'Remote only project',
+          'remote-only-project'
+        ),
       },
     }
     const cleanSyncedProject: CloudProject = {
@@ -386,25 +411,49 @@ test(
         ),
       },
     }
+    const localOnlyFiles = {
+      'main.kcl': 'localOnly = 1\n',
+      'project.toml': projectToml('Local only project'),
+    }
+    const createdLocalOnlyProject: CloudProject = {
+      id: 'created-local-only-project',
+      title: 'Local only project',
+      revision: 'created-local-only-rev-1',
+      files: {
+        ...localOnlyFiles,
+        'project.toml': projectToml(
+          'Local only project',
+          'created-local-only-project'
+        ),
+      },
+    }
+    const remoteProjects = [
+      remoteOnlyProject,
+      cleanSyncedProject,
+      staleDirtyProject,
+    ]
+    const remoteArchives = new Map<string, Buffer>(
+      await Promise.all(
+        remoteProjects.map(
+          async (project) =>
+            [project.id, await zipProject(project.files)] as const
+        )
+      )
+    )
     const remoteListGate = createRemoteListGate()
     const { calls: apiCalls } = await routeCloudProjects(context, {
-      remoteProjects: [
-        remoteOnlyProject,
-        cleanSyncedProject,
-        staleDirtyProject,
-      ],
-      listedProjects: [
-        remoteOnlyProject,
-        cleanSyncedProject,
-        staleDirtyProject,
-      ],
+      remoteProjects,
+      listedProjects: remoteProjects,
+      remoteArchives,
       remoteListGate,
-      createProject: () => ({
-        id: 'created-local-only-project',
-        title: 'Local only project',
-        revision: 'created-local-only-rev-1',
-        files: {},
-      }),
+      createProject: async () => {
+        remoteProjects.push(createdLocalOnlyProject)
+        remoteArchives.set(
+          createdLocalOnlyProject.id,
+          await zipProject(createdLocalOnlyProject.files)
+        )
+        return createdLocalOnlyProject
+      },
       updateProject: ({ projectId }) =>
         projectId === staleDirtyProject.id
           ? {
@@ -425,10 +474,6 @@ test(
     await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
 
-    const localOnlyFiles = {
-      'main.kcl': 'localOnly = 1\n',
-      'project.toml': projectToml('Local only project'),
-    }
     const cleanSyncedFiles = {
       'main.kcl': 'cleanLocal = 1\n',
       'project.toml': projectToml(
@@ -547,6 +592,16 @@ test(
       )
     await expect.poll(() => apiCalls.creates.length).toBeGreaterThanOrEqual(1)
     await expect.poll(() => staleUpdateCalls().length).toBeGreaterThanOrEqual(1)
+    await expect
+      .poll(
+        () =>
+          readCloudSyncProjectMetadata(
+            page,
+            `${PROJECT_DIR}/local-only-project`
+          ),
+        { timeout: CLOUD_SYNC_E2E_TIMEOUT }
+      )
+      .toMatchObject({ remoteProjectId: 'created-local-only-project' })
 
     // The mutation observer recorded every project-title DOM change after the
     // local list appeared. Once all local-first projects are present, every
@@ -589,7 +644,6 @@ test(
       cleanSynced: `${PROJECT_DIR}/clean-synced-project/main.kcl`,
       cleanSyncedToml: `${PROJECT_DIR}/clean-synced-project/project.toml`,
       localOnly: `${PROJECT_DIR}/local-only-project/main.kcl`,
-      localOnlyToml: `${PROJECT_DIR}/local-only-project/project.toml`,
       staleDirty: `${PROJECT_DIR}/stale-dirty-project/main.kcl`,
     })
 
@@ -598,9 +652,6 @@ test(
       'project_id = "clean-synced-project"'
     )
     expect(localFiles.localOnly).toContain('localOnly = 1')
-    expect(localFiles.localOnlyToml).toContain(
-      'project_id = "created-local-only-project"'
-    )
     expect(localFiles.staleDirty).toContain('staleLocalDirty = 2')
     expect(staleUpdateCalls()[0]?.url).toContain('expected_revision')
 
