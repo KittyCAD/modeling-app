@@ -44,6 +44,35 @@ describe('FilesSnapshot', () => {
     vi.restoreAllMocks()
   })
 
+  test('renders an unavailable replay attachment without offering a download', () => {
+    const files: MlCopilotFile[] = [
+      {
+        name: 'missing.png',
+        mimetype: 'image/png',
+        data: [],
+        metadata: {
+          zoo_replay_error: 'attachment_unavailable',
+        },
+      },
+    ]
+
+    render(<FilesSnapshot files={files} />)
+
+    expect(screen.getByText('Zookeeper File')).toBeInTheDocument()
+    expect(screen.getByText('missing.png')).toBeInTheDocument()
+    expect(screen.getByText('Attachment unavailable')).toBeInTheDocument()
+
+    expect(
+      screen.getByLabelText('missing.png: Attachment unavailable')
+    ).toBeInTheDocument()
+
+    expect(
+      screen.queryByTitle('Click to download missing.png')
+    ).not.toBeInTheDocument()
+
+    expect(createObjectURLMock).not.toHaveBeenCalled()
+  })
+
   test('renders a single image file with correct filename', () => {
     const files: MlCopilotFile[] = [
       {

@@ -50,7 +50,7 @@ test(
 
       // Select the first format option
       const gltfOption = cmdBar.selectOption({ name: 'glTF' })
-      const exportFileName = `main.gltf` // source file is named `main.kcl`
+      const exportFileName = `bracket.gltf` // project is named `bracket`
       await expect(gltfOption).toBeVisible()
       await page.keyboard.press('Enter')
 

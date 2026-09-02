@@ -19,8 +19,14 @@ export type CloudProject = {
   categoryIds?: string[]
   revision: string
   updatedAt?: string
+  publicationStatus?: string
+  submittedAt?: string
+  publishedAt?: string
+  feedback?: string
   files: ProjectFiles
 }
+
+type MaybePromise<T> = T | Promise<T>
 
 type RemoteListGate = ReturnType<typeof createRemoteListGate>
 
@@ -96,7 +102,13 @@ export function cloudProjectResponse(project: CloudProject) {
     description: project.description ?? '',
     category_ids: project.categoryIds ?? [],
     revision: project.revision,
-    ...(project.updatedAt ? { updated_at: project.updatedAt } : {}),
+    updated_at: project.updatedAt ?? '2026-09-01T12:00:00.000Z',
+    publication_status: project.publicationStatus ?? 'private',
+    publication: {
+      submitted_at: project.submittedAt,
+      last_published_at: project.publishedAt,
+      feedback: project.feedback,
+    },
   }
 }
 
@@ -108,8 +120,13 @@ export async function routeCloudProjects(
     remoteArchives?: Map<string, Buffer>
     remoteListGate?: RemoteListGate
     brokenArchiveProjectIds?: Iterable<string>
-    createProject?: (postData: string) => CloudProject
-    updateProject?: (request: ProjectRequest) => JsonRouteResponse | undefined
+    createProject?: (postData: string) => MaybePromise<CloudProject>
+    updateProject?: (
+      request: ProjectRequest
+    ) => MaybePromise<JsonRouteResponse | undefined>
+    publishProject?: (
+      projectId: string
+    ) => MaybePromise<JsonRouteResponse | undefined>
   }
 ) {
   // Mock the subset of the Projects API that cloud sync uses: remote listing,
@@ -132,6 +149,7 @@ export async function routeCloudProjects(
   const calls = {
     creates: [] as string[],
     downloads: [] as string[],
+    publishes: [] as string[],
     remoteListResponses: 0,
     updates: [] as ProjectRequest[],
   }
@@ -160,14 +178,35 @@ export async function routeCloudProjects(
     if (pathname === '/user/projects' && request.method() === 'POST') {
       const postData = request.postData() || ''
       calls.creates.push(postData)
+      const createdProject = await options.createProject?.(postData)
       await fulfillJson(
         route,
-        options.createProject?.(postData) ?? {
-          id: 'created-project',
-          title: 'Created project',
-          revision: 'created-rev-1',
-          files: {},
-        }
+        cloudProjectResponse(
+          createdProject ?? {
+            id: 'created-project',
+            title: 'Created project',
+            revision: 'created-rev-1',
+            files: {},
+          }
+        )
+      )
+      return
+    }
+
+    if (
+      projectId &&
+      pathname.endsWith('/publish') &&
+      request.method() === 'POST'
+    ) {
+      calls.publishes.push(projectId)
+      const response = await options.publishProject?.(projectId)
+      await fulfillJson(
+        route,
+        response?.body ?? {
+          id: projectId,
+          publication_status: 'pending_review',
+        },
+        response?.status ?? 200
       )
       return
     }
@@ -179,7 +218,7 @@ export async function routeCloudProjects(
         postData: request.postData() || '',
       }
       calls.updates.push(updateRequest)
-      const response = options.updateProject?.(updateRequest)
+      const response = await options.updateProject?.(updateRequest)
       if (response) {
         await fulfillJson(route, response.body, response.status)
         return
@@ -438,6 +477,37 @@ export async function opfsPathExists(page: Page, path: string) {
       return false
     }
   }, path)
+}
+
+export async function readCloudSyncProjectMetadata(
+  page: Page,
+  projectPath: string
+) {
+  return page.evaluate(async (localProjectPath) => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('zds-opfs-cloud-sync', 1)
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => resolve(request.result)
+    })
+    const project = await new Promise<
+      | {
+          localProjectPath: string
+          remoteProjectId?: string
+          remoteRevision?: string
+          conflict?: unknown
+        }
+      | undefined
+    >((resolve, reject) => {
+      const request = db
+        .transaction('projects', 'readonly')
+        .objectStore('projects')
+        .get(localProjectPath)
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => resolve(request.result)
+    })
+    db.close()
+    return project
+  }, projectPath)
 }
 
 async function fulfillJson(route: Route, body: unknown, status = 200) {
