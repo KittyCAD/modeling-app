@@ -5,7 +5,11 @@ import {
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
-import { provideCommand } from '@src/registry/contracts/commands'
+import {
+  FILE_COMMAND_SCOPES,
+  MODE_MODELING_COMMAND_SCOPE,
+  provideCommand,
+} from '@src/registry/contracts/commands'
 import {
   type EngineSceneExtensionContext,
   defineEngineSceneStreamClassName,
@@ -16,7 +20,6 @@ import {
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   type KeymapItem,
-  MODE_MODELING_KEYMAP_SCOPE,
   provideKeymapItem,
 } from '@src/registry/contracts/keymap'
 import {
@@ -46,6 +49,7 @@ export const ENGINE_SCENE_COMMAND_IDS = Object.freeze({
 } as const)
 
 const captureScreenshotCommand: Command = {
+  scopes: FILE_COMMAND_SCOPES,
   id: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
   name: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -57,6 +61,7 @@ const captureScreenshotCommand: Command = {
 }
 
 const openMeasureToolCommand: Command = {
+  scopes: [MODE_MODELING_COMMAND_SCOPE],
   id: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
   name: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -71,6 +76,7 @@ const openMeasureToolCommand: Command = {
 }
 
 const openPhysicalAnalysisToolCommand: Command = {
+  scopes: [MODE_MODELING_COMMAND_SCOPE],
   id: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
   name: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
   groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
@@ -88,7 +94,7 @@ const openMeasureToolKeymapItem: KeymapItem = {
   id: 'engine-scene.measure.open',
   title: 'Open measure tool',
   source: ENGINE_SCENE_KEYMAP_SOURCE,
-  scopes: [MODE_MODELING_KEYMAP_SCOPE],
+  scopes: [MODE_MODELING_COMMAND_SCOPE],
   keystrokes: ['shift+m'],
   command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
 }
@@ -97,7 +103,7 @@ const openPhysicalAnalysisToolKeymapItem: KeymapItem = {
   id: 'engine-scene.physical-analysis.open',
   title: 'Open physical analysis tool',
   source: ENGINE_SCENE_KEYMAP_SOURCE,
-  scopes: [MODE_MODELING_KEYMAP_SCOPE],
+  scopes: [MODE_MODELING_COMMAND_SCOPE],
   keystrokes: ['shift+p'],
   command: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
 }
