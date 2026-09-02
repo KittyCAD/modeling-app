@@ -253,6 +253,44 @@ fn wrap() {
     })
   })
 
+  it("rewires a KCL 2 sketch-block shadow's own initializer", () => {
+    const beforeDeleteAst = parseProgram(`@settings(kclVersion = 2.0)
+parent001 = 10
+deleted001 = parent001
+result = if false {
+  profile001 = sketch(on = XY) {
+    deleted001 = deleted001 + 1
+    line001 = line(start = [var 0, var 0], end = [var 1, var 0])
+  }
+  1
+} else {
+  0
+}`)
+
+    const afterDeleteAst = parseProgram(`@settings(kclVersion = 2.0)
+parent001 = 10
+result = if false {
+  profile001 = sketch(on = XY) {
+    deleted001 = deleted001 + 1
+    line001 = line(start = [var 0, var 0], end = [var 1, var 0])
+  }
+  1
+} else {
+  0
+}`)
+
+    const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+    const recasted = recast(rewiredAst, getInstance())
+    if (err(recasted)) {
+      throw recasted
+    }
+
+    // A sketch-block declaration is not in scope in its own initializer,
+    // including under KCL 2. Leaving this reference unchanged creates a
+    // latent runtime error if the currently inactive arm is later selected.
+    expect(recasted).toContain('deleted001 = parent001 + 1')
+  })
+
   // KCL 3.0: each if/else-if/else arm body is its own scope, and a binding is
   // in scope only from its declaration to the arm's closing brace.
   describe('if-arm scope under KCL 3.0', () => {
@@ -387,6 +425,55 @@ after001 = deleted001 + result`
       // The arm binding is dropped at the arm's closing brace instead of
       // leaking into the function scope.
       expect(recasted).toContain('after001 = parent001 + result')
+    })
+
+    it('does not capture a locally shadowed rewire target', () => {
+      const beforeDeleteAst = parseProgram(`${V3_HEADER}
+parent001 = 10
+deleted001 = parent001
+fn build() {
+  parent001 = 100
+  result = if true {
+    deleted001 = 200
+    deleted001
+  } else {
+    0
+  }
+  after001 = deleted001
+  return after001
+}
+output = build()`)
+
+      const afterDeleteAst = parseProgram(`${V3_HEADER}
+parent001 = 10
+fn build() {
+  parent001 = 100
+  result = if true {
+    deleted001 = 200
+    deleted001
+  } else {
+    0
+  }
+  after001 = deleted001
+  return after001
+}
+output = build()`)
+
+      const rewiredAst = rewireAfterDelete(
+        beforeDeleteAst,
+        afterDeleteAst,
+        V3_OPTIONS
+      )
+      const recasted = recast(rewiredAst, getInstance())
+      if (err(recasted)) {
+        throw recasted
+      }
+
+      // The deleted binding referred to the top-level parent001. Replacing it
+      // with the bare name here would instead capture the function-local
+      // parent001 and silently change output from 10 to 100.
+      expect(recasted).toContain('after001 = deleted001')
+      expect(recasted).not.toContain('after001 = parent001')
     })
 
     it("rewires the shadow declaration's own initializer", () => {
