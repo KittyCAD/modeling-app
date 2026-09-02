@@ -290,6 +290,68 @@ describe('Registry', () => {
     expect(events).toEqual(['async:start', 'sync', 'async:end'])
   })
 
+  it('starts shutdown finalizers while an earlier async cleanup is pending', async () => {
+    const slot = new Slot()
+    const release = deferred()
+    const events: string[] = []
+    const asynchronous = defineRegistryItemFactory(() => {
+      return {
+        item: {
+          dispose: async () => {
+            events.push('async:start')
+            await release.promise
+            events.push('async:end')
+          },
+        },
+      }
+    }, 'overlapping-disposal.async')
+    const synchronous = defineRegistryItemFactory(() => {
+      return { item: { dispose: () => events.push('sync') } }
+    }, 'overlapping-disposal.sync')
+    const container = new Registry()
+    container.configure([slot.of(asynchronous), synchronous])
+    container.inspect()
+
+    const earlierCleanup = container.reconfigureAsync(slot, [])
+    expect(events).toEqual(['async:start'])
+
+    container[Symbol.dispose]()
+    expect(events).toEqual(['async:start', 'sync'])
+
+    release.resolve()
+    await earlierCleanup
+    await container[Symbol.asyncDispose]()
+    expect(events).toEqual(['async:start', 'sync', 'async:end'])
+  })
+
+  it('keeps registry services available during synchronous shutdown', () => {
+    const dependency = defineService<{ readonly value: string }>(
+      'shutdown-dependency'
+    )
+    const events: string[] = []
+    const runtime = defineRegistryItemFactory((ctx) => {
+      return {
+        item: {
+          dispose: () => events.push(ctx.services.get(dependency).value),
+        },
+      }
+    }, 'service-aware-disposal.runtime')
+    const container = new Registry()
+    container.configure([
+      defineRegistryItem({
+        providesServices: [
+          provideService(dependency, { value: 'dependency-active' }),
+        ],
+      }),
+      runtime,
+    ])
+    container.inspect()
+
+    container[Symbol.dispose]()
+
+    expect(events).toEqual(['dependency-active'])
+  })
+
   it('disposes dependent runtime instances before their providers', async () => {
     const events: string[] = []
     const child = defineRegistryItemFactory(() => {

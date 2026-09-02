@@ -56,12 +56,6 @@ interface RuntimeInstance {
   readonly dispose?: () => unknown
 }
 
-interface DisposalBatch {
-  readonly disposers: readonly (() => unknown)[]
-  readonly resolve: () => void
-  readonly reject: (reason: unknown) => void
-}
-
 interface FlattenResult {
   readonly contributions: readonly FlattenedContribution[]
   readonly serviceContributions: readonly FlattenedServiceContribution[]
@@ -116,8 +110,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
     RuntimeInstance
   >()
   private readonly resolvingServices = new Set<symbol>()
-  private readonly disposalQueue: DisposalBatch[] = []
-  private isDrainingDisposals = false
+  private readonly pendingDisposals = new Set<Promise<void>>()
   private latestReconciliation: Promise<void> = Promise.resolve()
   private shutdownPromise: Promise<void> | undefined
 
@@ -504,41 +497,22 @@ export class Registry implements ValueSpecReader, ServiceReader {
     this.latestReconciliation = this.enqueueDisposers(disposers.reverse())
   }
 
-  /** Serialize cleanup batches and continue running after individual failures. */
+  /** Start cleanup immediately while retaining its awaitable completion. */
   private enqueueDisposers(
     disposers: readonly (() => unknown)[]
   ): Promise<void> {
     if (disposers.length === 0) return Promise.resolve()
 
-    const completion = new Promise<void>((resolve, reject) => {
-      this.disposalQueue.push({ disposers, resolve, reject })
-    })
+    const completion = this.disposeBatch(disposers)
+    this.pendingDisposals.add(completion)
+    void completion.then(
+      () => this.pendingDisposals.delete(completion),
+      () => this.pendingDisposals.delete(completion)
+    )
     // Attach recovery immediately so ignored synchronous APIs cannot produce
     // unhandled rejections; awaited APIs still receive `completion` itself.
     void completion.catch(() => undefined)
-    void this.drainDisposals()
     return completion
-  }
-
-  private async drainDisposals(): Promise<void> {
-    if (this.isDrainingDisposals) return
-    this.isDrainingDisposals = true
-
-    try {
-      while (this.disposalQueue.length > 0) {
-        const batch = this.disposalQueue.shift()
-        if (!batch) continue
-
-        try {
-          await this.disposeBatch(batch.disposers)
-          batch.resolve()
-        } catch (error) {
-          batch.reject(error)
-        }
-      }
-    } finally {
-      this.isDrainingDisposals = false
-    }
   }
 
   private async disposeBatch(
@@ -581,12 +555,33 @@ export class Registry implements ValueSpecReader, ServiceReader {
     }
   }
 
+  private async awaitDisposalCompletions(
+    completions: readonly Promise<void>[]
+  ): Promise<void> {
+    const results = await Promise.allSettled(completions)
+    const failures = results.flatMap((result) =>
+      result.status === 'rejected' ? [result.reason] : []
+    )
+    if (failures.length === 1) throw failures[0]
+    if (failures.length > 1) {
+      throw new AggregateError(
+        failures,
+        'One or more registry cleanup batches failed to complete.'
+      )
+    }
+  }
+
   private beginShutdown(): Promise<void> {
     if (this.shutdownPromise) return this.shutdownPromise
 
     const disposers = [...this.runtimeInstances.values()]
       .reverse()
       .flatMap((instance) => (instance.dispose ? [instance.dispose] : []))
+    const pendingBeforeShutdown = [...this.pendingDisposals]
+    // Finalizers may consult services owned by runtimes earlier in the graph.
+    // Invoke their synchronous phase before clearing the registry, then await
+    // any asynchronous continuation after the graph is deactivated.
+    const shutdownDisposal = this.enqueueDisposers(disposers)
     this.runtimeInstances.clear()
     this.roots.value = []
     this.slotContent.clear()
@@ -594,7 +589,10 @@ export class Registry implements ValueSpecReader, ServiceReader {
     this.debugValueSpecItems.clear()
     this.serviceSignals.clear()
     this.debugServiceItems.clear()
-    this.shutdownPromise = this.enqueueDisposers(disposers)
+    this.shutdownPromise = this.awaitDisposalCompletions([
+      ...pendingBeforeShutdown,
+      shutdownDisposal,
+    ])
     return this.shutdownPromise
   }
 
