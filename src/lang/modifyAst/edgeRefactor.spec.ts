@@ -1624,7 +1624,7 @@ part = bracket()
     beforeEach(async () => {
       if (instanceInThisFile) return
       const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
+        await buildTheWorldAndConnectToEngine({ geometryOnly: true })
       instanceInThisFile = instance
       kclManagerInThisFile = kclManager
       engineCommandManagerInThisFile = engineCommandManager

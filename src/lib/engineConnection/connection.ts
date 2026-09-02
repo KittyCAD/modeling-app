@@ -110,6 +110,7 @@ export class Connection extends EventTarget {
     tearDownManager,
     rejectPendingCommand,
     callbackOnUnitTestingConnection,
+    unitTestGeometryOnly,
     handleMessage,
     getCloudProjectId,
   }: {
@@ -119,6 +120,7 @@ export class Connection extends EventTarget {
     tearDownManager: (options?: ManagerTearDown) => void
     rejectPendingCommand: ({ cmdId }: { cmdId: string }) => void
     callbackOnUnitTestingConnection?: (message: string) => void
+    unitTestGeometryOnly?: boolean
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
   }) {
@@ -154,14 +156,20 @@ export class Connection extends EventTarget {
     })
 
     if (callbackOnUnitTestingConnection) {
-      this.connectUnitTesting(callbackOnUnitTestingConnection)
+      this.connectUnitTesting(
+        callbackOnUnitTestingConnection,
+        unitTestGeometryOnly
+      )
       this.isUsingUnitTestingConnection = true
     }
   }
 
-  connectUnitTesting(callback: (message: string) => void) {
+  connectUnitTesting(
+    callback: (message: string) => void,
+    geometryOnly = false
+  ) {
     const url = withKittycadWebSocketURL(
-      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao`
+      `?video_res_width=${256}&video_res_height=${256}&post_effect=ssao${geometryOnly ? '&webrtc=false' : ''}`
     )
     this.websocket = new WebSocket(url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -201,6 +209,14 @@ export class Connection extends EventTarget {
 
       switch (resp.type) {
         case 'pong':
+          break
+
+        // Geometry-only sessions do not establish WebRTC, so the session data
+        // response is the successful connection handshake for these tests.
+        case 'modeling_session_data':
+          if (geometryOnly) {
+            callback('auth success')
+          }
           break
 
         // Only fires on successful authentication.
