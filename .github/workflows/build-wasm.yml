@@ -47,8 +47,16 @@ jobs:
           # attributed to the caller's parent run. Using `e2e-tests.yml` works
           # as the canonical caller since this runs every hour on main.
           workflow: e2e-tests.yml
-          branch: main
+          # Reuse only Wasm built for this PR's exact base. Falling back to the
+          # newest artifact on main can pair new TypeScript with stale Rust.
+          commit: ${{ github.event.pull_request.base.sha || github.sha }}
           path: rust/kcl-wasm-lib/pkg
+
+      - name: Verify downloaded Wasm version
+        id: cached-wasm-version
+        if: ${{ steps.download-wasm.outcome == 'success' }}
+        continue-on-error: true
+        run: node scripts/verify-kcl-wasm-version.mjs
 
       - name: Determine Wasm rebuild
         id: wasm
@@ -56,10 +64,12 @@ jobs:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
           RUST_CHANGES: ${{ steps.filter.outputs.rust || 'false' }}
+          WASM_VERSION_OUTCOME: ${{ steps.cached-wasm-version.outcome }}
         run: |
           # Build Wasm with Rust changes, cache misses, or for stacked PRs
           if [[ "${RUST_CHANGES}" == 'true' || \
                 "${DOWNLOAD_OUTCOME}" == 'failure' || \
+                "${WASM_VERSION_OUTCOME}" == 'failure' || \
                 ( -n "${BASE_REF}" && "${BASE_REF}" != 'main' ) ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
@@ -102,6 +112,9 @@ jobs:
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         shell: bash
         run: npm run build:wasm
+
+      - name: Verify prepared Wasm version
+        run: node scripts/verify-kcl-wasm-version.mjs
 
       - name: Use committed TypeScript bindings
         if: ${{ steps.wasm.outputs.should-build-wasm != 'true' }}
