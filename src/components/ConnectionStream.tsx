@@ -675,6 +675,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         <LocalWebGPUScene
           backgroundColor={style.backgroundColor}
           enableSSAO={settingsValues.modeling.enableSSAO.current}
+          highlightEdges={settingsValues.modeling.highlightEdges.current}
           onVisibilityChange={handleLocalVisibilityChange}
           onExportReady={handleLocalExportReady}
           forceHide={!shouldShowLocalWebGpuScene}

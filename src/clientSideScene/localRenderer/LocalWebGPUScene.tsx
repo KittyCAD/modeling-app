@@ -9,6 +9,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const {
     backgroundColor,
     enableSSAO,
+    highlightEdges,
     onVisibilityChange,
     onExportReady,
     forceHide = false,
@@ -49,6 +50,10 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   useEffect(() => {
     rendererRef.current?.setEnableSSAO(enableSSAO)
   }, [enableSSAO])
+
+  useEffect(() => {
+    rendererRef.current?.setHighlightEdges(highlightEdges)
+  }, [highlightEdges])
 
   useEffect(() => {
     rendererRef.current?.setForceHide(forceHide)

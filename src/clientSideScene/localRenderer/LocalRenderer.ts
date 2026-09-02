@@ -94,6 +94,7 @@ type WebGpuRuntimeModules = {
 export interface LocalRendererProps {
   backgroundColor: string
   enableSSAO: boolean
+  highlightEdges: boolean
   onVisibilityChange: (isVisible: boolean) => void
   onExportReady?: (exportScene: (() => Promise<void>) | null) => void
   forceHide?: boolean
@@ -105,6 +106,7 @@ export class LocalRenderer {
   private readonly kclManager: KclManager
   private backgroundColor: string
   private enableSSAO: boolean
+  private highlightEdges: boolean
   private forceHide: boolean
   private commandProxyEnabled: boolean
   private onVisibilityChange: LocalRendererProps['onVisibilityChange']
@@ -151,6 +153,7 @@ export class LocalRenderer {
     this.kclManager = kclManager
     this.backgroundColor = props.backgroundColor
     this.enableSSAO = props.enableSSAO
+    this.highlightEdges = props.highlightEdges
     this.forceHide = props.forceHide ?? false
     this.commandProxyEnabled = props.commandProxyEnabled ?? true
     this.onVisibilityChange = props.onVisibilityChange
@@ -185,6 +188,16 @@ export class LocalRenderer {
 
   setEnableSSAO(enableSSAO: boolean) {
     this.enableSSAO = enableSSAO
+    this.requestRender?.()
+  }
+
+  setHighlightEdges(highlightEdges: boolean) {
+    if (this.highlightEdges === highlightEdges) {
+      return
+    }
+
+    this.highlightEdges = highlightEdges
+    this.edgeRenderer?.setVisible(highlightEdges)
     this.requestRender?.()
   }
 
@@ -462,7 +475,7 @@ export class LocalRenderer {
       .intersectObject(this.currentModel, true)
       .find((candidate) => {
         if (this.edgeRenderer?.isLineObject(candidate.object)) {
-          return true
+          return this.highlightEdges
         }
         if (candidate.object instanceof Line) {
           return true
@@ -1003,7 +1016,10 @@ export class LocalRenderer {
       return
     }
 
-    const edgeRenderer = new EdgeRenderer(this.backgroundColor)
+    const edgeRenderer = new EdgeRenderer(
+      this.backgroundColor,
+      this.highlightEdges
+    )
     this.edgeRenderer = edgeRenderer
 
     this.exportScene = this.exportCurrentScene

@@ -28,7 +28,7 @@ export class EdgeRenderer {
   private edgeObjects: Object3D[] = []
   private edgeSegmentRanges = new Map<string, EdgeSegmentRange>()
 
-  constructor(backgroundColor: string) {
+  constructor(backgroundColor: string, visible = true) {
     this.material = new Line2NodeMaterial({
       color: getEdgeColorForBackground(backgroundColor),
       linewidth: EDGE_LINE_WIDTH_PX,
@@ -45,6 +45,7 @@ export class EdgeRenderer {
     this.lines.renderOrder = 2
     this.lines.userData.kittycadEdgeBatch = true
     this.group.name = 'edge_batch'
+    this.group.visible = visible
   }
 
   setEdges(edges: LocalRenderPacketEdge[]) {
@@ -97,7 +98,6 @@ export class EdgeRenderer {
       this.geometry.setPositions(segmentPositions)
       this.group.add(this.lines)
     }
-
     return selectionTargets
   }
 
@@ -128,6 +128,14 @@ export class EdgeRenderer {
 
   setBackgroundColor(backgroundColor: string) {
     this.material.color.copy(getEdgeColorForBackground(backgroundColor))
+  }
+
+  setVisible(visible: boolean) {
+    if (this.group.visible === visible) {
+      return
+    }
+
+    this.group.visible = visible
   }
 
   dispose() {
