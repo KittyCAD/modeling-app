@@ -2,6 +2,7 @@ import { defineRegistryItem, provide } from '@kittycad/registry'
 import { computed, signal } from '@preact/signals-core'
 import type { App } from '@src/lib/app'
 import { PATHS } from '@src/lib/paths'
+import { resolveIndexTarget } from '@src/lib/routeInit'
 import {
   type AppLocation,
   type AppOverlay,
@@ -171,6 +172,40 @@ export function createNavigationContributions(app: App) {
           overlay.value = parseOverlay(url.pathname)
           libraryId.value = id
           app.closeProject()
+          return true
+        },
+      }),
+      /**
+       * `/` is a funnel, not a place, so it has no `toPath`: no application
+       * state ever serialises back to it. It only claims the URL on the way in,
+       * and what it claims it resolves into state — desktop and flagged web to
+       * the project list, unflagged web to the one project it may have.
+       *
+       * `?ask-open-desktop` is declined rather than claimed, because
+       * `OpenInDesktopAppHandler` owns that decision and this must not move the
+       * app out from under it.
+       */
+      provide(urlRoutesValueSpec, {
+        id: 'index',
+        order: 50,
+        toPath: () => null,
+        load: async (url) => {
+          if (url.pathname !== PATHS.INDEX) return false
+
+          const target = await resolveIndexTarget(app, {
+            requestUrl: url.href,
+          })
+          if (target.kind === 'defer') return false
+
+          overlay.value = undefined
+          libraryId.value = undefined
+
+          if (target.kind === 'home') {
+            app.closeProject()
+            return true
+          }
+
+          await app.openFile({ id: target.filePath })
           return true
         },
       }),
