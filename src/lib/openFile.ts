@@ -41,10 +41,8 @@ import {
 import { getProjectLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import { loadRouteSettings } from '@src/lib/routeSettings'
 import type { IndexLoaderData } from '@src/lib/types'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
+import { SystemIOMachineStates } from '@src/machines/systemIO/states'
 import { waitFor } from 'xstate'
 
 export type OpenFileOutcome =
