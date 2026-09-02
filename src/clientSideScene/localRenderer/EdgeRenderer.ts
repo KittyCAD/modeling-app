@@ -131,10 +131,6 @@ export class EdgeRenderer {
   }
 
   setVisible(visible: boolean) {
-    if (this.group.visible === visible) {
-      return
-    }
-
     this.group.visible = visible
   }
 
