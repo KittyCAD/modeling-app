@@ -1010,6 +1010,7 @@ export async function setup(
           ...TEST_SETTINGS,
           plugins: playwrightPluginSettings({
             cloudSyncEnabled: userFeatures.includes(OPFS_CLOUD_FEATURE_FLAG),
+            zookeeperEnabled: testInfo?.tags.includes('@zookeeper'),
           }),
           ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {

@@ -253,7 +253,11 @@ export class ElectronZoo {
 
     await setup(this.context, this.page, testInfo, userFeatures)
 
-    await this.cleanProjectDir()
+    await this.cleanProjectDir({
+      plugins: playwrightPluginSettings({
+        zookeeperEnabled: testInfo.tags.includes('@zookeeper'),
+      }),
+    })
 
     // Create a consistent way to resize the page across electron and web.
     // (lee) I had to do everything in the book to make electron change its

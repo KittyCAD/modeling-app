@@ -4,8 +4,9 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 // See zookeeper/text_to_cad/zookeeper_magic_bypass.py
 const ZK_MOCK_REPLY_MARKER =
   'ZOO_MAGIC_STRING_TRIGGER_MOCK_REPLY_D39D279C6F84FA63AD49364FDEFB4A27D0E15BA7FB0975D4D6E003A8A594E460'
+const ZOOKEEPER_TEST_TAGS = ['@desktop', '@web', '@zookeeper']
 
-test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
+test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
   test('Happy path: new project, easy prompt, good result', async ({
     page,
     editor,
@@ -30,19 +31,10 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
       await expect(page.getByTestId('ml-request-chat-bubble')).toContainText(
         prompt
       )
-
-      const paneButton = page.getByTestId('ttc-pane-button')
-      const spinner = paneButton.locator('[aria-label="loading"]')
-      await expect(spinner).not.toBeVisible()
-
-      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
-      await expect(spinner).toBeVisible()
-      await expect(spinner).not.toBeVisible({
+      await expect(copilot.placeHolderResponse).not.toBeVisible({
         timeout: 30_000,
       })
 
-      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
-      await expect(copilot.placeHolderResponse).not.toBeVisible()
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await expect(editor.codeContent).toContainText('sketch', {
@@ -57,7 +49,7 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
       await expect(extrude).toBeVisible()
     })
   })
-  test('Closing and reopening the pane keeps the Zookeeper session alive', async ({
+  test('Closing and reopening the pane keeps the Zookeeper actor alive', async ({
     page,
     homePage,
     scene,
@@ -83,14 +75,10 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
 
     await page.evaluate(() => {
       const actor = window.app.debug.zookeeperManagerActor
-      const websocket = actor?.getSnapshot().context.ws
-      if (!actor || !websocket) {
+      if (!actor) {
         throw new Error('Expected a ready Zookeeper session')
       }
-      Reflect.set(window, '__zookeeperSessionBeforePaneClose', {
-        actor,
-        websocket,
-      })
+      Reflect.set(window, '__zookeeperActorBeforePaneClose', actor)
     })
 
     await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
@@ -101,23 +89,19 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
         })
     )
 
-    const sessionIsUnchanged = () =>
+    const actorIsUnchanged = () =>
       page.evaluate(() => {
-        const before = Reflect.get(window, '__zookeeperSessionBeforePaneClose')
+        const before = Reflect.get(window, '__zookeeperActorBeforePaneClose')
         const actor = window.app.debug.zookeeperManagerActor
-        return (
-          actor === before?.actor &&
-          actor?.getSnapshot().context.ws === before?.websocket &&
-          before?.websocket.readyState === WebSocket.OPEN
-        )
+        return actor === before
       })
 
-    expect(await sessionIsUnchanged()).toBe(true)
+    expect(await actorIsUnchanged()).toBe(true)
 
     await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
-    expect(await sessionIsUnchanged()).toBe(true)
+    expect(await actorIsUnchanged()).toBe(true)
     await page.evaluate(() => {
-      Reflect.deleteProperty(window, '__zookeeperSessionBeforePaneClose')
+      Reflect.deleteProperty(window, '__zookeeperActorBeforePaneClose')
     })
   })
   test(

@@ -478,13 +478,19 @@ class SessionController implements ZookeeperSessionController {
     const editorPath = kclManager.path
     const selections = kclManager.modelingState?.context.selectionRanges ?? null
     let projectFiles: Awaited<ReturnType<typeof collectProjectFiles>>
+    let wasmInstance: Awaited<KclManager['wasmInstancePromise']>
     try {
-      projectFiles = await collectProjectFiles({
-        selectedFileContents: editorCode,
-        selectedFilePath: editorPath,
-        fileNames: kclManager.execState.filenames,
-        projectContext: project,
-      })
+      const promptInputs = await Promise.all([
+        collectProjectFiles({
+          selectedFileContents: editorCode,
+          selectedFilePath: editorPath,
+          fileNames: kclManager.execState.filenames,
+          projectContext: project,
+        }),
+        kclManager.wasmInstancePromise,
+      ])
+      projectFiles = promptInputs[0]
+      wasmInstance = promptInputs[1]
     } catch (error: unknown) {
       if (
         !this.active ||
@@ -529,7 +535,7 @@ class SessionController implements ZookeeperSessionController {
       artifactGraph: kclManager.artifactGraph,
       kclManager,
       engineCommandManager: kclManager.engineCommandManager,
-      wasmInstance: kclManager.wasmInstance,
+      wasmInstance,
       mode,
       additionalFiles: attachments,
     })

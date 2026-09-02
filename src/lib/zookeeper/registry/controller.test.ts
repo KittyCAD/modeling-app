@@ -31,6 +31,8 @@ const workerMocks = vi.hoisted(() => ({
   }>,
 }))
 
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
+
 vi.mock(
   '@src/lib/zookeeper/zookeeperManagerMachine',
   async (importOriginal) => ({
@@ -236,7 +238,10 @@ function createHarness({
     execState: { filenames: {} },
     modelingState: { context: { selectionRanges: null } },
     path: loaderFile.path,
-    wasmInstance: {},
+    wasmInstancePromise: Promise.resolve({}),
+    get wasmInstance(): never {
+      throw new Error('Attempted to get wasmInstance before initialization')
+    },
     zookeeperHistoryRecordingInProgress: false,
   }
   const executingEditor = signal<typeof kclManager | undefined>(kclManager)

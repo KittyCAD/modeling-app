@@ -21,6 +21,8 @@ const mocks = vi.hoisted(() => ({
   updateCodeEditor: vi.fn(),
 }))
 
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
+
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
     relative: (from: string, to: string) =>

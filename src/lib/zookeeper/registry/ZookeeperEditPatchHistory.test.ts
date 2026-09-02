@@ -8,6 +8,8 @@ const mocks = vi.hoisted(() => ({
   readFile: vi.fn(async () => 'updated contents'),
 }))
 
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
+
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
     join: (root: string, ...parts: string[]) =>
