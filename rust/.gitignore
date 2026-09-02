@@ -3,7 +3,7 @@ target
 *.snap.new.md
 
 /kcl-lib/fuzz/Cargo.lock
-/kcl-language-server-release/Cargo.lock
+/kcl-lsp-server-release/Cargo.lock
 /kcl-wasm-lib/pkg
 /lcov.info
 

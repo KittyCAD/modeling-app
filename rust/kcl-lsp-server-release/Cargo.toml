@@ -1,5 +1,5 @@
 [package]
-name = "kcl-language-server-release"
+name = "kcl-lsp-server-release"
 version = "0.1.181"
 edition = "2024"
 authors = ["KittyCAD Inc <kcl@kittycad.io>"]
@@ -7,7 +7,7 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [[bin]]
-name = "kcl-language-server-release"
+name = "kcl-lsp-server-release"
 path = "src/main.rs"
 bench = false
 

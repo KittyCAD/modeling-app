@@ -21,7 +21,7 @@ const compat = new FlatCompat({
 export default defineConfig([
   globalIgnores([
     'rust/**/*.ts',
-    '!rust/kcl-language-server/client/src/**/*.ts',
+    '!rust/kcl-lsp-client-vscode/client/src/**/*.ts',
     '**/*.typegen.ts',
     'packages/codemirror-lsp-client/dist/*',
     '**/.vscode-test',

@@ -32,8 +32,6 @@ use tower_lsp::lsp_types::CompletionResponse;
 use tower_lsp::lsp_types::CreateFilesParams;
 use tower_lsp::lsp_types::DeleteFilesParams;
 use tower_lsp::lsp_types::Diagnostic;
-use tower_lsp::lsp_types::DiagnosticOptions;
-use tower_lsp::lsp_types::DiagnosticServerCapabilities;
 use tower_lsp::lsp_types::DiagnosticSeverity;
 use tower_lsp::lsp_types::DidChangeConfigurationParams;
 use tower_lsp::lsp_types::DidChangeTextDocumentParams;
@@ -1043,9 +1041,10 @@ impl LanguageServer for Backend {
                     all_commit_characters: None,
                     ..Default::default()
                 }),
-                diagnostic_provider: Some(DiagnosticServerCapabilities::Options(DiagnosticOptions {
-                    ..Default::default()
-                })),
+                // Diagnostics are pushed with `textDocument/publishDiagnostics`.
+                // Advertising pull diagnostics too makes clients such as Zed
+                // display the same diagnostic from both channels.
+                diagnostic_provider: None,
                 document_formatting_provider: Some(OneOf::Left(true)),
                 folding_range_provider: Some(FoldingRangeProviderCapability::Simple(true)),
                 hover_provider: Some(HoverProviderCapability::Simple(true)),

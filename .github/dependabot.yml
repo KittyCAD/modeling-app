@@ -511,7 +511,7 @@ updates:
     - '*zoo*'
     - '*kittycad*'
 - package-ecosystem: npm
-  directory: /rust/kcl-language-server
+  directory: /rust/kcl-lsp-client-vscode
   schedule:
     interval: weekly
     day: saturday

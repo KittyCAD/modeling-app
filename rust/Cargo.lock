@@ -2400,26 +2400,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl-language-server-release"
-version = "0.1.181"
-dependencies = [
- "anyhow",
- "clap",
- "flate2",
- "lazy_static",
- "log",
- "slog",
- "slog-async",
- "slog-json",
- "slog-term",
- "time",
- "tokio",
- "tracing-subscriber",
- "xshell",
- "zip",
-]
-
-[[package]]
 name = "kcl-lib"
 version = "0.2.181"
 dependencies = [
@@ -2499,6 +2479,26 @@ dependencies = [
  "web-time",
  "winnow",
  "zduny-wasm-timer",
+]
+
+[[package]]
+name = "kcl-lsp-server-release"
+version = "0.1.181"
+dependencies = [
+ "anyhow",
+ "clap",
+ "flate2",
+ "lazy_static",
+ "log",
+ "slog",
+ "slog-async",
+ "slog-json",
+ "slog-term",
+ "time",
+ "tokio",
+ "tracing-subscriber",
+ "xshell",
+ "zip",
 ]
 
 [[package]]
