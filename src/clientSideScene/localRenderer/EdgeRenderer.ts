@@ -49,6 +49,7 @@ export class EdgeRenderer {
   }
 
   setEdges(edges: LocalRenderPacketEdge[]) {
+    this.geometry.dispose()
     this.group.clear()
 
     const renderableEdges = edges.filter((edge) => edge.positions.length >= 6)
