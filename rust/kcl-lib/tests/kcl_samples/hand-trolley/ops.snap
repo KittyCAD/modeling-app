@@ -13644,13 +13644,13 @@ description: Operations executed hand-trolley.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "3f81e487-bbfd-50e7-a868-1e9819afb724"
+                "artifactId": "de5768d7-3677-5eaa-8324-e3aef256910b"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "6af183d5-b2df-54eb-ad89-50ab4ea41f6e"
+                "artifactId": "0076e2d9-31b0-54e6-9983-d4d5a310f28d"
               }
             },
             {
@@ -22257,13 +22257,13 @@ description: Operations executed hand-trolley.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "44d1b7ed-9ef4-5ee4-9e01-c3733a9c5a8c"
+                    "artifactId": "3a4c70c1-8b01-5043-9c43-07e6d8b309e0"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "026a3c83-9c73-53b3-9327-bd0c472ee4cc"
+                    "artifactId": "fc0719bc-856e-5b6e-8425-7c8f5a9c062b"
                   }
                 }
               ]
@@ -22280,7 +22280,7 @@ description: Operations executed hand-trolley.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "a2dd933d-d1c5-5321-91b6-91ef2e12031a"
+                    "artifactId": "d2bc649a-d080-5c64-9f90-132625df0672"
                   }
                 },
                 {
@@ -22292,7 +22292,7 @@ description: Operations executed hand-trolley.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "328be17e-bd14-54ed-8ea2-31c52e59f66b"
+                    "artifactId": "d622043a-5727-526f-8d77-aca1cff6f302"
                   }
                 }
               ]

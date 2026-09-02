@@ -5938,19 +5938,19 @@ description: Operations executed multi-axis-robot.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "9ba81595-d8a9-58b6-a767-febd76e6c114"
+                "value": "9e73947b-0fd5-5a42-a410-45c329517b3f"
               },
               {
                 "type": "Uuid",
-                "value": "ce59b3c1-db84-5621-95d9-cc9c5138bd98"
+                "value": "84dcab21-bafe-5857-9277-5cd2a264d695"
               },
               {
                 "type": "Uuid",
-                "value": "4c61878a-1970-5d11-afab-83a120c45742"
+                "value": "cf5b2e71-1edb-55e8-a475-9243b87b41e1"
               },
               {
                 "type": "Uuid",
-                "value": "b1c85ba6-414b-5b64-9307-2d757764e0fd"
+                "value": "c621bad2-7960-53b5-b9e4-a3eadd7690e4"
               }
             ]
           },

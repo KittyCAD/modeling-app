@@ -525,7 +525,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
-        "edge_id": "d937e77e-e9d1-50b4-98ef-763a4d548090"
+        "edge_id": "6cddcf0f-9271-5fb5-ac5b-96ac4152d66f"
       }
     },
     {
@@ -534,7 +534,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
-        "edge_id": "d937e77e-e9d1-50b4-98ef-763a4d548090"
+        "edge_id": "6cddcf0f-9271-5fb5-ac5b-96ac4152d66f"
       }
     },
     {
@@ -542,7 +542,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "25c2a2f7-d7fa-5c1d-ae57-003922781d19",
+        "entity_id": "0abe5974-90f2-5293-988f-5820298ce734",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -619,7 +619,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "25c2a2f7-d7fa-5c1d-ae57-003922781d19",
+        "entity_id": "0abe5974-90f2-5293-988f-5820298ce734",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -660,7 +660,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
-        "edge_id": "a1f46414-cb15-5dee-aa7a-3b93e4006ca3"
+        "edge_id": "7f5a0227-018c-5211-9af6-8a459e9ab3d0"
       }
     },
     {
@@ -669,7 +669,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
-        "edge_id": "a1f46414-cb15-5dee-aa7a-3b93e4006ca3"
+        "edge_id": "7f5a0227-018c-5211-9af6-8a459e9ab3d0"
       }
     },
     {
@@ -677,7 +677,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "e16c7d71-b086-5ac1-8bfd-79425e7f64f6",
+        "entity_id": "018674f1-2f7d-5c88-8f15-f6f671ae5667",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -754,7 +754,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "e16c7d71-b086-5ac1-8bfd-79425e7f64f6",
+        "entity_id": "018674f1-2f7d-5c88-8f15-f6f671ae5667",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -795,7 +795,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
-        "edge_id": "3f20c928-2f80-5d74-8c1f-d6c138628f0b"
+        "edge_id": "5a898825-a5f5-5989-880f-1de07d7d94bd"
       }
     },
     {
@@ -804,7 +804,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
-        "edge_id": "3f20c928-2f80-5d74-8c1f-d6c138628f0b"
+        "edge_id": "5a898825-a5f5-5989-880f-1de07d7d94bd"
       }
     },
     {
@@ -831,8 +831,8 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_get_common_edge",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "face_ids": [
-          "40899cd6-1959-5e95-8667-0966a4b69bbb",
-          "908dcb14-8c7d-508a-b0c6-ed9178956b78"
+          "f59fae83-cded-5213-adfd-4ffbbed9fb7d",
+          "8b83dade-7d69-5021-a824-85c6c4af89b4"
         ]
       }
     },
@@ -843,8 +843,8 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_get_common_edge",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "face_ids": [
-          "908dcb14-8c7d-508a-b0c6-ed9178956b78",
-          "9536b06b-b56d-5c50-aa59-c6f4807c1dd4"
+          "8b83dade-7d69-5021-a824-85c6c4af89b4",
+          "5c83a0dc-5782-5af8-b35e-a5035e85c863"
         ]
       }
     },
@@ -855,8 +855,8 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_get_common_edge",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "face_ids": [
-          "9536b06b-b56d-5c50-aa59-c6f4807c1dd4",
-          "c9f813d5-311b-5c08-847f-0b8d50eee301"
+          "5c83a0dc-5782-5af8-b35e-a5035e85c863",
+          "61468768-7d03-5b5d-b8e4-600e2ded60c2"
         ]
       }
     },
@@ -867,8 +867,8 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_get_common_edge",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "face_ids": [
-          "c9f813d5-311b-5c08-847f-0b8d50eee301",
-          "40899cd6-1959-5e95-8667-0966a4b69bbb"
+          "61468768-7d03-5b5d-b8e4-600e2ded60c2",
+          "f59fae83-cded-5213-adfd-4ffbbed9fb7d"
         ]
       }
     },
@@ -878,7 +878,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
-        "edge_id": "9ba81595-d8a9-58b6-a767-febd76e6c114"
+        "edge_id": "9e73947b-0fd5-5a42-a410-45c329517b3f"
       },
       "omitFromGraph": true
     },
@@ -888,7 +888,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
-        "edge_id": "ce59b3c1-db84-5621-95d9-cc9c5138bd98"
+        "edge_id": "84dcab21-bafe-5857-9277-5cd2a264d695"
       },
       "omitFromGraph": true
     },
@@ -898,7 +898,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
-        "edge_id": "4c61878a-1970-5d11-afab-83a120c45742"
+        "edge_id": "cf5b2e71-1edb-55e8-a475-9243b87b41e1"
       },
       "omitFromGraph": true
     },
@@ -908,7 +908,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
-        "edge_id": "b1c85ba6-414b-5b64-9307-2d757764e0fd"
+        "edge_id": "c621bad2-7960-53b5-b9e4-a3eadd7690e4"
       },
       "omitFromGraph": true
     },
@@ -919,7 +919,7 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_cut_edges",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "edge_ids": [
-          "9ba81595-d8a9-58b6-a767-febd76e6c114"
+          "9e73947b-0fd5-5a42-a410-45c329517b3f"
         ],
         "cut_type": {
           "chamfer": {
@@ -941,7 +941,7 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_cut_edges",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "edge_ids": [
-          "ce59b3c1-db84-5621-95d9-cc9c5138bd98"
+          "84dcab21-bafe-5857-9277-5cd2a264d695"
         ],
         "cut_type": {
           "chamfer": {
@@ -963,7 +963,7 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_cut_edges",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "edge_ids": [
-          "4c61878a-1970-5d11-afab-83a120c45742"
+          "cf5b2e71-1edb-55e8-a475-9243b87b41e1"
         ],
         "cut_type": {
           "chamfer": {
@@ -985,7 +985,7 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_cut_edges",
         "object_id": "fb3e74cc-4645-51fe-b4d7-5ce3951e1443",
         "edge_ids": [
-          "b1c85ba6-414b-5b64-9307-2d757764e0fd"
+          "c621bad2-7960-53b5-b9e4-a3eadd7690e4"
         ],
         "cut_type": {
           "chamfer": {
@@ -1225,7 +1225,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
-        "edge_id": "f00c8f98-363d-5862-a96f-8cf649cde3ea"
+        "edge_id": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b"
       }
     },
     {
@@ -1234,7 +1234,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
-        "edge_id": "f00c8f98-363d-5862-a96f-8cf649cde3ea"
+        "edge_id": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b"
       }
     },
     {
@@ -1242,7 +1242,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9df1a74b-234e-564e-a764-44995273691d",
+        "entity_id": "7abef581-6d8a-5087-8146-e180624ca783",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1318,7 +1318,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9df1a74b-234e-564e-a764-44995273691d",
+        "entity_id": "7abef581-6d8a-5087-8146-e180624ca783",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1359,7 +1359,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
-        "edge_id": "bdf933ab-8e5c-5545-92a9-353845351e14"
+        "edge_id": "7a420cfc-712e-58da-9200-a71eb586b982"
       }
     },
     {
@@ -1368,7 +1368,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
-        "edge_id": "bdf933ab-8e5c-5545-92a9-353845351e14"
+        "edge_id": "7a420cfc-712e-58da-9200-a71eb586b982"
       }
     },
     {
@@ -1376,7 +1376,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9df1a74b-234e-564e-a764-44995273691d",
+        "entity_id": "7abef581-6d8a-5087-8146-e180624ca783",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1452,7 +1452,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "9df1a74b-234e-564e-a764-44995273691d",
+        "entity_id": "7abef581-6d8a-5087-8146-e180624ca783",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1493,7 +1493,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
-        "edge_id": "13a2957a-8d9c-503f-b44b-d58410ce4c13"
+        "edge_id": "c2cc5fab-df05-5614-b021-7030500c77c7"
       }
     },
     {
@@ -1502,7 +1502,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
-        "edge_id": "13a2957a-8d9c-503f-b44b-d58410ce4c13"
+        "edge_id": "c2cc5fab-df05-5614-b021-7030500c77c7"
       }
     },
     {
@@ -1510,7 +1510,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "94b43173-b34b-50ab-b141-3042e27396f1",
+        "entity_id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1586,7 +1586,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "94b43173-b34b-50ab-b141-3042e27396f1",
+        "entity_id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1627,7 +1627,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
-        "edge_id": "391fec29-b48f-50a2-bab4-337c2a0b4f80"
+        "edge_id": "cd36649a-b297-5394-8b19-fcd382f40999"
       }
     },
     {
@@ -1636,7 +1636,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "69dd42be-4378-5d6d-a48d-4cb7dba6a59d",
-        "edge_id": "391fec29-b48f-50a2-bab4-337c2a0b4f80"
+        "edge_id": "cd36649a-b297-5394-8b19-fcd382f40999"
       }
     },
     {
@@ -1881,7 +1881,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "b9cf2835-3bcf-51d5-87f0-30af82818dea",
-        "edge_id": "ca6cd6ac-7569-56d7-af27-07570eeed719"
+        "edge_id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df"
       }
     },
     {
@@ -1890,7 +1890,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "b9cf2835-3bcf-51d5-87f0-30af82818dea",
-        "edge_id": "ca6cd6ac-7569-56d7-af27-07570eeed719"
+        "edge_id": "b9ea2399-1f22-5fc3-9b84-fd3d7a2029df"
       }
     },
     {
@@ -1898,7 +1898,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "b3cc3038-34b8-516c-afd5-7d20b30bf6e2",
+        "entity_id": "42d5003d-3756-5e61-ad7f-7ec959eefb4f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1974,7 +1974,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "b3cc3038-34b8-516c-afd5-7d20b30bf6e2",
+        "entity_id": "42d5003d-3756-5e61-ad7f-7ec959eefb4f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2015,7 +2015,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "b9cf2835-3bcf-51d5-87f0-30af82818dea",
-        "edge_id": "a86398f4-4350-586c-bf4c-9990aa97ee7f"
+        "edge_id": "510f436a-132b-546b-aa9b-d935f5856f7a"
       }
     },
     {
@@ -2024,7 +2024,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "b9cf2835-3bcf-51d5-87f0-30af82818dea",
-        "edge_id": "a86398f4-4350-586c-bf4c-9990aa97ee7f"
+        "edge_id": "510f436a-132b-546b-aa9b-d935f5856f7a"
       }
     },
     {
@@ -2032,7 +2032,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "6327fbac-c3cf-5b6c-af47-a3b42f581dd1",
+        "entity_id": "6811759c-1b79-5e97-9641-5a2ae07d7cd4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2108,7 +2108,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "6327fbac-c3cf-5b6c-af47-a3b42f581dd1",
+        "entity_id": "6811759c-1b79-5e97-9641-5a2ae07d7cd4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2149,7 +2149,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "ba9afb15-82a8-54ba-b497-7c4a35ab0fa7",
-        "edge_id": "53ac9f66-e715-5734-92eb-d05cddb9dbd0"
+        "edge_id": "7ab44626-4550-58eb-b371-5781af818f31"
       }
     },
     {
@@ -2158,7 +2158,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "ba9afb15-82a8-54ba-b497-7c4a35ab0fa7",
-        "edge_id": "53ac9f66-e715-5734-92eb-d05cddb9dbd0"
+        "edge_id": "7ab44626-4550-58eb-b371-5781af818f31"
       }
     },
     {
@@ -2166,7 +2166,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "b3cc3038-34b8-516c-afd5-7d20b30bf6e2",
+        "entity_id": "42d5003d-3756-5e61-ad7f-7ec959eefb4f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2242,7 +2242,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "b3cc3038-34b8-516c-afd5-7d20b30bf6e2",
+        "entity_id": "42d5003d-3756-5e61-ad7f-7ec959eefb4f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2283,7 +2283,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
-        "edge_id": "e9284596-6552-5471-92b1-8326b3d7a4b9"
+        "edge_id": "34ea7cec-5ec6-563f-8d46-c58237130fa9"
       }
     },
     {
@@ -2292,7 +2292,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
-        "edge_id": "e9284596-6552-5471-92b1-8326b3d7a4b9"
+        "edge_id": "34ea7cec-5ec6-563f-8d46-c58237130fa9"
       }
     },
     {
@@ -2300,7 +2300,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "fd5d2eb4-1c18-5f06-8635-bdc178ab94a4",
+        "entity_id": "3ae1961c-10aa-5ad6-bc75-245b45a7f95c",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2376,7 +2376,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "fd5d2eb4-1c18-5f06-8635-bdc178ab94a4",
+        "entity_id": "3ae1961c-10aa-5ad6-bc75-245b45a7f95c",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2417,7 +2417,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
-        "edge_id": "f9f3395a-449d-5ec3-b551-b45263b021d0"
+        "edge_id": "31c8e79a-74ef-5bd7-9e8a-b88f10ba7319"
       }
     },
     {
@@ -2426,7 +2426,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "64590b9a-7e06-5fd0-83bd-08b8b18b1405",
-        "edge_id": "f9f3395a-449d-5ec3-b551-b45263b021d0"
+        "edge_id": "31c8e79a-74ef-5bd7-9e8a-b88f10ba7319"
       }
     },
     {
@@ -2434,7 +2434,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c1244c8-dfed-5899-9653-39fe55a04c4e",
+        "entity_id": "dfdd8282-a277-5502-ab76-00a8045f56d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2612,7 +2612,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c1244c8-dfed-5899-9653-39fe55a04c4e",
+        "entity_id": "dfdd8282-a277-5502-ab76-00a8045f56d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2653,7 +2653,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "1c4af35e-3789-555a-b480-2dc0aab22dd1",
-        "edge_id": "da985225-f347-5000-b174-83f9788fd602"
+        "edge_id": "021f0598-4a12-5b9f-a0ad-2540723f9183"
       }
     },
     {
@@ -2662,7 +2662,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "1c4af35e-3789-555a-b480-2dc0aab22dd1",
-        "edge_id": "da985225-f347-5000-b174-83f9788fd602"
+        "edge_id": "021f0598-4a12-5b9f-a0ad-2540723f9183"
       }
     },
     {
@@ -2670,7 +2670,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c1244c8-dfed-5899-9653-39fe55a04c4e",
+        "entity_id": "dfdd8282-a277-5502-ab76-00a8045f56d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2848,7 +2848,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "3c1244c8-dfed-5899-9653-39fe55a04c4e",
+        "entity_id": "dfdd8282-a277-5502-ab76-00a8045f56d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2889,7 +2889,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "301f8743-d0a0-5bd2-9197-fb19bed47af5",
-        "edge_id": "202999b7-86f5-524a-add7-ee8b3f999dd0"
+        "edge_id": "a3d85d7b-1991-5875-b7bf-d7c89a24275c"
       }
     },
     {
@@ -2898,7 +2898,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "301f8743-d0a0-5bd2-9197-fb19bed47af5",
-        "edge_id": "202999b7-86f5-524a-add7-ee8b3f999dd0"
+        "edge_id": "a3d85d7b-1991-5875-b7bf-d7c89a24275c"
       }
     },
     {
@@ -3135,7 +3135,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "389ea878-9075-54e8-9f0d-f5855f0295fb",
-        "edge_id": "d8ec1559-4cdc-580d-a21b-cb7d72781a29"
+        "edge_id": "dc8499ff-29fe-52e1-8145-d4827c53c57d"
       }
     },
     {
@@ -3144,7 +3144,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "389ea878-9075-54e8-9f0d-f5855f0295fb",
-        "edge_id": "d8ec1559-4cdc-580d-a21b-cb7d72781a29"
+        "edge_id": "dc8499ff-29fe-52e1-8145-d4827c53c57d"
       }
     },
     {
@@ -3379,7 +3379,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
-        "edge_id": "f3f268a0-527c-5b6d-8951-6831cc778f58"
+        "edge_id": "45a7f0ae-a60d-5c05-a80b-64a6e20be693"
       }
     },
     {
@@ -3388,7 +3388,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
-        "edge_id": "f3f268a0-527c-5b6d-8951-6831cc778f58"
+        "edge_id": "45a7f0ae-a60d-5c05-a80b-64a6e20be693"
       }
     },
     {
@@ -3396,7 +3396,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "1f7c390d-8f3c-577d-b71a-538bc9b56a8a",
+        "entity_id": "2827c090-e171-5f86-8140-d3dd3056c6c6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3472,7 +3472,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "1f7c390d-8f3c-577d-b71a-538bc9b56a8a",
+        "entity_id": "2827c090-e171-5f86-8140-d3dd3056c6c6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3513,7 +3513,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
-        "edge_id": "924f5a0b-c2cd-543e-9886-d60a24022bc6"
+        "edge_id": "c1d1bd47-6417-5d2d-8386-f0d45e3d8622"
       }
     },
     {
@@ -3522,7 +3522,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
-        "edge_id": "924f5a0b-c2cd-543e-9886-d60a24022bc6"
+        "edge_id": "c1d1bd47-6417-5d2d-8386-f0d45e3d8622"
       }
     },
     {
@@ -3530,7 +3530,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "43fd2c19-41b1-525b-9b67-581a048d5e1f",
+        "entity_id": "6357148f-b547-5baf-9773-bdb7300cfaf1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3606,7 +3606,7 @@ description: Artifact commands multi-axis-robot.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "43fd2c19-41b1-525b-9b67-581a048d5e1f",
+        "entity_id": "6357148f-b547-5baf-9773-bdb7300cfaf1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3647,7 +3647,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
-        "edge_id": "ae019c08-cb21-5e1c-bd6e-f14409a2ed11"
+        "edge_id": "bc7b8622-045d-5e5f-9aab-ea023c8d9888"
       }
     },
     {
@@ -3656,7 +3656,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
-        "edge_id": "ae019c08-cb21-5e1c-bd6e-f14409a2ed11"
+        "edge_id": "bc7b8622-045d-5e5f-9aab-ea023c8d9888"
       }
     },
     {
@@ -3840,7 +3840,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "f1b5f5aa-e22c-5336-8f83-223a4e981cbb",
-        "edge_id": "8823ee25-3360-5a18-90de-dc1850696338"
+        "edge_id": "ef339c84-ab92-5b1c-a24f-b27935f2f3ff"
       }
     },
     {
@@ -3849,7 +3849,7 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "f1b5f5aa-e22c-5336-8f83-223a4e981cbb",
-        "edge_id": "8823ee25-3360-5a18-90de-dc1850696338"
+        "edge_id": "ef339c84-ab92-5b1c-a24f-b27935f2f3ff"
       }
     }
   ]

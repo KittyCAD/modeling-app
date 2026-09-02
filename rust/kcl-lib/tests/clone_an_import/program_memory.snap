@@ -17,7 +17,7 @@ description: Variables in memory after executing clone_an_import.kcl
         "paths": [
           {
             "__geoMeta": {
-              "id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b",
+              "id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4",
               "sourceRange": []
             },
             "ccw": true,
@@ -47,7 +47,7 @@ description: Variables in memory after executing clone_an_import.kcl
           },
           {
             "__geoMeta": {
-              "id": "4579311f-b00c-58c4-af18-cddf42afbd1c",
+              "id": "55f55573-4a17-5173-9af8-767495822462",
               "sourceRange": []
             },
             "ccw": true,
@@ -170,7 +170,7 @@ description: Variables in memory after executing clone_an_import.kcl
         "paths": [
           {
             "__geoMeta": {
-              "id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4",
+              "id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b",
               "sourceRange": []
             },
             "ccw": true,
@@ -200,7 +200,7 @@ description: Variables in memory after executing clone_an_import.kcl
           },
           {
             "__geoMeta": {
-              "id": "55f55573-4a17-5173-9af8-767495822462",
+              "id": "4579311f-b00c-58c4-af18-cddf42afbd1c",
               "sourceRange": []
             },
             "ccw": true,
