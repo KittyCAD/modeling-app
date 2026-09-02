@@ -16,14 +16,14 @@ import engineSceneExtension from '.'
 import { activateZoodleRuntimeExtension } from './zoodleRuntimeExtension'
 
 describe('zoodle runtime extension', () => {
-  it('insets the engine stream while Zoodle is active', async () => {
+  it('insets the engine stream while Zoodle is active', () => {
     const registry = new Registry()
     registry.configure([
       engineSceneExtension,
       engineSceneRuntimeExtensionsSlot.of(),
     ])
 
-    await activateZoodleRuntimeExtension(registry, {
+    activateZoodleRuntimeExtension(registry, {
       imageDataUrl: 'data:image/png;base64,aGVsbG8=',
       onCancel: vi.fn(),
       onSend: vi.fn(),
@@ -39,14 +39,14 @@ describe('zoodle runtime extension', () => {
     )
   })
 
-  it('provides a session-scoped Zoodle tool service', async () => {
+  it('provides a session-scoped Zoodle tool service', () => {
     const registry = new Registry()
     registry.configure([
       engineSceneExtension,
       engineSceneRuntimeExtensionsSlot.of(),
     ])
 
-    await activateZoodleRuntimeExtension(registry, {
+    activateZoodleRuntimeExtension(registry, {
       imageDataUrl: 'data:image/png;base64,aGVsbG8=',
       onCancel: vi.fn(),
       onSend: vi.fn(),
