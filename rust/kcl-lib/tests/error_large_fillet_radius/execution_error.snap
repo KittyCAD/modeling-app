@@ -4,8 +4,7 @@ description: Error from executing error_large_fillet_radius.kcl
 ---
 KCL Engine error
 
-  × engine: The Zoo engine cannot handle this 3D subtraction yet.  Please
-  │ report this as an issue
+  × engine: The Zoo engine cannot handle this 3D subtraction yet.
   │ Edge cut failed
     ╭─[21:13]
  20 │ extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
