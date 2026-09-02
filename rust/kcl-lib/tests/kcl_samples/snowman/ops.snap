@@ -963,11 +963,11 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -997,7 +997,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -1023,7 +1023,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004"
           }
         },
         "sourceRange": []
@@ -1123,7 +1123,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
           }
         },
         "sourceRange": []
@@ -1169,7 +1169,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
           }
         },
         "sourceRange": []
@@ -1580,11 +1580,11 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5173c024-ac32-59f6-acbe-69ddbf68893d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "59bc8baf-257f-5783-ad91-95db236aa6b0"
               }
             ]
           },
@@ -1614,7 +1614,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30"
           }
         },
         "sourceRange": []
@@ -1640,7 +1640,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f481fd4-203e-57d7-b5d6-b16289577621"
           }
         },
         "sourceRange": []
@@ -1740,7 +1740,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
           }
         },
         "sourceRange": []
@@ -1786,7 +1786,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
           }
         },
         "sourceRange": []
@@ -2197,11 +2197,11 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "663fe57f-e0fe-5661-bf24-d25b7a92874c"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7"
               }
             ]
           },
@@ -2231,7 +2231,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153"
           }
         },
         "sourceRange": []
@@ -2257,7 +2257,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2"
           }
         },
         "sourceRange": []
@@ -2357,7 +2357,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
           }
         },
         "sourceRange": []
@@ -2403,7 +2403,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
           }
         },
         "sourceRange": []
@@ -2872,11 +2872,11 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
               }
             ]
           },
@@ -2906,7 +2906,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd"
           }
         },
         "sourceRange": []
@@ -2932,7 +2932,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -3032,7 +3032,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
           }
         },
         "sourceRange": []
@@ -3450,11 +3450,11 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e8637a6d-00c2-5b87-831e-2db8c2223948"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0919e597-7112-50da-97bb-e5ba198e1dcd"
               }
             ]
           },
@@ -3484,7 +3484,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
           }
         },
         "sourceRange": []
@@ -3510,7 +3510,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896"
           }
         },
         "sourceRange": []
@@ -3610,7 +3610,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
           }
         },
         "sourceRange": []
@@ -4028,11 +4028,11 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
               }
             ]
           },
@@ -4062,7 +4062,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976"
           }
         },
         "sourceRange": []
@@ -4088,7 +4088,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375"
           }
         },
         "sourceRange": []
@@ -4188,7 +4188,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
           }
         },
         "sourceRange": []
@@ -4261,19 +4261,19 @@ description: Operations executed snowman.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
               }
             }
           ]
@@ -4773,11 +4773,11 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "19107e89-bf40-5541-88a5-5106b6de636d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef"
               }
             ]
           },
@@ -4807,7 +4807,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2"
           }
         },
         "sourceRange": []
@@ -4833,7 +4833,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6"
           }
         },
         "sourceRange": []
@@ -4933,7 +4933,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997"
           }
         },
         "sourceRange": []
@@ -5351,11 +5351,11 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d7522563-c424-5aea-962e-3d6a85a0b99d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f58fd62a-578c-542c-94f8-dd627caab5d0"
               }
             ]
           },
@@ -5385,7 +5385,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70"
           }
         },
         "sourceRange": []
@@ -5411,7 +5411,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1f5ca073-184d-543b-9da6-2db6719123a8"
           }
         },
         "sourceRange": []
@@ -5511,7 +5511,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
           }
         },
         "sourceRange": []
@@ -5584,13 +5584,13 @@ description: Operations executed snowman.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
               }
             }
           ]
@@ -6514,11 +6514,11 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3"
               }
             ]
           },
@@ -6548,7 +6548,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "44b2dfb0-0721-57cd-a796-4401a664e194"
           }
         },
         "sourceRange": []
@@ -6574,7 +6574,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bdd2605a-480e-5ad5-b52f-c6889529c457"
           }
         },
         "sourceRange": []
@@ -6662,7 +6662,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc66f518-029e-5b30-8772-13859f39ce6d"
           }
         },
         "sourceRange": []
@@ -6732,7 +6732,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc66f518-029e-5b30-8772-13859f39ce6d"
           }
         },
         "sourceRange": []
@@ -6794,7 +6794,7 @@ description: Operations executed snowman.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -6951,7 +6951,7 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5b060302-5d33-5353-bd5e-3f938c80ea7f"
               }
             ]
           },
@@ -6981,7 +6981,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322"
           }
         },
         "sourceRange": []
@@ -7007,7 +7007,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb"
           }
         },
         "sourceRange": []
@@ -7165,7 +7165,7 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8f72543d-c84d-5018-865e-36a2fd66854c"
               }
             ]
           },
@@ -7195,7 +7195,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
           }
         },
         "sourceRange": []
@@ -7221,7 +7221,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7"
           }
         },
         "sourceRange": []
@@ -7267,7 +7267,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "43582f56-4d15-5082-9796-67d8e5ee6e44"
           }
         },
         "sourceRange": []
@@ -7446,7 +7446,7 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad"
               }
             ]
           },
@@ -7476,7 +7476,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66"
           }
         },
         "sourceRange": []
@@ -7502,7 +7502,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "065d6e6f-62af-500d-aae0-fe097d5f952b"
           }
         },
         "sourceRange": []
@@ -7548,7 +7548,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
           }
         },
         "sourceRange": []
@@ -7625,7 +7625,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
           }
         },
         "sourceRange": []
@@ -7804,7 +7804,7 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "af94b4da-da53-5386-a65f-ed75c251c9ff"
               }
             ]
           },
@@ -7834,7 +7834,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf"
           }
         },
         "sourceRange": []
@@ -7860,7 +7860,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49"
           }
         },
         "sourceRange": []
@@ -7906,7 +7906,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd"
           }
         },
         "sourceRange": []
@@ -7983,7 +7983,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd"
           }
         },
         "sourceRange": []
@@ -8220,7 +8220,7 @@ description: Operations executed snowman.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2f89f295-7088-5e46-8594-1b84a8601b0a"
               }
             ]
           },
@@ -8250,7 +8250,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ca586750-6453-56e0-b4cf-8e561096e7ca"
           }
         },
         "sourceRange": []
@@ -8276,7 +8276,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46"
           }
         },
         "sourceRange": []
@@ -8322,7 +8322,7 @@ description: Operations executed snowman.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
           }
         },
         "sourceRange": []
@@ -8399,13 +8399,13 @@ description: Operations executed snowman.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
               }
             },
             {
@@ -8414,19 +8414,19 @@ description: Operations executed snowman.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
                   }
                 }
               ]
@@ -8437,13 +8437,13 @@ description: Operations executed snowman.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
                   }
                 }
               ]
@@ -8451,25 +8451,25 @@ description: Operations executed snowman.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fc66f518-029e-5b30-8772-13859f39ce6d"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "43582f56-4d15-5082-9796-67d8e5ee6e44"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd"
               }
             }
           ]

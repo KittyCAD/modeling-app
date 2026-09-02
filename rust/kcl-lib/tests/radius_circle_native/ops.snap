@@ -163,7 +163,7 @@ description: Operations executed radius_circle_native.kcl
         "point": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           },
           "sourceRange": []
         },
@@ -173,7 +173,7 @@ description: Operations executed radius_circle_native.kcl
             "value": {
               "c": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "meta": {
                 "type": "Object",
@@ -181,7 +181,7 @@ description: Operations executed radius_circle_native.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
                     }
                   }
                 }
@@ -217,7 +217,7 @@ description: Operations executed radius_circle_native.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           }
         },
         "sourceRange": []

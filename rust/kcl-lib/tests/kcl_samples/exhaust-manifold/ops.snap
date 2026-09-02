@@ -2313,7 +2313,7 @@ description: Operations executed exhaust-manifold.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c4fac378-d3df-5505-98c1-308b81b0fd96"
               }
             ]
           },
@@ -2343,7 +2343,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
           }
         },
         "sourceRange": []
@@ -2353,7 +2353,7 @@ description: Operations executed exhaust-manifold.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
             }
           },
           "sourceRange": []
@@ -2382,7 +2382,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
           }
         },
         "sourceRange": []
@@ -2408,7 +2408,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
           }
         },
         "sourceRange": []
@@ -2434,7 +2434,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
           }
         },
         "sourceRange": []
@@ -2467,7 +2467,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899"
           }
         },
         "sourceRange": []
@@ -2548,7 +2548,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899"
           }
         },
         "sourceRange": []
@@ -4588,7 +4588,7 @@ description: Operations executed exhaust-manifold.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
               }
             ]
           },
@@ -4618,7 +4618,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -4628,7 +4628,7 @@ description: Operations executed exhaust-manifold.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "5f95e913-96e4-58df-abe6-125bedd61cad"
             }
           },
           "sourceRange": []
@@ -4657,7 +4657,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab"
           }
         },
         "sourceRange": []
@@ -4683,7 +4683,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5f95e913-96e4-58df-abe6-125bedd61cad"
           }
         },
         "sourceRange": []
@@ -4709,7 +4709,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
           }
         },
         "sourceRange": []
@@ -4742,7 +4742,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
           }
         },
         "sourceRange": []
@@ -4823,7 +4823,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
           }
         },
         "sourceRange": []
@@ -13042,11 +13042,11 @@ description: Operations executed exhaust-manifold.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a0df0eb6-009b-594d-815d-31646979be80"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d"
               }
             ]
           },
@@ -13076,7 +13076,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22"
           }
         },
         "sourceRange": []
@@ -13118,7 +13118,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "12610836-7dea-569b-a3df-ec2ff8b2c295"
           }
         },
         "sourceRange": []
@@ -13144,7 +13144,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380"
           }
         },
         "sourceRange": []
@@ -13168,7 +13168,7 @@ description: Operations executed exhaust-manifold.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "82f627e1-15a9-56fd-b721-f1484a01bed4"
               }
             ]
           },
@@ -13198,7 +13198,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380"
           }
         },
         "sourceRange": []
@@ -13222,7 +13222,7 @@ description: Operations executed exhaust-manifold.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "8246962b-ec20-5e73-b0c1-7e2121dbc04b"
               }
             ]
           },
@@ -13252,7 +13252,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380"
           }
         },
         "sourceRange": []
@@ -13276,7 +13276,7 @@ description: Operations executed exhaust-manifold.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "2ed9eb2d-5402-57cf-b6ac-fa3d478374da"
               }
             ]
           },
@@ -13306,7 +13306,7 @@ description: Operations executed exhaust-manifold.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380"
           }
         },
         "sourceRange": []
@@ -13330,7 +13330,7 @@ description: Operations executed exhaust-manifold.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "fdcd2045-c974-5f1c-989f-26724ffcf3ff"
               }
             ]
           },

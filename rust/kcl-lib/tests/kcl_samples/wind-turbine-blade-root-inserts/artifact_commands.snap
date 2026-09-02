@@ -5,7 +5,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
 {
   "public/kcl-samples/wind-turbine-blade-root-inserts/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
         "to": {
           "x": 750.0,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
         "segment": {
           "type": "arc",
           "center": {
@@ -107,11 +107,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
         "to": {
           "x": 550.0,
           "y": 0.0,
@@ -120,11 +120,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
         "segment": {
           "type": "arc",
           "center": {
@@ -145,24 +145,24 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -174,11 +174,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
         "distance": 1000.0,
         "faces": null,
         "opposite": "None",
@@ -187,40 +187,40 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+        "edge_id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+        "edge_id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -245,20 +245,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -270,18 +270,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "to": {
           "x": 700.0,
           "y": 0.0,
@@ -290,18 +290,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "segment": {
           "type": "arc",
           "center": {
@@ -322,24 +322,24 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "segment": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+        "intersection_segment": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -351,11 +351,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "distance": 750.0,
         "faces": null,
         "opposite": "None",
@@ -364,44 +364,44 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "edge_id": "71b752f1-381b-5716-bd8f-14d9d2db403d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "deb86259-17a0-5782-a352-d25992246cc0",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "edge_id": "71b752f1-381b-5716-bd8f-14d9d2db403d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "axis": {
           "x": 1.0,
           "y": 0.0,
@@ -418,37 +418,37 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "cc141785-f204-5d03-bdf3-aa7163368c30",
+          "de815b4c-817e-5265-b7b5-30ae92f19673",
+          "98e0b289-82ed-52dc-bb85-8d78f27a8d91",
+          "175dedae-41eb-53a3-a4ac-e5c0c236e1b7",
+          "a662e804-cadb-5168-b786-8ba77ad3a7c5",
+          "3d18a1e3-e1ef-5ecb-a249-aaf3fc738661",
+          "5c0c8e1e-2e1a-5f02-9225-b6f7e124bb59",
+          "e399799a-9d34-57d8-aaf4-123081b7efda",
+          "08ac0227-0e34-5937-9e5d-16670fc36a55",
+          "290aebd3-ac5a-54ec-8d01-24fc714bbb11",
+          "ead1fc36-fe75-5bd8-97e8-c0fa73f8cf7e",
+          "0357578e-fbdb-5b68-98d2-e76431c9bb32",
+          "ec62450f-7353-5e1a-9150-3a7b381de151",
+          "01215fa4-ee56-5054-a41e-7b59a7f38930",
+          "73f7bfd3-6044-5270-8b81-b1e589f2c3de",
+          "3a6ce3d7-4036-5d3a-867e-1feec0a610b6"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "907cac50-3701-5367-b35c-4ec2132c824f",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -473,20 +473,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "907cac50-3701-5367-b35c-4ec2132c824f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "907cac50-3701-5367-b35c-4ec2132c824f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -498,18 +498,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "to": {
           "x": 0.0,
           "y": 700.0,
@@ -518,18 +518,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "segment": {
           "type": "line",
           "end": {
@@ -542,11 +542,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "segment": {
           "type": "line",
           "end": {
@@ -559,11 +559,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "segment": {
           "type": "line",
           "end": {
@@ -576,11 +576,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "segment": {
           "type": "line",
           "end": {
@@ -593,11 +593,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "segment": {
           "type": "line",
           "end": {
@@ -610,11 +610,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "segment": {
           "type": "line",
           "end": {
@@ -627,24 +627,24 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+        "segment": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+        "intersection_segment": "2f481fd4-203e-57d7-b5d6-b16289577621",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "468f6520-a683-5392-9492-de009fdcddef",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
         "origin": {
           "x": 0.0,
           "y": 650.0,
@@ -666,37 +666,37 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "edge_id": "a3d73251-2e0b-5feb-a8f1-86a06b78002b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "edge_id": "a3d73251-2e0b-5feb-a8f1-86a06b78002b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
         "axis": {
           "x": 1.0,
           "y": 0.0,
@@ -713,11 +713,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -730,11 +730,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "58f938df-d602-5853-b01d-2a43cca5f494",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -747,11 +747,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "62257390-d2de-5872-8ca3-b1bc5956a183",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -764,11 +764,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "37493873-57bb-5a93-8b39-27c3e0911e80",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -781,11 +781,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "7133ad51-77a3-5caa-a47c-f7769d25553c",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -798,11 +798,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "1ee88786-25f7-5753-85c6-a3a5012dd9ed",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -815,11 +815,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "70b11925-ca01-518f-b5fd-4a086304fd08",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -832,11 +832,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "117a5bf5-9c1f-5b9c-af63-74acd66158a9",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -849,11 +849,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "2536c5fe-6035-5963-aebf-000fb27e96f3",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -866,11 +866,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a0ade6f-d355-5121-9adb-351976a78284",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "fd93e2e0-e340-56a4-8c13-334b62f3a358",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -883,11 +883,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "bd137e91-49bd-51f3-9b6d-1dc493f8303f",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -900,11 +900,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "5a78251e-c511-5822-a3d4-9b3cd7ebfbb8",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -917,11 +917,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "85a300a5-35d3-5ae0-97a7-4abe8449c255",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -934,11 +934,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9c715b33-6888-5ad7-89fb-0a3e70954a92",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -951,11 +951,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "3c04cd7b-214b-581c-8e53-d3d7421b7165",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -968,11 +968,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "ec221c83-82da-5024-829e-ec633c4b200d",
         "color": {
           "r": 0.72156864,
           "g": 0.4509804,
@@ -985,7 +985,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1010,20 +1010,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1035,18 +1035,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a54ad82c-be8d-599a-9764-c6498922dd5c",
         "to": {
           "x": 0.0,
           "y": 695.0,
@@ -1055,18 +1055,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a54ad82c-be8d-599a-9764-c6498922dd5c",
         "segment": {
           "type": "line",
           "end": {
@@ -1079,11 +1079,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a54ad82c-be8d-599a-9764-c6498922dd5c",
         "segment": {
           "type": "arc",
           "center": {
@@ -1104,11 +1104,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a54ad82c-be8d-599a-9764-c6498922dd5c",
         "segment": {
           "type": "line",
           "end": {
@@ -1121,11 +1121,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a54ad82c-be8d-599a-9764-c6498922dd5c",
         "segment": {
           "type": "line",
           "end": {
@@ -1138,11 +1138,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a54ad82c-be8d-599a-9764-c6498922dd5c",
         "segment": {
           "type": "line",
           "end": {
@@ -1155,11 +1155,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a54ad82c-be8d-599a-9764-c6498922dd5c",
         "segment": {
           "type": "line",
           "end": {
@@ -1172,11 +1172,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a54ad82c-be8d-599a-9764-c6498922dd5c",
         "segment": {
           "type": "line",
           "end": {
@@ -1189,24 +1189,24 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+        "segment": "5288de96-84bb-518a-848b-5092b5d33e48",
+        "intersection_segment": "9be00e59-09ca-5d92-b815-256daf9fc98e",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
         "origin": {
           "x": 0.0,
           "y": 650.0,
@@ -1228,37 +1228,37 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+        "edge_id": "a7106712-a8e0-57d8-861f-5f817203584c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+        "edge_id": "a7106712-a8e0-57d8-861f-5f817203584c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
         "axis": {
           "x": 1.0,
           "y": 0.0,
@@ -1275,7 +1275,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1300,11 +1300,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1314,20 +1314,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1339,18 +1339,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
         "to": {
           "x": 750.0,
           "y": 0.0,
@@ -1359,18 +1359,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
         "segment": {
           "type": "arc",
           "center": {
@@ -1391,7 +1391,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1416,11 +1416,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1430,20 +1430,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1455,18 +1455,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "020035cf-ab88-50f3-91b0-886b7f399647",
         "to": {
           "x": 550.0,
           "y": 0.0,
@@ -1475,18 +1475,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "020035cf-ab88-50f3-91b0-886b7f399647",
         "segment": {
           "type": "arc",
           "center": {
@@ -1507,33 +1507,33 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
+        "segment": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
+        "intersection_segment": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "020035cf-ab88-50f3-91b0-886b7f399647",
+        "segment": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
+        "intersection_segment": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bee9909d-abbf-534c-b266-2c2c04133834",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1558,11 +1558,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "bee9909d-abbf-534c-b266-2c2c04133834",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1572,20 +1572,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "bee9909d-abbf-534c-b266-2c2c04133834",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0df0eb6-009b-594d-815d-31646979be80",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "bee9909d-abbf-534c-b266-2c2c04133834",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1597,18 +1597,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa75438f-b2d0-5142-b452-608454e1806a",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fa75438f-b2d0-5142-b452-608454e1806a",
         "to": {
           "x": 1175.0,
           "y": 2035.1597,
@@ -1617,18 +1617,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fa75438f-b2d0-5142-b452-608454e1806a",
         "segment": {
           "type": "line",
           "end": {
@@ -1641,11 +1641,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fa75438f-b2d0-5142-b452-608454e1806a",
         "segment": {
           "type": "arc",
           "center": {
@@ -1666,11 +1666,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fa75438f-b2d0-5142-b452-608454e1806a",
         "to": {
           "x": -324.91913999999997,
           "y": 892.70799,
@@ -1679,11 +1679,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fa75438f-b2d0-5142-b452-608454e1806a",
         "segment": {
           "type": "arc",
           "center": {
@@ -1704,7 +1704,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c444b134-67e1-507a-bb00-d4998ba97afb",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1729,11 +1729,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "c444b134-67e1-507a-bb00-d4998ba97afb",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1743,20 +1743,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c444b134-67e1-507a-bb00-d4998ba97afb",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c444b134-67e1-507a-bb00-d4998ba97afb",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1768,18 +1768,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
         "to": {
           "x": 1075.0,
           "y": 1861.95462,
@@ -1788,18 +1788,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a7368ed-12c7-59b9-88f4-186289245e86",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
         "segment": {
           "type": "line",
           "end": {
@@ -1812,11 +1812,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
         "segment": {
           "type": "arc",
           "center": {
@@ -1837,11 +1837,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
         "to": {
           "x": -256.51511,
           "y": 704.76947,
@@ -1850,11 +1850,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
         "segment": {
           "type": "arc",
           "center": {
@@ -1875,33 +1875,33 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "fa75438f-b2d0-5142-b452-608454e1806a",
+        "segment": "89273a0b-b55b-5457-9b1c-de1d777240e8",
+        "intersection_segment": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44b2dfb0-0721-57cd-a796-4401a664e194",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+        "segment": "5a7368ed-12c7-59b9-88f4-186289245e86",
+        "intersection_segment": "1f5ca073-184d-543b-9da6-2db6719123a8",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1926,11 +1926,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "906a1f18-6a62-5deb-b39b-61d540081804",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1940,20 +1940,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "906a1f18-6a62-5deb-b39b-61d540081804",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8cc464b-6248-5cb4-8c70-30f634da184c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "906a1f18-6a62-5deb-b39b-61d540081804",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1965,18 +1965,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 461.72719,
           "y": 1268.5850400000002,
@@ -1985,18 +1985,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -2009,11 +2009,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -2034,11 +2034,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 461.72719,
           "y": 1268.5850400000002,
@@ -2047,11 +2047,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -2072,7 +2072,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc66f518-029e-5b30-8772-13859f39ce6d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2097,11 +2097,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "61b354b3-059b-5095-a0b8-2636217c6cee",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "fc66f518-029e-5b30-8772-13859f39ce6d",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2111,20 +2111,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44d94cee-dac7-5b9f-829d-112d277b8975",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fc66f518-029e-5b30-8772-13859f39ce6d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95d80984-dc84-541c-af31-df26752c9fd4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fc66f518-029e-5b30-8772-13859f39ce6d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2136,18 +2136,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "to": {
           "x": 393.32316000000003,
           "y": 1080.64651,
@@ -2156,18 +2156,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f18bf81-bc67-555b-bc5f-0a5fbcd2f487",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7239bb75-ea9c-5e04-812d-426e933ce851",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "line",
           "end": {
@@ -2180,11 +2180,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "arc",
           "center": {
@@ -2205,11 +2205,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "to": {
           "x": 393.32316000000003,
           "y": 1080.64651,
@@ -2218,11 +2218,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "arc",
           "center": {
@@ -2243,40 +2243,40 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
+        "segment": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
+        "intersection_segment": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8f72543d-c84d-5018-865e-36a2fd66854c",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
+        "segment": "7239bb75-ea9c-5e04-812d-426e933ce851",
+        "intersection_segment": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
       "range": [],
       "command": {
         "type": "loft",
         "section_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "93954f29-a246-54bd-ac2a-62572f26d508",
+          "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
+          "55ffab66-c2ee-54fb-b1dc-3f6282f04664"
         ],
         "v_degree": 2,
         "bez_approximate_rational": false,
@@ -2286,37 +2286,37 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96889f64-587b-51f2-b62f-b230408206cc",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
+        "edge_id": "8b9eac14-1926-59fe-9f92-b2af60f80a4f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
+        "edge_id": "8b9eac14-1926-59fe-9f92-b2af60f80a4f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "05ce46e4-9f5d-5320-8c0f-7d8e93e6940e",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -2329,14 +2329,14 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "985c5da4-4467-570a-8e44-4d58a9c442ba",
       "range": [],
       "command": {
         "type": "loft",
         "section_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "20f09319-bab0-5dd8-8c40-ce90cd688483",
+          "44b2dfb0-0721-57cd-a796-4401a664e194",
+          "8f72543d-c84d-5018-865e-36a2fd66854c"
         ],
         "v_degree": 2,
         "bez_approximate_rational": false,
@@ -2346,37 +2346,37 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "985c5da4-4467-570a-8e44-4d58a9c442ba"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
+        "edge_id": "881dd657-0be5-56f2-aadd-4705107c8c92"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
+        "edge_id": "881dd657-0be5-56f2-aadd-4705107c8c92"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "43582f56-4d15-5082-9796-67d8e5ee6e44",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -2389,7 +2389,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2414,11 +2414,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e9531b65-3013-5f8b-bebc-accdbd43919c",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2428,20 +2428,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2453,18 +2453,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94906884-1803-5336-93e6-0aca938f73f1",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "to": {
           "x": 461.72719,
           "y": 1268.5850400000002,
@@ -2473,18 +2473,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "segment": {
           "type": "line",
           "end": {
@@ -2497,11 +2497,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "segment": {
           "type": "arc",
           "center": {
@@ -2522,11 +2522,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "to": {
           "x": 461.72719,
           "y": 1268.5850400000002,
@@ -2535,11 +2535,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1583b450-a578-582f-8d23-686bccf95d8b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "segment": {
           "type": "arc",
           "center": {
@@ -2560,20 +2560,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0a92fa6-be55-5cfb-a650-710b68437549",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
+        "segment": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
+        "intersection_segment": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f296bd37-495b-5038-81a3-eade3812cc2e",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2598,11 +2598,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "f296bd37-495b-5038-81a3-eade3812cc2e",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2612,20 +2612,20 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "75786bd7-c284-566d-b238-3f6b11158ab4",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f296bd37-495b-5038-81a3-eade3812cc2e",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6ae8c147-090c-5277-8840-6daa34bb4685",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f296bd37-495b-5038-81a3-eade3812cc2e",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2637,18 +2637,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d6c2537-3784-5667-8614-4423d6c6f752",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "2d6c2537-3784-5667-8614-4423d6c6f752",
         "to": {
           "x": 128.25755,
           "y": 352.38473,
@@ -2657,18 +2657,18 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f89f295-7088-5e46-8594-1b84a8601b0a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "af94b4da-da53-5386-a65f-ed75c251c9ff",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2d6c2537-3784-5667-8614-4423d6c6f752",
         "segment": {
           "type": "line",
           "end": {
@@ -2681,11 +2681,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2d6c2537-3784-5667-8614-4423d6c6f752",
         "segment": {
           "type": "arc",
           "center": {
@@ -2706,11 +2706,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "2d6c2537-3784-5667-8614-4423d6c6f752",
         "to": {
           "x": 128.25755,
           "y": 352.38473,
@@ -2719,11 +2719,11 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "df641c7f-27a7-5524-a6c2-93d1677bc829",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2d6c2537-3784-5667-8614-4423d6c6f752",
         "segment": {
           "type": "arc",
           "center": {
@@ -2744,26 +2744,26 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b7074da6-ba4d-5c11-9954-823a94aa7064",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "2d6c2537-3784-5667-8614-4423d6c6f752",
+        "segment": "af94b4da-da53-5386-a65f-ed75c251c9ff",
+        "intersection_segment": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
       "range": [],
       "command": {
         "type": "loft",
         "section_ids": [
-          "[uuid]",
-          "[uuid]"
+          "c0a92fa6-be55-5cfb-a650-710b68437549",
+          "b7074da6-ba4d-5c11-9954-823a94aa7064"
         ],
         "v_degree": 2,
         "bez_approximate_rational": false,
@@ -2773,37 +2773,37 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
+        "edge_id": "d5840c3a-5ab3-52c8-8193-f90084720c5a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f3e5d974-3ee8-52ce-a294-da34987457f8",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
+        "edge_id": "d5840c3a-5ab3-52c8-8193-f90084720c5a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -2816,110 +2816,110 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e54f67fd-5312-580f-b00e-e78b0877011e",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c902ac1e-80c0-5a28-b5a8-0ef58e8fd399",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "020035cf-ab88-50f3-91b0-886b7f399647",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5fd1215-9080-56e3-9845-e939e4245bdb",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fa75438f-b2d0-5142-b452-608454e1806a",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f24ed84c-9623-59b6-bf31-be6202c5a133",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "349ba77a-8183-57f6-8580-b06227eac5bd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84468ff1-4b26-5c88-8618-6cea09661aac",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2d6c2537-3784-5667-8614-4423d6c6f752",
         "hidden": true
       }
     }

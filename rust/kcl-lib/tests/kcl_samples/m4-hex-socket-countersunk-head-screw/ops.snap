@@ -2892,11 +2892,11 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2926,7 +2926,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
           }
         },
         "sourceRange": []
@@ -3026,7 +3026,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
               }
             ]
           },
@@ -3056,7 +3056,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48"
           }
         },
         "sourceRange": []
@@ -3101,7 +3101,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
               }
             }
           ]
@@ -3116,7 +3116,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
                 }
               }
             ]
@@ -3151,7 +3151,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf"
           }
         },
         "sourceRange": []
@@ -3214,7 +3214,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
           }
         },
         "sourceRange": []
@@ -3243,7 +3243,7 @@ description: Operations executed m4-hex-socket-countersunk-head-screw.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
           }
         },
         "sourceRange": []

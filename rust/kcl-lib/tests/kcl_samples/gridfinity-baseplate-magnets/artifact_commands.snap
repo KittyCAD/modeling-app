@@ -5,7 +5,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
 {
   "public/kcl-samples/gridfinity-baseplate-magnets/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -44,20 +44,20 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -69,18 +69,18 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -89,18 +89,18 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "segment": {
           "type": "line",
           "end": {
@@ -113,11 +113,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "segment": {
           "type": "line",
           "end": {
@@ -130,11 +130,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "segment": {
           "type": "line",
           "end": {
@@ -147,11 +147,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "segment": {
           "type": "line",
           "end": {
@@ -164,11 +164,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "segment": {
           "type": "line",
           "end": {
@@ -181,24 +181,24 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+        "segment": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -210,11 +210,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
         "distance": 34.0,
         "faces": null,
         "opposite": "None",
@@ -223,44 +223,44 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+        "edge_id": "a1a26952-28d2-5b84-8af9-1de0ec7d3177"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
+        "edge_id": "a1a26952-28d2-5b84-8af9-1de0ec7d3177"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -277,24 +277,24 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+        "segment": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "origin": {
           "x": 4.0,
           "y": 4.0,
@@ -316,46 +316,46 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+        "edge_id": "a00b2ac4-76a6-535b-aed2-b2e6e98aa7c5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+        "edge_id": "a00b2ac4-76a6-535b-aed2-b2e6e98aa7c5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "468f6520-a683-5392-9492-de009fdcddef",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -372,11 +372,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
         "transform": [],
         "transforms": [
           [
@@ -412,11 +412,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "51fdff2e-bf9e-5b7a-a763-be68e8862cf8",
         "transform": [],
         "transforms": [
           [
@@ -452,11 +452,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "46c1c873-adde-54a9-8c92-5f163decf204",
         "transform": [],
         "transforms": [
           [
@@ -492,11 +492,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "bf2569f4-8303-5a9a-817c-062b9a00a926",
         "transform": [],
         "transforms": [
           [
@@ -532,11 +532,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
         "transform": [],
         "transforms": [
           [
@@ -601,11 +601,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "f7dce085-f4da-5dd8-b353-dcc2149fa091",
         "transform": [],
         "transforms": [
           [
@@ -670,11 +670,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "51fdff2e-bf9e-5b7a-a763-be68e8862cf8",
         "transform": [],
         "transforms": [
           [
@@ -739,11 +739,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "1ca88202-28a4-5453-86b2-137341ba3b82",
         "transform": [],
         "transforms": [
           [
@@ -808,11 +808,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "46c1c873-adde-54a9-8c92-5f163decf204",
         "transform": [],
         "transforms": [
           [
@@ -877,11 +877,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "0c0fc85f-b896-5ad8-93ba-3ab0696db8c2",
         "transform": [],
         "transforms": [
           [
@@ -946,11 +946,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "bf2569f4-8303-5a9a-817c-062b9a00a926",
         "transform": [],
         "transforms": [
           [
@@ -1015,11 +1015,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "5aef7c6e-34c0-55cd-954d-2cc03a99a2ac",
         "transform": [],
         "transforms": [
           [
@@ -1084,11 +1084,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a0ade6f-d355-5121-9adb-351976a78284",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "transform": [],
         "transforms": [
           [
@@ -1124,11 +1124,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "6489eeeb-3652-50fa-9d8e-723c2c670f39",
         "transform": [],
         "transforms": [
           [
@@ -1164,11 +1164,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "813463c6-1c89-5251-84d8-6159121dd7b3",
         "transform": [],
         "transforms": [
           [
@@ -1204,11 +1204,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "229b0da4-30f2-58ab-a274-0ad55ebca336",
         "transform": [],
         "transforms": [
           [
@@ -1244,11 +1244,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "transform": [],
         "transforms": [
           [
@@ -1313,11 +1313,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "f80c3690-fdcb-530e-af33-3e641f2497c4",
         "transform": [],
         "transforms": [
           [
@@ -1382,11 +1382,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "6489eeeb-3652-50fa-9d8e-723c2c670f39",
         "transform": [],
         "transforms": [
           [
@@ -1451,11 +1451,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "646813a2-6477-57f4-a8d3-5a8baa359e14",
         "transform": [],
         "transforms": [
           [
@@ -1520,11 +1520,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "813463c6-1c89-5251-84d8-6159121dd7b3",
         "transform": [],
         "transforms": [
           [
@@ -1589,11 +1589,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "163894bb-abcd-5c32-80eb-82564a57fe78",
         "transform": [],
         "transforms": [
           [
@@ -1658,11 +1658,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "229b0da4-30f2-58ab-a274-0ad55ebca336",
         "transform": [],
         "transforms": [
           [
@@ -1727,11 +1727,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "31154c89-6d38-5b0c-9b74-6095b3164530",
         "transform": [],
         "transforms": [
           [
@@ -1796,7 +1796,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1821,20 +1821,20 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1846,18 +1846,18 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -1866,18 +1866,18 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "969d96c2-dff1-582e-8974-a3f5fef9c547",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -1890,11 +1890,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -1907,11 +1907,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -1924,11 +1924,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -1941,11 +1941,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "to": {
           "x": 2.85,
           "y": 13.0,
@@ -1954,11 +1954,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -1971,11 +1971,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -1988,11 +1988,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "arc",
           "center": {
@@ -2013,11 +2013,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -2030,11 +2030,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -2047,11 +2047,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -2064,11 +2064,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "arc",
           "center": {
@@ -2089,11 +2089,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -2106,11 +2106,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -2123,11 +2123,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -2140,11 +2140,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "arc",
           "center": {
@@ -2165,11 +2165,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -2182,11 +2182,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -2199,11 +2199,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -2216,11 +2216,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "arc",
           "center": {
@@ -2241,11 +2241,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "line",
           "end": {
@@ -2258,11 +2258,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "to": {
           "x": 11.25,
           "y": 8.0,
@@ -2271,11 +2271,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "arc",
           "center": {
@@ -2296,11 +2296,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e3e760fc-c341-586d-9f2f-a9afbbddf645",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "to": {
           "x": 37.25,
           "y": 8.0,
@@ -2309,11 +2309,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "arc",
           "center": {
@@ -2334,11 +2334,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d22753f-e63a-506c-bc84-6006343b9a0b",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "to": {
           "x": 37.25,
           "y": 34.0,
@@ -2347,11 +2347,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "arc",
           "center": {
@@ -2372,11 +2372,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34ea98a5-fab3-5283-9445-5a3b25071d26",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "to": {
           "x": 11.25,
           "y": 34.0,
@@ -2385,11 +2385,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "19107e89-bf40-5541-88a5-5106b6de636d",
         "segment": {
           "type": "arc",
           "center": {
@@ -2410,24 +2410,24 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ab8a671-6218-5516-901a-d1a83480ded7",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "19107e89-bf40-5541-88a5-5106b6de636d",
+        "segment": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+        "intersection_segment": "0919e597-7112-50da-97bb-e5ba198e1dcd",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2439,11 +2439,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
@@ -2452,137 +2452,137 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8cc464b-6248-5cb4-8c70-30f634da184c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
+        "edge_id": "01aa52d7-c1d1-5567-a5c3-53e43bba4688"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
+        "edge_id": "01aa52d7-c1d1-5567-a5c3-53e43bba4688"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc66f518-029e-5b30-8772-13859f39ce6d",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "aaaf8e56-7ddd-5519-9995-d913561f71fb",
+          "b4bb2784-c1bf-5c97-a771-cc7bc5ad8d32"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "61b354b3-059b-5095-a0b8-2636217c6cee",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "b4bb2784-c1bf-5c97-a771-cc7bc5ad8d32",
+          "1c9e7665-6e22-5bad-91b9-bd93753dde31"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "1c9e7665-6e22-5bad-91b9-bd93753dde31",
+          "24b7aa07-d613-5eaf-891e-d91711bbee58"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7239bb75-ea9c-5e04-812d-426e933ce851",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "24b7aa07-d613-5eaf-891e-d91711bbee58",
+          "aaaf8e56-7ddd-5519-9995-d913561f71fb"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
+        "edge_id": "5b00d88d-9949-5483-aad1-21877c68db18"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
+        "edge_id": "a84fcff7-34de-5f2e-8bcc-8025bfc87540"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
+        "edge_id": "c9cf69e5-e177-5669-8b55-95486bcf2f2c"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff863943-02de-5b48-baf7-471ff32b980f",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
+        "edge_id": "891ff527-b205-5f94-be7d-f14f7045a650"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "662e081e-0c36-5b97-b2b8-ea0464220525",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "edge_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "5b00d88d-9949-5483-aad1-21877c68db18",
+          "a84fcff7-34de-5f2e-8bcc-8025bfc87540",
+          "c9cf69e5-e177-5669-8b55-95486bcf2f2c",
+          "891ff527-b205-5f94-be7d-f14f7045a650"
         ],
         "cut_type": {
           "fillet": {
@@ -2593,18 +2593,18 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "5b060302-5d33-5353-bd5e-3f938c80ea7f",
+          "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+          "bd2c7879-5553-55c3-bc25-46df0c8081fc"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93fe6743-e0aa-5d65-834b-87a82208c703",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "transform": [],
         "transforms": [
           [
@@ -2640,11 +2640,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "2ab8a671-6218-5516-901a-d1a83480ded7",
         "transform": [],
         "transforms": [
           [
@@ -2709,11 +2709,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "ee89986d-15de-5ef8-b8f1-0e0680ad440e",
         "transform": [],
         "transforms": [
           [
@@ -2778,7 +2778,7 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4cbda13-cf30-51b5-adde-debccd5ae685",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2803,11 +2803,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "d4cbda13-cf30-51b5-adde-debccd5ae685",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2817,20 +2817,20 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d4cbda13-cf30-51b5-adde-debccd5ae685",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d4cbda13-cf30-51b5-adde-debccd5ae685",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2842,18 +2842,18 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f129c320-ce75-58e1-b5e8-ff4a5bae64dc",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -2862,18 +2862,18 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "806c3d5e-727c-5e29-9a69-c4ca7ed4e15b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -2886,11 +2886,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9209892e-e35e-575e-b305-9935eac5ab33",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -2903,11 +2903,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -2920,11 +2920,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44d94cee-dac7-5b9f-829d-112d277b8975",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -2937,11 +2937,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cdb4d69-ec09-5ed8-9866-b9b01a5bad3e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "to": {
           "x": 2.85,
           "y": 13.0,
@@ -2950,11 +2950,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -2967,11 +2967,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8f72543d-c84d-5018-865e-36a2fd66854c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -2984,11 +2984,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "arc",
           "center": {
@@ -3009,11 +3009,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96889f64-587b-51f2-b62f-b230408206cc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -3026,11 +3026,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -3043,11 +3043,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -3060,11 +3060,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "05ce46e4-9f5d-5320-8c0f-7d8e93e6940e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "arc",
           "center": {
@@ -3085,11 +3085,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "985c5da4-4467-570a-8e44-4d58a9c442ba",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -3102,11 +3102,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -3119,11 +3119,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -3136,11 +3136,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "arc",
           "center": {
@@ -3161,11 +3161,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "43582f56-4d15-5082-9796-67d8e5ee6e44",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -3178,11 +3178,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -3195,11 +3195,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e9531b65-3013-5f8b-bebc-accdbd43919c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -3212,11 +3212,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "arc",
           "center": {
@@ -3237,11 +3237,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "segment": {
           "type": "line",
           "end": {
@@ -3254,24 +3254,24 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "fe6e67eb-7a61-566b-b101-f63111291cbc",
+        "segment": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+        "intersection_segment": "9209892e-e35e-575e-b305-9935eac5ab33",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12a33a9d-38b6-56fb-af56-29ce1e09b1cb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d4cbda13-cf30-51b5-adde-debccd5ae685",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3283,11 +3283,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d569b1e-3e41-5603-8816-9c625622a434",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
@@ -3296,137 +3296,137 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb172247-c469-54b8-920f-ca9ddc4fdbb3",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
+        "edge_id": "357b29be-6be8-52ef-b140-595cd573d8c9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f531517-960e-5389-a7ca-a71161457c8a",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
+        "edge_id": "357b29be-6be8-52ef-b140-595cd573d8c9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14466b86-e358-553e-8c66-6fd171fc4f2f",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "9653d322-14aa-58d3-8b7e-9448481ae312",
+          "62f962bb-da21-5246-a6f8-2f65aeeefb2e"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3322387d-5b58-56ea-8103-4d2112d432af",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "62f962bb-da21-5246-a6f8-2f65aeeefb2e",
+          "c1e3018a-f598-5596-84ea-6f0dcc501bde"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "c1e3018a-f598-5596-84ea-6f0dcc501bde",
+          "30909365-8494-5ca7-8bc2-1e4d7c89db66"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94cfcc75-120e-5336-b89b-66096a401da3",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "30909365-8494-5ca7-8bc2-1e4d7c89db66",
+          "9653d322-14aa-58d3-8b7e-9448481ae312"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
+        "edge_id": "da33d58d-66c8-52bd-95b5-372a550154f6"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "97510544-69da-5bcc-ae16-ec102d607510",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
+        "edge_id": "69826cdc-60e6-540b-b3a6-b34c2b742a3a"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a04f1a36-b6ca-5465-bbe3-d98a909adffd",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
+        "edge_id": "8bfbe77e-22af-5e52-bd31-9b2cc247116a"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa91dc3c-d764-5550-a1d4-5f081872a206",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
+        "edge_id": "ac6326dc-e62b-5324-a8bf-617a9f4cc30f"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef12f2d7-ce30-5ed5-b5db-a16ab77a6cd9",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "edge_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "da33d58d-66c8-52bd-95b5-372a550154f6",
+          "69826cdc-60e6-540b-b3a6-b34c2b742a3a",
+          "8bfbe77e-22af-5e52-bd31-9b2cc247116a",
+          "ac6326dc-e62b-5324-a8bf-617a9f4cc30f"
         ],
         "cut_type": {
           "fillet": {
@@ -3437,18 +3437,18 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "08c45048-e16b-54e2-9691-c65127dfc3a8",
+          "c8b4e335-6a37-5df4-9658-e96f62cfa1e8",
+          "7a8c96c1-87c0-5d35-b412-deb67d5b0712"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f50bec22-83af-5ac9-9f90-8e8d9796a811",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "transform": [],
         "transforms": [
           [
@@ -3484,11 +3484,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "transform": [],
         "transforms": [
           [
@@ -3553,11 +3553,11 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa6d2791-9aa8-5817-aa05-d99d3e67163d",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "cd9f616e-2aa7-5235-9f59-50b60cbfe095",
         "transform": [],
         "transforms": [
           [
@@ -3622,20 +3622,20 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dfdda8f5-4f4a-5599-9c74-ba5fdd0a0084",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "19107e89-bf40-5541-88a5-5106b6de636d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d60ddbad-e06f-5b11-9ef8-b52ac282856c",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "hidden": true
       }
     }

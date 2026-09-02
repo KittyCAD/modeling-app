@@ -979,11 +979,11 @@ description: Operations executed split-washer-spring-version.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -1013,7 +1013,7 @@ description: Operations executed split-washer-spring-version.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
           }
         },
         "sourceRange": []
@@ -1023,7 +1023,7 @@ description: Operations executed split-washer-spring-version.kcl
           "value": {
             "type": "Helix",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d"
             }
           },
           "sourceRange": []

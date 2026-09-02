@@ -6,12 +6,12 @@ description: Variables in memory after executing helix_ccw.kcl
   "part001": {
     "type": "Helix",
     "value": {
-      "value": "[uuid]",
-      "artifactId": "[uuid]",
+      "value": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "revolutions": 16.0,
       "angleStart": 0.0,
       "ccw": true,
-      "cylinderId": "[uuid]",
+      "cylinderId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "units": "mm"
     }
   }

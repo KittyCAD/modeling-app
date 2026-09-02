@@ -5,7 +5,7 @@ description: Artifact commands kittycad_svg.kcl
 {
   "rust/kcl-lib/tests/kittycad_svg/input.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -46,18 +46,18 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "to": {
           "x": 2.52,
           "y": -26.04,
@@ -66,18 +66,18 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -90,11 +90,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -107,11 +107,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -124,11 +124,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -141,11 +141,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -158,11 +158,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -175,11 +175,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -192,11 +192,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -209,11 +209,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -226,11 +226,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -243,11 +243,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -260,11 +260,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -277,11 +277,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -294,11 +294,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -311,11 +311,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -328,11 +328,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -345,11 +345,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -362,11 +362,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -379,11 +379,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -396,11 +396,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -413,11 +413,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -430,11 +430,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -447,11 +447,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -464,11 +464,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -481,11 +481,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -498,11 +498,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -515,11 +515,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -532,11 +532,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -549,11 +549,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -566,11 +566,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -583,11 +583,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -600,11 +600,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -617,11 +617,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -634,11 +634,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -651,11 +651,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "deb86259-17a0-5782-a352-d25992246cc0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -668,11 +668,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -685,11 +685,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -702,11 +702,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "907cac50-3701-5367-b35c-4ec2132c824f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -719,11 +719,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e342814e-d7c1-537b-959c-f7fd92c90294",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -736,11 +736,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -753,11 +753,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -770,11 +770,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -787,11 +787,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -804,11 +804,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -821,11 +821,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -838,11 +838,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -855,11 +855,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -872,11 +872,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -889,11 +889,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -906,11 +906,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -923,11 +923,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -940,11 +940,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -957,11 +957,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -974,11 +974,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d4c814d-f292-503d-a012-68ab58c77524",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -991,11 +991,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1008,11 +1008,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1025,11 +1025,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1042,11 +1042,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc312d38-2fa6-5583-a605-44880f646499",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1059,11 +1059,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1076,11 +1076,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1093,11 +1093,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1110,11 +1110,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1127,11 +1127,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1144,11 +1144,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1161,11 +1161,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1178,11 +1178,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1195,11 +1195,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1212,11 +1212,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1229,11 +1229,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1246,11 +1246,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1263,11 +1263,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1280,11 +1280,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1297,11 +1297,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1314,11 +1314,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1331,11 +1331,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1348,11 +1348,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "468f6520-a683-5392-9492-de009fdcddef",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1365,11 +1365,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1382,11 +1382,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1399,11 +1399,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1416,11 +1416,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1433,11 +1433,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1450,11 +1450,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1467,11 +1467,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1484,11 +1484,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1501,11 +1501,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1518,11 +1518,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1535,11 +1535,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1552,11 +1552,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1569,11 +1569,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1586,11 +1586,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a0ade6f-d355-5121-9adb-351976a78284",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1603,11 +1603,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1620,11 +1620,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1637,11 +1637,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1654,11 +1654,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1671,11 +1671,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1688,11 +1688,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1705,11 +1705,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1722,11 +1722,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1739,11 +1739,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1756,11 +1756,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1773,11 +1773,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1790,11 +1790,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1807,11 +1807,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1824,11 +1824,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1841,11 +1841,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1858,11 +1858,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1875,11 +1875,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1892,11 +1892,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1909,11 +1909,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1926,11 +1926,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1943,11 +1943,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1960,11 +1960,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1977,11 +1977,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -1994,11 +1994,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "724b87fd-c709-5232-b7a1-547c15affb9b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2011,11 +2011,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2028,11 +2028,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2045,11 +2045,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2062,11 +2062,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2079,11 +2079,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2096,11 +2096,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2113,11 +2113,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2130,11 +2130,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2147,11 +2147,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2164,11 +2164,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2181,11 +2181,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2198,11 +2198,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2215,11 +2215,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2232,11 +2232,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2249,11 +2249,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2266,11 +2266,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2283,11 +2283,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2300,11 +2300,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2317,11 +2317,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2334,11 +2334,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2351,11 +2351,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2368,11 +2368,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2385,11 +2385,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2402,11 +2402,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2419,11 +2419,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2436,11 +2436,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2453,11 +2453,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2470,11 +2470,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2487,11 +2487,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2504,11 +2504,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2521,11 +2521,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2538,11 +2538,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2555,11 +2555,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2572,11 +2572,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2589,11 +2589,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2606,11 +2606,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2623,11 +2623,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2640,11 +2640,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2657,11 +2657,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2674,11 +2674,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2691,11 +2691,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2708,11 +2708,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2725,11 +2725,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2742,11 +2742,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2759,11 +2759,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2776,11 +2776,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2793,11 +2793,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2810,11 +2810,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2827,11 +2827,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2844,11 +2844,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2861,11 +2861,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2878,11 +2878,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2895,11 +2895,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2912,11 +2912,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2929,11 +2929,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2946,11 +2946,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2963,11 +2963,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2980,11 +2980,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bee9909d-abbf-534c-b266-2c2c04133834",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -2997,11 +2997,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3014,11 +3014,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3031,11 +3031,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3048,11 +3048,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3065,11 +3065,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3082,11 +3082,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3099,11 +3099,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3116,11 +3116,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3133,11 +3133,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa75438f-b2d0-5142-b452-608454e1806a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3150,11 +3150,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3167,11 +3167,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3184,11 +3184,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3201,11 +3201,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3218,11 +3218,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3235,11 +3235,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3252,11 +3252,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3269,11 +3269,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3286,11 +3286,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3303,11 +3303,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ea8409b-834f-5214-b812-e276f2ff01f4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3320,11 +3320,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3337,11 +3337,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3354,11 +3354,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0df0eb6-009b-594d-815d-31646979be80",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3371,11 +3371,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3388,11 +3388,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3405,11 +3405,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3422,11 +3422,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c444b134-67e1-507a-bb00-d4998ba97afb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3439,11 +3439,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3456,11 +3456,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3473,11 +3473,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a7368ed-12c7-59b9-88f4-186289245e86",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3490,11 +3490,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3507,11 +3507,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3524,11 +3524,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3541,11 +3541,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3558,11 +3558,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3575,11 +3575,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3592,11 +3592,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3609,11 +3609,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3626,11 +3626,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3643,11 +3643,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3660,11 +3660,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3677,11 +3677,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3694,11 +3694,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3711,11 +3711,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3728,11 +3728,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3745,11 +3745,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3762,11 +3762,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3779,11 +3779,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3796,11 +3796,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3813,11 +3813,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3830,11 +3830,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3847,11 +3847,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3864,11 +3864,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3881,11 +3881,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44b2dfb0-0721-57cd-a796-4401a664e194",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3898,11 +3898,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3915,11 +3915,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3932,11 +3932,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3949,11 +3949,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3966,11 +3966,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -3983,11 +3983,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4000,11 +4000,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4017,11 +4017,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4034,11 +4034,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4051,11 +4051,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4068,11 +4068,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4085,11 +4085,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4102,11 +4102,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4119,11 +4119,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "969d96c2-dff1-582e-8974-a3f5fef9c547",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4136,11 +4136,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4153,11 +4153,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4170,11 +4170,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e3e760fc-c341-586d-9f2f-a9afbbddf645",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4187,11 +4187,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d22753f-e63a-506c-bc84-6006343b9a0b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4204,11 +4204,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34ea98a5-fab3-5283-9445-5a3b25071d26",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4221,11 +4221,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ab8a671-6218-5516-901a-d1a83480ded7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4238,11 +4238,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4255,11 +4255,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4272,11 +4272,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8cc464b-6248-5cb4-8c70-30f634da184c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4289,11 +4289,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4306,11 +4306,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4323,11 +4323,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4340,11 +4340,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc66f518-029e-5b30-8772-13859f39ce6d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4357,11 +4357,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "61b354b3-059b-5095-a0b8-2636217c6cee",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4374,11 +4374,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4391,11 +4391,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7239bb75-ea9c-5e04-812d-426e933ce851",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4408,11 +4408,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4425,11 +4425,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4442,11 +4442,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4459,11 +4459,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff863943-02de-5b48-baf7-471ff32b980f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4476,11 +4476,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "662e081e-0c36-5b97-b2b8-ea0464220525",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4493,11 +4493,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4510,11 +4510,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4527,11 +4527,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4544,11 +4544,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93fe6743-e0aa-5d65-834b-87a82208c703",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4561,11 +4561,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4578,11 +4578,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4595,11 +4595,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4cbda13-cf30-51b5-adde-debccd5ae685",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4612,11 +4612,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4629,11 +4629,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4608674b-5141-508f-8ee7-95c7819212bb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4646,11 +4646,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4663,11 +4663,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9209892e-e35e-575e-b305-9935eac5ab33",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4680,11 +4680,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4697,11 +4697,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44d94cee-dac7-5b9f-829d-112d277b8975",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4714,11 +4714,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95d80984-dc84-541c-af31-df26752c9fd4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4731,11 +4731,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4748,11 +4748,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f18bf81-bc67-555b-bc5f-0a5fbcd2f487",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4765,11 +4765,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "segment": {
           "type": "line",
           "end": {
@@ -4782,19 +4782,19 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
       "range": [],
       "command": {
         "type": "close_path",
-        "path_id": "[uuid]"
+        "path_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4806,11 +4806,11 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8f72543d-c84d-5018-865e-36a2fd66854c",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
@@ -4819,36 +4819,36 @@ description: Artifact commands kittycad_svg.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96889f64-587b-51f2-b62f-b230408206cc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9afb6023-b93a-59ec-afe5-e351f8385d69",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "edge_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "05ce46e4-9f5d-5320-8c0f-7d8e93e6940e",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "edge_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
       }
     }
   ]

@@ -3872,7 +3872,7 @@ description: Operations executed manhole-cover.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -3902,7 +3902,7 @@ description: Operations executed manhole-cover.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb"
           }
         },
         "sourceRange": []
@@ -3950,7 +3950,7 @@ description: Operations executed manhole-cover.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -4919,11 +4919,11 @@ description: Operations executed manhole-cover.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c0c1140b-284f-50ff-b80d-615b8b938475"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
               }
             ]
           },
@@ -4953,7 +4953,7 @@ description: Operations executed manhole-cover.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731"
           }
         },
         "sourceRange": []
@@ -4995,7 +4995,7 @@ description: Operations executed manhole-cover.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997"
           }
         },
         "sourceRange": []
@@ -5008,7 +5008,7 @@ description: Operations executed manhole-cover.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "2b45af9b-6b90-5530-b9b7-b193031152d8"
                 }
               }
             ]
@@ -5042,13 +5042,13 @@ description: Operations executed manhole-cover.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c8da3189-2eee-5307-9477-076b12db84a5"
               }
             }
           ]

@@ -10,7 +10,7 @@ description: Operations executed sketch_on_face_index.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -42,7 +42,7 @@ description: Operations executed sketch_on_face_index.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -88,7 +88,7 @@ description: Operations executed sketch_on_face_index.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -146,7 +146,7 @@ description: Operations executed sketch_on_face_index.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -155,8 +155,8 @@ description: Operations executed sketch_on_face_index.kcl
         "face": {
           "value": {
             "type": "TagIdentifier",
-            "value": "face_id_[uuid]",
-            "artifact_id": "[uuid]"
+            "value": "face_id_cd65f73d_2282_5b22_8533_f78e6a5bb5ca",
+            "artifact_id": "cd65f73d-2282-5b22-8533-f78e6a5bb5ca"
           },
           "sourceRange": []
         }
@@ -185,7 +185,7 @@ description: Operations executed sketch_on_face_index.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
           }
         },
         "sourceRange": []
@@ -228,7 +228,7 @@ description: Operations executed sketch_on_face_index.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2"
           }
         },
         "sourceRange": []
@@ -252,7 +252,7 @@ description: Operations executed sketch_on_face_index.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               }
             ]
           },
