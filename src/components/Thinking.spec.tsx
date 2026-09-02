@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { MlCopilotFile } from '@kittycad/lib'
-import { FilesSnapshot } from '@src/components/Thinking'
+import { ErroneousThing, FilesSnapshot } from '@src/components/Thinking'
 
 // Mock a small valid PNG image (1x1 transparent pixel)
 const MOCK_PNG_DATA = [
@@ -25,6 +25,29 @@ const MOCK_JPEG_DATA = [
 const MOCK_PDF_DATA = [
   37, 80, 68, 70, 45, 49, 46, 52, 10, 37, 226, 227, 207, 211, 10,
 ]
+
+describe('ErroneousThing', () => {
+  test('identifies a KCL error as a Zookeeper diagnostic', () => {
+    const engineError =
+      'The Zoo engine cannot handle this 3D subtraction yet. Please report this as an issue.'
+
+    render(
+      <ErroneousThing
+        content={engineError}
+        setAnyRowCollapse={vi.fn()}
+        keyIndex={0}
+      />
+    )
+
+    expect(screen.getByText('Zookeeper encountered a KCL error')).toBeVisible()
+    expect(
+      screen.getByText(
+        'Zookeeper uses this diagnostic while trying to fix the model. If it cannot recover, it will report the failure separately.'
+      )
+    ).toBeVisible()
+    expect(screen.getByText(engineError)).toBeVisible()
+  })
+})
 
 describe('FilesSnapshot', () => {
   let createObjectURLMock: ReturnType<typeof vi.fn>

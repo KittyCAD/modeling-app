@@ -86,11 +86,17 @@ export const ErroneousThing = (props: {
   return (
     <ThoughtContainer
       heading={
-        <ThoughtHeader
-          icon={<CustomIcon name="triangleExclamation" className="w-6 h-6" />}
-        >
-          Error detected
-        </ThoughtHeader>
+        <div>
+          <ThoughtHeader
+            icon={<CustomIcon name="triangleExclamation" className="w-6 h-6" />}
+          >
+            Zookeeper encountered a KCL error
+          </ThoughtHeader>
+          <p className="ml-8 mt-1 text-xs text-chalkboard-70 dark:text-chalkboard-40">
+            Zookeeper uses this diagnostic while trying to fix the model. If it
+            cannot recover, it will report the failure separately.
+          </p>
+        </div>
       }
     >
       <ThoughtContent
