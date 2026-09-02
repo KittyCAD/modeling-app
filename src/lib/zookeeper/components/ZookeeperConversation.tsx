@@ -11,7 +11,7 @@ import Tooltip from '@src/components/Tooltip'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
-import { err } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
 import {
@@ -303,7 +303,7 @@ export const ZookeeperConversationInput = (
 
   const stopZoodleRuntimeExtension = useCallback(() => {
     setIsZoodleActive(false)
-    deactivateZoodleRuntimeExtension(registry)
+    void deactivateZoodleRuntimeExtension(registry).catch(reportRejection)
   }, [registry])
 
   useEffect(() => {
@@ -436,7 +436,7 @@ export const ZookeeperConversationInput = (
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
       setIsZoodleActive(true)
-      activateZoodleRuntimeExtension(registry, {
+      void activateZoodleRuntimeExtension(registry, {
         imageDataUrl: dataUrl,
         onCancel: stopZoodleRuntimeExtension,
         onSend: (annotatedDataUrl) => {
@@ -446,7 +446,7 @@ export const ZookeeperConversationInput = (
           )
           stopZoodleRuntimeExtension()
         },
-      })
+      }).catch(reportRejection)
     } catch (e) {
       setIsZoodleActive(false)
       console.error('Failed to capture viewport screenshot for annotation', e)

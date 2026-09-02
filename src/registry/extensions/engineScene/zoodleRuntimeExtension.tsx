@@ -104,16 +104,16 @@ export function createZoodleRuntimeExtension(
 }
 
 export function activateZoodleRuntimeExtension(
-  registry: Pick<RegistryLike, 'reconfigure'>,
+  registry: Pick<RegistryLike, 'reconfigureAsync'>,
   session: ZoodleRuntimeExtensionSession
 ) {
-  registry.reconfigure(engineSceneRuntimeExtensionsSlot, [
+  return registry.reconfigureAsync(engineSceneRuntimeExtensionsSlot, [
     createZoodleRuntimeExtension(session),
   ])
 }
 
 export function deactivateZoodleRuntimeExtension(
-  registry: Pick<RegistryLike, 'reconfigure'>
+  registry: Pick<RegistryLike, 'reconfigureAsync'>
 ) {
-  registry.reconfigure(engineSceneRuntimeExtensionsSlot, [])
+  return registry.reconfigureAsync(engineSceneRuntimeExtensionsSlot, [])
 }

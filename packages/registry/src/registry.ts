@@ -53,7 +53,13 @@ interface FlattenedServiceContribution {
 interface RuntimeInstance {
   readonly key: RegistryItemKey
   readonly handle: RuntimeRegistryItemHandle<unknown>
-  readonly dispose?: () => void
+  readonly dispose?: () => unknown
+}
+
+interface DisposalBatch {
+  readonly disposers: readonly (() => unknown)[]
+  readonly resolve: () => void
+  readonly reject: (reason: unknown) => void
 }
 
 interface FlattenResult {
@@ -66,6 +72,15 @@ function isServiceDefinition(
   arg: Service<unknown> | ValueSpec<unknown, unknown>
 ): arg is Service<unknown> {
   return 'multiple' in arg
+}
+
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+  return (
+    (typeof value === 'object' || typeof value === 'function') &&
+    value !== null &&
+    'then' in value &&
+    typeof value.then === 'function'
+  )
 }
 
 /**
@@ -101,6 +116,10 @@ export class Registry implements ValueSpecReader, ServiceReader {
     RuntimeInstance
   >()
   private readonly resolvingServices = new Set<symbol>()
+  private readonly disposalQueue: DisposalBatch[] = []
+  private isDrainingDisposals = false
+  private latestReconciliation: Promise<void> = Promise.resolve()
+  private shutdownPromise: Promise<void> | undefined
 
   private combineDepth = 0
   private flattenDepth = 0
@@ -191,8 +210,28 @@ export class Registry implements ValueSpecReader, ServiceReader {
     this.roots.value = items
   }
 
+  /** Replace the active tree and await every runtime instance it unmounts. */
+  configureAsync(items: readonly RegistryItem[]): Promise<void> {
+    this.latestReconciliation = Promise.resolve()
+    this.roots.value = items
+    void this.flat.value
+    return this.latestReconciliation
+  }
+
   /** Replace the content of one slot while preserving unrelated runtime state. */
   reconfigure(slot: Slot, items: readonly RegistryItem[]): void {
+    void this.applyReconfiguration(slot, items)
+  }
+
+  /** Replace one slot and await every runtime instance it unmounts. */
+  reconfigureAsync(slot: Slot, items: readonly RegistryItem[]): Promise<void> {
+    return this.applyReconfiguration(slot, items)
+  }
+
+  private applyReconfiguration(
+    slot: Slot,
+    items: readonly RegistryItem[]
+  ): Promise<void> {
     if (this.flattenDepth > 0) {
       throw new ReconfigurationError(
         'Cannot reconfigure a slot while building the registry graph.'
@@ -210,7 +249,12 @@ export class Registry implements ValueSpecReader, ServiceReader {
       holder = signal(items)
       this.slotContent.set(slot.id, holder)
     }
+    this.latestReconciliation = Promise.resolve()
     holder.value = items
+    // Flattening is otherwise lazy. Force this transition so inactive runtime
+    // instances begin disposal even when no value-spec or service is read next.
+    void this.flat.value
+    return this.latestReconciliation
   }
 
   /** Resolve a registry value spec or service as a live Preact signal. */
@@ -449,29 +493,84 @@ export class Registry implements ValueSpecReader, ServiceReader {
   private reconcileRuntimeInstances(
     activeKeys: ReadonlySet<RegistryItemKey>
   ): void {
+    const disposers: Array<() => unknown> = []
     for (const [key, instance] of this.runtimeInstances) {
       if (activeKeys.has(key)) continue
 
-      try {
-        instance.dispose?.()
-      } catch {
-        // cleanup failures are intentionally swallowed during reconciliation
-      }
-
       this.runtimeInstances.delete(key)
+      if (instance.dispose) disposers.push(instance.dispose)
+    }
+
+    this.latestReconciliation = this.enqueueDisposers(disposers.reverse())
+  }
+
+  /** Serialize cleanup batches and continue running after individual failures. */
+  private enqueueDisposers(
+    disposers: readonly (() => unknown)[]
+  ): Promise<void> {
+    if (disposers.length === 0) return Promise.resolve()
+
+    const completion = new Promise<void>((resolve, reject) => {
+      this.disposalQueue.push({ disposers, resolve, reject })
+    })
+    // Attach recovery immediately so ignored synchronous APIs cannot produce
+    // unhandled rejections; awaited APIs still receive `completion` itself.
+    void completion.catch(() => undefined)
+    void this.drainDisposals()
+    return completion
+  }
+
+  private async drainDisposals(): Promise<void> {
+    if (this.isDrainingDisposals) return
+    this.isDrainingDisposals = true
+
+    try {
+      while (this.disposalQueue.length > 0) {
+        const batch = this.disposalQueue.shift()
+        if (!batch) continue
+
+        try {
+          await this.disposeBatch(batch.disposers)
+          batch.resolve()
+        } catch (error) {
+          batch.reject(error)
+        }
+      }
+    } finally {
+      this.isDrainingDisposals = false
     }
   }
 
-  /** Dispose the container and all active runtime instances. */
-  [Symbol.dispose](): void {
-    for (const [, instance] of this.runtimeInstances) {
+  private async disposeBatch(
+    disposers: readonly (() => unknown)[]
+  ): Promise<void> {
+    const errors: unknown[] = []
+    for (const dispose of disposers) {
       try {
-        instance.dispose?.()
-      } catch {
-        // ignore cleanup failures during shutdown
+        const result = dispose()
+        // Keep legacy synchronous disposal synchronous until an actual async
+        // boundary is encountered. This preserves shutdown ordering for
+        // existing owners while awaited APIs still sequence async finalizers.
+        if (isPromiseLike(result)) await result
+      } catch (error) {
+        errors.push(error)
       }
     }
 
+    if (errors.length > 0) {
+      throw new AggregateError(
+        errors,
+        'One or more registry runtime instances failed to dispose.'
+      )
+    }
+  }
+
+  private beginShutdown(): Promise<void> {
+    if (this.shutdownPromise) return this.shutdownPromise
+
+    const disposers = [...this.runtimeInstances.values()]
+      .reverse()
+      .flatMap((instance) => (instance.dispose ? [instance.dispose] : []))
     this.runtimeInstances.clear()
     this.roots.value = []
     this.slotContent.clear()
@@ -479,5 +578,17 @@ export class Registry implements ValueSpecReader, ServiceReader {
     this.debugValueSpecItems.clear()
     this.serviceSignals.clear()
     this.debugServiceItems.clear()
+    this.shutdownPromise = this.enqueueDisposers(disposers)
+    return this.shutdownPromise
+  }
+
+  /** Begin container cleanup for legacy synchronous owners. */
+  [Symbol.dispose](): void {
+    void this.beginShutdown().catch(() => undefined)
+  }
+
+  /** Dispose the container and await all active runtime finalizers. */
+  [Symbol.asyncDispose](): Promise<void> {
+    return this.beginShutdown()
   }
 }
