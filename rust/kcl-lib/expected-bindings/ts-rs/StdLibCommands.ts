@@ -21,7 +21,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -44,7 +45,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -67,7 +69,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angle",
@@ -77,7 +80,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "length",
@@ -87,7 +91,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "lengthX",
@@ -97,7 +102,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "lengthY",
@@ -107,7 +113,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsoluteX",
@@ -117,7 +124,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsoluteY",
@@ -127,7 +135,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -137,7 +146,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -160,7 +170,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angle",
@@ -170,7 +181,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "intersectTag",
@@ -180,7 +192,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "offset",
@@ -190,7 +203,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -200,7 +214,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -223,7 +238,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "color",
@@ -233,7 +249,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "metalness",
@@ -243,7 +260,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "roughness",
@@ -253,7 +271,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "opacity",
@@ -263,7 +282,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -286,7 +306,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -309,7 +330,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angleStart",
@@ -319,7 +341,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angleEnd",
@@ -329,7 +352,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "radius",
@@ -339,7 +363,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "diameter",
@@ -349,7 +374,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "interiorAbsolute",
@@ -359,7 +385,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsolute",
@@ -369,7 +396,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -379,7 +407,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -402,7 +431,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -425,7 +455,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "isGreaterThan",
@@ -435,7 +466,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "isLessThan",
@@ -445,7 +477,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "isGreaterThanOrEqual",
@@ -455,7 +488,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "isLessThanOrEqual",
@@ -465,7 +499,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "isEqualTo",
@@ -475,7 +510,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "isNotEqualTo",
@@ -485,7 +521,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -495,7 +532,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "error",
@@ -505,7 +543,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -528,7 +567,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "error",
@@ -538,7 +578,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -561,7 +602,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -584,7 +626,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "x",
@@ -594,7 +637,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -617,7 +661,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "control1",
@@ -627,7 +672,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "control2",
@@ -637,7 +683,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "end",
@@ -647,7 +694,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "control1Absolute",
@@ -657,7 +705,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "control2Absolute",
@@ -667,7 +716,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsolute",
@@ -677,7 +727,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -687,7 +738,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -710,7 +762,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -733,7 +786,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -756,7 +810,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "length",
@@ -766,7 +821,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tags",
@@ -776,7 +832,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -786,7 +843,8 @@ export default {
         "special": false,
         "experimental": true,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "secondLength",
@@ -796,7 +854,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angle",
@@ -806,7 +865,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -816,7 +876,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "legacyMethod",
@@ -826,7 +887,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedSince": "3.0"
       },
       {
         "name": "version",
@@ -836,7 +898,8 @@ export default {
         "special": false,
         "experimental": true,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -859,7 +922,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "center",
@@ -869,7 +933,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "radius",
@@ -879,7 +944,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "diameter",
@@ -889,7 +955,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -899,7 +966,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -922,7 +990,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "p1",
@@ -932,7 +1001,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "p2",
@@ -942,7 +1012,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "p3",
@@ -952,7 +1023,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -962,7 +1034,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -985,7 +1058,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1008,7 +1082,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -1018,7 +1093,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1041,7 +1117,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "items",
@@ -1051,7 +1128,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1074,7 +1152,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "interiorAbsolute",
@@ -1084,7 +1163,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsolute",
@@ -1094,7 +1174,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "interior",
@@ -1104,7 +1185,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "end",
@@ -1114,7 +1196,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "coefficients",
@@ -1124,7 +1207,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "startTangent",
@@ -1134,7 +1218,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endTangent",
@@ -1144,7 +1229,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -1154,7 +1240,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1177,7 +1264,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1200,7 +1288,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1223,7 +1312,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1246,7 +1336,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -1256,7 +1347,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faceIndices",
@@ -1266,7 +1358,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1289,7 +1382,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "index",
@@ -1299,7 +1393,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "closestTo",
@@ -1309,7 +1404,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1332,7 +1428,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "minorRadius",
@@ -1342,7 +1439,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "center",
@@ -1352,7 +1450,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "majorRadius",
@@ -1362,7 +1461,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "majorAxis",
@@ -1372,7 +1472,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -1382,7 +1483,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1405,7 +1507,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "center",
@@ -1415,7 +1518,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angleStart",
@@ -1425,7 +1529,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angleEnd",
@@ -1435,7 +1540,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "minorRadius",
@@ -1445,7 +1551,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "majorRadius",
@@ -1455,7 +1562,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "majorAxis",
@@ -1465,7 +1573,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -1475,7 +1584,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1498,7 +1608,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "minorRadius",
@@ -1508,7 +1619,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "x",
@@ -1518,7 +1630,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "y",
@@ -1528,7 +1641,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1563,7 +1677,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "length",
@@ -1573,7 +1688,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "to",
@@ -1583,7 +1699,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "symmetric",
@@ -1593,7 +1710,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "direction",
@@ -1603,7 +1721,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "bidirectionalLength",
@@ -1613,7 +1732,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tagStart",
@@ -1623,7 +1743,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tagEnd",
@@ -1633,7 +1754,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "draftAngle",
@@ -1643,7 +1765,8 @@ export default {
         "special": false,
         "experimental": true,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "twistAngle",
@@ -1653,7 +1776,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "twistAngleStep",
@@ -1663,7 +1787,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "twistCenter",
@@ -1673,7 +1798,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "method",
@@ -1683,7 +1809,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "hideSeams",
@@ -1693,7 +1820,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "bodyType",
@@ -1703,7 +1831,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1726,7 +1855,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "index",
@@ -1736,7 +1866,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1759,7 +1890,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "face",
@@ -1769,7 +1901,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1792,7 +1925,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1815,7 +1949,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "radius",
@@ -1825,7 +1960,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tags",
@@ -1835,7 +1971,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -1845,7 +1982,8 @@ export default {
         "special": false,
         "experimental": true,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -1855,7 +1993,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -1865,7 +2004,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "legacyMethod",
@@ -1875,7 +2015,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedSince": "3.0"
       },
       {
         "name": "version",
@@ -1885,7 +2026,8 @@ export default {
         "special": false,
         "experimental": true,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1908,7 +2050,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1931,7 +2074,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1954,7 +2098,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -1977,7 +2122,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -1987,7 +2133,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -1997,7 +2144,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "datums",
@@ -2007,7 +2155,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -2017,7 +2166,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -2027,7 +2177,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -2037,7 +2188,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -2047,7 +2199,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -2057,7 +2210,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -2067,7 +2221,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -2090,7 +2245,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -2100,7 +2256,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -2110,7 +2267,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -2120,7 +2278,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -2130,7 +2289,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -2140,7 +2300,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -2150,7 +2311,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -2160,7 +2322,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -2183,7 +2346,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -2193,7 +2357,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -2203,7 +2368,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -2213,7 +2379,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -2223,7 +2390,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -2233,7 +2401,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -2243,7 +2412,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -2253,7 +2423,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -2263,7 +2434,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -2286,7 +2458,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "datums",
@@ -2296,7 +2469,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -2306,7 +2480,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -2316,7 +2491,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -2326,7 +2502,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -2336,7 +2513,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -2346,7 +2524,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -2356,7 +2535,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -2366,7 +2546,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -2376,7 +2557,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -2399,7 +2581,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -2409,7 +2592,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -2419,7 +2603,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -2429,7 +2614,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -2439,7 +2625,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -2449,7 +2636,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -2459,7 +2647,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -2469,7 +2658,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -2479,7 +2669,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -2502,7 +2693,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "name",
@@ -2512,7 +2704,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -2522,7 +2715,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -2532,7 +2726,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -2542,7 +2737,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -2552,7 +2748,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -2562,7 +2759,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -2585,7 +2783,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "from",
@@ -2595,7 +2794,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "to",
@@ -2605,7 +2805,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -2615,7 +2816,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -2625,7 +2827,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -2635,7 +2838,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -2645,7 +2849,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -2655,7 +2860,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -2665,7 +2871,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -2675,7 +2882,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -2698,7 +2906,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -2708,7 +2917,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -2718,7 +2928,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -2728,7 +2939,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -2738,7 +2950,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -2748,7 +2961,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -2758,7 +2972,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -2768,7 +2983,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -2791,7 +3007,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -2801,7 +3018,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -2811,7 +3029,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -2821,7 +3040,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -2831,7 +3051,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -2854,7 +3075,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -2864,7 +3086,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -2874,7 +3097,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "datums",
@@ -2884,7 +3108,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -2894,7 +3119,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -2904,7 +3130,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -2914,7 +3141,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -2924,7 +3152,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -2934,7 +3163,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -2944,7 +3174,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -2967,7 +3198,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -2977,7 +3209,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -2987,7 +3220,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "datums",
@@ -2997,7 +3231,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -3007,7 +3242,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -3017,7 +3253,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -3027,7 +3264,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -3037,7 +3275,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -3047,7 +3286,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -3057,7 +3297,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -3080,7 +3321,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -3090,7 +3332,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -3100,7 +3343,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "datums",
@@ -3110,7 +3354,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -3120,7 +3365,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -3130,7 +3376,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -3140,7 +3387,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -3150,7 +3398,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -3160,7 +3409,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -3170,7 +3420,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -3193,7 +3444,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -3203,7 +3455,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -3213,7 +3466,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "datums",
@@ -3223,7 +3477,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -3233,7 +3488,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -3243,7 +3499,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -3253,7 +3510,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -3263,7 +3521,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -3273,7 +3532,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -3283,7 +3543,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -3306,7 +3567,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -3316,7 +3578,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "datums",
@@ -3326,7 +3589,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -3336,7 +3600,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -3346,7 +3611,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -3356,7 +3622,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -3366,7 +3633,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -3376,7 +3644,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -3386,7 +3655,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -3409,7 +3679,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -3419,7 +3690,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "datums",
@@ -3429,7 +3701,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -3439,7 +3712,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -3449,7 +3723,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -3459,7 +3734,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -3469,7 +3745,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -3479,7 +3756,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -3489,7 +3767,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -3512,7 +3791,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "datums",
@@ -3522,7 +3802,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -3532,7 +3813,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -3542,7 +3824,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -3552,7 +3835,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -3562,7 +3846,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -3572,7 +3857,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -3582,7 +3868,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -3592,7 +3879,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -3602,7 +3890,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -3625,7 +3914,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -3635,7 +3925,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -3645,7 +3936,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -3655,7 +3947,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -3665,7 +3958,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -3675,7 +3969,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -3685,7 +3980,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -3695,7 +3991,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -3705,7 +4002,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -3728,7 +4026,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "datums",
@@ -3738,7 +4037,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -3748,7 +4048,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edges",
@@ -3758,7 +4059,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "precision",
@@ -3768,7 +4070,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePosition",
@@ -3778,7 +4081,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "framePlane",
@@ -3788,7 +4092,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leaderScale",
@@ -3798,7 +4103,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "fontSize",
@@ -3808,7 +4114,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "annotationName",
@@ -3818,7 +4125,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -3841,7 +4149,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "module",
@@ -3851,7 +4160,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "pressureAngle",
@@ -3861,7 +4171,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "helixAngle",
@@ -3871,7 +4182,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "gearHeight",
@@ -3881,7 +4193,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -3904,7 +4217,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "module",
@@ -3914,7 +4228,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "pressureAngle",
@@ -3924,7 +4239,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "gearHeight",
@@ -3934,7 +4250,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "helixAngle",
@@ -3944,7 +4261,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -3967,7 +4285,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "module",
@@ -3977,7 +4296,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "pressureAngle",
@@ -3987,7 +4307,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "helixAngle",
@@ -3997,7 +4318,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "gearHeight",
@@ -4007,7 +4329,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4030,7 +4353,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "module",
@@ -4040,7 +4364,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "pressureAngle",
@@ -4050,7 +4375,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "gearHeight",
@@ -4060,7 +4386,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4083,7 +4410,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "edge",
@@ -4093,7 +4421,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "lowerBound",
@@ -4103,7 +4432,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "upperBound",
@@ -4113,7 +4443,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4136,7 +4467,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4159,7 +4491,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4182,7 +4515,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4205,7 +4539,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4228,7 +4563,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angleStart",
@@ -4238,7 +4574,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "ccw",
@@ -4248,7 +4585,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "radius",
@@ -4258,7 +4596,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "axis",
@@ -4268,7 +4607,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "length",
@@ -4278,7 +4618,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "cylinder",
@@ -4288,7 +4629,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4311,7 +4653,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4334,7 +4677,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "diameter",
@@ -4344,7 +4688,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4367,7 +4712,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "depth",
@@ -4377,7 +4723,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4400,7 +4747,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angle",
@@ -4410,7 +4758,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "headClearance",
@@ -4420,7 +4769,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4443,7 +4793,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4478,7 +4829,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "face",
@@ -4488,7 +4840,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeBottom",
@@ -4498,7 +4851,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeBody",
@@ -4508,7 +4862,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeType",
@@ -4518,7 +4873,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "cutAt",
@@ -4528,7 +4884,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4551,7 +4908,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "plane",
@@ -4561,7 +4919,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeBottom",
@@ -4571,7 +4930,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeBody",
@@ -4581,7 +4941,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeType",
@@ -4591,7 +4952,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4614,7 +4976,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "face",
@@ -4624,7 +4987,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeBottom",
@@ -4634,7 +4998,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeBody",
@@ -4644,7 +5009,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeType",
@@ -4654,7 +5020,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "cutsAt",
@@ -4664,7 +5031,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4687,7 +5055,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "face",
@@ -4697,7 +5066,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeBottom",
@@ -4707,7 +5077,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeBody",
@@ -4717,7 +5088,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "holeType",
@@ -4727,7 +5099,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "cutAt",
@@ -4737,7 +5110,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "instances",
@@ -4747,7 +5121,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "distance",
@@ -4757,7 +5132,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "axis",
@@ -4767,7 +5143,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4802,7 +5179,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "thickness",
@@ -4812,7 +5190,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4835,7 +5214,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "semiMajor",
@@ -4845,7 +5225,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "semiMinor",
@@ -4855,7 +5236,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "interiorAbsolute",
@@ -4865,7 +5247,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsolute",
@@ -4875,7 +5258,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "interior",
@@ -4885,7 +5269,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "end",
@@ -4895,7 +5280,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -4905,7 +5291,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4928,7 +5315,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "semiMinor",
@@ -4938,7 +5326,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "x",
@@ -4948,7 +5337,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "y",
@@ -4958,7 +5348,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -4981,7 +5372,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -4991,7 +5383,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "legacyMethod",
@@ -5001,7 +5394,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedSince": "3.0"
       }
     ]
   },
@@ -5024,7 +5418,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angle",
@@ -5034,7 +5429,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "startRadius",
@@ -5044,7 +5440,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endRadius",
@@ -5054,7 +5451,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "startDiameter",
@@ -5064,7 +5462,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endDiameter",
@@ -5074,7 +5473,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "reverse",
@@ -5084,7 +5484,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -5094,7 +5495,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5117,7 +5519,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5140,7 +5543,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5163,7 +5567,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -5173,7 +5578,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5196,7 +5602,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5219,7 +5626,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5242,7 +5650,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leg",
@@ -5252,7 +5661,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5275,7 +5685,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leg",
@@ -5285,7 +5696,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5308,7 +5720,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "leg",
@@ -5318,7 +5731,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5341,7 +5755,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsolute",
@@ -5351,7 +5766,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "end",
@@ -5361,7 +5777,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -5371,7 +5788,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5394,7 +5812,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5417,7 +5836,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "vDegree",
@@ -5427,7 +5847,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "bezApproximateRational",
@@ -5437,7 +5858,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "baseCurveIndex",
@@ -5447,7 +5869,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -5457,7 +5880,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tagStart",
@@ -5467,7 +5891,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tagEnd",
@@ -5477,7 +5902,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "bodyType",
@@ -5487,7 +5913,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5510,7 +5937,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "base",
@@ -5520,7 +5948,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5543,7 +5972,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5566,7 +5996,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5589,7 +6020,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "f",
@@ -5599,7 +6031,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5622,7 +6055,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5645,7 +6079,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5668,7 +6103,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "axis",
@@ -5678,7 +6114,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5701,7 +6138,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "across",
@@ -5711,7 +6149,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5734,7 +6173,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "offset",
@@ -5744,7 +6184,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5767,7 +6208,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "end",
@@ -5777,7 +6219,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsolute",
@@ -5787,7 +6230,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "coefficients",
@@ -5797,7 +6241,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "interior",
@@ -5807,7 +6252,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "interiorAbsolute",
@@ -5817,7 +6263,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -5827,7 +6274,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5850,7 +6298,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "x",
@@ -5860,7 +6309,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "y",
@@ -5870,7 +6320,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5893,7 +6344,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "instances",
@@ -5903,7 +6355,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "center",
@@ -5913,7 +6366,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "arcDegrees",
@@ -5923,7 +6377,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "rotateDuplicates",
@@ -5933,7 +6388,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "useOriginal",
@@ -5943,7 +6399,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -5966,7 +6423,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "instances",
@@ -5976,7 +6434,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "axis",
@@ -5986,7 +6445,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "center",
@@ -5996,7 +6456,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "arcDegrees",
@@ -6006,7 +6467,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "rotateDuplicates",
@@ -6016,7 +6478,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "useOriginal",
@@ -6026,7 +6489,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6049,7 +6513,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "instances",
@@ -6059,7 +6524,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "distance",
@@ -6069,7 +6535,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "axis",
@@ -6079,7 +6546,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "useOriginal",
@@ -6089,7 +6557,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6112,7 +6581,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "instances",
@@ -6122,7 +6592,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "distance",
@@ -6132,7 +6603,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "axis",
@@ -6142,7 +6614,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "useOriginal",
@@ -6152,7 +6625,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6175,7 +6649,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "instances",
@@ -6185,7 +6660,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "transform",
@@ -6195,7 +6671,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "useOriginal",
@@ -6205,7 +6682,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6228,7 +6706,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "instances",
@@ -6238,7 +6717,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "transform",
@@ -6248,7 +6728,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "useOriginal",
@@ -6258,7 +6739,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6281,7 +6763,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "face",
@@ -6291,7 +6774,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6314,7 +6798,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "length",
@@ -6324,7 +6809,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6347,7 +6833,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "radius",
@@ -6357,7 +6844,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "numSides",
@@ -6367,7 +6855,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "center",
@@ -6377,7 +6866,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "inscribed",
@@ -6387,7 +6877,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6410,7 +6901,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6433,7 +6925,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "exp",
@@ -6443,7 +6936,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6466,7 +6960,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6489,7 +6984,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6512,7 +7008,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6535,7 +7032,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "item",
@@ -6545,7 +7043,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6568,7 +7067,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "width",
@@ -6578,7 +7078,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "height",
@@ -6588,7 +7089,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "center",
@@ -6598,7 +7100,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "corner",
@@ -6608,7 +7111,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6631,7 +7135,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "initial",
@@ -6641,7 +7146,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "f",
@@ -6651,7 +7157,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6674,7 +7181,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "segments",
@@ -6684,7 +7192,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "intersectionIndex",
@@ -6694,7 +7203,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "direction",
@@ -6704,7 +7214,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "sketch",
@@ -6714,7 +7225,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6737,7 +7249,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "divisor",
@@ -6747,7 +7260,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6770,7 +7284,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "axis",
@@ -6780,7 +7295,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angle",
@@ -6790,7 +7306,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -6800,7 +7317,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "symmetric",
@@ -6810,7 +7328,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "bidirectionalAngle",
@@ -6820,7 +7339,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tagStart",
@@ -6830,7 +7350,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tagEnd",
@@ -6840,7 +7361,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "bodyType",
@@ -6850,7 +7372,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6873,7 +7396,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "roll",
@@ -6883,7 +7407,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "pitch",
@@ -6893,7 +7418,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "yaw",
@@ -6903,7 +7429,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "axis",
@@ -6913,7 +7440,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angle",
@@ -6923,7 +7451,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "global",
@@ -6933,7 +7462,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6956,7 +7486,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -6979,7 +7510,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "x",
@@ -6989,7 +7521,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "y",
@@ -6999,7 +7532,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "z",
@@ -7009,7 +7543,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "global",
@@ -7019,7 +7554,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "factor",
@@ -7029,7 +7565,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7052,7 +7589,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7075,7 +7613,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7098,7 +7637,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7121,7 +7661,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7144,7 +7685,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7167,7 +7709,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7190,7 +7733,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7213,7 +7757,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7236,7 +7781,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "thickness",
@@ -7246,7 +7792,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "faces",
@@ -7256,7 +7803,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7279,7 +7827,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7302,7 +7851,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "start",
@@ -7312,7 +7862,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "end",
@@ -7322,7 +7873,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7345,7 +7897,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "labelPosition",
@@ -7355,7 +7908,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7378,7 +7932,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "sector",
@@ -7388,7 +7943,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "inverse",
@@ -7398,7 +7954,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "labelPosition",
@@ -7408,7 +7965,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7431,7 +7989,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "end",
@@ -7441,7 +8000,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "center",
@@ -7451,7 +8011,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "direction",
@@ -7461,7 +8022,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "construction",
@@ -7471,7 +8033,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7494,7 +8057,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "center",
@@ -7504,7 +8068,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "construction",
@@ -7514,7 +8079,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7537,7 +8103,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7560,7 +8127,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "construction",
@@ -7570,7 +8138,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7593,7 +8162,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "labelPosition",
@@ -7603,7 +8173,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7626,7 +8197,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "labelPosition",
@@ -7636,7 +8208,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7659,7 +8232,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7682,7 +8256,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7705,7 +8280,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7728,7 +8304,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7751,7 +8328,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "labelPosition",
@@ -7761,7 +8339,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7784,7 +8363,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "end",
@@ -7794,7 +8374,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "construction",
@@ -7804,7 +8385,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7827,7 +8409,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "point",
@@ -7837,7 +8420,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7860,7 +8444,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7883,7 +8468,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7906,7 +8492,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7929,7 +8516,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "labelPosition",
@@ -7939,7 +8527,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7962,7 +8551,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "axis",
@@ -7972,7 +8562,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -7995,7 +8586,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8018,7 +8610,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8041,7 +8634,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "labelPosition",
@@ -8051,7 +8645,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8074,7 +8669,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "merge",
@@ -8084,7 +8680,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "keepTools",
@@ -8094,7 +8691,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tools",
@@ -8104,7 +8702,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "legacyMethod",
@@ -8114,7 +8713,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedSince": "3.0"
       }
     ]
   },
@@ -8137,7 +8737,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8160,7 +8761,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "at",
@@ -8170,7 +8772,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -8180,7 +8783,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8203,7 +8807,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "face",
@@ -8213,7 +8818,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "normalToFace",
@@ -8223,7 +8829,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "alignAxis",
@@ -8233,7 +8840,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "normalOffset",
@@ -8243,7 +8851,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8266,7 +8875,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "to",
@@ -8276,7 +8886,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "caseInsensitive",
@@ -8286,7 +8897,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8309,7 +8921,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8332,7 +8945,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8355,7 +8969,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8378,7 +8993,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8401,7 +9017,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8424,7 +9041,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8447,7 +9065,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tools",
@@ -8457,7 +9076,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -8467,7 +9087,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "legacyMethod",
@@ -8477,7 +9098,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedSince": "3.0"
       }
     ]
   },
@@ -8500,7 +9122,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tool",
@@ -8510,7 +9133,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8533,7 +9157,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "path",
@@ -8543,7 +9168,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "sectional",
@@ -8553,7 +9179,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -8563,7 +9190,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "relativeTo",
@@ -8573,7 +9201,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": true,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": "3.0"
       },
       {
         "name": "translateProfileToPath",
@@ -8583,7 +9212,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "orientProfilePerpendicular",
@@ -8593,7 +9223,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tagStart",
@@ -8603,7 +9234,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tagEnd",
@@ -8613,7 +9245,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "bodyType",
@@ -8623,7 +9256,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "version",
@@ -8633,7 +9267,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8656,7 +9291,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8679,7 +9315,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8702,7 +9339,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsolute",
@@ -8712,7 +9350,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "end",
@@ -8722,7 +9361,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "radius",
@@ -8732,7 +9372,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "diameter",
@@ -8742,7 +9383,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "angle",
@@ -8752,7 +9394,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -8762,7 +9405,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8785,7 +9429,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "x",
@@ -8795,7 +9440,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "y",
@@ -8805,7 +9451,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "z",
@@ -8815,7 +9462,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "global",
@@ -8825,7 +9473,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "xyz",
@@ -8835,7 +9484,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8858,7 +9508,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tolerance",
@@ -8868,7 +9519,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "legacyMethod",
@@ -8878,7 +9530,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": "2.0"
+        "deprecatedSince": "2.0",
+        "removedSince": "3.0"
       }
     ]
   },
@@ -8901,7 +9554,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8924,7 +9578,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8947,7 +9602,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8970,7 +9626,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -8993,7 +9650,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9016,7 +9674,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9039,7 +9698,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9062,7 +9722,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9085,7 +9746,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "v",
@@ -9095,7 +9757,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9118,7 +9781,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "v",
@@ -9128,7 +9792,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9151,7 +9816,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "v",
@@ -9161,7 +9827,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9184,7 +9851,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "v",
@@ -9194,7 +9862,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9217,7 +9886,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9240,7 +9910,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "v",
@@ -9250,7 +9921,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9273,7 +9945,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9296,7 +9969,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "v",
@@ -9306,7 +9980,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9329,7 +10004,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "up",
@@ -9339,7 +10015,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "target",
@@ -9349,7 +10026,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "distance",
@@ -9359,7 +10037,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "projection",
@@ -9369,7 +10048,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9392,7 +10072,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "camera",
@@ -9402,7 +10083,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "baseline",
@@ -9412,7 +10094,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "except",
@@ -9422,7 +10105,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9445,7 +10129,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "target",
@@ -9455,7 +10140,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "distance",
@@ -9465,7 +10151,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "projection",
@@ -9475,7 +10162,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9498,7 +10186,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "length",
@@ -9508,7 +10197,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsolute",
@@ -9518,7 +10208,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -9528,7 +10219,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   },
@@ -9551,7 +10243,8 @@ export default {
         "special": true,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "length",
@@ -9561,7 +10254,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "endAbsolute",
@@ -9571,7 +10265,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       },
       {
         "name": "tag",
@@ -9581,7 +10276,8 @@ export default {
         "special": false,
         "experimental": false,
         "deprecated": false,
-        "deprecatedSince": null
+        "deprecatedSince": null,
+        "removedSince": null
       }
     ]
   }
