@@ -35,6 +35,7 @@ use crate::ModuleId;
 use crate::SourceRange;
 use crate::TypedPath;
 use crate::errors::KclError;
+use crate::execution::InvalidKclVersionExt;
 use crate::execution::KclValue;
 use crate::execution::Metadata;
 use crate::execution::TagIdentifier;
@@ -490,13 +491,16 @@ impl CodeBlock for Node<Program> {
 }
 
 fn kcl_version_expr(kcl_version: &str) -> Result<Expr, KclError> {
-    let version = kcl_version.parse::<crate::KclVersion>()?;
+    let source_range = Vec::new();
+    let version = kcl_version
+        .parse::<crate::KclVersion>()
+        .map_err(|e| e.as_kcl_error(source_range.clone()))?;
     let (value, raw) = match version {
         crate::KclVersion::V1 | crate::KclVersion::V2 => {
             let value = kcl_version.parse::<f64>().map_err(|_| {
                 KclError::new_semantic(crate::errors::KclErrorDetails::new(
                     format!("Unexpected numeric KCL version value: `{kcl_version}`"),
-                    vec![],
+                    source_range,
                 ))
             })?;
             (
