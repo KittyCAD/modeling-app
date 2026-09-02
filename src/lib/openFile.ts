@@ -44,10 +44,8 @@ import {
 } from '@src/lib/routeLoaderNavigation'
 import { loadRouteSettings } from '@src/lib/routeSettings'
 import type { IndexLoaderData } from '@src/lib/types'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
+import { SystemIOMachineStates } from '@src/machines/systemIO/states'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { waitFor } from 'xstate'
 
