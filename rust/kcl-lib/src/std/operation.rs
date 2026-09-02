@@ -6,11 +6,18 @@ use crate::{
         ModelingCmdMeta, Solid,
         types::{NumericTypeExt, PrimitiveType, RuntimeType},
     },
-    std::{Args, args::TyF64},
+    std::{
+        Args,
+        args::TyF64,
+        sketch::{PlaneData, make_sketch_plane_from_orientation},
+    },
 };
 use kcmc::each_cmd as mcmd;
 use kittycad_modeling_cmds::{
-    self as kcmc, ok_response::OkModelingCmdResponse, shared::Point3d, units::UnitLength,
+    self as kcmc,
+    ok_response::OkModelingCmdResponse,
+    shared::{PathSegment, Point3d},
+    units::UnitLength,
     websocket::OkWebSocketResponseData,
 };
 use kittycad_modeling_cmds::{ModelingCmd, websocket::ModelingCmdReq};
@@ -178,23 +185,28 @@ pub async fn facing(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         )
         .await?;
 
-    let aabb = if let OkWebSocketResponseData::Modeling {
+    let bounding_box = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::BoundingBox(data),
     } = response
     {
-        Some(data.dimensions)
+        Some(data)
     } else {
         None
     };
 
-    let origin = Point3d { x: 0.0, y: 0.0, z: 0.0 };
-    let direction = Point3d { x: 1.0, y: 1.0, z: 1.0 };
-
-    match aabb {
-        Some(aabb) => {
+    match bounding_box {
+        Some(bounding_box) => {
+            let aabb = bounding_box.dimensions;
+            let center = bounding_box.center;
+            let origin = Point3d {
+                x: (center.x - (aabb.x / 2.0)) as f32,
+                y: (center.y - (aabb.y / 2.0)) as f32,
+                z: (center.z + (aabb.z / 2.0)) as f32,
+            };
+            let direction = Point3d { x: 1.0, y: 1.0, z: 1.0 };
             let part_width = aabb.x;
             let part_height = aabb.y;
-            let response = s_curve(
+            let moves = s_curve(
                 part_width as f32,
                 part_height as f32,
                 tool_diameter.n as f32,
@@ -202,21 +214,14 @@ pub async fn facing(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                 direction,
                 step_over.n as f32,
             );
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("{:#?}", response).into());
-        }
-        None => {}
-    }
 
-    let sketch_surface_id = solid.sketch_id().expect("nice");
-    let enable_sketch_id = exec_state.next_uuid();
-    let path_id = exec_state.next_uuid();
-    let huh_id = exec_state.next_uuid();
-    let disable_sketch_id = exec_state.next_uuid();
-    exec_state
-        .batch_modeling_cmds(
-            ModelingCmdMeta::new(exec_state, &args.ctx, args.source_range),
-            &[
+            let plane = make_sketch_plane_from_orientation(PlaneData::XY, exec_state, &args).await?;
+            let sketch_surface_id = plane.id;
+            let enable_sketch_id = exec_state.next_uuid();
+            let path_id = exec_state.next_uuid();
+            let disable_sketch_id = exec_state.next_uuid();
+
+            let mut cmds = vec![
                 // Enter sketch mode on the surface.
                 // We call this here so you can reuse the sketch surface for multiple sketches.
                 ModelingCmdReq {
@@ -226,6 +231,7 @@ pub async fn facing(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                             .ortho(false)
                             .entity_id(sketch_surface_id)
                             .adjust_camera(false)
+                            .planar_normal(plane.info.x_axis.axes_cross_product(&plane.info.y_axis).into())
                             .build(),
                     ),
                     cmd_id: enable_sketch_id.into(),
@@ -239,21 +245,75 @@ pub async fn facing(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                         mcmd::MovePathPen::builder()
                             .path(path_id.into())
                             .to(Point3d {
-                                x: kittycad_modeling_cmds::length_unit::LengthUnit(1.0),
-                                y: kittycad_modeling_cmds::length_unit::LengthUnit(1.0),
-                                z: kittycad_modeling_cmds::length_unit::LengthUnit(1.0),
+                                x: kittycad_modeling_cmds::length_unit::LengthUnit(moves[0].end.x as f64),
+                                y: kittycad_modeling_cmds::length_unit::LengthUnit(moves[0].end.y as f64),
+                                z: kittycad_modeling_cmds::length_unit::LengthUnit(moves[0].end.z as f64),
                             })
                             .build(),
                     ),
-                    cmd_id: huh_id.into(),
+                    cmd_id: exec_state.next_uuid().into(),
                 },
-                ModelingCmdReq {
-                    cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-                    cmd_id: disable_sketch_id.into(),
-                },
-            ],
-        )
-        .await?;
+            ];
+
+            for move_op in moves {
+                match move_op.point {
+                    Some(p) => {
+                        cmds.push(ModelingCmdReq {
+                            cmd_id: exec_state.next_uuid().into(),
+                            cmd: ModelingCmd::from(
+                                mcmd::ExtendPath::builder()
+                                    .path(path_id.into())
+                                    .segment(PathSegment::ArcTo {
+                                        interior: Point3d {
+                                            x: kittycad_modeling_cmds::length_unit::LengthUnit(p.x as f64),
+                                            y: kittycad_modeling_cmds::length_unit::LengthUnit(p.y as f64),
+                                            z: kittycad_modeling_cmds::length_unit::LengthUnit(p.z as f64),
+                                        },
+                                        end: Point3d {
+                                            x: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.x as f64),
+                                            y: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.y as f64),
+                                            z: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.z as f64),
+                                        },
+                                        relative: false,
+                                    })
+                                    .build(),
+                            ),
+                        });
+                    }
+                    None => {
+                        cmds.push(ModelingCmdReq {
+                            cmd_id: exec_state.next_uuid().into(),
+                            cmd: ModelingCmd::from(
+                                mcmd::ExtendPath::builder()
+                                    .path(path_id.into())
+                                    .segment(PathSegment::Line {
+                                        end: Point3d {
+                                            x: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.x as f64),
+                                            y: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.y as f64),
+                                            z: kittycad_modeling_cmds::length_unit::LengthUnit(move_op.end.z as f64),
+                                        },
+                                        relative: false,
+                                    })
+                                    .build(),
+                            ),
+                        });
+                    }
+                }
+            }
+
+            // disable
+            cmds.push(ModelingCmdReq {
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                cmd_id: disable_sketch_id.into(),
+            });
+
+            exec_state
+                .batch_modeling_cmds(ModelingCmdMeta::new(exec_state, &args.ctx, args.source_range), &cmds)
+                .await?;
+        }
+        None => {}
+    }
+
     // Pass this to the engine in an engine endpoint
     Ok(KclValue::Number {
         value: 4.0,
