@@ -48,17 +48,17 @@ pub fn s_curve(
     // and back into the part.
     let overhang = tool_diameter;
 
+    // Scalar between the S Curve rows based on the tool diameter and the percent stepover.
+    let density = tool_diameter * stepover;
+
     // Start point in world coordinate for the S Curve
     let start_point = Point3d {
-        x: (-((1.0 - stepover) * overhang)) * direction.x + origin.x,
+        x: direction.x * origin.x,
         y: (-overhang) * direction.y + origin.y,
         z: origin.z,
     };
 
     let mut moves: Vec<Move> = vec![];
-
-    // Scalar between the S Curve rows based on the tool diameter and the percent stepover.
-    let density = tool_diameter * stepover;
 
     // The number of S curve rows
     let interval = (part_width / density).ceil() as i32 + 1;
@@ -77,7 +77,7 @@ pub fn s_curve(
     // For the number of rows in the s curve push lines and arcs
     for i in 0..interval {
         // X position of the row
-        let x_row: f32 = (i as f32 * density * direction.x) + start_point.x;
+        let x_row = (i as f32 * density * direction.x) + start_point.x;
         // X position of the next row in the loop
         let next_x_row = (((i + 1) as f32 * density) * direction.x) + start_point.x;
         // Difference of values between the x row and next x row. Not a world coordinate value.
@@ -87,11 +87,11 @@ pub fn s_curve(
         if i % 2 == 0 {
             // The x position of the line and the start of the arc.
             let x = x_row;
+            let y = start_point.y;
             let end_y = ((part_height + overhang + overhang) * direction.y) + start_point.y;
             // diff_of_x_rows makes it a circular arc
             let arc_middle_y = start_point.y + (direction.y * (part_height + overhang + overhang + diff_of_x_rows));
 
-            // Push line
             moves.push(Move {
                 trajectory: Trajectory::Linear,
                 end: Point3d {
@@ -103,7 +103,6 @@ pub fn s_curve(
             });
 
             if i < interval - 1 {
-                // Create the clockwise arc since you are moving +Y then going +X
                 moves.push(Move {
                     trajectory: Trajectory::CircularCw,
                     point: Some(Point3d {
@@ -121,11 +120,14 @@ pub fn s_curve(
         } else {
             // -Y
             let x = x_row;
+            let line_start_y = start_point.y;
+            let line_end_y = ((part_height + overhang + overhang) * direction.y) + start_point.y;
 
             // The move end needs to be in the direction going down.
             let y = start_point.y;
             // diff_of_x_rows makes it a circular arc
             let arc_middle_y = -diff_of_x_rows * direction.y + start_point.y;
+
             moves.push(Move {
                 trajectory: Trajectory::Linear,
                 end: Point3d {
@@ -135,9 +137,7 @@ pub fn s_curve(
                 },
                 point: None,
             });
-
             if i < interval - 1 {
-                // Create the counter clockwise arc
                 moves.push(Move {
                     trajectory: Trajectory::CircularCcw,
                     point: Some(Point3d {
