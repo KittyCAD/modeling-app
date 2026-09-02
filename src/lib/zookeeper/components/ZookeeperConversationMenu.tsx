@@ -138,7 +138,7 @@ export function ZookeeperConversationFeedbackDialog({
               maxLength={4000}
               rows={6}
               autoFocus
-              className="w-full resize-y rounded-sm border border-chalkboard-30 bg-chalkboard-10 p-2 text-sm dark:border-chalkboard-70 dark:bg-chalkboard-90"
+              className="w-full resize-y rounded-sm border border-chalkboard-30 bg-chalkboard-10 p-2 text-sm focus:border-ml-green focus:outline-none focus:ring-1 focus:ring-ml-green dark:border-chalkboard-70 dark:bg-chalkboard-90 dark:focus:border-ml-green dark:focus:ring-ml-green"
               placeholder="What worked, what did not, or what should Zookeeper do differently?"
             />
 
