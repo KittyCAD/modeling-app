@@ -4125,6 +4125,17 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                                     "`{REMOVED_SINCE}` cannot be used on the unlabeled parameter; only labeled parameters can be removed"
                                 ),
                             ));
+                        } else if default_value.is_none() {
+                            // A caller on the removed version cannot pass the
+                            // parameter, so the function body must be able to
+                            // run with its default value.
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&identifier),
+                                format!(
+                                    "A parameter with `{REMOVED_SINCE}` must be optional; add `?` after `{}`",
+                                    identifier.name
+                                ),
+                            ));
                         }
                     }
                     identifier.outer_attrs.push(attr);
@@ -5986,6 +5997,33 @@ height = [obj["a"] -1, 0]"#;
 }"#,
             "`removed_since` cannot be used on the unlabeled parameter",
         );
+    }
+
+    #[test]
+    fn test_param_removed_since_requires_optional_param() {
+        assert_err(
+            r#"fn foo(
+  @(removed_since = "3.0")
+  x: number,
+) {
+  return x
+}"#,
+            "A parameter with `removed_since` must be optional; add `?` after `x`",
+            [37, 38],
+        );
+    }
+
+    #[test]
+    fn test_param_removed_since_allows_optional_param_with_default() {
+        crate::parsing::top_level_parse(
+            r#"fn foo(
+  @(removed_since = "3.0")
+  x?: number = 7,
+) {
+  return x
+}"#,
+        )
+        .unwrap();
     }
 
     #[test]

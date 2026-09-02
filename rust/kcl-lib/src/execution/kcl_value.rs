@@ -231,8 +231,9 @@ impl NamedParam {
     /// Whether this parameter is removed as of the KCL version governing the
     /// current execution. A removed parameter behaves as if the function never
     /// declared it: passing it is an error, and the function body sees the
-    /// parameter's default value, or `none` if it has no default. A pre-release
-    /// version such as "3.0-preview" counts as the release it precedes.
+    /// parameter's default value, which the parser guarantees exists. A
+    /// pre-release version such as "3.0-preview" counts as the release it
+    /// precedes.
     pub(crate) fn is_removed(&self, exec_state: &ExecState) -> bool {
         self.removed_since
             .as_ref()

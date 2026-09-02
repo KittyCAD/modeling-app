@@ -31,7 +31,6 @@ use crate::execution::memory;
 use crate::execution::types::CoercionMode;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::CallExpressionKw;
-use crate::parsing::ast::types::DefaultParamVal;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Type;
 use crate::std::ConsumedSolidArgCheck;
@@ -1313,23 +1312,20 @@ pub(super) fn assign_args_to_params_kw(
                     arg.source_ranges().pop().unwrap_or(SourceRange::synthetic()),
                 )?;
             }
-            None => {
-                let default_val = match &param.default_value {
-                    Some(default_val) => default_val.clone(),
-                    // The caller cannot pass a removed parameter, so the body
-                    // sees `none` rather than a missing-argument error.
-                    None if param.is_removed(exec_state) => DefaultParamVal::none(),
-                    None => {
-                        return Err(KclError::new_argument(KclErrorDetails::new(
-                            format!("This function requires a parameter {name}, but you haven't passed it one."),
-                            source_ranges,
-                        )));
-                    }
-                };
-                let source_range = default_val.source_range();
-                let value = KclValue::from_default_param(default_val, exec_state);
-                exec_state.mut_stack().add(name.clone(), value, source_range)?;
-            }
+            None => match &param.default_value {
+                Some(default_val) => {
+                    let value = KclValue::from_default_param(default_val.clone(), exec_state);
+                    exec_state
+                        .mut_stack()
+                        .add(name.clone(), value, default_val.source_range())?;
+                }
+                None => {
+                    return Err(KclError::new_argument(KclErrorDetails::new(
+                        format!("This function requires a parameter {name}, but you haven't passed it one."),
+                        source_ranges,
+                    )));
+                }
+            },
         }
     }
 
@@ -1412,6 +1408,7 @@ mod test {
     use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
     use crate::execution::types::NumericTypeExt;
+    use crate::parsing::ast::types::DefaultParamVal;
     use crate::parsing::ast::types::FunctionExpression;
     use crate::parsing::ast::types::Identifier;
     use crate::parsing::ast::types::Parameter;
@@ -2474,45 +2471,6 @@ x = f()
         let result = parse_execute(program).await.unwrap();
         assert!(result.issues().is_empty(), "unexpected issues: {:#?}", result.issues());
         assert!(matches!(get_var(&result, "x"), KclValue::Number { value, .. } if value == 7.0));
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn removed_required_param_binds_none_instead_of_erroring() {
-        // The caller can no longer pass the parameter, so requiring it would
-        // make the function uncallable.
-        let program = r#"@settings(kclVersion = "3.0-preview")
-fn f(
-  @(removed_since = "3.0")
-  oldArg: number,
-) {
-  return oldArg
-}
-x = f()
-"#;
-
-        let result = parse_execute(program).await.unwrap();
-        assert!(result.issues().is_empty(), "unexpected issues: {:#?}", result.issues());
-        assert!(matches!(get_var(&result, "x"), KclValue::KclNone { .. }));
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn removed_required_param_is_still_required_before_removed_version() {
-        let program = r#"@settings(kclVersion = 2.0)
-fn f(
-  @(removed_since = "3.0")
-  oldArg: number,
-) {
-  return oldArg
-}
-x = f()
-"#;
-
-        let err = parse_execute(program).await.unwrap_err();
-        assert!(
-            err.message().contains("This function requires a parameter oldArg"),
-            "found {}",
-            err.message()
-        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
