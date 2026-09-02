@@ -1,6 +1,6 @@
 import type { GetSketchModePlane } from '@kittycad/lib'
 import { LOCAL_WEBGPU_RENDERING_ENABLED } from '@src/clientSideScene/localRenderer/config'
-import type { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
+import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import {
@@ -12,9 +12,9 @@ import {
   type LocalRenderPacketSketchSegment,
 } from '@src/clientSideScene/localRenderer/renderPacketBinary'
 import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
-import type {
+import {
   createWebGpuSurfaceResources,
-  WebGpuSurfaceResources,
+  type WebGpuSurfaceResources,
 } from '@src/clientSideScene/webgpuTrim'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
@@ -53,9 +53,9 @@ import {
   Vector2,
   Vector3,
 } from 'three'
-import type { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
-import type { pass, vec3, vec4 } from 'three/tsl'
-import type { RenderPipeline, WebGPURenderer } from 'three/webgpu'
+import { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
+import { pass, vec3, vec4 } from 'three/tsl'
+import { RenderPipeline, WebGPURenderer } from 'three/webgpu'
 
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
@@ -82,15 +82,6 @@ type AmbientOcclusionPipeline = {
   scenePass: ReturnType<typeof pass>
   aoPass: AmbientOcclusionPass
 }
-type WebGpuRuntimeModules = {
-  RenderPipeline: typeof RenderPipeline
-  createWebGpuSurfaceResources: typeof createWebGpuSurfaceResources
-  pass: typeof pass
-  vec3: typeof vec3
-  vec4: typeof vec4
-  createAmbientOcclusion: CreateAmbientOcclusion
-}
-
 export interface LocalRendererProps {
   backgroundColor: string
   enableSSAO: boolean
@@ -116,7 +107,6 @@ export class LocalRenderer {
   private scene: Scene | null = null
   private envMapLoader: EnvMapLoader | null = null
   private edgeRenderer: EdgeRenderer | null = null
-  private runtimeModules: WebGpuRuntimeModules | null = null
   private resizeObserver: ResizeObserver | null = null
   private animationFrameId = -1
   private currentModel: Object3D | null = null
@@ -267,7 +257,6 @@ export class LocalRenderer {
     this.renderer = null
     this.scene = null
     this.previewCamera = null
-    this.runtimeModules = null
     this.parserState = null
     this.activeSketchModePlane = null
   }
@@ -666,9 +655,8 @@ export class LocalRenderer {
   private renderPreview() {
     const previewCamera = this.previewCamera
     const renderer = this.renderer
-    const runtimeModules = this.runtimeModules
     const scene = this.scene
-    if (!previewCamera || !renderer || !runtimeModules || !scene) {
+    if (!previewCamera || !renderer || !scene) {
       return
     }
 
@@ -682,12 +670,12 @@ export class LocalRenderer {
 
       // GTAO expects a regular depth texture. The renderer itself can keep
       // using MSAA, but this intermediate pass must be single-sampled.
-      const scenePass = runtimeModules.pass(scene, previewCamera, {
+      const scenePass = pass(scene, previewCamera, {
         samples: 0,
       })
       const scenePassColor = scenePass.getTextureNode()
       const scenePassDepth = scenePass.getTextureNode('depth')
-      const aoPass = runtimeModules.createAmbientOcclusion(
+      const aoPass = (ao as CreateAmbientOcclusion)(
         scenePassDepth,
         null,
         previewCamera
@@ -695,14 +683,12 @@ export class LocalRenderer {
       aoPass.resolutionScale = 0.5
       this.configureAmbientOcclusion(aoPass)
 
-      const pipeline = new runtimeModules.RenderPipeline(renderer)
+      const pipeline = new RenderPipeline(renderer)
       const aoOutput = aoPass.getTextureNode()
       // Preserve some indirect light even at maximum occlusion while leaving
       // enough contrast to make the setting visibly effective.
       const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
-      pipeline.outputNode = scenePassColor.mul(
-        runtimeModules.vec4(runtimeModules.vec3(ambientOcclusion), 1)
-      )
+      pipeline.outputNode = scenePassColor.mul(vec4(vec3(ambientOcclusion), 1))
 
       this.ambientOcclusionPipeline = {
         camera: previewCamera,
@@ -884,9 +870,8 @@ export class LocalRenderer {
     }
 
     const edgeRenderer = this.edgeRenderer
-    const runtimeModules = this.runtimeModules
     const scene = this.scene
-    if (!edgeRenderer || !runtimeModules || !scene) {
+    if (!edgeRenderer || !scene) {
       this.pendingRefreshRequest = true
       logLocalWebGpuPreview('refresh requested before renderer initialization')
       return
@@ -977,7 +962,7 @@ export class LocalRenderer {
       (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
     ) {
       this.clearModel()
-      const surfaceResources = runtimeModules.createWebGpuSurfaceResources(
+      const surfaceResources = createWebGpuSurfaceResources(
         renderPacket.primitives,
         renderPacket.bodyMaterials ?? [],
         WEBGPU_TRIMMING_ENABLED
@@ -1036,25 +1021,6 @@ export class LocalRenderer {
     const { container } = this
 
     logLocalWebGpuPreview('initializing preview renderer')
-    const [
-      { WebGPURenderer, RenderPipeline },
-      { EdgeRenderer },
-      { createWebGpuSurfaceResources },
-      { pass, vec3, vec4 },
-      { ao },
-    ] = await Promise.all([
-      import('three/webgpu'),
-      import('@src/clientSideScene/localRenderer/EdgeRenderer'),
-      import('@src/clientSideScene/webgpuTrim'),
-      import('three/tsl'),
-      import('three/examples/jsm/tsl/display/GTAONode.js'),
-    ])
-
-    if (this.disposed) {
-      logLocalWebGpuPreview('preview disposed before initialization completed')
-      return
-    }
-
     const hasNavigatorGpu = typeof navigator !== 'undefined' && !!navigator.gpu
     logLocalWebGpuPreview('navigator.gpu availability checked', {
       isSecureContext: window.isSecureContext,
@@ -1201,14 +1167,6 @@ export class LocalRenderer {
         this.syncPreviewCameraFromShared
       )
 
-    this.runtimeModules = {
-      RenderPipeline,
-      createWebGpuSurfaceResources,
-      pass,
-      vec3,
-      vec4,
-      createAmbientOcclusion: ao as CreateAmbientOcclusion,
-    }
     this.renderer = renderer
     this.envMapLoader = envMapLoader
 
