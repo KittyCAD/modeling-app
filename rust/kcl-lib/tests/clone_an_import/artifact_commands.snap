@@ -216,7 +216,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "458bd166-3b39-5b82-86b7-0d0cfea550b1",
-        "edge_id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4"
+        "edge_id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b"
       }
     },
     {
@@ -225,7 +225,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "458bd166-3b39-5b82-86b7-0d0cfea550b1",
-        "edge_id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4"
+        "edge_id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b"
       }
     },
     {
@@ -503,7 +503,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "ef5d07ed-ec75-547f-b122-54717e4473f3",
-        "edge_id": "2febc3e0-e362-5a22-921a-27594c8a4aa7"
+        "edge_id": "0fbde302-8f66-5f93-8dd8-4e31ed629b3b"
       }
     },
     {
@@ -512,7 +512,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "ef5d07ed-ec75-547f-b122-54717e4473f3",
-        "edge_id": "2febc3e0-e362-5a22-921a-27594c8a4aa7"
+        "edge_id": "0fbde302-8f66-5f93-8dd8-4e31ed629b3b"
       }
     },
     {
@@ -591,7 +591,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "d7c3c182-9055-5974-aed5-8c6a26dd830a",
-        "edge_id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4"
+        "edge_id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b"
       }
     },
     {
@@ -600,7 +600,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "d7c3c182-9055-5974-aed5-8c6a26dd830a",
-        "edge_id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4"
+        "edge_id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b"
       }
     },
     {
@@ -672,7 +672,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "b3f571cf-a507-5510-a6c4-b3754477a444",
-        "edge_id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b"
+        "edge_id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4"
       }
     },
     {
@@ -681,7 +681,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "b3f571cf-a507-5510-a6c4-b3754477a444",
-        "edge_id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b"
+        "edge_id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4"
       }
     },
     {
@@ -924,7 +924,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "28006c95-3b9c-5732-a899-10c8e6ab53bc",
-        "edge_id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b"
+        "edge_id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4"
       }
     },
     {
@@ -933,7 +933,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "28006c95-3b9c-5732-a899-10c8e6ab53bc",
-        "edge_id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b"
+        "edge_id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4"
       }
     },
     {
@@ -1124,7 +1124,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "8bdf2e11-34d1-55fe-952c-a08aa30ae2d3",
-        "edge_id": "52e2e250-777b-5746-a7c7-8744d97e5096"
+        "edge_id": "760cc82f-86e1-519e-8024-b4672b5540ed"
       }
     },
     {
@@ -1133,7 +1133,7 @@ description: Artifact commands clone_an_import.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "8bdf2e11-34d1-55fe-952c-a08aa30ae2d3",
-        "edge_id": "52e2e250-777b-5746-a7c7-8744d97e5096"
+        "edge_id": "760cc82f-86e1-519e-8024-b4672b5540ed"
       }
     },
     {

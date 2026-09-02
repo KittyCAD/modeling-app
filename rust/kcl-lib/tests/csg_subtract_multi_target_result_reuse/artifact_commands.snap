@@ -696,7 +696,7 @@ description: Artifact commands csg_subtract_multi_target_result_reuse.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "a5980aec-5a80-4d93-a5b1-93c884a6e856",
+        "object_id": "0315accd-5792-4523-a15f-a45848f8eb42",
         "color": {
           "r": 0.2,
           "g": 0.6666667,

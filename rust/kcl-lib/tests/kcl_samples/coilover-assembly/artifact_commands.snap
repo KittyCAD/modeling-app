@@ -382,7 +382,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "2069f7e5-bec0-5db1-9ea0-3d931c659a2e",
-        "edge_id": "66807694-4109-5a3f-8c7d-16197e5dc5fb"
+        "edge_id": "96e6dc51-b24b-5b5e-b152-b42796c81d8a"
       }
     },
     {
@@ -391,7 +391,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "2069f7e5-bec0-5db1-9ea0-3d931c659a2e",
-        "edge_id": "66807694-4109-5a3f-8c7d-16197e5dc5fb"
+        "edge_id": "96e6dc51-b24b-5b5e-b152-b42796c81d8a"
       }
     },
     {
@@ -408,7 +408,7 @@ description: Artifact commands coilover-assembly.kcl
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "9748355c-6018-5920-8219-65838648619b"
+        "object_id": "74370ff5-898a-5401-a26c-8a664f0231c9"
       }
     },
     {
@@ -551,7 +551,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
-        "edge_id": "0e172b1c-cc06-5196-8da9-066eec26d835"
+        "edge_id": "8c15c139-5109-55b1-aacd-60cd175f3848"
       }
     },
     {
@@ -560,7 +560,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
-        "edge_id": "0e172b1c-cc06-5196-8da9-066eec26d835"
+        "edge_id": "8c15c139-5109-55b1-aacd-60cd175f3848"
       }
     },
     {
@@ -570,8 +570,8 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_get_common_edge",
         "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
         "face_ids": [
-          "716b4129-e806-5479-b9e2-d028356fdb86",
-          "bfb77a84-ca01-5e87-b8f5-ba183441db71"
+          "9c1a364c-7261-5e63-8570-2877e788d831",
+          "a49f6419-56d5-55cc-afd8-f454f21faf27"
         ]
       }
     },
@@ -581,7 +581,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
-        "edge_id": "6df15eaf-d85c-526c-bd2d-f7cb9926112e"
+        "edge_id": "acb2a8ff-4c96-5e0b-9dbf-b2ace0e55c95"
       },
       "omitFromGraph": true
     },
@@ -592,7 +592,7 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_cut_edges",
         "object_id": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
         "edge_ids": [
-          "6df15eaf-d85c-526c-bd2d-f7cb9926112e"
+          "acb2a8ff-4c96-5e0b-9dbf-b2ace0e55c95"
         ],
         "cut_type": {
           "chamfer": {
@@ -621,7 +621,7 @@ description: Artifact commands coilover-assembly.kcl
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "bfb77a84-ca01-5e87-b8f5-ba183441db71"
+        "object_id": "a49f6419-56d5-55cc-afd8-f454f21faf27"
       }
     },
     {
@@ -764,7 +764,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
-        "edge_id": "5bc5e3b1-f497-51fb-ad31-bd669376ca33"
+        "edge_id": "ee95e1d7-63a8-590c-941d-d073b4bbc769"
       }
     },
     {
@@ -773,7 +773,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
-        "edge_id": "5bc5e3b1-f497-51fb-ad31-bd669376ca33"
+        "edge_id": "ee95e1d7-63a8-590c-941d-d073b4bbc769"
       }
     },
     {
@@ -783,8 +783,8 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_get_common_edge",
         "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
         "face_ids": [
-          "e40e9915-74a8-5a30-9f6d-6540d7af27a2",
-          "52a33b5f-71e0-51d2-a3ef-8e08c3bf8492"
+          "1c83c07f-1367-5eae-87a6-2c5c17910d6d",
+          "a0142a94-0deb-5b1a-a91c-09fffee1a35c"
         ]
       }
     },
@@ -794,7 +794,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
-        "edge_id": "bd09a985-5d63-503d-8f2f-ff5b1e84fbd9"
+        "edge_id": "2775e3bd-8b39-560f-ab03-334989bf4ef1"
       },
       "omitFromGraph": true
     },
@@ -805,7 +805,7 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_cut_edges",
         "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
         "edge_ids": [
-          "bd09a985-5d63-503d-8f2f-ff5b1e84fbd9"
+          "2775e3bd-8b39-560f-ab03-334989bf4ef1"
         ],
         "cut_type": {
           "fillet": {
@@ -825,8 +825,8 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_get_common_edge",
         "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
         "face_ids": [
-          "e40e9915-74a8-5a30-9f6d-6540d7af27a2",
-          "946206c5-dc53-5d70-a93c-38a30f606977"
+          "1c83c07f-1367-5eae-87a6-2c5c17910d6d",
+          "add7f4dc-698e-52c1-8123-58174862c900"
         ]
       }
     },
@@ -836,7 +836,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
-        "edge_id": "5bc5e3b1-f497-51fb-ad31-bd669376ca33"
+        "edge_id": "ee95e1d7-63a8-590c-941d-d073b4bbc769"
       },
       "omitFromGraph": true
     },
@@ -847,7 +847,7 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_cut_edges",
         "object_id": "c17a4fed-a24c-5bd4-b74e-411833c26da9",
         "edge_ids": [
-          "5bc5e3b1-f497-51fb-ad31-bd669376ca33"
+          "ee95e1d7-63a8-590c-941d-d073b4bbc769"
         ],
         "cut_type": {
           "fillet": {
@@ -1195,7 +1195,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "639652ec-4ed4-59e5-bbf8-a3cd1ec148f3",
-        "edge_id": "8f752721-ab42-5133-97de-b2b33225ab08"
+        "edge_id": "a4224eea-d935-5b9d-9bd5-c1181bff1b77"
       }
     },
     {
@@ -1204,7 +1204,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "639652ec-4ed4-59e5-bbf8-a3cd1ec148f3",
-        "edge_id": "8f752721-ab42-5133-97de-b2b33225ab08"
+        "edge_id": "a4224eea-d935-5b9d-9bd5-c1181bff1b77"
       }
     },
     {
@@ -1410,7 +1410,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "e4dd6f90-03b7-53e6-ac9a-3638839b8db5",
-        "edge_id": "348d7735-c1e4-5ec9-8acb-4ba379509d44"
+        "edge_id": "b750c55b-6b33-5b63-8dfc-f9d37693e5f8"
       }
     },
     {
@@ -1419,7 +1419,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "e4dd6f90-03b7-53e6-ac9a-3638839b8db5",
-        "edge_id": "348d7735-c1e4-5ec9-8acb-4ba379509d44"
+        "edge_id": "b750c55b-6b33-5b63-8dfc-f9d37693e5f8"
       }
     },
     {
@@ -1611,7 +1611,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "36f739ad-44ec-54a1-a253-1897aeafb909",
-        "edge_id": "e3086723-f98b-51c9-bc41-30fafe585335"
+        "edge_id": "cfd98384-f90d-5f0d-a06c-6751325ec752"
       }
     },
     {
@@ -1620,7 +1620,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "36f739ad-44ec-54a1-a253-1897aeafb909",
-        "edge_id": "e3086723-f98b-51c9-bc41-30fafe585335"
+        "edge_id": "cfd98384-f90d-5f0d-a06c-6751325ec752"
       }
     },
     {
@@ -1637,7 +1637,7 @@ description: Artifact commands coilover-assembly.kcl
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "b45da081-f1ed-5c3f-be19-691f17a9f3ae"
+        "object_id": "86f5b56a-8ee7-54f5-9008-3cf212909c2c"
       }
     },
     {
@@ -1780,7 +1780,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "cbc74e70-6a54-530b-989d-cf74f1da82c5",
-        "edge_id": "afd2659f-468c-51f6-84bb-8b5a9d0be5d6"
+        "edge_id": "14d6d3a7-ecdc-5160-89cc-338e8362522e"
       }
     },
     {
@@ -1789,7 +1789,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "cbc74e70-6a54-530b-989d-cf74f1da82c5",
-        "edge_id": "afd2659f-468c-51f6-84bb-8b5a9d0be5d6"
+        "edge_id": "14d6d3a7-ecdc-5160-89cc-338e8362522e"
       }
     },
     {
@@ -1996,7 +1996,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
-        "edge_id": "1f8bb8e8-cdf6-5f77-9728-917ae47cdb8b"
+        "edge_id": "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
       }
     },
     {
@@ -2005,7 +2005,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
-        "edge_id": "1f8bb8e8-cdf6-5f77-9728-917ae47cdb8b"
+        "edge_id": "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
       }
     },
     {
@@ -2015,8 +2015,8 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_get_common_edge",
         "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "face_ids": [
-          "d0b58bae-d29a-5383-9501-9eadfd906681",
-          "c2d979e1-911c-5869-8f1b-96e6d7366604"
+          "118dd6be-7e76-5ad2-aab5-354627acb59b",
+          "e1e7e372-f8f6-5b56-a623-e188c73253ab"
         ]
       }
     },
@@ -2026,7 +2026,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
-        "edge_id": "2562a7c0-185f-5882-a94b-c890c579d20e"
+        "edge_id": "33a382ff-4e43-5c58-a0ae-cf68ce924f55"
       },
       "omitFromGraph": true
     },
@@ -2037,7 +2037,7 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_cut_edges",
         "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "edge_ids": [
-          "2562a7c0-185f-5882-a94b-c890c579d20e"
+          "33a382ff-4e43-5c58-a0ae-cf68ce924f55"
         ],
         "cut_type": {
           "chamfer": {
@@ -2066,7 +2066,7 @@ description: Artifact commands coilover-assembly.kcl
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "c2d979e1-911c-5869-8f1b-96e6d7366604"
+        "object_id": "e1e7e372-f8f6-5b56-a623-e188c73253ab"
       }
     },
     {
@@ -2209,7 +2209,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "601dbb56-735e-5539-9adf-396f13e5255e",
-        "edge_id": "e0ebbdc7-886b-5a37-a971-d1575406fe19"
+        "edge_id": "f9dc77a7-942d-53b4-8770-2ba893de13ea"
       }
     },
     {
@@ -2218,7 +2218,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "601dbb56-735e-5539-9adf-396f13e5255e",
-        "edge_id": "e0ebbdc7-886b-5a37-a971-d1575406fe19"
+        "edge_id": "f9dc77a7-942d-53b4-8770-2ba893de13ea"
       }
     },
     {
@@ -2235,7 +2235,7 @@ description: Artifact commands coilover-assembly.kcl
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "e2209036-5ee4-5592-a892-c6d664889378"
+        "object_id": "094eba77-2db2-5353-b3c1-5160c55b1f09"
       }
     },
     {
@@ -2378,7 +2378,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
-        "edge_id": "bdfd3e6e-ecb7-5181-a489-6ee8a2eb1496"
+        "edge_id": "5ffca563-7e60-502d-a44c-c3f46b2c01df"
       }
     },
     {
@@ -2387,7 +2387,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
-        "edge_id": "bdfd3e6e-ecb7-5181-a489-6ee8a2eb1496"
+        "edge_id": "5ffca563-7e60-502d-a44c-c3f46b2c01df"
       }
     },
     {
@@ -2397,8 +2397,8 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_get_common_edge",
         "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
         "face_ids": [
-          "23d1be5f-2ea6-5e40-a383-467847447a0f",
-          "118c2d42-4f11-5d4a-ae93-b75feb004421"
+          "048d4247-26c9-5763-a1ef-4c2969eb0113",
+          "15cbcec7-c51d-5826-89aa-977e59c2170d"
         ]
       }
     },
@@ -2408,7 +2408,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
-        "edge_id": "d888c585-258c-5793-8e4b-35455ec7325f"
+        "edge_id": "ec8d6cce-59df-5143-94cf-9997e5e195b6"
       },
       "omitFromGraph": true
     },
@@ -2419,7 +2419,7 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_cut_edges",
         "object_id": "781c48e5-9a88-580f-a953-0c524fe7ad05",
         "edge_ids": [
-          "d888c585-258c-5793-8e4b-35455ec7325f"
+          "ec8d6cce-59df-5143-94cf-9997e5e195b6"
         ],
         "cut_type": {
           "chamfer": {
@@ -2448,7 +2448,7 @@ description: Artifact commands coilover-assembly.kcl
       "range": [],
       "command": {
         "type": "face_is_planar",
-        "object_id": "118c2d42-4f11-5d4a-ae93-b75feb004421"
+        "object_id": "15cbcec7-c51d-5826-89aa-977e59c2170d"
       }
     },
     {
@@ -2591,7 +2591,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
-        "edge_id": "2d543621-a79a-5324-b30f-c698dfe770d9"
+        "edge_id": "e23910ba-5f1c-5ef5-a102-fcf5890875f4"
       }
     },
     {
@@ -2600,7 +2600,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
-        "edge_id": "2d543621-a79a-5324-b30f-c698dfe770d9"
+        "edge_id": "e23910ba-5f1c-5ef5-a102-fcf5890875f4"
       }
     },
     {
@@ -2610,8 +2610,8 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_get_common_edge",
         "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
         "face_ids": [
-          "1d13a690-95d4-5ea4-aa93-aac98d6e9a26",
-          "fe73c7f4-8fda-5563-9695-6561b5e48734"
+          "11122e4b-43e5-57d4-9ed3-1807e082727e",
+          "03eabece-7315-54fc-b59e-8ec268de10b1"
         ]
       }
     },
@@ -2621,7 +2621,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
-        "edge_id": "a821b55e-79ed-5a4d-9a7c-87950a99a80f"
+        "edge_id": "15b1192d-db8b-5740-9f36-845efe4af7d8"
       },
       "omitFromGraph": true
     },
@@ -2632,7 +2632,7 @@ description: Artifact commands coilover-assembly.kcl
         "type": "solid3d_cut_edges",
         "object_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
         "edge_ids": [
-          "a821b55e-79ed-5a4d-9a7c-87950a99a80f"
+          "15b1192d-db8b-5740-9f36-845efe4af7d8"
         ],
         "cut_type": {
           "fillet": {
@@ -3032,7 +3032,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "a06a58e3-42fa-55ff-b2be-7606be6a52a2",
-        "edge_id": "05d48f4a-3e61-555c-b1f0-b42e53e2e647"
+        "edge_id": "1c172ddf-66b4-5222-b74a-cfc09f1bb2ad"
       }
     },
     {
@@ -3041,7 +3041,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "a06a58e3-42fa-55ff-b2be-7606be6a52a2",
-        "edge_id": "05d48f4a-3e61-555c-b1f0-b42e53e2e647"
+        "edge_id": "1c172ddf-66b4-5222-b74a-cfc09f1bb2ad"
       }
     },
     {
@@ -3247,7 +3247,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "b4488d7a-289b-5f7a-ad51-dd02763e12ea",
-        "edge_id": "2867971b-ddd0-5707-a654-8db0ee84069a"
+        "edge_id": "73872674-b986-5b57-b5ce-d29f5c2afbb8"
       }
     },
     {
@@ -3256,7 +3256,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "b4488d7a-289b-5f7a-ad51-dd02763e12ea",
-        "edge_id": "2867971b-ddd0-5707-a654-8db0ee84069a"
+        "edge_id": "73872674-b986-5b57-b5ce-d29f5c2afbb8"
       }
     },
     {
@@ -3596,7 +3596,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "754e5e64-bf24-52cf-9f8c-962e4cc9e527",
-        "edge_id": "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
+        "edge_id": "1f8bb8e8-cdf6-5f77-9728-917ae47cdb8b"
       }
     },
     {
@@ -3605,7 +3605,7 @@ description: Artifact commands coilover-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "754e5e64-bf24-52cf-9f8c-962e4cc9e527",
-        "edge_id": "086bca0d-88a5-53e8-8bef-a2a8c35f17a7"
+        "edge_id": "1f8bb8e8-cdf6-5f77-9728-917ae47cdb8b"
       }
     },
     {

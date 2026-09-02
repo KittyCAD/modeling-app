@@ -107,8 +107,8 @@ description: Variables in memory after executing csg_subtract_multi_target_resul
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "a5980aec-5a80-4d93-a5b1-93c884a6e856",
-          "artifactId": "a5980aec-5a80-4d93-a5b1-93c884a6e856",
+          "id": "0315accd-5792-4523-a15f-a45848f8eb42",
+          "artifactId": "0315accd-5792-4523-a15f-a45848f8eb42",
           "value": [
             {
               "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
@@ -170,7 +170,7 @@ description: Variables in memory after executing csg_subtract_multi_target_resul
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "a5980aec-5a80-4d93-a5b1-93c884a6e856",
+            "id": "0315accd-5792-4523-a15f-a45848f8eb42",
             "paths": [
               {
                 "__geoMeta": {
@@ -1504,8 +1504,8 @@ description: Variables in memory after executing csg_subtract_multi_target_resul
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "a5980aec-5a80-4d93-a5b1-93c884a6e856",
-          "artifactId": "a5980aec-5a80-4d93-a5b1-93c884a6e856",
+          "id": "0315accd-5792-4523-a15f-a45848f8eb42",
+          "artifactId": "0315accd-5792-4523-a15f-a45848f8eb42",
           "value": [
             {
               "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
@@ -1567,7 +1567,7 @@ description: Variables in memory after executing csg_subtract_multi_target_resul
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "a5980aec-5a80-4d93-a5b1-93c884a6e856",
+            "id": "0315accd-5792-4523-a15f-a45848f8eb42",
             "paths": [
               {
                 "__geoMeta": {

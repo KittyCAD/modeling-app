@@ -402,7 +402,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "451389f5-0508-53af-befd-4e7dc409ce93",
-        "edge_id": "a80250d3-b686-51a3-abed-c9f6717726ba"
+        "edge_id": "03764652-5bd4-5fbf-843d-31fa26dcf517"
       }
     },
     {
@@ -411,7 +411,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "451389f5-0508-53af-befd-4e7dc409ce93",
-        "edge_id": "a80250d3-b686-51a3-abed-c9f6717726ba"
+        "edge_id": "03764652-5bd4-5fbf-843d-31fa26dcf517"
       }
     },
     {
@@ -423,26 +423,26 @@ description: Artifact commands cpu-cooler.kcl
         "edges_references": [
           {
             "side_faces": [
-              "c90e295a-4eea-515c-947c-d4c88ee05f90",
-              "15e2cdab-527a-5310-a829-8c30e394ddd8"
+              "22c1b6cc-6ba8-5406-9bfc-bb70f657cb22",
+              "83892831-a986-5072-bdf3-4a7be16bef4c"
             ]
           },
           {
             "side_faces": [
-              "15e2cdab-527a-5310-a829-8c30e394ddd8",
-              "ca1eb218-932e-5bab-84fb-21439a59cfa7"
+              "83892831-a986-5072-bdf3-4a7be16bef4c",
+              "59e2c9fc-e07d-5219-8b2a-b7e8c2707c88"
             ]
           },
           {
             "side_faces": [
-              "ca1eb218-932e-5bab-84fb-21439a59cfa7",
-              "bd4f2747-3446-5514-ac25-d6a878190fa9"
+              "59e2c9fc-e07d-5219-8b2a-b7e8c2707c88",
+              "38e009ed-0928-5493-91bb-1448835e0750"
             ]
           },
           {
             "side_faces": [
-              "bd4f2747-3446-5514-ac25-d6a878190fa9",
-              "c90e295a-4eea-515c-947c-d4c88ee05f90"
+              "38e009ed-0928-5493-91bb-1448835e0750",
+              "22c1b6cc-6ba8-5406-9bfc-bb70f657cb22"
             ]
           }
         ],
@@ -769,7 +769,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "b11f16f3-d1c8-5014-bbf1-df7999757c47",
-        "edge_id": "86f1193b-2916-55b1-901c-35b6672d1b1c"
+        "edge_id": "31a233ee-cbc7-5e1e-bc61-a0418e649837"
       }
     },
     {
@@ -778,7 +778,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "b11f16f3-d1c8-5014-bbf1-df7999757c47",
-        "edge_id": "86f1193b-2916-55b1-901c-35b6672d1b1c"
+        "edge_id": "31a233ee-cbc7-5e1e-bc61-a0418e649837"
       }
     },
     {
@@ -812,9 +812,9 @@ description: Artifact commands cpu-cooler.kcl
         ],
         "tool_ids": [
           "b11f16f3-d1c8-5014-bbf1-df7999757c47",
-          "d32c9e40-fc2f-59cb-b5fa-2313241d0db9",
-          "5765fbf6-cfd5-5322-b338-b30e28e073ab",
-          "4615b56e-b324-5b85-a959-ae8267f3e6b8"
+          "e9e31da4-61fc-5934-a352-2f37b3fcc35c",
+          "1d4e9ed6-368a-5f0f-85b6-2e9fe581b1ab",
+          "6736927c-4542-5d7a-b79a-7d3e4b1f78db"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
@@ -825,7 +825,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "dede8451-3e10-5006-b49e-56bc5f615f92",
+        "entity_id": "425ab5e2-f488-57e4-a2f9-0bb3560383dc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1045,7 +1045,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "dede8451-3e10-5006-b49e-56bc5f615f92",
+        "entity_id": "425ab5e2-f488-57e4-a2f9-0bb3560383dc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1086,7 +1086,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "90f7c397-0e7d-527b-abbb-20ffdf517cfa",
-        "edge_id": "d4e91000-5b82-5725-a83e-1f365fb693e3"
+        "edge_id": "84677371-7b28-5b0c-8e70-4c192a7ae6e5"
       }
     },
     {
@@ -1095,7 +1095,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "90f7c397-0e7d-527b-abbb-20ffdf517cfa",
-        "edge_id": "d4e91000-5b82-5725-a83e-1f365fb693e3"
+        "edge_id": "84677371-7b28-5b0c-8e70-4c192a7ae6e5"
       }
     },
     {
@@ -1103,7 +1103,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "706d923e-4441-523e-85ad-af9d93889de9",
+        "entity_id": "b48bce07-d7db-581b-88e2-108796e954ad",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1180,7 +1180,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "706d923e-4441-523e-85ad-af9d93889de9",
+        "entity_id": "b48bce07-d7db-581b-88e2-108796e954ad",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1221,7 +1221,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "90f7c397-0e7d-527b-abbb-20ffdf517cfa",
-        "edge_id": "04fbd278-4c6d-5843-8c66-9a0e1541947d"
+        "edge_id": "ac32c85f-61a9-5462-bd04-af607471c13a"
       }
     },
     {
@@ -1230,7 +1230,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "90f7c397-0e7d-527b-abbb-20ffdf517cfa",
-        "edge_id": "04fbd278-4c6d-5843-8c66-9a0e1541947d"
+        "edge_id": "ac32c85f-61a9-5462-bd04-af607471c13a"
       }
     },
     {
@@ -1238,7 +1238,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "706d923e-4441-523e-85ad-af9d93889de9",
+        "entity_id": "b48bce07-d7db-581b-88e2-108796e954ad",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1548,7 +1548,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "706d923e-4441-523e-85ad-af9d93889de9",
+        "entity_id": "b48bce07-d7db-581b-88e2-108796e954ad",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1589,7 +1589,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "90f7c397-0e7d-527b-abbb-20ffdf517cfa",
-        "edge_id": "8fddb806-0984-5bd4-be8f-4f222b0f652a"
+        "edge_id": "48ae0051-f2ea-5fe5-ac48-71d67163e719"
       }
     },
     {
@@ -1598,7 +1598,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "90f7c397-0e7d-527b-abbb-20ffdf517cfa",
-        "edge_id": "8fddb806-0984-5bd4-be8f-4f222b0f652a"
+        "edge_id": "48ae0051-f2ea-5fe5-ac48-71d67163e719"
       }
     },
     {
@@ -1610,26 +1610,26 @@ description: Artifact commands cpu-cooler.kcl
         "edges_references": [
           {
             "side_faces": [
-              "7b8b76aa-4b92-538f-9d61-d5ce105b877d",
-              "9b5e59f9-ab8f-576c-b773-3d1dfd5c7385"
+              "b43e6cb7-86c8-5cd8-a52f-6efd1b389b14",
+              "edf5cb1a-9395-5384-807c-28cb2a6f1b95"
             ]
           },
           {
             "side_faces": [
-              "9b5e59f9-ab8f-576c-b773-3d1dfd5c7385",
-              "69359fca-0036-5bf5-bfff-3ba3de20932d"
+              "edf5cb1a-9395-5384-807c-28cb2a6f1b95",
+              "ccfbbee9-9dee-5b2a-98ad-fef2ff943623"
             ]
           },
           {
             "side_faces": [
-              "69359fca-0036-5bf5-bfff-3ba3de20932d",
-              "e5555a26-aaf1-5712-b219-e1d9827f80ab"
+              "ccfbbee9-9dee-5b2a-98ad-fef2ff943623",
+              "b5328402-a7b5-554f-a5b7-2ecbd00730f5"
             ]
           },
           {
             "side_faces": [
-              "e5555a26-aaf1-5712-b219-e1d9827f80ab",
-              "7b8b76aa-4b92-538f-9d61-d5ce105b877d"
+              "b5328402-a7b5-554f-a5b7-2ecbd00730f5",
+              "b43e6cb7-86c8-5cd8-a52f-6efd1b389b14"
             ]
           }
         ],
@@ -1653,7 +1653,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "dede8451-3e10-5006-b49e-56bc5f615f92",
+        "entity_id": "425ab5e2-f488-57e4-a2f9-0bb3560383dc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1730,7 +1730,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "dede8451-3e10-5006-b49e-56bc5f615f92",
+        "entity_id": "425ab5e2-f488-57e4-a2f9-0bb3560383dc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1771,7 +1771,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "90f7c397-0e7d-527b-abbb-20ffdf517cfa",
-        "edge_id": "a961582f-5a20-5e87-a72f-53be14d76894"
+        "edge_id": "96885424-2c00-5d1f-af3a-cef7d15ad398"
       }
     },
     {
@@ -1780,7 +1780,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "90f7c397-0e7d-527b-abbb-20ffdf517cfa",
-        "edge_id": "a961582f-5a20-5e87-a72f-53be14d76894"
+        "edge_id": "96885424-2c00-5d1f-af3a-cef7d15ad398"
       }
     },
     {
@@ -1788,7 +1788,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "7847cc9b-3728-5d70-8798-b8529a40577a",
+        "entity_id": "96da22d7-7df1-5524-b8e9-357cb148d9d3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1865,7 +1865,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "7847cc9b-3728-5d70-8798-b8529a40577a",
+        "entity_id": "96da22d7-7df1-5524-b8e9-357cb148d9d3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1906,7 +1906,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "90f7c397-0e7d-527b-abbb-20ffdf517cfa",
-        "edge_id": "4c8d2304-c59a-5328-8fff-894aac485187"
+        "edge_id": "3efe2509-346a-552b-a7af-8fb11d551f98"
       }
     },
     {
@@ -1915,7 +1915,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "90f7c397-0e7d-527b-abbb-20ffdf517cfa",
-        "edge_id": "4c8d2304-c59a-5328-8fff-894aac485187"
+        "edge_id": "3efe2509-346a-552b-a7af-8fb11d551f98"
       }
     },
     {
@@ -2165,7 +2165,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "ef36dac0-1abc-5f2c-ab57-b0a08d1d2e31",
-        "edge_id": "ea76ac05-8d48-5c5c-8883-61eb3b1ef083"
+        "edge_id": "978bebe6-c971-55e7-9870-41911b5ec984"
       }
     },
     {
@@ -2174,7 +2174,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "ef36dac0-1abc-5f2c-ab57-b0a08d1d2e31",
-        "edge_id": "ea76ac05-8d48-5c5c-8883-61eb3b1ef083"
+        "edge_id": "978bebe6-c971-55e7-9870-41911b5ec984"
       }
     },
     {
@@ -2186,8 +2186,8 @@ description: Artifact commands cpu-cooler.kcl
         "edges_references": [
           {
             "side_faces": [
-              "b742af16-03b5-52e3-8683-91aa3a96093d",
-              "1352058f-646f-562b-8e23-42fa6a3e2c09"
+              "e169cfe8-acf5-5d8e-83f3-91473065efe2",
+              "7ec758e8-4964-5824-aa16-3ee0f79f4a50"
             ]
           }
         ],
@@ -2914,7 +2914,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "482d40f3-52ea-5845-b892-639330ea98de",
+        "object_id": "5338615f-e255-5edb-8de0-2a7db0400447",
         "color": {
           "r": 0.06666667,
           "g": 0.03137255,
@@ -2931,7 +2931,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "64865a7c-869f-5f10-82b7-03e12dd33610",
+        "object_id": "2283de1d-1c63-5dbe-9a70-0ff1f049183c",
         "color": {
           "r": 0.06666667,
           "g": 0.03137255,
@@ -2948,7 +2948,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "bb94088a-4cd9-5e2a-b162-4e58bfa040ba",
+        "object_id": "bea40a39-ad3e-5d5a-8ba4-9c8e4fa4bc20",
         "color": {
           "r": 0.06666667,
           "g": 0.03137255,
@@ -2965,7 +2965,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "a78b18f7-7890-5550-a664-d1a0a786ca38",
+        "object_id": "f4ccea3e-1707-5a33-b8ce-9478cfc390a8",
         "color": {
           "r": 0.06666667,
           "g": 0.03137255,
@@ -2982,7 +2982,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "98201707-8c9a-5bc4-aae3-aea16e2c69a2",
+        "object_id": "7d1b29a3-16a4-5ea0-9182-332b21650952",
         "color": {
           "r": 0.06666667,
           "g": 0.03137255,
@@ -2999,7 +2999,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "331f73dc-e158-5ca4-8fd5-ac4b59761984",
+        "object_id": "d099bc8d-c8ec-5780-ad72-85b75f54780c",
         "color": {
           "r": 0.06666667,
           "g": 0.03137255,
@@ -3016,7 +3016,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "77232ea8-abcb-5a4f-ae90-2ed80bf14783",
+        "object_id": "68762112-632d-5654-979a-69e688209238",
         "color": {
           "r": 0.06666667,
           "g": 0.03137255,
@@ -3033,7 +3033,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "9bd6d602-d72a-597a-a00e-1b12b2a868ab",
+        "object_id": "5cd3d5f6-8ae6-54c6-be1f-2def8ca19c23",
         "color": {
           "r": 0.06666667,
           "g": 0.03137255,
@@ -3473,7 +3473,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "d52c5174-bdd6-5d55-a6bc-29b55dd06287",
-        "edge_id": "97751ffd-353f-5dc7-a306-e2b3abff24b0"
+        "edge_id": "60b0b15f-7581-5152-973c-b75dc01cad0e"
       }
     },
     {
@@ -3482,7 +3482,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "d52c5174-bdd6-5d55-a6bc-29b55dd06287",
-        "edge_id": "97751ffd-353f-5dc7-a306-e2b3abff24b0"
+        "edge_id": "60b0b15f-7581-5152-973c-b75dc01cad0e"
       }
     },
     {
@@ -4008,7 +4008,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "19af0132-5e72-5833-acfb-fc1e190f7c95",
-        "edge_id": "3a146836-bb8d-5e4e-8a31-a321e1629889"
+        "edge_id": "9487c598-73b0-5605-84d9-7b8469fbee45"
       }
     },
     {
@@ -4017,7 +4017,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "19af0132-5e72-5833-acfb-fc1e190f7c95",
-        "edge_id": "3a146836-bb8d-5e4e-8a31-a321e1629889"
+        "edge_id": "9487c598-73b0-5605-84d9-7b8469fbee45"
       }
     },
     {
@@ -4095,7 +4095,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "ff94b866-5394-565d-8fd4-4d36b2d00c93",
+        "entity_id": "6432c877-ffdf-56ec-85f9-02ebb74a9ce6",
         "transform": [],
         "transforms": [
           [
@@ -4926,7 +4926,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "ba52a901-12b2-5307-970a-7d4b7cf9f3db",
-        "edge_id": "ed536f9b-be4f-586e-8e6a-4a0960b26dc1"
+        "edge_id": "dba82aa6-0b25-5e4c-aa8b-2f10b83d72d5"
       }
     },
     {
@@ -4935,7 +4935,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "ba52a901-12b2-5307-970a-7d4b7cf9f3db",
-        "edge_id": "ed536f9b-be4f-586e-8e6a-4a0960b26dc1"
+        "edge_id": "dba82aa6-0b25-5e4c-aa8b-2f10b83d72d5"
       }
     },
     {
@@ -6170,7 +6170,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "e4074746-98cd-5046-bd58-a1a245bdcf55",
-        "edge_id": "8a8b8ddd-d050-5007-9021-880c545a0bf1"
+        "edge_id": "498cada3-8d44-5ad4-a637-0329ff542d65"
       }
     },
     {
@@ -6179,7 +6179,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "e4074746-98cd-5046-bd58-a1a245bdcf55",
-        "edge_id": "8a8b8ddd-d050-5007-9021-880c545a0bf1"
+        "edge_id": "498cada3-8d44-5ad4-a637-0329ff542d65"
       }
     },
     {
@@ -6235,7 +6235,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "c123894c-0dd2-5cd5-9e3b-23f6fdad05d0"
+        "entity_id": "018f47ec-c231-5509-8e07-542cdda61bea"
       }
     },
     {
@@ -6243,7 +6243,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "c123894c-0dd2-5cd5-9e3b-23f6fdad05d0"
+        "object_id": "018f47ec-c231-5509-8e07-542cdda61bea"
       }
     },
     {
@@ -6252,7 +6252,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "e4074746-98cd-5046-bd58-a1a245bdcf55",
-        "edge_id": "8a8b8ddd-d050-5007-9021-880c545a0bf1"
+        "edge_id": "498cada3-8d44-5ad4-a637-0329ff542d65"
       }
     },
     {
@@ -6261,7 +6261,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "e4074746-98cd-5046-bd58-a1a245bdcf55",
-        "edge_id": "8a8b8ddd-d050-5007-9021-880c545a0bf1"
+        "edge_id": "498cada3-8d44-5ad4-a637-0329ff542d65"
       }
     },
     {
@@ -6271,7 +6271,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "boolean_union",
         "solid_ids": [
           "e4074746-98cd-5046-bd58-a1a245bdcf55",
-          "c123894c-0dd2-5cd5-9e3b-23f6fdad05d0"
+          "018f47ec-c231-5509-8e07-542cdda61bea"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
@@ -6653,7 +6653,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "fa10a9c6-5360-51a6-9c12-aa78c69b77e7",
-        "edge_id": "c58c67cf-7b3b-5bc8-9b94-01117b57631e"
+        "edge_id": "2f8d9895-b16b-52a7-b41d-80143c2183d6"
       }
     },
     {
@@ -6662,7 +6662,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "fa10a9c6-5360-51a6-9c12-aa78c69b77e7",
-        "edge_id": "c58c67cf-7b3b-5bc8-9b94-01117b57631e"
+        "edge_id": "2f8d9895-b16b-52a7-b41d-80143c2183d6"
       }
     },
     {
@@ -6718,7 +6718,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "b9931895-27b1-5363-b452-5b871a2e9403"
+        "entity_id": "64ec1147-9f3e-5c0d-a5be-0f714c6a8e78"
       }
     },
     {
@@ -6726,7 +6726,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "b9931895-27b1-5363-b452-5b871a2e9403"
+        "object_id": "64ec1147-9f3e-5c0d-a5be-0f714c6a8e78"
       }
     },
     {
@@ -6735,7 +6735,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "fa10a9c6-5360-51a6-9c12-aa78c69b77e7",
-        "edge_id": "c58c67cf-7b3b-5bc8-9b94-01117b57631e"
+        "edge_id": "2f8d9895-b16b-52a7-b41d-80143c2183d6"
       }
     },
     {
@@ -6744,7 +6744,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "fa10a9c6-5360-51a6-9c12-aa78c69b77e7",
-        "edge_id": "c58c67cf-7b3b-5bc8-9b94-01117b57631e"
+        "edge_id": "2f8d9895-b16b-52a7-b41d-80143c2183d6"
       }
     },
     {
@@ -6754,7 +6754,7 @@ description: Artifact commands cpu-cooler.kcl
         "type": "boolean_union",
         "solid_ids": [
           "fa10a9c6-5360-51a6-9c12-aa78c69b77e7",
-          "b9931895-27b1-5363-b452-5b871a2e9403"
+          "64ec1147-9f3e-5c0d-a5be-0f714c6a8e78"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
@@ -7136,7 +7136,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "184ed43d-add0-59e8-9b73-a4fd1dda7f54",
-        "edge_id": "ab27a7d6-1a9e-5307-983e-04a56503fac5"
+        "edge_id": "4ab41e55-d86a-5242-90a7-4c3589c5ac90"
       }
     },
     {
@@ -7145,7 +7145,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "184ed43d-add0-59e8-9b73-a4fd1dda7f54",
-        "edge_id": "ab27a7d6-1a9e-5307-983e-04a56503fac5"
+        "edge_id": "4ab41e55-d86a-5242-90a7-4c3589c5ac90"
       }
     },
     {
@@ -7157,26 +7157,26 @@ description: Artifact commands cpu-cooler.kcl
         "edges_references": [
           {
             "side_faces": [
-              "4bc29111-ecd1-5b4a-a30a-2f2919e8d2ac",
-              "b4851c85-e265-50fe-b9f6-02941c312694"
+              "a759d35d-7381-552e-a7c0-8428d43a14d8",
+              "da395b1d-c1f7-53a8-bffc-32d2bcd89263"
             ]
           },
           {
             "side_faces": [
-              "30a1fa39-8e70-56a6-9337-e328eb3b5e7f",
-              "b4851c85-e265-50fe-b9f6-02941c312694"
+              "c2e2a1c9-7427-55c5-ad64-c29bae64c052",
+              "da395b1d-c1f7-53a8-bffc-32d2bcd89263"
             ]
           },
           {
             "side_faces": [
-              "30a1fa39-8e70-56a6-9337-e328eb3b5e7f",
-              "3d4af8dd-a48c-56f2-9c70-1ab10230bd5b"
+              "c2e2a1c9-7427-55c5-ad64-c29bae64c052",
+              "cc5df2ab-6416-5874-bb50-3974d1dc0d17"
             ]
           },
           {
             "side_faces": [
-              "4bc29111-ecd1-5b4a-a30a-2f2919e8d2ac",
-              "3d4af8dd-a48c-56f2-9c70-1ab10230bd5b"
+              "a759d35d-7381-552e-a7c0-8428d43a14d8",
+              "cc5df2ab-6416-5874-bb50-3974d1dc0d17"
             ]
           }
         ],
@@ -7200,7 +7200,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "d644a329-7a01-591a-868b-a4bc7d0d7e2b",
+        "entity_id": "10cdedf4-768b-5728-8d4d-1e6db7864f16",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -7277,7 +7277,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "d644a329-7a01-591a-868b-a4bc7d0d7e2b",
+        "entity_id": "10cdedf4-768b-5728-8d4d-1e6db7864f16",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -7318,7 +7318,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "184ed43d-add0-59e8-9b73-a4fd1dda7f54",
-        "edge_id": "83e05029-147b-51ef-96a8-015a0c74ec49"
+        "edge_id": "9b6ac457-5d59-547b-9580-dfb8325bcff6"
       }
     },
     {
@@ -7327,7 +7327,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "184ed43d-add0-59e8-9b73-a4fd1dda7f54",
-        "edge_id": "83e05029-147b-51ef-96a8-015a0c74ec49"
+        "edge_id": "9b6ac457-5d59-547b-9580-dfb8325bcff6"
       }
     },
     {
@@ -7339,8 +7339,8 @@ description: Artifact commands cpu-cooler.kcl
         "edges_references": [
           {
             "side_faces": [
-              "d644a329-7a01-591a-868b-a4bc7d0d7e2b",
-              "52c7fc81-1144-5be5-b8ca-689be6482e94"
+              "10cdedf4-768b-5728-8d4d-1e6db7864f16",
+              "73cfecfb-a9af-592b-ba65-84d3529ee3ab"
             ]
           }
         ],
@@ -7716,7 +7716,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "482d40f3-52ea-5845-b892-639330ea98de",
+        "object_id": "5338615f-e255-5edb-8de0-2a7db0400447",
         "transforms": [
           {
             "translate": {
@@ -7742,7 +7742,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "64865a7c-869f-5f10-82b7-03e12dd33610",
+        "object_id": "2283de1d-1c63-5dbe-9a70-0ff1f049183c",
         "transforms": [
           {
             "translate": {
@@ -7768,7 +7768,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "bb94088a-4cd9-5e2a-b162-4e58bfa040ba",
+        "object_id": "bea40a39-ad3e-5d5a-8ba4-9c8e4fa4bc20",
         "transforms": [
           {
             "translate": {
@@ -7794,7 +7794,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "a78b18f7-7890-5550-a664-d1a0a786ca38",
+        "object_id": "f4ccea3e-1707-5a33-b8ce-9478cfc390a8",
         "transforms": [
           {
             "translate": {
@@ -7820,7 +7820,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "98201707-8c9a-5bc4-aae3-aea16e2c69a2",
+        "object_id": "7d1b29a3-16a4-5ea0-9182-332b21650952",
         "transforms": [
           {
             "translate": {
@@ -7846,7 +7846,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "331f73dc-e158-5ca4-8fd5-ac4b59761984",
+        "object_id": "d099bc8d-c8ec-5780-ad72-85b75f54780c",
         "transforms": [
           {
             "translate": {
@@ -7872,7 +7872,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "77232ea8-abcb-5a4f-ae90-2ed80bf14783",
+        "object_id": "68762112-632d-5654-979a-69e688209238",
         "transforms": [
           {
             "translate": {
@@ -7898,7 +7898,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "9bd6d602-d72a-597a-a00e-1b12b2a868ab",
+        "object_id": "5cd3d5f6-8ae6-54c6-be1f-2def8ca19c23",
         "transforms": [
           {
             "translate": {
@@ -8004,7 +8004,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "482d40f3-52ea-5845-b892-639330ea98de",
+        "entity_id": "5338615f-e255-5edb-8de0-2a7db0400447",
         "transform": [],
         "transforms": [
           [
@@ -8044,7 +8044,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "64865a7c-869f-5f10-82b7-03e12dd33610",
+        "entity_id": "2283de1d-1c63-5dbe-9a70-0ff1f049183c",
         "transform": [],
         "transforms": [
           [
@@ -8084,7 +8084,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "bb94088a-4cd9-5e2a-b162-4e58bfa040ba",
+        "entity_id": "bea40a39-ad3e-5d5a-8ba4-9c8e4fa4bc20",
         "transform": [],
         "transforms": [
           [
@@ -8124,7 +8124,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "a78b18f7-7890-5550-a664-d1a0a786ca38",
+        "entity_id": "f4ccea3e-1707-5a33-b8ce-9478cfc390a8",
         "transform": [],
         "transforms": [
           [
@@ -8164,7 +8164,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "98201707-8c9a-5bc4-aae3-aea16e2c69a2",
+        "entity_id": "7d1b29a3-16a4-5ea0-9182-332b21650952",
         "transform": [],
         "transforms": [
           [
@@ -8204,7 +8204,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "331f73dc-e158-5ca4-8fd5-ac4b59761984",
+        "entity_id": "d099bc8d-c8ec-5780-ad72-85b75f54780c",
         "transform": [],
         "transforms": [
           [
@@ -8244,7 +8244,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "77232ea8-abcb-5a4f-ae90-2ed80bf14783",
+        "entity_id": "68762112-632d-5654-979a-69e688209238",
         "transform": [],
         "transforms": [
           [
@@ -8284,7 +8284,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "9bd6d602-d72a-597a-a00e-1b12b2a868ab",
+        "entity_id": "5cd3d5f6-8ae6-54c6-be1f-2def8ca19c23",
         "transform": [],
         "transforms": [
           [
@@ -8429,7 +8429,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "04910eb0-eca3-5586-8092-525099b148bf",
+        "entity_id": "7e2e89ad-ecfc-54e5-8b8f-2df828650dab",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -8471,7 +8471,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "2eb3bda7-28ac-5aac-948e-4d0a4be6bd5f",
+        "entity_id": "9eb38470-3421-5e87-80cf-c9dafdb11f83",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -8513,7 +8513,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "b16ad255-c779-54b1-92ce-a7b41bd77237",
+        "entity_id": "b3587609-58e9-535a-aaa6-95020c1fb883",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -8555,7 +8555,7 @@ description: Artifact commands cpu-cooler.kcl
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "aeb1bdbc-d983-5079-9434-98342f29590d",
+        "entity_id": "c3360ddf-d1e7-5a1a-b6c6-f5987e542f58",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -8752,7 +8752,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "9e16ca69-67dd-5294-8693-34fbdb7b414e",
-        "edge_id": "9a637cbd-0b2b-5b9a-ad83-522375676522"
+        "edge_id": "eea54388-2ca1-56e8-ad9e-f6c30b72b55b"
       }
     },
     {
@@ -8761,7 +8761,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "9e16ca69-67dd-5294-8693-34fbdb7b414e",
-        "edge_id": "9a637cbd-0b2b-5b9a-ad83-522375676522"
+        "edge_id": "eea54388-2ca1-56e8-ad9e-f6c30b72b55b"
       }
     },
     {
@@ -8773,14 +8773,14 @@ description: Artifact commands cpu-cooler.kcl
         "edges_references": [
           {
             "side_faces": [
-              "ea2e3ad9-fd6c-5261-8a46-9f2ad80fba27",
-              "80ab6224-6fad-5745-9fde-b6e4b6436a5a"
+              "398276fa-0471-5fb2-b9e6-5b236f2649b6",
+              "558eb171-8d89-5a72-895f-e6db98260326"
             ]
           },
           {
             "side_faces": [
-              "ea2e3ad9-fd6c-5261-8a46-9f2ad80fba27",
-              "e3ca543c-39f3-5f25-9f26-c10881fc9ff1"
+              "398276fa-0471-5fb2-b9e6-5b236f2649b6",
+              "65d236f6-0708-5ec6-89db-55c85e0be3bb"
             ]
           }
         ],
@@ -8993,7 +8993,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "6b47b38f-ef39-55ee-86a3-09330b344cbd",
-        "edge_id": "783f9f3a-bae8-54b5-a8b7-3697f9d6b52a"
+        "edge_id": "49c83fd4-bccc-553f-90f4-4ba295b95625"
       }
     },
     {
@@ -9002,7 +9002,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "6b47b38f-ef39-55ee-86a3-09330b344cbd",
-        "edge_id": "783f9f3a-bae8-54b5-a8b7-3697f9d6b52a"
+        "edge_id": "49c83fd4-bccc-553f-90f4-4ba295b95625"
       }
     },
     {
@@ -9823,7 +9823,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "20582bfb-22a0-560e-9b43-a34b1414aa73",
-        "edge_id": "4c6748e5-9c83-5bf1-b45c-f05e451a3b35"
+        "edge_id": "4e4601fb-62e8-51c2-8be2-6443fd86caf2"
       }
     },
     {
@@ -9832,7 +9832,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "20582bfb-22a0-560e-9b43-a34b1414aa73",
-        "edge_id": "4c6748e5-9c83-5bf1-b45c-f05e451a3b35"
+        "edge_id": "4e4601fb-62e8-51c2-8be2-6443fd86caf2"
       }
     },
     {
@@ -9984,7 +9984,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "9143d8ca-fdca-5a4a-a285-7da5f6998518",
-        "edge_id": "9227f485-89cd-545e-b045-3233a27a67b9"
+        "edge_id": "e98beac5-3061-55b2-9964-1cac745abec3"
       }
     },
     {
@@ -9993,7 +9993,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "9143d8ca-fdca-5a4a-a285-7da5f6998518",
-        "edge_id": "9227f485-89cd-545e-b045-3233a27a67b9"
+        "edge_id": "e98beac5-3061-55b2-9964-1cac745abec3"
       }
     },
     {
@@ -10568,7 +10568,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "0dbb6a71-6a78-5b97-ba31-db7c29452d97",
-        "edge_id": "ce1740bd-db7e-5760-a276-ea799d8f33a3"
+        "edge_id": "c6146d81-92d0-5dde-b0b3-6428e1ce588d"
       }
     },
     {
@@ -10577,7 +10577,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "0dbb6a71-6a78-5b97-ba31-db7c29452d97",
-        "edge_id": "ce1740bd-db7e-5760-a276-ea799d8f33a3"
+        "edge_id": "c6146d81-92d0-5dde-b0b3-6428e1ce588d"
       }
     },
     {
@@ -10729,7 +10729,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "b6f2ba85-569c-53ae-9557-8079b730ecd5",
-        "edge_id": "f6ae0659-6340-57bd-810a-862eca39707c"
+        "edge_id": "76bf9b3e-ef87-5be2-b5ab-c14dc40ebe89"
       }
     },
     {
@@ -10738,7 +10738,7 @@ description: Artifact commands cpu-cooler.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "b6f2ba85-569c-53ae-9557-8079b730ecd5",
-        "edge_id": "f6ae0659-6340-57bd-810a-862eca39707c"
+        "edge_id": "76bf9b3e-ef87-5be2-b5ab-c14dc40ebe89"
       }
     },
     {

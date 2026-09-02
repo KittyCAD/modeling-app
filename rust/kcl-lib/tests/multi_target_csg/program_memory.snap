@@ -10,8 +10,8 @@ description: Variables in memory after executing multi_target_csg.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "b555e712-6fa6-4480-b14c-9abdcd69fe36",
-          "artifactId": "b555e712-6fa6-4480-b14c-9abdcd69fe36",
+          "id": "7ce4d69e-d613-444c-8593-2db96b89b883",
+          "artifactId": "7ce4d69e-d613-444c-8593-2db96b89b883",
           "value": [
             {
               "faceId": "7a97258e-03e3-5aeb-b695-ae87c1db5767",
@@ -59,7 +59,7 @@ description: Variables in memory after executing multi_target_csg.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "b555e712-6fa6-4480-b14c-9abdcd69fe36",
+            "id": "7ce4d69e-d613-444c-8593-2db96b89b883",
             "paths": [
               {
                 "__geoMeta": {

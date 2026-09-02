@@ -869,8 +869,8 @@ description: Variables in memory after executing consumed_solid_original_issue.k
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "5d4a09fd-602e-443f-a09a-a57acc38f998",
-          "artifactId": "5d4a09fd-602e-443f-a09a-a57acc38f998",
+          "id": "e1d33263-ce24-4950-85ff-bf2ff4eee7a0",
+          "artifactId": "e1d33263-ce24-4950-85ff-bf2ff4eee7a0",
           "value": [
             {
               "faceId": "4105693c-4de0-512d-9784-605508d9ba57",
@@ -932,7 +932,7 @@ description: Variables in memory after executing consumed_solid_original_issue.k
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "5d4a09fd-602e-443f-a09a-a57acc38f998",
+            "id": "e1d33263-ce24-4950-85ff-bf2ff4eee7a0",
             "paths": [
               {
                 "__geoMeta": {

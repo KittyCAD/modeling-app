@@ -454,7 +454,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "7fc87969-04f4-5bd5-aab8-40f570953914",
-        "edge_id": "79584c2b-3e9c-52ae-b76b-74afa81f3f84"
+        "edge_id": "07b4b6bd-fa64-53d3-85a9-7e45a7426b6c"
       }
     },
     {
@@ -463,7 +463,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "7fc87969-04f4-5bd5-aab8-40f570953914",
-        "edge_id": "79584c2b-3e9c-52ae-b76b-74afa81f3f84"
+        "edge_id": "07b4b6bd-fa64-53d3-85a9-7e45a7426b6c"
       }
     },
     {
@@ -516,7 +516,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
-        "edge_id": "7e443c7f-acff-56a2-b7af-4f714cc50ef8"
+        "edge_id": "3dec5050-c956-50d4-a2ef-c91f26df1121"
       }
     },
     {
@@ -525,7 +525,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
-        "edge_id": "7e443c7f-acff-56a2-b7af-4f714cc50ef8"
+        "edge_id": "3dec5050-c956-50d4-a2ef-c91f26df1121"
       }
     },
     {
@@ -559,10 +559,10 @@ description: Artifact commands car-wheel-assembly.kcl
         ],
         "tool_ids": [
           "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
-          "eb71a2b7-3998-5d42-8f50-15b4c020f3ce",
-          "963fc456-62e5-51c8-bd6f-ee8e95f06987",
-          "2c93623d-20b2-5066-baba-1da156ad3c9d",
-          "20d15690-c148-56fe-ae6a-ba9765680b08"
+          "49c94dca-8ebf-5ef1-93cf-044777ab5724",
+          "1870b6dc-9a36-5ef6-a663-f963c2cadcb3",
+          "c6faf96e-46df-5deb-aeb1-44adfda84d60",
+          "da5d5951-2975-5ed5-aab1-f22eaa05aaad"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
@@ -816,7 +816,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "383a30e4-8963-5b1a-811b-c9cdf89f31f1",
-        "edge_id": "6a0dc8bd-f19e-521f-8b5e-45c77834c08d"
+        "edge_id": "c7f56825-5213-569b-9f35-ddd0efdc8f94"
       }
     },
     {
@@ -825,7 +825,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "383a30e4-8963-5b1a-811b-c9cdf89f31f1",
-        "edge_id": "6a0dc8bd-f19e-521f-8b5e-45c77834c08d"
+        "edge_id": "c7f56825-5213-569b-9f35-ddd0efdc8f94"
       }
     },
     {
@@ -871,7 +871,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "7287b87b-447e-551a-a226-c756124cb231",
+        "object_id": "ad2d1de3-93c8-52b2-93ea-2916b149c956",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -888,7 +888,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "3dd99eae-a590-50e2-b5cd-ed9ecf0e2f16",
+        "object_id": "044ab6c9-98cd-52c0-ad55-991a5527e53c",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -905,7 +905,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "07e6747c-8d31-5371-84f7-a8bc8e5c5a7b",
+        "object_id": "fc7c9dc2-8b6b-5a3a-8391-12350f4c15a1",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -922,7 +922,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "c0023a96-2289-5a22-a9af-89d4b797f510",
+        "object_id": "cb65e7c1-6a5f-5817-b31c-a6882599bfff",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -939,7 +939,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "faef664f-c215-5c00-b451-0afdfb8599c9",
+        "object_id": "761a5d22-188a-5968-8cbb-7382538c6b15",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -956,7 +956,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "a6fd882b-0449-5d8f-add0-c84f6d763af1",
+        "object_id": "9acbad1e-49d8-52a0-b81e-43046d219e90",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -973,7 +973,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "55d0b30b-0245-52ab-883f-f9c2bd13b5bf",
+        "object_id": "b9f823e7-bcd1-5aa9-8f82-364faf2dc8d6",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -990,7 +990,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "38a1ce7e-4fbc-5798-9559-517af32e4e6d",
+        "object_id": "a747d39b-f92d-52a9-881d-b515fa8886f9",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1007,7 +1007,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "641e1e2b-a59f-529e-bc78-9575caa5866e",
+        "object_id": "7a1cfdef-3036-55e6-8ccc-d4750f6335ee",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1024,7 +1024,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "1f27b0e3-7c3b-5416-bd0a-e915eb1cd294",
+        "object_id": "e0b067f9-46ea-5092-80d6-4582c62bfee1",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1041,7 +1041,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "3e48cf3f-1d41-5c6c-a11f-25776448cc98",
+        "object_id": "fb1dbe9f-175a-501f-a963-a430f582c338",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1058,7 +1058,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "4ac71417-12de-5ba4-a8e6-8d68733b1712",
+        "object_id": "fa30b24a-8905-5809-8b0e-d491659eb1d8",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1075,7 +1075,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "ed23444b-9492-541a-8c29-a2b40f2164ee",
+        "object_id": "fead44e7-9feb-5b42-bec9-3ce0494c78e5",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1092,7 +1092,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "a41fb5da-9a62-5956-af9f-0b5ff1707dd0",
+        "object_id": "012a17de-08cd-50aa-a316-e2848f55f49f",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1109,7 +1109,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "f9a33b1b-c218-5b0f-8aa4-9821b1de2ba1",
+        "object_id": "9ecab7aa-27f1-5d31-b279-2d429f10f363",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1126,7 +1126,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "9ee10b58-e39d-57a2-916f-ff078db647e5",
+        "object_id": "855e83c9-6538-549e-b238-e8a5f8977763",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1143,7 +1143,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "458dea6c-dcef-5985-ab51-df2b7a29f0cc",
+        "object_id": "c3614d49-43ab-5da6-8aa3-8f8071c36323",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1160,7 +1160,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "ec6d5fcc-6383-5dad-8348-8edb138310dd",
+        "object_id": "73eb79a5-42c4-58c7-a07e-7b8d64044125",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1177,7 +1177,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "5626ca82-ed18-58f1-bf05-b67565d42afc",
+        "object_id": "5781761e-b952-5942-a49a-3ad3d1639eb8",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1194,7 +1194,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "5029a64c-0d2a-58af-89fe-a6c05463d4d4",
+        "object_id": "18f99ac7-c798-562f-b1b2-5a83e8c384f0",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1211,7 +1211,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "bed84e06-5a85-5d09-b8a2-40419f0d723a",
+        "object_id": "7213a0e3-e605-596b-8d5b-075e30f98d0b",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1228,7 +1228,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "a5c6e74c-5130-5016-8209-5ec714563439",
+        "object_id": "4f185986-c139-5db5-b291-cf8732f66446",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1245,7 +1245,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "9f4483ea-affa-548a-9f16-1d8df750f517",
+        "object_id": "cfcb7f0c-ac7a-5cdd-be11-2a06c5328e4d",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1262,7 +1262,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "8db3f83a-7e19-5f69-980c-5c1a3130b71b",
+        "object_id": "e855db40-0207-528c-bfbc-ff97b765e960",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1279,7 +1279,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "8787d9f1-4efc-59ae-b644-7cdb65ab1db6",
+        "object_id": "f96c151f-88af-5891-84db-917b3d6bcb2c",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1296,7 +1296,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "780faaae-4081-5cf0-9fc1-2327d8573c37",
+        "object_id": "3e51ca80-13c0-5049-8058-37eefbaa346b",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1313,7 +1313,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "48007ada-d132-5273-857a-2e6b8ca1168a",
+        "object_id": "7f83a1f6-1eac-57aa-b89f-469dc8ba9069",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1330,7 +1330,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "579b45c5-d8a7-5505-b263-ce0382af7290",
+        "object_id": "da4f73c2-1b9d-56fb-9df8-55b7b1d5864f",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1347,7 +1347,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "c40eff91-fd55-579b-8456-4f396cf32ff8",
+        "object_id": "087884ec-9be9-5e2f-9d1f-561e50589440",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1364,7 +1364,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "a4f07cfc-8b48-507e-9ddc-d3937e547d5f",
+        "object_id": "7929887d-6f4d-5733-a7d1-455a0137eeb2",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1381,7 +1381,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "2a94fb20-0ce5-56f9-bdeb-b4d12a99ca1a",
+        "object_id": "c3dd3931-0896-569f-bc3e-bdc3642896d7",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1398,7 +1398,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "dcfc42e6-ddee-5c29-86f1-93592be8bc57",
+        "object_id": "0a18d375-8b34-5cce-93e8-97b85b1ba976",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1415,7 +1415,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "be28abea-92e5-55e9-86c5-8d02aea7adcd",
+        "object_id": "3702b723-ed45-57a1-8a2a-53293d4b4ac1",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1432,7 +1432,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "1c0911a2-5cd8-5fc6-905c-decd3aff7c5b",
+        "object_id": "6ca18f7c-46fe-5bc2-979c-d9c1c6ea8480",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1449,7 +1449,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "d309fb45-defa-525b-b9a1-10beb05eb494",
+        "object_id": "6deb37c5-d1d7-5728-b7f3-6da44ac07f6d",
         "color": {
           "r": 0.9411765,
           "g": 0.84313726,
@@ -1678,7 +1678,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "38008fc4-9b25-5b7f-af4d-747b7fda84cf",
-        "edge_id": "12f37aa8-c417-57e6-a818-3c6a2535bf86"
+        "edge_id": "63eda33b-3f0c-5852-af18-1b986826b254"
       }
     },
     {
@@ -1687,7 +1687,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "38008fc4-9b25-5b7f-af4d-747b7fda84cf",
-        "edge_id": "12f37aa8-c417-57e6-a818-3c6a2535bf86"
+        "edge_id": "63eda33b-3f0c-5852-af18-1b986826b254"
       }
     },
     {
@@ -2244,7 +2244,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "9fd168f9-37cd-555f-9048-c8566ca41d47",
-        "edge_id": "25f08812-546f-5f41-97c1-d41b5d5caf2a"
+        "edge_id": "8f9fbe21-9107-5a38-b3d6-e283270c869d"
       }
     },
     {
@@ -2253,7 +2253,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "9fd168f9-37cd-555f-9048-c8566ca41d47",
-        "edge_id": "25f08812-546f-5f41-97c1-d41b5d5caf2a"
+        "edge_id": "8f9fbe21-9107-5a38-b3d6-e283270c869d"
       }
     },
     {
@@ -2532,7 +2532,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "f20a7800-7fb2-522c-abc3-645eaa4ca76a",
-        "edge_id": "eb5eebf7-920a-541b-85e5-7030b532b96c"
+        "edge_id": "660d6e44-47cd-5ee1-8bee-90267b8cbbc9"
       }
     },
     {
@@ -2541,7 +2541,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "f20a7800-7fb2-522c-abc3-645eaa4ca76a",
-        "edge_id": "eb5eebf7-920a-541b-85e5-7030b532b96c"
+        "edge_id": "660d6e44-47cd-5ee1-8bee-90267b8cbbc9"
       }
     },
     {
@@ -2881,7 +2881,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "1edf3e97-cc0d-5442-8700-7debb1169632",
-        "edge_id": "cd36649a-b297-5394-8b19-fcd382f40999"
+        "edge_id": "1e1d0d60-ee22-5677-998e-0c18387f8241"
       }
     },
     {
@@ -2890,7 +2890,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "1edf3e97-cc0d-5442-8700-7debb1169632",
-        "edge_id": "cd36649a-b297-5394-8b19-fcd382f40999"
+        "edge_id": "1e1d0d60-ee22-5677-998e-0c18387f8241"
       }
     },
     {
@@ -2903,10 +2903,10 @@ description: Artifact commands car-wheel-assembly.kcl
         ],
         "tool_ids": [
           "f20a7800-7fb2-522c-abc3-645eaa4ca76a",
-          "82a7e94f-3820-580d-98cb-b287de383e48",
-          "df367eb0-c2b7-5323-aca0-78793c95db40",
-          "d441b67f-ef54-5dd6-9c2d-0ebdb49b4e5e",
-          "1e6bcc28-3897-5091-aba4-a715c4ca2f02"
+          "edacd626-60da-5b03-bbae-1c9715abe2fb",
+          "45973728-0f54-5ab6-927b-6e0101a96f6a",
+          "da721f8e-62cc-57dc-86cb-eac349127e21",
+          "329b4ddb-61d2-5ae8-8a65-476cb0b392dd"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
@@ -3459,7 +3459,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "fe295ca0-b410-5328-8da5-220ec2caf40a",
-        "edge_id": "6e6483c0-a357-5ad2-89c4-508b066f62b3"
+        "edge_id": "d1456a37-c681-5e88-993d-9e4baf9a43f1"
       }
     },
     {
@@ -3468,7 +3468,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "fe295ca0-b410-5328-8da5-220ec2caf40a",
-        "edge_id": "6e6483c0-a357-5ad2-89c4-508b066f62b3"
+        "edge_id": "d1456a37-c681-5e88-993d-9e4baf9a43f1"
       }
     },
     {
@@ -3771,7 +3771,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "bf25acff-f294-5364-bc49-6ff1eea6a876",
-        "edge_id": "17bbeee7-bb7a-54c7-b457-fbdf64e57585"
+        "edge_id": "571d7d70-3c8a-524f-a439-a21d1195a11f"
       }
     },
     {
@@ -3780,7 +3780,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "bf25acff-f294-5364-bc49-6ff1eea6a876",
-        "edge_id": "17bbeee7-bb7a-54c7-b457-fbdf64e57585"
+        "edge_id": "571d7d70-3c8a-524f-a439-a21d1195a11f"
       }
     },
     {
@@ -4225,7 +4225,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "4e329317-b62e-5d90-b4c1-edbbe1e5bb38",
-        "edge_id": "e7c4cca2-6dc8-527b-b8ca-cff0955bcbd2"
+        "edge_id": "5e0a2a54-ef81-5019-9c91-67763be9e6af"
       }
     },
     {
@@ -4234,7 +4234,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "4e329317-b62e-5d90-b4c1-edbbe1e5bb38",
-        "edge_id": "e7c4cca2-6dc8-527b-b8ca-cff0955bcbd2"
+        "edge_id": "5e0a2a54-ef81-5019-9c91-67763be9e6af"
       }
     },
     {
@@ -4319,7 +4319,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "3d474976-d5f0-5985-8e5f-91f744cd840a",
+        "object_id": "a14feb93-2411-50a9-9319-793346928619",
         "color": {
           "r": 0.92941177,
           "g": 0.92941177,
@@ -4336,7 +4336,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "22c6f433-268c-5417-a3db-cead32ffe522",
+        "object_id": "3716cbe2-7d3f-5a59-ba48-02046e80e63e",
         "color": {
           "r": 0.92941177,
           "g": 0.92941177,
@@ -4353,7 +4353,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "9699ed28-d801-54d3-8a40-5fea57db010f",
+        "object_id": "120e5bfa-2752-5bcc-b69d-061e6cca1e5b",
         "color": {
           "r": 0.92941177,
           "g": 0.92941177,
@@ -4370,7 +4370,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "fc1958e0-bae2-5cad-a9fa-679e8a54c546",
+        "object_id": "f0e37265-8379-538d-b337-caf3e14a2c5e",
         "color": {
           "r": 0.92941177,
           "g": 0.92941177,
@@ -4641,7 +4641,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "81666e5c-6cc1-53d0-b1e8-73cd4c5dacdc",
-        "edge_id": "06c87f42-a636-58b7-afb4-0a9fcbd0fa6a"
+        "edge_id": "fe60de9e-0e73-525d-94b2-de3ca8daf9b2"
       }
     },
     {
@@ -4650,7 +4650,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "81666e5c-6cc1-53d0-b1e8-73cd4c5dacdc",
-        "edge_id": "06c87f42-a636-58b7-afb4-0a9fcbd0fa6a"
+        "edge_id": "fe60de9e-0e73-525d-94b2-de3ca8daf9b2"
       }
     },
     {

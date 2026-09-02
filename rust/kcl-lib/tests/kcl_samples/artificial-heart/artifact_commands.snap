@@ -447,7 +447,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "53c3190b-f023-5c4f-be10-10b13db80873",
-        "edge_id": "a630a4f8-fb73-511f-a2ae-521436f26104"
+        "edge_id": "d626163d-46bb-5c46-9bac-adae31a62e71"
       }
     },
     {
@@ -456,7 +456,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "53c3190b-f023-5c4f-be10-10b13db80873",
-        "edge_id": "a630a4f8-fb73-511f-a2ae-521436f26104"
+        "edge_id": "d626163d-46bb-5c46-9bac-adae31a62e71"
       }
     },
     {
@@ -650,7 +650,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "d24149d4-c0e8-5147-add1-f3d482e1e26c",
-        "edge_id": "13955525-96d1-593c-aab2-a02ffff26383"
+        "edge_id": "41fb7511-da9d-5f8b-b995-159adba709ba"
       }
     },
     {
@@ -659,7 +659,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "d24149d4-c0e8-5147-add1-f3d482e1e26c",
-        "edge_id": "13955525-96d1-593c-aab2-a02ffff26383"
+        "edge_id": "41fb7511-da9d-5f8b-b995-159adba709ba"
       }
     },
     {
@@ -963,7 +963,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8",
-        "edge_id": "4b87e121-2182-59d8-b4c1-223257a26812"
+        "edge_id": "0bced87c-31c2-5a49-bd1c-6574f23f9131"
       }
     },
     {
@@ -972,7 +972,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8",
-        "edge_id": "4b87e121-2182-59d8-b4c1-223257a26812"
+        "edge_id": "0bced87c-31c2-5a49-bd1c-6574f23f9131"
       }
     },
     {
@@ -1025,7 +1025,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "c20c40fc-0ea8-5640-b267-20ce6af54976",
-        "edge_id": "59b4b2bf-bcc3-534b-8016-ce85d7a0bcea"
+        "edge_id": "39176ffb-ae3c-5554-9ac1-a94dabd933ba"
       }
     },
     {
@@ -1034,7 +1034,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "c20c40fc-0ea8-5640-b267-20ce6af54976",
-        "edge_id": "59b4b2bf-bcc3-534b-8016-ce85d7a0bcea"
+        "edge_id": "39176ffb-ae3c-5554-9ac1-a94dabd933ba"
       }
     },
     {
@@ -1615,7 +1615,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "218a8472-acf7-5c93-b30c-244f577f7292",
-        "edge_id": "1697b181-47d1-5b57-aee8-fc296138a94b"
+        "edge_id": "073b7532-222e-5792-a7da-32719b079b74"
       }
     },
     {
@@ -1624,7 +1624,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "218a8472-acf7-5c93-b30c-244f577f7292",
-        "edge_id": "1697b181-47d1-5b57-aee8-fc296138a94b"
+        "edge_id": "073b7532-222e-5792-a7da-32719b079b74"
       }
     },
     {
@@ -2027,7 +2027,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "5f73c80f-dde3-5416-b320-d0284248e38e",
-        "edge_id": "b7675efb-6455-5b3c-a83b-8081c5c3bd37"
+        "edge_id": "ac34318c-bd08-5cb4-92c7-2afbebd5fffe"
       }
     },
     {
@@ -2036,7 +2036,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "5f73c80f-dde3-5416-b320-d0284248e38e",
-        "edge_id": "b7675efb-6455-5b3c-a83b-8081c5c3bd37"
+        "edge_id": "ac34318c-bd08-5cb4-92c7-2afbebd5fffe"
       }
     },
     {
@@ -2474,7 +2474,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "5816c24d-23a0-5d60-87eb-d2b0e3bd1bd0",
-        "edge_id": "56c6c55f-e692-5516-a188-2ab372bd1e58"
+        "edge_id": "ead979b5-b60c-54c8-a01a-d220f98f780c"
       }
     },
     {
@@ -2483,7 +2483,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "5816c24d-23a0-5d60-87eb-d2b0e3bd1bd0",
-        "edge_id": "56c6c55f-e692-5516-a188-2ab372bd1e58"
+        "edge_id": "ead979b5-b60c-54c8-a01a-d220f98f780c"
       }
     },
     {
@@ -3028,7 +3028,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "5bd616e6-6e6d-5179-9d56-7b9dee32e864",
-        "edge_id": "23cc70c7-a92b-54fb-ac20-f39e8ca4f1a7"
+        "edge_id": "73e918e6-7f6a-55f7-93aa-823c79a4083b"
       }
     },
     {
@@ -3037,7 +3037,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "5bd616e6-6e6d-5179-9d56-7b9dee32e864",
-        "edge_id": "23cc70c7-a92b-54fb-ac20-f39e8ca4f1a7"
+        "edge_id": "73e918e6-7f6a-55f7-93aa-823c79a4083b"
       }
     },
     {
@@ -3329,7 +3329,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a",
-        "edge_id": "d2e30641-f9f4-5b7d-83ab-37a9f429d311"
+        "edge_id": "696097e9-98c1-51de-9bac-4b2f119f7609"
       }
     },
     {
@@ -3338,7 +3338,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a",
-        "edge_id": "d2e30641-f9f4-5b7d-83ab-37a9f429d311"
+        "edge_id": "696097e9-98c1-51de-9bac-4b2f119f7609"
       }
     },
     {
@@ -3407,7 +3407,7 @@ description: Artifact commands artificial-heart.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "29f072f8-628b-5bf6-8c7f-bf19914ce292",
+        "entity_id": "8b849b3c-1591-5b59-892f-ec55ef39dd60",
         "transform": [],
         "transforms": [
           [
@@ -3447,7 +3447,7 @@ description: Artifact commands artificial-heart.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "9f7bd332-00b5-5472-828a-65d9bc94f927",
+        "entity_id": "f834af2e-876d-5a14-b17f-b52e02f78f68",
         "transform": [],
         "transforms": [
           [
@@ -3487,7 +3487,7 @@ description: Artifact commands artificial-heart.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "1d4b7ed2-7eb0-5c7e-9847-c5c0f2485b55",
+        "entity_id": "995566a7-3d86-516e-b692-2e1e4b22b0b4",
         "transform": [],
         "transforms": [
           [
@@ -3527,7 +3527,7 @@ description: Artifact commands artificial-heart.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "76bb6256-e1c5-588f-8dba-ccd9214e0a74",
+        "entity_id": "27a78609-fd7e-5d42-b485-76d64ba9b646",
         "transform": [],
         "transforms": [
           [
@@ -3567,7 +3567,7 @@ description: Artifact commands artificial-heart.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "43292b22-be75-5a74-947b-67c1d6ac7546",
+        "entity_id": "7f054020-d44c-58c5-a99f-b1dd36e59d0c",
         "transform": [],
         "transforms": [
           [
@@ -3607,7 +3607,7 @@ description: Artifact commands artificial-heart.kcl
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "e094107d-b6da-5d3b-ae88-e477446e8d5c",
+        "entity_id": "9b8ddac5-8546-5b0d-82e4-8d6ae1fced14",
         "transform": [],
         "transforms": [
           [
@@ -4128,7 +4128,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
-        "edge_id": "03764652-5bd4-5fbf-843d-31fa26dcf517"
+        "edge_id": "c8e9133a-60b7-5305-9454-436ebd412c14"
       }
     },
     {
@@ -4137,7 +4137,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
-        "edge_id": "03764652-5bd4-5fbf-843d-31fa26dcf517"
+        "edge_id": "c8e9133a-60b7-5305-9454-436ebd412c14"
       }
     },
     {
@@ -4255,7 +4255,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "39b12400-18c1-58a6-b7a6-660bcd7aaeea",
-        "edge_id": "ae800eeb-3777-5ad8-88b7-c73403c342ba"
+        "edge_id": "9aa43af7-a00e-569f-a16f-2f335bafb226"
       }
     },
     {
@@ -4264,7 +4264,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "39b12400-18c1-58a6-b7a6-660bcd7aaeea",
-        "edge_id": "ae800eeb-3777-5ad8-88b7-c73403c342ba"
+        "edge_id": "9aa43af7-a00e-569f-a16f-2f335bafb226"
       }
     },
     {
@@ -4700,7 +4700,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "30ac11a8-1960-5b8a-9e47-b39668413425",
-        "edge_id": "9bddea44-f7c3-5c24-b773-4121d7952f29"
+        "edge_id": "676ad8ab-6837-548b-bb65-6d6e3256d9bc"
       }
     },
     {
@@ -4709,7 +4709,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "30ac11a8-1960-5b8a-9e47-b39668413425",
-        "edge_id": "9bddea44-f7c3-5c24-b773-4121d7952f29"
+        "edge_id": "676ad8ab-6837-548b-bb65-6d6e3256d9bc"
       }
     },
     {
@@ -5042,7 +5042,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "98eca586-bb75-58ef-89ff-ffc35db52409",
-        "edge_id": "1f5f7bdf-252b-5296-a530-12a738d8c675"
+        "edge_id": "71fcd15a-3b5d-58fc-a30a-742391467be8"
       }
     },
     {
@@ -5051,7 +5051,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "98eca586-bb75-58ef-89ff-ffc35db52409",
-        "edge_id": "1f5f7bdf-252b-5296-a530-12a738d8c675"
+        "edge_id": "71fcd15a-3b5d-58fc-a30a-742391467be8"
       }
     },
     {
@@ -6010,7 +6010,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "2224641f-25ad-5575-b005-e16db99ed65a",
-        "edge_id": "456a2de8-f5f8-53bb-a739-296a8ac64c3f"
+        "edge_id": "4f447075-14ba-536f-b495-10621c535a91"
       }
     },
     {
@@ -6019,7 +6019,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "2224641f-25ad-5575-b005-e16db99ed65a",
-        "edge_id": "456a2de8-f5f8-53bb-a739-296a8ac64c3f"
+        "edge_id": "4f447075-14ba-536f-b495-10621c535a91"
       }
     },
     {
@@ -6094,7 +6094,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "2128dde6-7045-5d16-a133-ed6a3d89ad11",
-        "edge_id": "98d7a3af-50d7-5f4e-b53c-edf4e6622b78"
+        "edge_id": "df8d70af-93cb-59a1-8958-1fb5a3488e29"
       }
     },
     {
@@ -6103,7 +6103,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "2128dde6-7045-5d16-a133-ed6a3d89ad11",
-        "edge_id": "98d7a3af-50d7-5f4e-b53c-edf4e6622b78"
+        "edge_id": "df8d70af-93cb-59a1-8958-1fb5a3488e29"
       }
     },
     {
@@ -6237,7 +6237,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_extrusion_face_info",
         "object_id": "e832610b-9ec9-589c-b82a-96911e9e3c4f",
-        "edge_id": "1a98fb44-14a3-5e90-9ee7-f7b3f7b90a8e"
+        "edge_id": "5e65efef-608b-5896-8e89-61e04ea71144"
       }
     },
     {
@@ -6246,7 +6246,7 @@ description: Artifact commands artificial-heart.kcl
       "command": {
         "type": "solid3d_get_adjacency_info",
         "object_id": "e832610b-9ec9-589c-b82a-96911e9e3c4f",
-        "edge_id": "1a98fb44-14a3-5e90-9ee7-f7b3f7b90a8e"
+        "edge_id": "5e65efef-608b-5896-8e89-61e04ea71144"
       }
     },
     {

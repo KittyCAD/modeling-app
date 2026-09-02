@@ -6,8 +6,8 @@ description: Variables in memory after executing clone_a_blend.kcl
   "__sketch_19_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing clone_a_blend.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,8 +71,8 @@ description: Variables in memory after executing clone_a_blend.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+      "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "value": [],
       "sketch": {
         "creatorType": "procedural"
@@ -87,8 +87,8 @@ description: Variables in memory after executing clone_a_blend.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+      "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "value": [],
       "sketch": {
         "creatorType": "procedural"
@@ -103,12 +103,12 @@ description: Variables in memory after executing clone_a_blend.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+      "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b4e824e7-0c36-5590-a0b9-a99eb731e8fe",
+          "id": "b4e824e7-0c36-5590-a0b9-a99eb731e8fe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -116,8 +116,8 @@ description: Variables in memory after executing clone_a_blend.kcl
       ],
       "sketch": {
         "creatorType": "edge",
-        "edge_id": "[uuid]",
-        "body_id": "[uuid]"
+        "edge_id": "8f376f82-671f-58e7-bdef-122a7408ee1e",
+        "body_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
       },
       "startCapId": null,
       "endCapId": null,
@@ -129,12 +129,12 @@ description: Variables in memory after executing clone_a_blend.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+      "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "95061471-14bb-5041-96c5-8f3c04c90df7",
+          "id": "95061471-14bb-5041-96c5-8f3c04c90df7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -142,8 +142,8 @@ description: Variables in memory after executing clone_a_blend.kcl
       ],
       "sketch": {
         "creatorType": "edge",
-        "edge_id": "[uuid]",
-        "body_id": "[uuid]"
+        "edge_id": "8abfc843-3124-54d9-9439-43a4f6539bf7",
+        "body_id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8"
       },
       "startCapId": null,
       "endCapId": null,
@@ -160,7 +160,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -234,8 +234,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -264,7 +264,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -280,7 +280,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -354,8 +354,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -384,7 +384,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -400,7 +400,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -474,8 +474,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -504,7 +504,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -520,7 +520,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -594,8 +594,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -624,7 +624,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41c630c9-9d44-581b-98af-caee575bea48",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -641,11 +641,11 @@ description: Variables in memory after executing clone_a_blend.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -669,7 +669,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -693,7 +693,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -717,7 +717,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -741,8 +741,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -783,7 +783,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                   "sourceRange": []
                 }
               },
@@ -805,8 +805,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
+              "originalId": "41c630c9-9d44-581b-98af-caee575bea48",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -826,7 +826,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                 "objectId": 22,
                 "kind": {
                   "line": {
@@ -900,8 +900,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
@@ -930,7 +930,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -946,7 +946,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "objectId": 25,
                 "kind": {
                   "line": {
@@ -1020,8 +1020,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
@@ -1050,7 +1050,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1066,7 +1066,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -1140,8 +1140,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
@@ -1170,7 +1170,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -1186,7 +1186,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "objectId": 31,
                 "kind": {
                   "line": {
@@ -1260,8 +1260,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "kind": "Custom",
                   "objectId": 18,
                   "origin": {
@@ -1290,7 +1290,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -1307,11 +1307,11 @@ description: Variables in memory after executing clone_a_blend.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                     "sourceRange": []
                   },
                   "from": [
@@ -1335,7 +1335,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                     "sourceRange": []
                   },
                   "from": [
@@ -1359,7 +1359,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                     "sourceRange": []
                   },
                   "from": [
@@ -1383,7 +1383,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                     "sourceRange": []
                   },
                   "from": [
@@ -1407,8 +1407,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                 "kind": "Custom",
                 "objectId": 18,
                 "origin": {
@@ -1449,7 +1449,7 @@ description: Variables in memory after executing clone_a_blend.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                   "sourceRange": []
                 }
               },
@@ -1471,8 +1471,8 @@ description: Variables in memory after executing clone_a_blend.kcl
                   "value": "line8"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+              "originalId": "2c522d90-5fef-5750-b489-b008732bd2c3",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1487,12 +1487,12 @@ description: Variables in memory after executing clone_a_blend.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+      "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9bae9824-fc91-5745-8e9a-fc2839744e92",
+          "id": "bdffb5dd-6462-5cb2-addb-aa1c6ab627cc",
           "sourceRange": [],
           "tag": {
             "commentStart": 764,
@@ -1505,8 +1505,8 @@ description: Variables in memory after executing clone_a_blend.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
+          "id": "d0b2ae9c-6174-5964-89c4-7ef6c64c0e98",
           "sourceRange": [],
           "tag": {
             "commentStart": 845,
@@ -1519,8 +1519,8 @@ description: Variables in memory after executing clone_a_blend.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
+          "id": "53c23738-8a00-5f59-8f43-97fa75d69785",
           "sourceRange": [],
           "tag": {
             "commentStart": 925,
@@ -1533,8 +1533,8 @@ description: Variables in memory after executing clone_a_blend.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "46c1c873-adde-54a9-8c92-5f163decf204",
+          "id": "d14df539-5931-5bd1-9dbb-5474e284f5fe",
           "sourceRange": [],
           "tag": {
             "commentStart": 1004,
@@ -1550,11 +1550,11 @@ description: Variables in memory after executing clone_a_blend.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bdffb5dd-6462-5cb2-addb-aa1c6ab627cc",
               "sourceRange": []
             },
             "from": [
@@ -1578,7 +1578,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d0b2ae9c-6174-5964-89c4-7ef6c64c0e98",
               "sourceRange": []
             },
             "from": [
@@ -1602,7 +1602,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "53c23738-8a00-5f59-8f43-97fa75d69785",
               "sourceRange": []
             },
             "from": [
@@ -1626,7 +1626,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d14df539-5931-5bd1-9dbb-5474e284f5fe",
               "sourceRange": []
             },
             "from": [
@@ -1650,8 +1650,8 @@ description: Variables in memory after executing clone_a_blend.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
           "kind": "Custom",
           "objectId": 18,
           "origin": {
@@ -1692,7 +1692,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
             "sourceRange": []
           }
         },
@@ -1714,9 +1714,9 @@ description: Variables in memory after executing clone_a_blend.kcl
             "value": "line8"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+        "originalId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+        "originSketchId": "2c522d90-5fef-5750-b489-b008732bd2c3",
         "units": "mm"
       },
       "startCapId": null,
@@ -1729,12 +1729,12 @@ description: Variables in memory after executing clone_a_blend.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+      "artifactId": "cc312d38-2fa6-5583-a605-44880f646499",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b5dc18e1-9cda-5dfd-8ad6-311e0721ff70",
+          "id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
           "sourceRange": [],
           "tag": {
             "commentStart": 276,
@@ -1747,8 +1747,8 @@ description: Variables in memory after executing clone_a_blend.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bd1b6826-e1e3-5f0d-abfe-12cb65ebaba2",
+          "id": "de815b4c-817e-5265-b7b5-30ae92f19673",
           "sourceRange": [],
           "tag": {
             "commentStart": 352,
@@ -1761,8 +1761,8 @@ description: Variables in memory after executing clone_a_blend.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "760cc82f-86e1-519e-8024-b4672b5540ed",
+          "id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
           "sourceRange": [],
           "tag": {
             "commentStart": 425,
@@ -1775,8 +1775,8 @@ description: Variables in memory after executing clone_a_blend.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+          "id": "4e2075b3-008a-58a5-8d30-a638594f8a38",
           "sourceRange": [],
           "tag": {
             "commentStart": 500,
@@ -1792,11 +1792,11 @@ description: Variables in memory after executing clone_a_blend.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
               "sourceRange": []
             },
             "from": [
@@ -1820,7 +1820,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "de815b4c-817e-5265-b7b5-30ae92f19673",
               "sourceRange": []
             },
             "from": [
@@ -1844,7 +1844,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
               "sourceRange": []
             },
             "from": [
@@ -1868,7 +1868,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4e2075b3-008a-58a5-8d30-a638594f8a38",
               "sourceRange": []
             },
             "from": [
@@ -1892,8 +1892,8 @@ description: Variables in memory after executing clone_a_blend.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1934,7 +1934,7 @@ description: Variables in memory after executing clone_a_blend.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
             "sourceRange": []
           }
         },
@@ -1956,9 +1956,9 @@ description: Variables in memory after executing clone_a_blend.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originalId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
+        "originSketchId": "41c630c9-9d44-581b-98af-caee575bea48",
         "units": "mm"
       },
       "startCapId": null,

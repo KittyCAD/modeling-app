@@ -1039,7 +1039,7 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "type": "boolean_intersection",
         "solid_ids": [
           "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
-          "5d4a09fd-602e-443f-a09a-a57acc38f998",
+          "e1d33263-ce24-4950-85ff-bf2ff4eee7a0",
           "951ea05e-32a3-565d-82e0-c2efadabfa6c",
           "de815b4c-817e-5265-b7b5-30ae92f19673",
           "85f8f58f-2cc6-5f38-b900-cfa8976705b8",
