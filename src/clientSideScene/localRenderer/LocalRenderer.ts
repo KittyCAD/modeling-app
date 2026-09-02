@@ -155,7 +155,6 @@ export class LocalRenderer {
       return
     }
 
-    logLocalWebGpuPreview('initializing preview')
     this.container.style.opacity = '0'
     this.kclManager.addEventListener(
       KclManagerEvents.ExecutionDone,
@@ -318,9 +317,6 @@ export class LocalRenderer {
 
     this.isVisible = nextVisible
     this.container.style.opacity = nextVisible && !this.forceHide ? '1' : '0'
-    logLocalWebGpuPreview('preview visibility changed', {
-      isVisible: nextVisible,
-    })
     this.onVisibilityChange(nextVisible)
     this.scheduleRender()
   }
@@ -521,17 +517,6 @@ export class LocalRenderer {
 
     this.hoveredObject = nextHoveredObject
     this.applyObjectState(this.hoveredObject)
-    const resolvedSelectionEntity =
-      this.getResolvedSelectionEntity(nextHoveredObject)
-    logLocalWebGpuPreview('local hover changed', {
-      distance: intersection?.distance,
-      point: intersection?.point?.toArray(),
-      ...summarizePickedObject(
-        nextHoveredObject,
-        this.parserState,
-        resolvedSelectionEntity
-      ),
-    })
   }
 
   private updateSelectedMeshes({
@@ -560,14 +545,10 @@ export class LocalRenderer {
     ;(
       window as typeof window & { __WEBGPU_POC_SELECTION__?: unknown }
     ).__WEBGPU_POC_SELECTION__ = selectionSummary
-    logLocalWebGpuPreview('local selection changed', {
-      selection: selectionSummary,
-    })
   }
 
   private readonly exportCurrentScene = async () => {
     if (!this.currentModel) {
-      logLocalWebGpuPreview('GLB export skipped; no current model')
       return
     }
 
@@ -607,11 +588,6 @@ export class LocalRenderer {
       downloadLink.click()
       downloadLink.remove()
       window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000)
-
-      logLocalWebGpuPreview('current Three.js scene exported as GLB', {
-        bytes: result.byteLength,
-        filename: downloadLink.download,
-      })
     } finally {
       trimStates.forEach((trimState, object) => {
         object.userData.kittycadTrimState = trimState
@@ -879,24 +855,14 @@ export class LocalRenderer {
     const scene = this.scene
     if (!edgeRenderer || !scene) {
       this.pendingRefreshRequest = true
-      logLocalWebGpuPreview('refresh requested before renderer initialization')
       return
     }
 
     this.pendingRefreshRequest = false
     const refreshId = ++this.currentRefreshId
-    logLocalWebGpuPreview('starting model refresh', {
-      refreshId,
-      hasLastSuccessfulCode: Boolean(this.kclManager.lastSuccessfulCode),
-    })
     await this.kclManager.rustContext.waitForAllEngineModelingCommands()
 
     if (this.disposed || refreshId !== this.currentRefreshId) {
-      logLocalWebGpuPreview('dropping stale refresh after engine wait', {
-        disposed: this.disposed,
-        refreshId,
-        currentRefreshId: this.currentRefreshId,
-      })
       return
     }
 
@@ -929,11 +895,6 @@ export class LocalRenderer {
       }
 
       if (this.disposed || refreshId !== this.currentRefreshId) {
-        logLocalWebGpuPreview('dropping stale refresh result', {
-          disposed: this.disposed,
-          refreshId,
-          currentRefreshId: this.currentRefreshId,
-        })
         return
       }
 
@@ -945,21 +906,11 @@ export class LocalRenderer {
       }
 
       if (attempt < maxRenderPacketAttempts) {
-        logLocalWebGpuPreview('render packet unavailable, retrying', {
-          refreshId,
-          attempt,
-          maxRenderPacketAttempts,
-        })
         await new Promise((resolve) => window.setTimeout(resolve, 150))
       }
     }
 
     if (this.disposed || refreshId !== this.currentRefreshId) {
-      logLocalWebGpuPreview('dropping stale refresh result', {
-        disposed: this.disposed,
-        refreshId,
-        currentRefreshId: this.currentRefreshId,
-      })
       return
     }
 
@@ -994,20 +945,6 @@ export class LocalRenderer {
         this.setVisible(false)
         return
       }
-      logLocalWebGpuPreview('render packet applied to scene', {
-        refreshId,
-        primitiveCount: renderPacket.primitives.length,
-        edgeCount: renderPacket.edges.length,
-        bodyMaterialCount: renderPacket.bodyMaterials?.length ?? 0,
-        meshCount: loadedModelStats.meshCount,
-        surfaceDrawCount:
-          surfaceResources.batches.length +
-          surfaceResources.complexSurfaces.length,
-        trimmingEnabled: WEBGPU_TRIMMING_ENABLED,
-        trimTriangleCount: surfaceResources.triangleCount,
-        hybridMaskLayerCount: surfaceResources.hybridMaskLayerCount,
-        complexMaskCount: surfaceResources.complexMaskCount,
-      })
       this.syncPreviewCameraFromShared()
       this.setVisible(true)
       this.scheduleRender()
@@ -1026,13 +963,11 @@ export class LocalRenderer {
     const { kclManager } = this
     const { container } = this
 
-    logLocalWebGpuPreview('initializing preview renderer')
     const hasNavigatorGpu = typeof navigator !== 'undefined' && !!navigator.gpu
-    logLocalWebGpuPreview('navigator.gpu availability checked', {
-      isSecureContext: window.isSecureContext,
-      hasNavigatorGpu,
-    })
     if (!hasNavigatorGpu) {
+      logLocalWebGpuPreview('WebGPU unavailable', {
+        isSecureContext: window.isSecureContext,
+      })
       this.setVisible(false)
       return
     }
@@ -1040,17 +975,8 @@ export class LocalRenderer {
     const adapter = await navigator.gpu.requestAdapter({
       powerPreference: 'high-performance',
     })
-    logLocalWebGpuPreview('high-performance adapter request completed', {
-      adapterFound: Boolean(adapter),
-      adapterInfo: adapter?.info
-        ? {
-            vendor: adapter.info.vendor,
-            architecture: adapter.info.architecture,
-            description: adapter.info.description,
-          }
-        : null,
-    })
     if (!adapter) {
+      logLocalWebGpuPreview('WebGPU adapter request failed')
       this.setVisible(false)
       return
     }
@@ -1074,42 +1000,28 @@ export class LocalRenderer {
       this.setVisible(false)
       return
     }
-    logLocalWebGpuPreview('device request completed', {
-      label: device.label,
-    })
     if (this.disposed) {
       device.destroy()
       return
     }
 
-    logLocalWebGpuPreview('creating WebGPU renderer')
     const renderer = new WebGPURenderer({
       antialias: true,
       alpha: false,
       device,
     })
-    logLocalWebGpuPreview('renderer created')
-    logLocalWebGpuPreview('initializing renderer backend')
     await renderer.init()
     if (this.disposed) {
-      logLocalWebGpuPreview(
-        'preview disposed before renderer backend initialization completed'
-      )
       renderer.dispose()
       device.destroy()
       return
     }
-    logLocalWebGpuPreview('renderer backend initialized')
     renderer.toneMapping = NeutralToneMapping
     renderer.toneMappingExposure = 1
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.domElement.className =
       'absolute inset-0 z-20 h-full w-full pointer-events-none'
     container.appendChild(renderer.domElement)
-    logLocalWebGpuPreview('renderer attached to DOM', {
-      width: container.clientWidth,
-      height: container.clientHeight,
-    })
 
     const scene = new Scene()
     this.scene = scene
@@ -1119,9 +1031,6 @@ export class LocalRenderer {
     if (hdrEnvMapUrl) {
       try {
         await envMapLoader.loadHdr(scene, hdrEnvMapUrl)
-        logLocalWebGpuPreview('HDR environment loaded', {
-          url: hdrEnvMapUrl,
-        })
       } catch (error) {
         logLocalWebGpuPreview(
           'HDR environment unavailable; using procedural fallback',
@@ -1162,12 +1071,6 @@ export class LocalRenderer {
     }
     this.previewCamera.layers.mask = sharedCamera.layers.mask
     this.previewTarget.copy(sharedTarget)
-    logLocalWebGpuPreview('preview camera created', {
-      cameraType: this.previewCamera.type,
-      cameraPosition: this.previewCamera.position.toArray(),
-      target: this.previewTarget.toArray(),
-      layerMask: this.previewCamera.layers.mask,
-    })
     this.unregisterSharedCameraListener =
       kclManager.sceneInfra.camControls.cameraChange.add(
         this.syncPreviewCameraFromShared
@@ -1448,19 +1351,6 @@ export class LocalRenderer {
                 )
                 return null
               }
-              logLocalWebGpuPreview('local sketch mode plane prepared', {
-                entityId: cmd.entity_id,
-                meshName: mesh.name || null,
-                meshDebug: {
-                  ...summarizeMeshWorldGeometry(mesh),
-                  metadata: summarizePickedObject(
-                    mesh,
-                    this.parserState,
-                    this.getResolvedSelectionEntity(mesh)
-                  ),
-                },
-                plane: summarizeSketchModePlane(this.activeSketchModePlane),
-              })
               const modelingResponse = {
                 type: 'enable_sketch_mode',
                 data: {},
@@ -1486,9 +1376,6 @@ export class LocalRenderer {
                 )
                 return null
               }
-              logLocalWebGpuPreview('local sketch mode plane requested', {
-                plane: summarizeSketchModePlane(this.activeSketchModePlane),
-              })
               const modelingResponse = {
                 type: 'get_sketch_mode_plane',
                 data: this.activeSketchModePlane,
@@ -1508,9 +1395,6 @@ export class LocalRenderer {
               }
             }
             case 'sketch_mode_disable': {
-              logLocalWebGpuPreview('local sketch mode disabled', {
-                plane: summarizeSketchModePlane(this.activeSketchModePlane),
-              })
               this.activeSketchModePlane = null
               const modelingResponse = {
                 type: 'sketch_mode_disable',
@@ -1542,7 +1426,6 @@ export class LocalRenderer {
     this.resizeObserver.observe(container)
 
     this.scheduleRender()
-    logLocalWebGpuPreview('render mode set to on-demand')
 
     if (kclManager.lastSuccessfulCode) {
       await this.refreshModel()
@@ -1554,8 +1437,8 @@ export class LocalRenderer {
 
   private readonly onExecutionDone = (event: Event) => {
     const { detail } = event as CustomEvent<KclExecutionDoneDetail>
-    logLocalWebGpuPreview('received execution-done event', detail)
     if (!detail.successful) {
+      logLocalWebGpuPreview('KCL execution failed', detail)
       return
     }
 
@@ -2146,57 +2029,6 @@ function scalePoint3d(point: GetSketchModePlane['origin'], scale: number) {
     x: point.x * scale,
     y: point.y * scale,
     z: point.z * scale,
-  }
-}
-
-function summarizeSketchModePlane(plane: GetSketchModePlane | null) {
-  if (!plane) {
-    return null
-  }
-
-  return {
-    origin: [plane.origin.x, plane.origin.y, plane.origin.z],
-    xAxis: [plane.x_axis.x, plane.x_axis.y, plane.x_axis.z],
-    yAxis: [plane.y_axis.x, plane.y_axis.y, plane.y_axis.z],
-    zAxis: [plane.z_axis.x, plane.z_axis.y, plane.z_axis.z],
-  }
-}
-
-function summarizeMeshWorldGeometry(mesh: Mesh) {
-  mesh.updateWorldMatrix(true, false)
-
-  const positionAttribute = mesh.geometry.getAttribute('position')
-  if (!positionAttribute || positionAttribute.count < 3) {
-    return {
-      meshWorldPosition: new Vector3().setFromMatrixPosition(mesh.matrixWorld),
-      firstTriangleWorld: null,
-    }
-  }
-
-  const indexAttribute = mesh.geometry.index
-  const a = new Vector3()
-    .fromBufferAttribute(
-      positionAttribute,
-      indexAttribute ? indexAttribute.getX(0) : 0
-    )
-    .applyMatrix4(mesh.matrixWorld)
-  const b = new Vector3()
-    .fromBufferAttribute(
-      positionAttribute,
-      indexAttribute ? indexAttribute.getX(1) : 1
-    )
-    .applyMatrix4(mesh.matrixWorld)
-  const c = new Vector3()
-    .fromBufferAttribute(
-      positionAttribute,
-      indexAttribute ? indexAttribute.getX(2) : 2
-    )
-    .applyMatrix4(mesh.matrixWorld)
-
-  return {
-    meshWorldPosition: new Vector3().setFromMatrixPosition(mesh.matrixWorld),
-    indexed: Boolean(indexAttribute),
-    firstTriangleWorld: [a.toArray(), b.toArray(), c.toArray()],
   }
 }
 
