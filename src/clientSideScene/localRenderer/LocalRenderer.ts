@@ -17,6 +17,7 @@ import {
   type LocalRenderPacketRegion,
   type LocalRenderPacketSketchSegment,
 } from '@src/clientSideScene/localRenderer/renderPacketBinary'
+import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
 import {
   createWebGpuSurfaceResources,
   type WebGpuSurfaceResources,
@@ -26,10 +27,6 @@ import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { pathToNodeFromRustNodePath } from '@src/lang/wasm'
-import {
-  SKETCH_HIGHLIGHT_COLOR,
-  SKETCH_SELECTION_COLOR,
-} from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { RenderPacket } from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -67,10 +64,6 @@ const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
 const WEBGPU_TRIMMING_ENABLED = true
 const GLTF_METERS_TO_ENGINE_MILLIMETERS = 1000
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / GLTF_METERS_TO_ENGINE_MILLIMETERS
-const ENGINE_DEFAULT_SURFACE_COLOR = new Color(0.9, 0.9, 0.9)
-const HOVER_COLOR = new Color(SKETCH_HIGHLIGHT_COLOR)
-const SELECTED_COLOR = new Color(SKETCH_SELECTION_COLOR)
-const previewMaterialBaseColors = new WeakMap<Material, Color>()
 
 type AoFactory = typeof ao
 type AmbientOcclusionPass = ReturnType<AoFactory> & { dispose: () => void }
@@ -94,7 +87,6 @@ type RenderPacketModelIndex = {
   packet: LocalRenderPacket
   selectionEntries: RenderPacketSelectionEntry[]
   previewObjects: WeakSet<Object3D>
-  regionObjects: WeakSet<Object3D>
   surfaceObjects: Mesh[]
   pickingGeometryStats: IntegerIdPickerGeometryStats
 }
@@ -128,6 +120,7 @@ export class LocalRenderer {
   private envMapLoader: EnvMapLoader | null = null
   private edgeRenderer: EdgeRenderer | null = null
   private integerIdPicker: IntegerIdPicker | null = null
+  private selectionHighlightRenderer: SelectionHighlightRenderer | null = null
   private resizeObserver: ResizeObserver | null = null
   private animationFrameId = -1
   private currentModel: Object3D | null = null
@@ -137,8 +130,8 @@ export class LocalRenderer {
   private readonly convertedSharedPosition = new Vector3()
   private readonly convertedSharedTarget = new Vector3()
   private readonly convertedSharedUp = new Vector3()
-  private hoveredObject: Object3D | null = null
-  private selectedObjects = new Set<Object3D>()
+  private hoveredTarget: IntegerIdPickTarget | null = null
+  private selectedTargets = new Map<string, IntegerIdPickTarget>()
   private selectionTargetByEntityId = new Map<string, SelectionTarget>()
   private modelIndex: RenderPacketModelIndex | null = null
   private activeSketchModePlane: GetSketchModePlane | null = null
@@ -254,16 +247,14 @@ export class LocalRenderer {
     this.unregisterSharedCameraListener?.()
     this.unregisterSharedCameraListener = null
     this.clearHover()
-    const previousSelectedObjects = [...this.selectedObjects]
-    this.selectedObjects.clear()
-    for (const object of previousSelectedObjects) {
-      this.applyObjectState(object)
-    }
+    this.selectedTargets.clear()
     this.clearModel()
     this.edgeRenderer?.dispose()
     this.edgeRenderer = null
     this.integerIdPicker?.dispose()
     this.integerIdPicker = null
+    this.selectionHighlightRenderer?.dispose()
+    this.selectionHighlightRenderer = null
     this.resizeObserver?.disconnect()
     this.resizeObserver = null
     if (this.animationFrameId !== -1) {
@@ -386,36 +377,14 @@ export class LocalRenderer {
     this.scheduleRender()
   }
 
-  private applyObjectState(object: Object3D | null) {
-    if (!object) {
-      return
-    }
-
-    const mode = this.selectedObjects.has(object)
-      ? 'selected'
-      : object === this.hoveredObject
-        ? 'hover'
-        : 'base'
-    if (object instanceof Mesh) {
-      setMeshHighlight(
-        object,
-        mode,
-        this.modelIndex?.regionObjects.has(object) ?? false
-      )
-    } else if (object instanceof Line) {
-      setLineHighlight(object, mode)
-    }
-    this.scheduleRender()
-  }
-
   private clearHover() {
-    if (!this.hoveredObject) {
+    if (!this.hoveredTarget) {
       return
     }
 
-    const previousHoveredObject = this.hoveredObject
-    this.hoveredObject = null
-    this.applyObjectState(previousHoveredObject)
+    this.hoveredTarget = null
+    this.selectionHighlightRenderer?.setHover(null)
+    this.scheduleRender()
   }
 
   private async pickRenderableFromWindowCoordinates({
@@ -452,45 +421,39 @@ export class LocalRenderer {
   private updateHoverFromTarget(
     target: IntegerIdPickTarget | null | undefined
   ) {
-    const nextHoveredObject = target?.object ?? null
-    if (nextHoveredObject === this.hoveredObject) {
+    const nextTarget = target ?? null
+    const nextTargetKey = nextTarget ? getSelectionTargetKey(nextTarget) : null
+    const currentTargetKey = this.hoveredTarget
+      ? getSelectionTargetKey(this.hoveredTarget)
+      : null
+    if (nextTargetKey === currentTargetKey) {
       return
     }
 
-    const previousHoveredObject = this.hoveredObject
-    this.hoveredObject = null
-    this.applyObjectState(previousHoveredObject)
-    if (!nextHoveredObject) {
-      return
-    }
-
-    this.hoveredObject = nextHoveredObject
-    this.applyObjectState(this.hoveredObject)
+    this.hoveredTarget = nextTarget
+    this.selectionHighlightRenderer?.setHover(nextTarget)
+    this.scheduleRender()
   }
 
-  private updateSelectedMeshes({
-    nextSelectedMeshes,
+  private updateSelectedTargets({
+    nextSelectedTargets,
     selectionSummary,
   }: {
-    nextSelectedMeshes: Set<Object3D>
+    nextSelectedTargets: Map<string, IntegerIdPickTarget>
     selectionSummary: unknown
   }) {
     if (
-      nextSelectedMeshes.size === this.selectedObjects.size &&
-      [...nextSelectedMeshes].every((mesh) => this.selectedObjects.has(mesh))
+      nextSelectedTargets.size === this.selectedTargets.size &&
+      [...nextSelectedTargets.keys()].every((key) =>
+        this.selectedTargets.has(key)
+      )
     ) {
       return
     }
 
-    const previousSelectedMeshes = [...this.selectedObjects]
-    this.selectedObjects = nextSelectedMeshes
-    for (const object of previousSelectedMeshes) {
-      this.applyObjectState(object)
-    }
-    this.applyObjectState(this.hoveredObject)
-    for (const object of this.selectedObjects) {
-      this.applyObjectState(object)
-    }
+    this.selectedTargets = nextSelectedTargets
+    this.selectionHighlightRenderer?.setSelection(this.selectedTargets.values())
+    this.scheduleRender()
     ;(
       window as typeof window & { __WEBGPU_POC_SELECTION__?: unknown }
     ).__WEBGPU_POC_SELECTION__ = selectionSummary
@@ -577,45 +540,51 @@ export class LocalRenderer {
       return
     }
 
+    this.selectionHighlightRenderer?.beginFrame()
+
     if (!this.enableSSAO || this.forceHide) {
       renderer.render(scene, previewCamera)
-      return
-    }
+    } else {
+      if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
+        this.disposeAmbientOcclusionPipeline()
 
-    if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
-      this.disposeAmbientOcclusionPipeline()
+        // GTAO expects a regular depth texture. The renderer itself can keep
+        // using MSAA, but this intermediate pass must be single-sampled.
+        const scenePass = pass(scene, previewCamera, {
+          samples: 0,
+        })
+        const scenePassColor = scenePass.getTextureNode()
+        const scenePassDepth = scenePass.getTextureNode('depth')
+        const aoPass = (ao as CreateAmbientOcclusion)(
+          scenePassDepth,
+          null,
+          previewCamera
+        )
+        aoPass.resolutionScale = 0.5
+        this.configureAmbientOcclusion(aoPass)
 
-      // GTAO expects a regular depth texture. The renderer itself can keep
-      // using MSAA, but this intermediate pass must be single-sampled.
-      const scenePass = pass(scene, previewCamera, {
-        samples: 0,
-      })
-      const scenePassColor = scenePass.getTextureNode()
-      const scenePassDepth = scenePass.getTextureNode('depth')
-      const aoPass = (ao as CreateAmbientOcclusion)(
-        scenePassDepth,
-        null,
-        previewCamera
-      )
-      aoPass.resolutionScale = 0.5
-      this.configureAmbientOcclusion(aoPass)
+        const pipeline = new RenderPipeline(renderer)
+        pipeline.outputColorTransform = false
+        const aoOutput = aoPass.getTextureNode()
+        // Preserve some indirect light even at maximum occlusion while leaving
+        // enough contrast to make the setting visibly effective.
+        const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
+        pipeline.outputNode = scenePassColor.mul(
+          vec4(vec3(ambientOcclusion), 1)
+        )
 
-      const pipeline = new RenderPipeline(renderer)
-      const aoOutput = aoPass.getTextureNode()
-      // Preserve some indirect light even at maximum occlusion while leaving
-      // enough contrast to make the setting visibly effective.
-      const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
-      pipeline.outputNode = scenePassColor.mul(vec4(vec3(ambientOcclusion), 1))
-
-      this.ambientOcclusionPipeline = {
-        camera: previewCamera,
-        pipeline,
-        scenePass,
-        aoPass,
+        this.ambientOcclusionPipeline = {
+          camera: previewCamera,
+          pipeline,
+          scenePass,
+          aoPass,
+        }
       }
+
+      this.ambientOcclusionPipeline.pipeline.render()
     }
 
-    this.ambientOcclusionPipeline.pipeline.render()
+    this.selectionHighlightRenderer?.render(previewCamera)
   }
 
   private scheduleRender() {
@@ -654,6 +623,9 @@ export class LocalRenderer {
 
   private clearModel() {
     this.integerIdPicker?.clearModel()
+    this.selectionHighlightRenderer?.clearModel()
+    this.hoveredTarget = null
+    this.selectedTargets.clear()
     if (this.currentModel) {
       this.scene?.remove(this.currentModel)
       this.edgeRenderer?.removeFromParent()
@@ -797,6 +769,10 @@ export class LocalRenderer {
         edgeLines: edgeRenderer.lines,
         geometryStats: packetModel.modelIndex.pickingGeometryStats,
       })
+      this.selectionHighlightRenderer?.setModel(
+        renderPacket,
+        packetModel.modelIndex.selectionEntries
+      )
       const loadedModelStats = prepareLoadedModelForPreview(
         this.currentModel,
         packetModel.modelIndex
@@ -922,6 +898,7 @@ export class LocalRenderer {
     this.edgeRenderer = edgeRenderer
     this.integerIdPicker = new IntegerIdPicker(renderer)
     this.integerIdPicker.setEdgesVisible(this.highlightEdges)
+    this.selectionHighlightRenderer = new SelectionHighlightRenderer(renderer)
 
     this.onExportReady?.(this.exportCurrentScene)
 
@@ -1125,8 +1102,8 @@ export class LocalRenderer {
               if (!this.commandProxyEnabled) {
                 return null
               }
-              this.updateSelectedMeshes({
-                nextSelectedMeshes: new Set<Object3D>(),
+              this.updateSelectedTargets({
+                nextSelectedTargets: new Map<string, IntegerIdPickTarget>(),
                 selectionSummary: null,
               })
               return { websocketResponse: null }
@@ -1135,18 +1112,21 @@ export class LocalRenderer {
               if (!this.commandProxyEnabled) {
                 return null
               }
-              const nextSelectedMeshes = new Set<Object3D>()
+              const nextSelectedTargets = new Map<string, IntegerIdPickTarget>()
               let firstSelectionTarget: SelectionTarget | null = null
               for (const entityId of cmd.entities) {
                 const selectionTarget =
                   this.selectionTargetByEntityId.get(entityId)
                 if (selectionTarget) {
                   firstSelectionTarget ??= selectionTarget
-                  nextSelectedMeshes.add(selectionTarget.object)
+                  nextSelectedTargets.set(
+                    getSelectionTargetKey(selectionTarget),
+                    selectionTarget
+                  )
                 }
               }
-              this.updateSelectedMeshes({
-                nextSelectedMeshes,
+              this.updateSelectedTargets({
+                nextSelectedTargets,
                 selectionSummary: firstSelectionTarget
                   ? summarizeSelectionTarget(firstSelectionTarget)
                   : null,
@@ -1373,7 +1353,6 @@ function buildRenderPacketModel(
   const root = new Group()
   const selectionEntries: RenderPacketSelectionEntry[] = []
   const previewObjects = new WeakSet<Object3D>()
-  const regionObjects = new WeakSet<Object3D>()
   const surfaceObjects: Mesh[] = []
   let regionTriangleCount = 0
 
@@ -1538,7 +1517,6 @@ function buildRenderPacketModel(
     const source = { type: 'region', packetIndex: regionIndex } as const
     selectionEntries.push({ object: mesh, source })
     previewObjects.add(mesh)
-    regionObjects.add(mesh)
     regionTriangleCount += geometry.index?.count
       ? geometry.index.count / 3
       : geometry.getAttribute('position').count / 3
@@ -1560,7 +1538,6 @@ function buildRenderPacketModel(
       packet,
       selectionEntries,
       previewObjects,
-      regionObjects,
       surfaceObjects,
       pickingGeometryStats: {
         vertexCount: packet.vertices.byteLength / packet.vertexLayout.stride,
@@ -1672,16 +1649,6 @@ function prepareLoadedModelForPreview(
     materialCount,
     materialTypes: Array.from(materialTypes.values()),
   }
-}
-
-type PreviewSurfaceMaterial = Material & { color: Color }
-
-function getPreviewMaterials(mesh: Mesh): PreviewSurfaceMaterial[] {
-  const materials = isArray(mesh.material) ? mesh.material : [mesh.material]
-  return materials.filter(
-    (material): material is PreviewSurfaceMaterial =>
-      'color' in material && material.color instanceof Color
-  )
 }
 
 function unpackRegionLoop(loop: { positions: ArrayLike<number> }) {
@@ -2115,66 +2082,8 @@ function resolveSelectionEntityFromRegion(
   }
 }
 
-function setMeshHighlight(
-  mesh: Mesh | null,
-  mode: 'base' | 'hover' | 'selected',
-  isRegion: boolean
-) {
-  if (!mesh) {
-    return
-  }
-
-  if (isRegion) {
-    const material =
-      mesh.material instanceof MeshBasicMaterial ? mesh.material : null
-    if (!material) {
-      return
-    }
-
-    if (mode === 'selected') {
-      material.color.copy(SELECTED_COLOR)
-      material.opacity = 0.34
-    } else if (mode === 'hover') {
-      material.color.copy(HOVER_COLOR)
-      material.opacity = 0.22
-    } else {
-      material.color.set(0xffffff)
-      material.opacity = 0
-    }
-    material.needsUpdate = true
-    return
-  }
-
-  for (const material of getPreviewMaterials(mesh)) {
-    const nextColor =
-      previewMaterialBaseColors.get(material)?.clone() ??
-      ENGINE_DEFAULT_SURFACE_COLOR.clone()
-    if (mode === 'selected') {
-      nextColor.lerp(SELECTED_COLOR, 0.72)
-    } else if (mode === 'hover') {
-      nextColor.lerp(HOVER_COLOR, 0.5)
-    }
-    material.color.copy(nextColor)
-  }
-}
-
-function setLineHighlight(
-  line: Line | null,
-  mode: 'base' | 'hover' | 'selected'
-) {
-  if (!line || !(line.material instanceof LineBasicMaterial)) {
-    return
-  }
-
-  const nextColor = new Color('#f2f3f5')
-  if (mode === 'selected') {
-    nextColor.copy(SELECTED_COLOR)
-  } else if (mode === 'hover') {
-    nextColor.copy(HOVER_COLOR)
-  }
-
-  line.material.color.copy(nextColor)
-  line.material.opacity = mode === 'base' ? 0.95 : 1
+function getSelectionTargetKey(target: IntegerIdPickTarget) {
+  return `${target.source.type}:${target.source.packetIndex}`
 }
 
 function summarizeSelectionTarget(target: SelectionTarget) {
