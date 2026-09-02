@@ -10,7 +10,12 @@ import {
   BASE_COMMAND_SCOPE,
   CODE_EDITOR_FOCUSED_COMMAND_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE,
+  COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   DEFAULT_COMMAND_SCOPES,
+  EDITABLE_FOCUSED_COMMAND_SCOPE,
+  FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+  FILE_COMMAND_SCOPES,
+  GLOBAL_COMMAND_SCOPES,
   HOME_COMMAND_SCOPE,
   MODE_MODELING_COMMAND_SCOPE,
   MODE_SKETCHING_COMMAND_SCOPE,
@@ -18,6 +23,8 @@ import {
   MODE_SKETCH_SOLVE_COMMAND_SCOPE,
   PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE,
   PROJECT_EXPLORER_RENAMING_COMMAND_SCOPE,
+  SETTINGS_COMMAND_SCOPE,
+  SKETCH_COMMAND_SCOPES,
   commandScopesValueSpec,
   getCommandScopePriority,
   getEffectiveCommandScopes,
@@ -30,17 +37,26 @@ export const CODE_EDITOR_FOCUSED_KEYMAP_SCOPE =
   CODE_EDITOR_FOCUSED_COMMAND_SCOPE
 export const CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE =
   CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE
+export const EDITABLE_FOCUSED_KEYMAP_SCOPE = EDITABLE_FOCUSED_COMMAND_SCOPE
 export const MODE_MODELING_KEYMAP_SCOPE = MODE_MODELING_COMMAND_SCOPE
 export const MODE_SKETCHING_KEYMAP_SCOPE = MODE_SKETCHING_COMMAND_SCOPE
 export const MODE_SKETCH_NO_FACE_KEYMAP_SCOPE =
   MODE_SKETCH_NO_FACE_COMMAND_SCOPE
 export const MODE_SKETCH_SOLVE_KEYMAP_SCOPE = MODE_SKETCH_SOLVE_COMMAND_SCOPE
 export const HOME_KEYMAP_SCOPE = HOME_COMMAND_SCOPE
+export const COMMAND_PALETTE_OPEN_KEYMAP_SCOPE =
+  COMMAND_PALETTE_OPEN_COMMAND_SCOPE
+export const SETTINGS_KEYMAP_SCOPE = SETTINGS_COMMAND_SCOPE
 export const PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE =
   PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE
 export const PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE =
   PROJECT_EXPLORER_RENAMING_COMMAND_SCOPE
 export const DEFAULT_KEYMAP_SCOPES = DEFAULT_COMMAND_SCOPES
+export const GLOBAL_KEYMAP_SCOPES = GLOBAL_COMMAND_SCOPES
+export const SKETCH_KEYMAP_SCOPES = SKETCH_COMMAND_SCOPES
+export const FILE_KEYMAP_SCOPES = FILE_COMMAND_SCOPES
+export const FILE_AND_CODE_EDITOR_KEYMAP_SCOPES =
+  FILE_AND_CODE_EDITOR_COMMAND_SCOPES
 export const KEYMAP_SCHEMA_VERSION = 1
 export const USER_KEYMAP_SOURCE = 'User'
 
@@ -103,6 +119,8 @@ export type KeymapMatch =
   | { type: 'none' }
   | { type: 'prefix' }
   | { type: 'full'; item: KeymapItem }
+
+export type KeymapItemAvailability = (item: KeymapItem) => boolean
 
 export type KeymapSource = 'global' | 'codeMirror'
 
@@ -593,7 +611,8 @@ export function matchKeymapKeystrokes(
   tree: KeymapTree,
   scopes: readonly string[],
   keystrokes: readonly string[],
-  keymapScopes: readonly KeymapScope[] = []
+  keymapScopes: readonly KeymapScope[] = [],
+  isItemAvailable: KeymapItemAvailability = () => true
 ): KeymapMatch {
   const normalizedKeystrokes = keystrokes.map(normalizeKeymapChord)
   const activeScopes = getEffectiveKeymapScopes(scopes, keymapScopes)
@@ -602,18 +621,18 @@ export function matchKeymapKeystrokes(
   let node = tree.root
   for (const chord of normalizedKeystrokes) {
     const child = node.children.get(chord)
-    if (!child || !nodeHasActiveItems(child, activeScopeSet)) {
+    if (!child || !nodeHasActiveItems(child, activeScopeSet, isItemAvailable)) {
       return { type: 'none' }
     }
     node = child
   }
 
-  const item = getActiveKeymapItem(node.items, activeScopes)
+  const item = getActiveKeymapItem(node.items, activeScopes, isItemAvailable)
   if (item) {
     return { type: 'full', item }
   }
 
-  if (nodeHasActiveItems(node, activeScopeSet)) {
+  if (nodeHasActiveItems(node, activeScopeSet, isItemAvailable)) {
     return { type: 'prefix' }
   }
 
@@ -622,31 +641,39 @@ export function matchKeymapKeystrokes(
 
 function nodeHasActiveItems(
   node: KeymapTreeNode,
-  activeScopes: ReadonlySet<string>
+  activeScopes: ReadonlySet<string>,
+  isItemAvailable: KeymapItemAvailability
 ): boolean {
   return (
-    node.items.some((item) => isKeymapItemActive(item, activeScopes)) ||
+    node.items.some(
+      (item) => isItemAvailable(item) && isKeymapItemActive(item, activeScopes)
+    ) ||
     [...node.children.values()].some((child) =>
-      nodeHasActiveItems(child, activeScopes)
+      nodeHasActiveItems(child, activeScopes, isItemAvailable)
     )
   )
 }
 
 function getActiveKeymapItem(
   items: readonly KeymapItem[],
-  activeScopes: readonly string[]
+  activeScopes: readonly string[],
+  isItemAvailable: KeymapItemAvailability
 ) {
   for (const scope of [...activeScopes].toReversed()) {
-    const item = items.find((candidate) =>
-      isKeymapItemActiveForScope(candidate, scope)
+    const item = items.find(
+      (candidate) =>
+        isItemAvailable(candidate) &&
+        isKeymapItemActiveForScope(candidate, scope)
     )
     if (item) {
       return item
     }
   }
 
-  return items.find((item) =>
-    isKeymapItemActiveForScope(item, BASE_KEYMAP_SCOPE)
+  return items.find(
+    (item) =>
+      isItemAvailable(item) &&
+      isKeymapItemActiveForScope(item, BASE_KEYMAP_SCOPE)
   )
 }
 
