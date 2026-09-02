@@ -10,33 +10,33 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b320986c-4c5a-5020-a263-b7aa0fb2da89",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e859e016-919d-554f-841f-b9bb5e14b0a7",
+          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d95a4a21-df12-5a03-a6ff-5a18892e53de",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "765390a8-b202-5003-bffa-6d4bbfea36d6",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -45,11 +45,11 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "from": [
@@ -66,7 +66,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "sourceRange": []
             },
             "from": [
@@ -83,7 +83,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "from": [
@@ -100,7 +100,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "from": [
@@ -117,8 +117,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "kind": "XY",
           "objectId": 0,
           "origin": {
@@ -159,16 +159,16 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "16bfdd11-9bf4-5c72-b775-d59b627c9583",
+      "endCapId": "334c8b19-09a4-5e64-8a59-b9e921287865",
       "units": "mm",
       "sectional": false
     }
@@ -228,12 +228,12 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+      "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8a36674d-7c74-5ea9-b574-8b0c8b22873a",
+          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "sourceRange": [],
           "tag": {
             "commentStart": 1132,
@@ -246,8 +246,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6cb1f6ba-f041-5f0f-82b5-9fc53b93b48b",
+          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1199,
@@ -260,8 +260,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6e7fc584-91cd-565e-bf1a-82315a78d8a3",
+          "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
           "sourceRange": [],
           "tag": {
             "commentStart": 1224,
@@ -277,11 +277,11 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": []
             },
             "from": [
@@ -305,7 +305,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
               "sourceRange": []
             },
             "from": [
@@ -329,7 +329,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
               "sourceRange": []
             },
             "from": [
@@ -353,8 +353,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+          "id": "7b681387-29ea-57f1-8713-d63280827139",
           "kind": "XY",
           "objectId": 1,
           "origin": {
@@ -395,7 +395,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "sourceRange": []
           }
         },
@@ -413,12 +413,12 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             "value": "edge3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "22c9b1fa-8a44-584b-9a5d-8d4fc39ffb39",
+      "endCapId": "e139c477-1f36-5bb0-9633-7766b6e34b8c",
       "units": "mm",
       "sectional": false
     }
@@ -427,12 +427,12 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8a36674d-7c74-5ea9-b574-8b0c8b22873a",
+          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "sourceRange": [],
           "tag": {
             "commentStart": 1132,
@@ -445,8 +445,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6cb1f6ba-f041-5f0f-82b5-9fc53b93b48b",
+          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1199,
@@ -459,8 +459,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6e7fc584-91cd-565e-bf1a-82315a78d8a3",
+          "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
           "sourceRange": [],
           "tag": {
             "commentStart": 1224,
@@ -476,11 +476,11 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": []
             },
             "from": [
@@ -504,7 +504,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
               "sourceRange": []
             },
             "from": [
@@ -528,7 +528,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
               "sourceRange": []
             },
             "from": [
@@ -552,8 +552,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+          "id": "7b681387-29ea-57f1-8713-d63280827139",
           "kind": "XY",
           "objectId": 1,
           "origin": {
@@ -594,7 +594,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "sourceRange": []
           }
         },
@@ -612,12 +612,12 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             "value": "edge3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "22c9b1fa-8a44-584b-9a5d-8d4fc39ffb39",
+      "endCapId": "e139c477-1f36-5bb0-9633-7766b6e34b8c",
       "units": "mm",
       "sectional": false
     }
@@ -653,11 +653,11 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "sourceRange": []
           },
           "from": [
@@ -681,7 +681,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
             "sourceRange": []
           },
           "from": [
@@ -705,7 +705,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
             "sourceRange": []
           },
           "from": [
@@ -729,8 +729,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+        "id": "7b681387-29ea-57f1-8713-d63280827139",
         "kind": "XY",
         "objectId": 1,
         "origin": {
@@ -771,7 +771,7 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
           "sourceRange": []
         }
       },
@@ -789,8 +789,8 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "value": "edge3"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "units": "mm"
     }
   }

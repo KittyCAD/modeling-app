@@ -340,7 +340,7 @@ description: Operations executed herringbone-gear.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2c522d90-5fef-5750-b489-b008732bd2c3"
               }
             ]
           },
@@ -373,7 +373,7 @@ description: Operations executed herringbone-gear.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
           }
         },
         "sourceRange": []
@@ -415,7 +415,7 @@ description: Operations executed herringbone-gear.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
           }
         },
         "sourceRange": []
@@ -428,7 +428,7 @@ description: Operations executed herringbone-gear.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
                 }
               }
             ]
@@ -459,7 +459,7 @@ description: Operations executed herringbone-gear.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f"
           }
         },
         "sourceRange": []

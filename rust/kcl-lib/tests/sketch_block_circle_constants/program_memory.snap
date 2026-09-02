@@ -6,8 +6,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,7 +44,7 @@ description: Variables in memory after executing sketch_block_circle_constants.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -118,8 +118,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -148,7 +148,7 @@ description: Variables in memory after executing sketch_block_circle_constants.k
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "c1"
@@ -164,7 +164,7 @@ description: Variables in memory after executing sketch_block_circle_constants.k
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "circle": {
@@ -238,8 +238,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -268,7 +268,7 @@ description: Variables in memory after executing sketch_block_circle_constants.k
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "c2"
@@ -285,11 +285,11 @@ description: Variables in memory after executing sketch_block_circle_constants.k
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -319,7 +319,7 @@ description: Variables in memory after executing sketch_block_circle_constants.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                     "sourceRange": []
                   },
                   "from": [
@@ -336,7 +336,7 @@ description: Variables in memory after executing sketch_block_circle_constants.k
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -366,8 +366,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -408,7 +408,7 @@ description: Variables in memory after executing sketch_block_circle_constants.k
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                   "sourceRange": []
                 }
               },
@@ -422,8 +422,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
                   "value": "c2"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+              "originalId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
               "units": "mm",
               "isClosed": "no"
             }
@@ -438,12 +438,12 @@ description: Variables in memory after executing sketch_block_circle_constants.k
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+      "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb9d56c1-169a-5445-ae15-f24345ec7c75",
+          "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
           "sourceRange": [],
           "tag": {
             "commentStart": 378,
@@ -459,11 +459,11 @@ description: Variables in memory after executing sketch_block_circle_constants.k
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
               "sourceRange": []
             },
             "ccw": true,
@@ -493,8 +493,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -535,7 +535,7 @@ description: Variables in memory after executing sketch_block_circle_constants.k
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
             "sourceRange": []
           }
         },
@@ -549,13 +549,13 @@ description: Variables in memory after executing sketch_block_circle_constants.k
             "value": "c2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+        "originalId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+        "originSketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "33aa9496-5ecf-5157-ab0b-51ae219ee4df",
+      "endCapId": "db676f42-098b-5f8a-b4c7-abb41d3ee6dc",
       "units": "mm",
       "sectional": false
     }
@@ -564,12 +564,12 @@ description: Variables in memory after executing sketch_block_circle_constants.k
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+      "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09131f64-a1c0-5e26-805e-a4e6202fda9b",
+          "id": "76e97e85-e537-578b-ac43-e32d1b685418",
           "sourceRange": [],
           "tag": {
             "commentStart": 655,
@@ -585,11 +585,11 @@ description: Variables in memory after executing sketch_block_circle_constants.k
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "76e97e85-e537-578b-ac43-e32d1b685418",
               "sourceRange": []
             },
             "ccw": true,
@@ -619,8 +619,8 @@ description: Variables in memory after executing sketch_block_circle_constants.k
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -661,7 +661,7 @@ description: Variables in memory after executing sketch_block_circle_constants.k
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
             "sourceRange": []
           }
         },
@@ -675,13 +675,13 @@ description: Variables in memory after executing sketch_block_circle_constants.k
             "value": "c2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "originalId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
+        "originSketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a33b4b9e-bd51-5a8c-8eac-e1c70a744f07",
+      "endCapId": "d9fe94bb-ab6e-5eea-9518-db330f040aa8",
       "units": "mm",
       "sectional": false
     }

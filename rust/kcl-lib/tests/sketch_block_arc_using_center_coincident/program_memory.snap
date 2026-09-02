@@ -6,8 +6,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,7 +44,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -150,8 +150,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -180,7 +180,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -196,7 +196,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -270,8 +270,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -300,7 +300,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lineX"
@@ -316,7 +316,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 14,
                 "kind": {
                   "line": {
@@ -390,8 +390,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -420,7 +420,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lineY"
@@ -437,11 +437,11 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -471,7 +471,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                     "sourceRange": []
                   },
                   "from": [
@@ -488,7 +488,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -512,7 +512,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                     "sourceRange": []
                   },
                   "from": [
@@ -529,7 +529,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -553,8 +553,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -595,7 +595,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                   "sourceRange": []
                 }
               },
@@ -613,8 +613,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   "value": "lineY"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+              "originalId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
               "units": "mm",
               "isClosed": "no"
             }
@@ -628,7 +628,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 6,
                 "kind": {
                   "point": {
@@ -668,8 +668,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -698,7 +698,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "p0"
@@ -714,7 +714,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 18,
                 "kind": {
                   "point": {
@@ -754,8 +754,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -784,7 +784,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "p1"

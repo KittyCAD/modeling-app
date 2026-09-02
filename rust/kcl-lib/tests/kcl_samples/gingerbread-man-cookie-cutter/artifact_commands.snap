@@ -5,7 +5,7 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
 {
   "public/kcl-samples/gingerbread-man-cookie-cutter/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d4c814d-f292-503d-a012-68ab58c77524",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -124,11 +124,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "segment": {
           "type": "line",
           "end": {
@@ -141,11 +141,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "segment": {
           "type": "line",
           "end": {
@@ -158,11 +158,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "segment": {
           "type": "line",
           "end": {
@@ -175,11 +175,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -200,11 +200,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "segment": {
           "type": "line",
           "end": {
@@ -217,11 +217,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -242,11 +242,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "segment": {
           "type": "line",
           "end": {
@@ -259,11 +259,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -284,12 +284,12 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "range": [],
       "command": {
         "type": "entity_mirror",
         "ids": [
-          "[uuid]"
+          "186e6756-e0a9-5df7-a3d1-f5f025d153e3"
         ],
         "axis": {
           "x": 0.0,
@@ -304,11 +304,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc312d38-2fa6-5583-a605-44880f646499",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "transforms": [
           {
             "translate": null,
@@ -330,11 +330,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "range": [],
       "command": {
         "type": "create_region_from_query_point",
-        "object_id": "[uuid]",
+        "object_id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "query_point": {
           "x": 0.0,
           "y": 260.0
@@ -343,11 +343,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -359,11 +359,11 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "distance": 100.0,
         "faces": null,
         "opposite": "None",
@@ -372,67 +372,67 @@ description: Artifact commands gingerbread-man-cookie-cutter.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "245e94e9-dead-58c1-b997-17191922a7c5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "edge_id": "245e94e9-dead-58c1-b997-17191922a7c5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "solid3d_shell_face",
-        "object_id": "[uuid]",
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "c7bfbcc2-d435-57c0-90e3-b2ab2b00ba06",
+          "94d3ba3a-357d-573d-b676-504d26a4f43f"
         ],
         "shell_thickness": 10.0,
         "hollow": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "hidden": true
       }
     }

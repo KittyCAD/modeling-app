@@ -5,7 +5,7 @@ description: Artifact commands bracket-with-slot.kcl
 {
   "public/kcl-samples/bracket-with-slot/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "to": {
           "x": -0.00000000000000001629999928885756,
           "y": -0.00000000000000002210001769051198,
@@ -75,18 +75,18 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "segment": {
           "type": "line",
           "end": {
@@ -150,11 +150,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "segment": {
           "type": "line",
           "end": {
@@ -167,11 +167,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "segment": {
           "type": "line",
           "end": {
@@ -184,32 +184,32 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -221,11 +221,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "72dddee3-1330-5c4f-b767-659f762ad674",
         "distance": 40.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -234,68 +234,68 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "edge_id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "edge_id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "09c354a2-d6d5-5d42-9fdf-bf50650f057c"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "edge_id": "e8e8a799-080a-5af7-b552-92f258391b5a"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d4c814d-f292-503d-a012-68ab58c77524",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "edge_ids": [
-          "[uuid]"
+          "e8e8a799-080a-5af7-b552-92f258391b5a"
         ],
         "cut_type": {
           "fillet": {
@@ -309,35 +309,35 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "70234578-22da-5570-b77f-9ab44bbf8710",
+          "96c71cb9-3d0a-5ae9-af8e-0674c606a31d"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "edge_id": "375909ca-005f-5bf2-83c9-5f0b348dac37"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "edge_ids": [
-          "[uuid]"
+          "375909ca-005f-5bf2-83c9-5f0b348dac37"
         ],
         "cut_type": {
           "fillet": {
@@ -351,11 +351,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc312d38-2fa6-5583-a605-44880f646499",
       "range": [],
       "command": {
         "type": "closest_edge",
-        "object_id": "[uuid]",
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "closest_to": {
           "x": 2.0,
           "y": 20.0,
@@ -364,20 +364,20 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "range": [],
       "command": {
         "type": "query_entity_type",
-        "entity_id": "[uuid]"
+        "entity_id": "25d85146-207e-50e0-aa94-a6fb2beccf0a"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "range": [],
       "command": {
         "type": "closest_edge",
-        "object_id": "[uuid]",
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "closest_to": {
           "x": 2.0,
           "y": -20.0,
@@ -386,20 +386,20 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "query_entity_type",
-        "entity_id": "[uuid]"
+        "entity_id": "41d8aa02-4a9b-5fb6-90fb-724c008b2567"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
       "range": [],
       "command": {
         "type": "closest_edge",
-        "object_id": "[uuid]",
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "closest_to": {
           "x": 170.0,
           "y": 20.0,
@@ -408,20 +408,20 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "query_entity_type",
-        "entity_id": "[uuid]"
+        "entity_id": "1084cca5-0297-5dc3-92ac-287642feefac"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "closest_edge",
-        "object_id": "[uuid]",
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "closest_to": {
           "x": 170.0,
           "y": -20.0,
@@ -430,65 +430,65 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "range": [],
       "command": {
         "type": "query_entity_type",
-        "entity_id": "[uuid]"
+        "entity_id": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "edge_id": "25d85146-207e-50e0-aa94-a6fb2beccf0a"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "edge_id": "41d8aa02-4a9b-5fb6-90fb-724c008b2567"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "edge_id": "1084cca5-0297-5dc3-92ac-287642feefac"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "edge_id": "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "edge_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "41d8aa02-4a9b-5fb6-90fb-724c008b2567",
+          "1084cca5-0297-5dc3-92ac-287642feefac",
+          "9efbcccc-288a-5a5c-b7f4-7d2f8bbae204"
         ],
         "cut_type": {
           "fillet": {
@@ -499,14 +499,14 @@ description: Artifact commands bracket-with-slot.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+          "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+          "0917d07d-5996-5994-8a06-602d43e2b6f3"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -531,20 +531,20 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -556,18 +556,18 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
         "to": {
           "x": 56.0,
           "y": -0.0000000000000000024000000272348307,
@@ -576,18 +576,18 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
         "segment": {
           "type": "arc",
           "center": {
@@ -608,11 +608,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
         "to": {
           "x": 61.0,
           "y": -0.000000000000000023300000333336532,
@@ -621,11 +621,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
         "segment": {
           "type": "arc",
           "center": {
@@ -646,7 +646,7 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -671,20 +671,20 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -696,18 +696,18 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "to": {
           "x": 11.200000001,
           "y": 0.0,
@@ -716,18 +716,18 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "segment": {
           "type": "arc",
           "center": {
@@ -748,7 +748,7 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -773,20 +773,20 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -798,18 +798,18 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
         "to": {
           "x": 6.800000001,
           "y": 0.0,
@@ -818,18 +818,18 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
         "segment": {
           "type": "arc",
           "center": {
@@ -850,37 +850,37 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
+        "segment": "a54ad82c-be8d-599a-9764-c6498922dd5c",
+        "intersection_segment": "a54ad82c-be8d-599a-9764-c6498922dd5c",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+        "segment": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "intersection_segment": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "range": [],
       "command": {
         "type": "loft",
         "section_ids": [
-          "[uuid]",
-          "[uuid]"
+          "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+          "c820e130-6f59-5cd5-8ff1-7228a584ef66"
         ],
         "v_degree": 2,
         "bez_approximate_rational": false,
@@ -890,75 +890,75 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+        "edge_id": "a796ac51-f320-5542-b7e6-2eaeaba5cb25"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+        "edge_id": "a796ac51-f320-5542-b7e6-2eaeaba5cb25"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "72dddee3-1330-5c4f-b767-659f762ad674"
         ],
         "tool_ids": [
-          "[uuid]"
+          "d90f6603-b0cd-5c83-a076-386b01d9e12a"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -983,20 +983,20 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1008,18 +1008,18 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
         "to": {
           "x": 150.0,
           "y": -6.0,
@@ -1028,18 +1028,18 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
         "segment": {
           "type": "line",
           "end": {
@@ -1052,11 +1052,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
         "segment": {
           "type": "arc",
           "center": {
@@ -1077,11 +1077,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
         "segment": {
           "type": "line",
           "end": {
@@ -1094,11 +1094,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
         "segment": {
           "type": "arc",
           "center": {
@@ -1119,23 +1119,23 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+        "segment": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+        "intersection_segment": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
         "intersection_index": -1,
         "curve_clockwise": false
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1147,11 +1147,11 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
@@ -1160,68 +1160,68 @@ description: Artifact commands bracket-with-slot.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
+        "edge_id": "e1f6cd1f-6071-5d4d-872c-bd968e2f300b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
+        "edge_id": "e1f6cd1f-6071-5d4d-872c-bd968e2f300b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "969d96c2-dff1-582e-8974-a3f5fef9c547",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "7cba4b1e-0ab8-5276-a74e-b8b435085d01"
         ],
         "tool_ids": [
-          "[uuid]"
+          "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "969d96c2-dff1-582e-8974-a3f5fef9c547",
         "color": {
           "r": 0.78431374,
           "g": 1.0,

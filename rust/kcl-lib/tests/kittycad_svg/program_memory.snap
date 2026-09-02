@@ -7,1951 +7,1951 @@ description: Variables in memory after executing kittycad_svg.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "8f72543d-c84d-5018-865e-36a2fd66854c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb188970-5bfb-5d0b-b370-d8075c8dc5e9",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f54f42f7-c661-511d-bbb6-5e5949ebd134",
+          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c1e0ba6e-79d2-5b70-9b5d-345608d7d9a2",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a91ec623-8dbb-5dc3-b254-cef653590baf",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ae71faa-016c-5e71-94cb-1c5c39920610",
+          "id": "41c630c9-9d44-581b-98af-caee575bea48",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d368a5a0-9ed3-5858-8da8-9bbf1cbe1d9a",
+          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "599c37c9-844a-512a-bdc2-3a86ede398d1",
+          "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7e20db30-0723-5429-b2c3-eb87ad430433",
+          "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f87c2762-2879-5c61-a63f-a38dd2e48ffb",
+          "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "20674a85-fcf7-5d34-aa98-73897d9ed480",
+          "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3669b3cc-ab09-5db4-a77a-17432121e1b2",
+          "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f2889f0f-a23f-5ebd-bad4-f3629e6fcbf2",
+          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8f494664-b100-5672-b91b-b3a2a053c503",
+          "id": "7b681387-29ea-57f1-8713-d63280827139",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5d0f334a-c83e-5913-bb96-3fb40cf99246",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3406a9ea-a4be-596d-b7af-e3f43f893165",
+          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a5961b54-ef96-5aa9-97d0-a803925bc47f",
+          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "93a01680-70db-5986-988f-4a116dadacbb",
+          "id": "f084ad07-5777-5607-a544-c69f455c2aab",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8ca5db26-70d6-5e47-88b5-9b4286182846",
+          "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "644cf6a1-2956-5d45-9774-6536a064017a",
+          "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a99c8ea6-47a1-5d84-8c5d-a9cfc9ffadfb",
+          "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fe286bec-d723-5802-8ab7-4e3cb181573e",
+          "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6d95c7f4-638c-531c-a1bb-d226a86c4691",
+          "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c1d83d67-c6e1-5aa9-ac19-33c10be98783",
+          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "22972fce-ba55-5077-9a05-df95e9cecfd0",
+          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "05289b4f-d8bd-5191-8c8a-c44c98e9bcda",
+          "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "26f797fc-2e8c-5ba5-8241-c11c24088eda",
+          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d1178306-9ee9-5885-8450-962a1d61faf0",
+          "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "aa414c89-b36d-5226-8938-c125854c618a",
+          "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e25e51d3-2b74-5c4c-83d7-cddf6da743ed",
+          "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ab8e268a-aaaa-5b38-8b0a-59c36693e147",
+          "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1193014f-0d7a-5fdc-81be-4238bdbd93cb",
+          "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7bcf414f-50e4-5afc-9750-1ad6b50ba3ef",
+          "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bc7e2caa-4f38-506e-ba27-d140bab78bae",
+          "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "957f7b71-65a4-5996-a87a-0a46f97bfcff",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "94690d00-58e9-5c41-a549-2fca169aee1f",
+          "id": "deb86259-17a0-5782-a352-d25992246cc0",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a10f92fc-194b-5f5c-b0dd-696e4cae3be9",
+          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ef50456d-2074-56f9-be89-ddbe9ccd0f7b",
+          "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d542c7d8-d3bb-5ccc-9744-e08ef26d445c",
+          "id": "907cac50-3701-5367-b35c-4ec2132c824f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8d349943-3831-50bd-a07c-1aa1d94ad382",
+          "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "839f3303-4269-5363-b830-3ad889362058",
+          "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "92f4ed23-fd8f-5462-9dfb-0b89cbb001c3",
+          "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9ab00d1b-9038-5a46-9696-3e720d538fa6",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "14386e14-4706-56c6-a62f-23887267b9bc",
+          "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b2112a8a-e61e-5efb-bbd0-00815601dd70",
+          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0a9714c0-4d3c-5d27-b417-410a1bb1ddb5",
+          "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4c78fb35-ad3d-57fe-aee8-b55c8f74d9b8",
+          "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c29ba3e8-630c-5f15-83c8-a767511d67c1",
+          "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9c38640f-03b0-5f87-9e09-9da377af85de",
+          "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d60f0355-cb16-58b1-abcc-39aba2b4cea6",
+          "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3bda3421-444e-5cb7-8542-61d5b87fbe45",
+          "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3a9807de-5f46-50c0-b118-bb0a51abe9c3",
+          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0431d0ec-cc11-59a3-997a-8b64690e82d8",
+          "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "29f0fb59-d229-5d54-b356-fddb77b96b04",
+          "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6d61a662-7d37-5e52-936e-205dd73fa6f1",
+          "id": "7d4c814d-f292-503d-a012-68ab58c77524",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0167e39e-080d-5c94-874e-cf9b97b917b7",
+          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0113e0ad-34b9-5a4a-9f3d-7684fe54b548",
+          "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c1ec9e49-97db-55b0-9706-986cb5b94c0b",
+          "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "42e269aa-8de9-5f0a-b7c7-66fe9dc648ba",
+          "id": "cc312d38-2fa6-5583-a605-44880f646499",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "91ccf9c7-ad07-57ee-87d9-70737ee0566c",
+          "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6789a65b-252c-5cb4-8f06-60919174a887",
+          "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fcaecc16-2b36-56d7-bb4d-7cff2d409a9b",
+          "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d9b15bed-7196-59b0-83c4-be597538ac8b",
+          "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e17b7511-7fc3-51be-868c-d07a5908b621",
+          "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d466439d-50b0-5b93-966d-f2ca51bc716a",
+          "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0d94fd88-6c07-5adc-bb8d-8786c8038d60",
+          "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "77e7bf22-cbd3-5eee-8fcb-edc6cd2d355d",
+          "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3f1114f6-2ed7-5baf-b579-da09e392566a",
+          "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2c65a044-12ad-59e9-b071-98697b37ef6f",
+          "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "214c5b76-deae-5bb2-a5cc-8dbb473171ba",
+          "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bdba193d-639d-5cfb-8bc0-8e07820a038c",
+          "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ef8e25aa-c921-508c-af1a-6209a3bc7b5a",
+          "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c289e980-6297-5d71-ba3c-a367114eb022",
+          "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "902a633d-29e1-52b6-8aea-d9599d3e9d33",
+          "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f29b75c5-3515-5fdf-88e6-9fdd364f3070",
+          "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a25d78d4-07c4-5811-8903-e6520e2a706a",
+          "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5944af82-cdd3-59b4-a492-f5e118e8419e",
+          "id": "468f6520-a683-5392-9492-de009fdcddef",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "af06030b-14c8-51be-821e-07eb08d230f8",
+          "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bd428809-59ba-506a-9ced-95fb4008d8e1",
+          "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1af5eaa1-236b-5be6-94e6-6cf3c913dda0",
+          "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e01346a9-a7e7-5eda-a5d2-83cd26d8128c",
+          "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "226dea10-f5e6-5d32-80c7-a1e0cb34560c",
+          "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "10f91807-7e83-503a-9214-eae89de2778e",
+          "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "baaff982-b163-5c7d-9cbb-ea333271e922",
+          "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4f1941d3-2f15-55e8-9fd3-8ae220934626",
+          "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "46fe11d6-4b81-5c28-a6e4-6684a139b592",
+          "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "27aa38f4-7b41-52cb-8b0c-61a5bf671639",
+          "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "92cb981e-eaa3-5c5b-bb81-f2989f7aa8fd",
+          "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "64dd332f-f227-57c5-83f3-0aa9abdb03c3",
+          "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c798e3f2-a139-5358-96ff-d33312052c63",
+          "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fd629a58-baa0-509b-af98-6604e7974b89",
+          "id": "1a0ade6f-d355-5121-9adb-351976a78284",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "015098ea-a9d2-518c-9518-c1ab3ef67436",
+          "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7afc6dc1-0a2d-5513-bf94-fbda568ce189",
+          "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "be81dde2-1158-5a29-ad76-a5792327b54f",
+          "id": "d5eaf678-0440-563f-ac19-e473850b9270",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7291f263-36da-56a0-8f68-2548cca32689",
+          "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f93c6d78-4cc3-5682-aaa3-23158c3293e1",
+          "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9ef01fad-877e-58a6-8203-48a37dedf11d",
+          "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d4583a16-606f-524e-a0c5-af088b84d604",
+          "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b42d168a-1771-5f06-ab06-f4f10a9f2e81",
+          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5b7d823a-a172-55ab-8009-e240c22973dd",
+          "id": "5288de96-84bb-518a-848b-5092b5d33e48",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "32676f7e-d446-5901-a025-ae048e22c839",
+          "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9982c1a1-a2c7-5202-8b59-c99968eff6d9",
+          "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "65a2aa20-332e-5c3d-8253-767b6f66c192",
+          "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8d78ac2e-2580-524a-96eb-b899e860cb4d",
+          "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d63db2ad-9d9f-50be-b420-0f2a3f74e9cf",
+          "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb364f5d-a5e1-5843-b939-3a49d2d2653e",
+          "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9cf3a348-ec6f-5896-b7c0-d668a0df199e",
+          "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "48e80176-ed4f-58c8-b44b-62f0da5ed34a",
+          "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ac51bc11-639a-5453-bafb-d3da43b6c394",
+          "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b78598bd-a648-5d44-9dea-9de4e748c48a",
+          "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e0b7c7fa-8a72-5a93-a420-1caef50c7f3b",
+          "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1141c2c3-adf3-5c95-8a66-61e4536ac82a",
+          "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "08c91f9b-da50-50e5-97d0-358c8c730832",
+          "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "27e8e97c-7c84-5269-8fa6-af236bbae95a",
+          "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "47fc7601-1c4c-562c-8eb9-31b3399d37f3",
+          "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "271d18de-04d9-5c18-9220-0470f04a3223",
+          "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e5405e0d-b40d-5c0b-85b4-9a7352b0a1f2",
+          "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8befd474-d667-5a01-906a-6194733b9c80",
+          "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7235bb52-f4e9-5262-8ae9-d95c6edb4edc",
+          "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "909f458b-201b-5bd1-9a19-8e42a813107f",
+          "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9477d1bc-a18e-5763-847c-0f829fe5be63",
+          "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f85c141e-6f37-5eea-965f-84ec582e9666",
+          "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e55f378d-d18c-5490-a612-6288fef81d32",
+          "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "93052e63-8726-5f51-b91e-923622be1f02",
+          "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "29057330-e960-548f-bd90-dcd93286ea44",
+          "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "34bc5bc6-d7f9-560d-aee6-5a50edfa4db3",
+          "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7b152ab4-5b0c-544a-8a23-5213255ac149",
+          "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e3f4dcca-2e42-51cb-a239-4874d8f90c54",
+          "id": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6cfeaa36-aaae-5728-bdba-3a5269fda81d",
+          "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a4dbda0c-81e3-5bea-a268-ee7e965ea06d",
+          "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "dfe6974e-5cdb-5403-801e-666c7e742722",
+          "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "93263b1f-4ffa-52d2-8793-dc900af7cbbd",
+          "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5a8afee8-327c-5e26-a884-335befe0c5f3",
+          "id": "40d8c462-7810-5666-bb09-1db7308cf666",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "271f46fa-e416-5ecf-9e18-6fbae9a6fa76",
+          "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7061994e-9538-5a90-938a-5320359f017f",
+          "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6e8b1510-22c2-56cc-8521-71e3cbbb809b",
+          "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b1255798-8d63-5101-a8fa-a80ec47cbddd",
+          "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "22e763d8-c3c1-5d69-ab5c-b5e456bb0e8e",
+          "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6b737fb1-f751-5edc-83c4-0283dc6f8715",
+          "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cb696b9d-880c-5e7f-851f-028b4b6b097f",
+          "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e5e67d16-1bdf-5448-a115-c38fba8f39de",
+          "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fab244d1-67d9-5e1e-b188-02e9e908d989",
+          "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1d824a66-fa0a-505f-833f-9755590d3308",
+          "id": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "71a23d17-40fb-5a4d-8572-adb1f057cfbb",
+          "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "370b2452-6e24-53fe-9bad-bc9c63503f6a",
+          "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "226683b7-c8b2-5a06-834d-068ca28e184a",
+          "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a5f555d5-175b-5639-9477-825a8528f48c",
+          "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0e5ab0e4-8958-5f4c-b39b-3163ff2e3930",
+          "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4cfb5ba5-eef4-564e-b04b-a0a63cac52aa",
+          "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ccc4ec4-f2ee-5a69-88fd-140e26437bf4",
+          "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "147b5044-cbf7-574a-b73b-3c0c56a19708",
+          "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "95acf7ce-440e-50af-a7d9-4afb50132c91",
+          "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "370b2a3d-858b-52b9-9723-1e6814e8210e",
+          "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f511a5e5-a2f7-5ba8-8a3c-ada1a01f7dce",
+          "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ba540e45-4372-50bd-aa76-148be53378f6",
+          "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "94b30f2e-6f3e-5d88-80da-497e11740376",
+          "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6a40ca71-4ad2-5c1c-8cf6-0598916e8e17",
+          "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fb176a97-8168-5986-b88c-a77225940550",
+          "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3f7eebff-c215-5510-8cf1-8e87a9c5747f",
+          "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4c2dd4fa-2daa-5173-96fd-4d371f8440dc",
+          "id": "19107e89-bf40-5541-88a5-5106b6de636d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "233a3aee-6f8c-57c2-86f5-be247db0d8d4",
+          "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9366a519-786c-557f-a3cc-9e2d00641267",
+          "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e51f187d-a450-5871-ba03-71fe7adbddb3",
+          "id": "020035cf-ab88-50f3-91b0-886b7f399647",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2d982f04-25b3-56d7-9b7a-ef9341c466c1",
+          "id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a5cf14d4-ab58-530e-a403-648652237fef",
+          "id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0a6f9289-fefd-5265-871b-42b196a86953",
+          "id": "2489202c-0475-5b18-97c8-c3f239bd1947",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1c7fcee2-f361-5785-8ce1-bbd4767310ca",
+          "id": "e02115f0-d853-5684-82c8-298aa25e4541",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9172b12e-542e-5a55-81b0-331d15d5630f",
+          "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7129ee1b-0ea9-5d43-909b-7851c7d6fdc3",
+          "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8c6e1d9e-dd9b-52fb-aff8-8870a805de56",
+          "id": "ca431487-8e9a-59ce-a472-84fe45652fab",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c7e97904-350a-548b-af35-564592792311",
+          "id": "93954f29-a246-54bd-ac2a-62572f26d508",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cfa96a80-a789-5d6c-b948-942beda60a53",
+          "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9bfb9730-5a89-53a2-880a-d8800924f9e7",
+          "id": "bee9909d-abbf-534c-b266-2c2c04133834",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4b667f1e-4a98-572a-9923-7fd46e03f9cb",
+          "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ac029df0-1847-5d5d-8f0d-68dfbafd0f13",
+          "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "db6f3965-2512-5422-82cd-fcb870c93649",
+          "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6f8a7c3-7ed2-52c4-bf78-64c164363d63",
+          "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5a9a1313-f996-5eb5-a56d-25aa134078c1",
+          "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4573d5ad-aa95-579e-abe0-948112119250",
+          "id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e79c874c-b648-572b-9323-d7cbad0c8e03",
+          "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f6c74f7b-7725-55e3-8ffd-32a6e82dac45",
+          "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7c9ca69a-fb90-5204-938c-6e8e5942f1b5",
+          "id": "fa75438f-b2d0-5142-b452-608454e1806a",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c42b5227-3edb-52bb-9e37-2e35cf8e0aee",
+          "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "68ae719a-bf2f-5db6-93b9-bbf91e980499",
+          "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a1fb559f-488d-59c7-a9a5-8749b9c32c05",
+          "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b47daf22-e8d8-5037-b5df-1636192860aa",
+          "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "367431fc-8f8c-5f0a-92f4-47c30c43b857",
+          "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "74b48f5c-a192-592b-81c9-8f9622ce674c",
+          "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6aff00f5-af52-5d47-97cb-c9fe0adb7eb0",
+          "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c3af05ca-09eb-544d-ab2e-832592e28c83",
+          "id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9ad9bebd-f045-5e75-aa78-30e0b222935c",
+          "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6f851022-8e18-509d-ad5c-c9f8642bee19",
+          "id": "4ea8409b-834f-5214-b812-e276f2ff01f4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ea180755-a1d0-543a-9dcb-c25df2a857fd",
+          "id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b194833b-ff7e-5c49-b651-1acc9aea7ea5",
+          "id": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7549ba3e-1166-5a1f-b2b4-237c8aaab5ac",
+          "id": "a0df0eb6-009b-594d-815d-31646979be80",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "34552f6f-5a77-52c7-97c8-cfb08dff62f1",
+          "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "53e8e3fb-d996-5c26-a34b-1d3e2998e0a2",
+          "id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "396d286a-ef75-5ce5-9afd-b34162db6cb3",
+          "id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1a98fa54-cb04-5921-a2e2-a1325d0132d9",
+          "id": "c444b134-67e1-507a-bb00-d4998ba97afb",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "23ef921f-614f-52fc-80b0-1f5d329d04fb",
+          "id": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "53d6df20-7b19-58e3-9088-f36fc0e8db51",
+          "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "57be1901-f6cd-5458-abf8-ef6b8b2833ff",
+          "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "253f11db-6884-517d-833e-5334bdee3c00",
+          "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d6a06bf4-9749-5bce-96a6-e5acf454d9cd",
+          "id": "c8da3189-2eee-5307-9477-076b12db84a5",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6ae3b82d-559c-5927-9c4c-f350a3c6d9d5",
+          "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "47599ab0-3664-50ed-be5f-913b2db738a2",
+          "id": "f2e3fae3-4069-58be-a5a5-17ae327df966",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ec8b00be-c2b6-5723-a0d0-1ff62022f5f2",
+          "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9480e76f-75d7-5dfa-91d5-28c10f647636",
+          "id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6272f3c3-7672-5cfd-b2ae-fa03637eeb57",
+          "id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c05835dd-736b-5319-9c5a-00171d57cfde",
+          "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "52b4dc3e-03f3-5ec5-9fed-f531f6d9460b",
+          "id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "331ea244-438c-52de-bc70-acf1feeb5ecd",
+          "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "178c83b7-b609-509e-a3d3-e85f5d2ce018",
+          "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cf70636d-ee9d-5400-9a5c-df0eedda24e9",
+          "id": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6871a0b-e392-5428-9dbb-c1d479f58e28",
+          "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7f001383-ed27-5090-a649-01d895f61d85",
+          "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8773073e-428c-5970-9a26-73b4405b0791",
+          "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "690e6dae-b9c5-5077-8a1b-5aca37b3fdb9",
+          "id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2f4f3cd7-8bb6-5d88-a9ff-24e4509b75a8",
+          "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "46c12788-bcf7-50a1-abb2-6f17de53e3fb",
+          "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "aa6863c3-cdcc-5a2f-bb2d-726e9e19d4cb",
+          "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ab8535c5-d7cd-5e9c-8ed6-ce65382699fa",
+          "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "48fb2bab-b9a3-57ea-908a-f30d4953d5bf",
+          "id": "08138142-a558-56a4-a23f-2f334e02b011",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6fa2f4d1-fca2-57c9-b75d-e9640cc66d81",
+          "id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "01fa2480-dade-51d2-b005-e5831087f0a9",
+          "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d4e8ae04-e5f2-504f-a4a4-a0bde4e555d0",
+          "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "297a6ad0-afda-5a39-a0e6-39df54e3d088",
+          "id": "906a1f18-6a62-5deb-b39b-61d540081804",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "199182b9-72b6-5255-ac2d-bc4ddf41b4bd",
+          "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "12c78395-bb55-54ba-b598-a817756528b7",
+          "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "35395b62-7fd6-5498-80f9-43a7074f466d",
+          "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8d76dd0d-d0c2-5c4c-a908-62873b6b088e",
+          "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a5263dac-165a-5091-9d84-5bad6fe8424f",
+          "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ccfc278-2af3-513a-aed0-3d17b38d335a",
+          "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8020c3ec-05fb-5bbb-87f7-c9a60b3e55fe",
+          "id": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "49f1390f-97e2-551f-ba76-c0f562b8d215",
+          "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "803d52ec-56c2-5be4-afc8-5f7a85b32d82",
+          "id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0214bc89-04a1-5d06-8520-848b06d53b85",
+          "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "046ac77f-0d3a-5735-bc0d-b69caaf8960f",
+          "id": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9ab0833b-2db1-5003-8fad-25ab2af4e66f",
+          "id": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f487bb7e-8c5b-5480-b859-782e4e462b0d",
+          "id": "969d96c2-dff1-582e-8974-a3f5fef9c547",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b8647a59-81cd-5d14-94eb-e5f3dc000e61",
+          "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3458a2d7-3475-591d-b58a-92f9a97e73c3",
+          "id": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "be01a59e-c9ac-5780-854e-e42dfcda651b",
+          "id": "e3e760fc-c341-586d-9f2f-a9afbbddf645",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e0d70532-3716-5361-b412-9dc8fa75ec2d",
+          "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "246b2e98-4a97-567d-8bd2-a845bbad4760",
+          "id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8ce158c0-559e-56c2-9e84-154bd0cadc0b",
+          "id": "2ab8a671-6218-5516-901a-d1a83480ded7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c99ba598-ebd1-5d6a-a738-3c63178c0075",
+          "id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "760d5487-b129-50bb-8e75-4aaa80a344eb",
+          "id": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e703095c-a4e8-5be5-8ca2-59a7299f3614",
+          "id": "b8cc464b-6248-5cb4-8c70-30f634da184c",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "172fc8a2-19ed-54d8-84b5-655c50ef4c56",
+          "id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5d4f0a1d-e9bb-5d0c-a27c-0660f01938d7",
+          "id": "bdd2605a-480e-5ad5-b52f-c6889529c457",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1316318c-4fae-53ad-840c-8c2f2b6d38a0",
+          "id": "8eada7d4-6cff-576e-9660-4b58911de9a7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "93f5f5fc-94c2-54c0-92b0-9d90d9393e62",
+          "id": "fc66f518-029e-5b30-8772-13859f39ce6d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9f854e33-bee0-5deb-adfc-e28c0b349855",
+          "id": "61b354b3-059b-5095-a0b8-2636217c6cee",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c60ac7c6-7528-56ab-8e7a-48e3f7893ed0",
+          "id": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f8f9b993-d2c2-5261-89fe-07aa69242e64",
+          "id": "7239bb75-ea9c-5e04-812d-426e933ce851",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "63bf156b-6c83-5872-a86d-c8609c50b838",
+          "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "43dfeb1b-6b95-54d2-bbbb-5f84b77eff64",
+          "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fa08d302-d7da-5aef-a3fd-cd189f5f6f37",
+          "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e8f6f2e2-4091-5565-a3fd-a8c951eac50b",
+          "id": "ff863943-02de-5b48-baf7-471ff32b980f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "85eea227-ee6a-5b04-b0db-525b3bb27358",
+          "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2b34fbf6-280a-54e2-8068-711890688b3b",
+          "id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "15e2aea9-5b38-5644-8418-1455a1ff5525",
+          "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6998857a-853f-5585-a9a1-2fb2c1a4ec32",
+          "id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9bfacf33-eb73-5810-bad8-ba9382d1ef1d",
+          "id": "93fe6743-e0aa-5d65-834b-87a82208c703",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c0ab8468-0419-5d81-b0fe-f20888db7042",
+          "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f770d2af-4247-5ab2-ae87-471174cf37d8",
+          "id": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e9ce3a06-37b1-5e62-8be2-9715463525f4",
+          "id": "d4cbda13-cf30-51b5-adde-debccd5ae685",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "374fa434-7a57-52cd-8d37-fd7694657ac8",
+          "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9bb68a99-a80f-5856-a603-63dc2d4a1458",
+          "id": "4608674b-5141-508f-8ee7-95c7819212bb",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bc013f0c-3804-5b3a-b98d-b9ced9df7857",
+          "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0660cd37-9d5f-5d96-bc5d-08a8ff127be4",
+          "id": "9209892e-e35e-575e-b305-9935eac5ab33",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b47b37bf-0919-5851-9192-999c88c01316",
+          "id": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ed777dd3-8c9d-538a-bf9b-40a3401e2c42",
+          "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bbffb276-9fad-5dc8-bdf9-8371707d6500",
+          "id": "95d80984-dc84-541c-af31-df26752c9fd4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4962f4f6-8611-53c4-b17c-b8fed4064aab",
+          "id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "df1dce04-69fd-5c0d-8656-695b6ccbd1ba",
+          "id": "7f18bf81-bc67-555b-bc5f-0a5fbcd2f487",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "45219243-9b82-572e-bda8-ce9ad7b7a46a",
+          "id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2872e908-1e25-5032-b014-8cbe0591c565",
+          "id": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -1960,11 +1960,11 @@ description: Variables in memory after executing kittycad_svg.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "from": [
@@ -1981,7 +1981,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "sourceRange": []
             },
             "from": [
@@ -1998,7 +1998,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "from": [
@@ -2015,7 +2015,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "from": [
@@ -2032,7 +2032,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "sourceRange": []
             },
             "from": [
@@ -2049,7 +2049,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
               "sourceRange": []
             },
             "from": [
@@ -2066,7 +2066,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
               "sourceRange": []
             },
             "from": [
@@ -2083,7 +2083,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
               "sourceRange": []
             },
             "from": [
@@ -2100,7 +2100,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
               "sourceRange": []
             },
             "from": [
@@ -2117,7 +2117,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
               "sourceRange": []
             },
             "from": [
@@ -2134,7 +2134,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
               "sourceRange": []
             },
             "from": [
@@ -2151,7 +2151,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
               "sourceRange": []
             },
             "from": [
@@ -2168,7 +2168,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "sourceRange": []
             },
             "from": [
@@ -2185,7 +2185,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
               "sourceRange": []
             },
             "from": [
@@ -2202,7 +2202,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
               "sourceRange": []
             },
             "from": [
@@ -2219,7 +2219,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
               "sourceRange": []
             },
             "from": [
@@ -2236,7 +2236,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f084ad07-5777-5607-a544-c69f455c2aab",
               "sourceRange": []
             },
             "from": [
@@ -2253,7 +2253,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": []
             },
             "from": [
@@ -2270,7 +2270,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
               "sourceRange": []
             },
             "from": [
@@ -2287,7 +2287,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
               "sourceRange": []
             },
             "from": [
@@ -2304,7 +2304,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
               "sourceRange": []
             },
             "from": [
@@ -2321,7 +2321,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
               "sourceRange": []
             },
             "from": [
@@ -2338,7 +2338,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
               "sourceRange": []
             },
             "from": [
@@ -2355,7 +2355,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
               "sourceRange": []
             },
             "from": [
@@ -2372,7 +2372,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
               "sourceRange": []
             },
             "from": [
@@ -2389,7 +2389,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
               "sourceRange": []
             },
             "from": [
@@ -2406,7 +2406,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
               "sourceRange": []
             },
             "from": [
@@ -2423,7 +2423,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
               "sourceRange": []
             },
             "from": [
@@ -2440,7 +2440,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
               "sourceRange": []
             },
             "from": [
@@ -2457,7 +2457,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
               "sourceRange": []
             },
             "from": [
@@ -2474,7 +2474,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
               "sourceRange": []
             },
             "from": [
@@ -2491,7 +2491,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
               "sourceRange": []
             },
             "from": [
@@ -2508,7 +2508,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
               "sourceRange": []
             },
             "from": [
@@ -2525,7 +2525,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "sourceRange": []
             },
             "from": [
@@ -2542,7 +2542,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "deb86259-17a0-5782-a352-d25992246cc0",
               "sourceRange": []
             },
             "from": [
@@ -2559,7 +2559,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
               "sourceRange": []
             },
             "from": [
@@ -2576,7 +2576,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
               "sourceRange": []
             },
             "from": [
@@ -2593,7 +2593,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "907cac50-3701-5367-b35c-4ec2132c824f",
               "sourceRange": []
             },
             "from": [
@@ -2610,7 +2610,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
               "sourceRange": []
             },
             "from": [
@@ -2627,7 +2627,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
               "sourceRange": []
             },
             "from": [
@@ -2644,7 +2644,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
               "sourceRange": []
             },
             "from": [
@@ -2661,7 +2661,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e383621f-755a-5f2e-ada3-608aff393dab",
               "sourceRange": []
             },
             "from": [
@@ -2678,7 +2678,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
               "sourceRange": []
             },
             "from": [
@@ -2695,7 +2695,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "72dddee3-1330-5c4f-b767-659f762ad674",
               "sourceRange": []
             },
             "from": [
@@ -2712,7 +2712,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
               "sourceRange": []
             },
             "from": [
@@ -2729,7 +2729,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
               "sourceRange": []
             },
             "from": [
@@ -2746,7 +2746,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
               "sourceRange": []
             },
             "from": [
@@ -2763,7 +2763,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
               "sourceRange": []
             },
             "from": [
@@ -2780,7 +2780,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
               "sourceRange": []
             },
             "from": [
@@ -2797,7 +2797,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
               "sourceRange": []
             },
             "from": [
@@ -2814,7 +2814,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
               "sourceRange": []
             },
             "from": [
@@ -2831,7 +2831,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
               "sourceRange": []
             },
             "from": [
@@ -2848,7 +2848,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
               "sourceRange": []
             },
             "from": [
@@ -2865,7 +2865,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7d4c814d-f292-503d-a012-68ab58c77524",
               "sourceRange": []
             },
             "from": [
@@ -2882,7 +2882,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
               "sourceRange": []
             },
             "from": [
@@ -2899,7 +2899,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
               "sourceRange": []
             },
             "from": [
@@ -2916,7 +2916,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
               "sourceRange": []
             },
             "from": [
@@ -2933,7 +2933,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cc312d38-2fa6-5583-a605-44880f646499",
               "sourceRange": []
             },
             "from": [
@@ -2950,7 +2950,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
               "sourceRange": []
             },
             "from": [
@@ -2967,7 +2967,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
               "sourceRange": []
             },
             "from": [
@@ -2984,7 +2984,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "sourceRange": []
             },
             "from": [
@@ -3001,7 +3001,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
               "sourceRange": []
             },
             "from": [
@@ -3018,7 +3018,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
               "sourceRange": []
             },
             "from": [
@@ -3035,7 +3035,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
               "sourceRange": []
             },
             "from": [
@@ -3052,7 +3052,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
               "sourceRange": []
             },
             "from": [
@@ -3069,7 +3069,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
               "sourceRange": []
             },
             "from": [
@@ -3086,7 +3086,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
               "sourceRange": []
             },
             "from": [
@@ -3103,7 +3103,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
               "sourceRange": []
             },
             "from": [
@@ -3120,7 +3120,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
               "sourceRange": []
             },
             "from": [
@@ -3137,7 +3137,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
               "sourceRange": []
             },
             "from": [
@@ -3154,7 +3154,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
               "sourceRange": []
             },
             "from": [
@@ -3171,7 +3171,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
               "sourceRange": []
             },
             "from": [
@@ -3188,7 +3188,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
               "sourceRange": []
             },
             "from": [
@@ -3205,7 +3205,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
               "sourceRange": []
             },
             "from": [
@@ -3222,7 +3222,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
               "sourceRange": []
             },
             "from": [
@@ -3239,7 +3239,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "468f6520-a683-5392-9492-de009fdcddef",
               "sourceRange": []
             },
             "from": [
@@ -3256,7 +3256,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
               "sourceRange": []
             },
             "from": [
@@ -3273,7 +3273,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
               "sourceRange": []
             },
             "from": [
@@ -3290,7 +3290,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
               "sourceRange": []
             },
             "from": [
@@ -3307,7 +3307,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
               "sourceRange": []
             },
             "from": [
@@ -3324,7 +3324,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
               "sourceRange": []
             },
             "from": [
@@ -3341,7 +3341,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "62f92a38-07e6-5321-9e56-be9dd50f1d7b",
               "sourceRange": []
             },
             "from": [
@@ -3358,7 +3358,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
               "sourceRange": []
             },
             "from": [
@@ -3375,7 +3375,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
               "sourceRange": []
             },
             "from": [
@@ -3392,7 +3392,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
               "sourceRange": []
             },
             "from": [
@@ -3409,7 +3409,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
               "sourceRange": []
             },
             "from": [
@@ -3426,7 +3426,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
               "sourceRange": []
             },
             "from": [
@@ -3443,7 +3443,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
               "sourceRange": []
             },
             "from": [
@@ -3460,7 +3460,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
               "sourceRange": []
             },
             "from": [
@@ -3477,7 +3477,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1a0ade6f-d355-5121-9adb-351976a78284",
               "sourceRange": []
             },
             "from": [
@@ -3494,7 +3494,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
               "sourceRange": []
             },
             "from": [
@@ -3511,7 +3511,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "14d4f28b-98bf-5f5d-9542-446598cbea13",
               "sourceRange": []
             },
             "from": [
@@ -3528,7 +3528,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d5eaf678-0440-563f-ac19-e473850b9270",
               "sourceRange": []
             },
             "from": [
@@ -3545,7 +3545,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
               "sourceRange": []
             },
             "from": [
@@ -3562,7 +3562,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
               "sourceRange": []
             },
             "from": [
@@ -3571,21 +3571,21 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              19.32,
-              -5.88
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               19.32,
               -5.88
             ],
+            "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
+              "sourceRange": []
+            },
+            "from": [
+              19.32,
+              -5.88
+            ],
             "tag": null,
             "to": [
               20.16,
@@ -3596,7 +3596,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
               "sourceRange": []
             },
             "from": [
@@ -3613,7 +3613,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
               "sourceRange": []
             },
             "from": [
@@ -3630,7 +3630,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5288de96-84bb-518a-848b-5092b5d33e48",
               "sourceRange": []
             },
             "from": [
@@ -3647,7 +3647,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
               "sourceRange": []
             },
             "from": [
@@ -3664,7 +3664,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
               "sourceRange": []
             },
             "from": [
@@ -3681,7 +3681,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
               "sourceRange": []
             },
             "from": [
@@ -3698,7 +3698,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
               "sourceRange": []
             },
             "from": [
@@ -3715,7 +3715,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
               "sourceRange": []
             },
             "from": [
@@ -3732,7 +3732,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
               "sourceRange": []
             },
             "from": [
@@ -3749,7 +3749,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
               "sourceRange": []
             },
             "from": [
@@ -3766,7 +3766,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
               "sourceRange": []
             },
             "from": [
@@ -3783,7 +3783,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
               "sourceRange": []
             },
             "from": [
@@ -3800,7 +3800,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
               "sourceRange": []
             },
             "from": [
@@ -3817,7 +3817,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
               "sourceRange": []
             },
             "from": [
@@ -3834,7 +3834,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
               "sourceRange": []
             },
             "from": [
@@ -3851,7 +3851,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
               "sourceRange": []
             },
             "from": [
@@ -3868,7 +3868,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
               "sourceRange": []
             },
             "from": [
@@ -3885,7 +3885,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
               "sourceRange": []
             },
             "from": [
@@ -3902,7 +3902,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
               "sourceRange": []
             },
             "from": [
@@ -3919,7 +3919,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
               "sourceRange": []
             },
             "from": [
@@ -3936,7 +3936,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
               "sourceRange": []
             },
             "from": [
@@ -3953,7 +3953,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
               "sourceRange": []
             },
             "from": [
@@ -3970,7 +3970,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
               "sourceRange": []
             },
             "from": [
@@ -3987,7 +3987,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
               "sourceRange": []
             },
             "from": [
@@ -4004,7 +4004,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
               "sourceRange": []
             },
             "from": [
@@ -4021,7 +4021,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
               "sourceRange": []
             },
             "from": [
@@ -4038,7 +4038,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
               "sourceRange": []
             },
             "from": [
@@ -4055,7 +4055,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
               "sourceRange": []
             },
             "from": [
@@ -4072,7 +4072,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
               "sourceRange": []
             },
             "from": [
@@ -4089,7 +4089,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
               "sourceRange": []
             },
             "from": [
@@ -4106,7 +4106,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
               "sourceRange": []
             },
             "from": [
@@ -4123,7 +4123,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
               "sourceRange": []
             },
             "from": [
@@ -4140,7 +4140,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
               "sourceRange": []
             },
             "from": [
@@ -4157,7 +4157,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
               "sourceRange": []
             },
             "from": [
@@ -4174,7 +4174,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
               "sourceRange": []
             },
             "from": [
@@ -4191,7 +4191,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "40d8c462-7810-5666-bb09-1db7308cf666",
               "sourceRange": []
             },
             "from": [
@@ -4208,7 +4208,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
               "sourceRange": []
             },
             "from": [
@@ -4225,7 +4225,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
               "sourceRange": []
             },
             "from": [
@@ -4242,7 +4242,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
               "sourceRange": []
             },
             "from": [
@@ -4259,7 +4259,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
               "sourceRange": []
             },
             "from": [
@@ -4276,7 +4276,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
               "sourceRange": []
             },
             "from": [
@@ -4293,7 +4293,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
               "sourceRange": []
             },
             "from": [
@@ -4310,7 +4310,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
               "sourceRange": []
             },
             "from": [
@@ -4327,7 +4327,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
               "sourceRange": []
             },
             "from": [
@@ -4344,7 +4344,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
               "sourceRange": []
             },
             "from": [
@@ -4361,7 +4361,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
               "sourceRange": []
             },
             "from": [
@@ -4378,7 +4378,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
               "sourceRange": []
             },
             "from": [
@@ -4395,7 +4395,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
               "sourceRange": []
             },
             "from": [
@@ -4412,7 +4412,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
               "sourceRange": []
             },
             "from": [
@@ -4429,7 +4429,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
               "sourceRange": []
             },
             "from": [
@@ -4446,7 +4446,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
               "sourceRange": []
             },
             "from": [
@@ -4463,7 +4463,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
               "sourceRange": []
             },
             "from": [
@@ -4480,7 +4480,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
               "sourceRange": []
             },
             "from": [
@@ -4497,7 +4497,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
               "sourceRange": []
             },
             "from": [
@@ -4514,7 +4514,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
               "sourceRange": []
             },
             "from": [
@@ -4531,7 +4531,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
               "sourceRange": []
             },
             "from": [
@@ -4548,7 +4548,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
               "sourceRange": []
             },
             "from": [
@@ -4565,7 +4565,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
               "sourceRange": []
             },
             "from": [
@@ -4582,7 +4582,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
               "sourceRange": []
             },
             "from": [
@@ -4599,7 +4599,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
               "sourceRange": []
             },
             "from": [
@@ -4616,7 +4616,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
               "sourceRange": []
             },
             "from": [
@@ -4633,7 +4633,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
               "sourceRange": []
             },
             "from": [
@@ -4650,7 +4650,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19107e89-bf40-5541-88a5-5106b6de636d",
               "sourceRange": []
             },
             "from": [
@@ -4667,7 +4667,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
               "sourceRange": []
             },
             "from": [
@@ -4684,7 +4684,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
               "sourceRange": []
             },
             "from": [
@@ -4701,7 +4701,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "020035cf-ab88-50f3-91b0-886b7f399647",
               "sourceRange": []
             },
             "from": [
@@ -4718,7 +4718,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
               "sourceRange": []
             },
             "from": [
@@ -4735,7 +4735,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
               "sourceRange": []
             },
             "from": [
@@ -4752,7 +4752,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2489202c-0475-5b18-97c8-c3f239bd1947",
               "sourceRange": []
             },
             "from": [
@@ -4769,7 +4769,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e02115f0-d853-5684-82c8-298aa25e4541",
               "sourceRange": []
             },
             "from": [
@@ -4786,7 +4786,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
               "sourceRange": []
             },
             "from": [
@@ -4803,7 +4803,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
               "sourceRange": []
             },
             "from": [
@@ -4820,7 +4820,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ca431487-8e9a-59ce-a472-84fe45652fab",
               "sourceRange": []
             },
             "from": [
@@ -4837,7 +4837,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "93954f29-a246-54bd-ac2a-62572f26d508",
               "sourceRange": []
             },
             "from": [
@@ -4854,7 +4854,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
               "sourceRange": []
             },
             "from": [
@@ -4871,7 +4871,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bee9909d-abbf-534c-b266-2c2c04133834",
               "sourceRange": []
             },
             "from": [
@@ -4888,7 +4888,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
               "sourceRange": []
             },
             "from": [
@@ -4905,7 +4905,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
               "sourceRange": []
             },
             "from": [
@@ -4922,7 +4922,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
               "sourceRange": []
             },
             "from": [
@@ -4939,7 +4939,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
               "sourceRange": []
             },
             "from": [
@@ -4956,7 +4956,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
               "sourceRange": []
             },
             "from": [
@@ -4973,7 +4973,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
               "sourceRange": []
             },
             "from": [
@@ -4990,7 +4990,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
               "sourceRange": []
             },
             "from": [
@@ -5007,7 +5007,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
               "sourceRange": []
             },
             "from": [
@@ -5024,7 +5024,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fa75438f-b2d0-5142-b452-608454e1806a",
               "sourceRange": []
             },
             "from": [
@@ -5041,7 +5041,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
               "sourceRange": []
             },
             "from": [
@@ -5058,7 +5058,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
               "sourceRange": []
             },
             "from": [
@@ -5075,7 +5075,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
               "sourceRange": []
             },
             "from": [
@@ -5092,7 +5092,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
               "sourceRange": []
             },
             "from": [
@@ -5109,7 +5109,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
               "sourceRange": []
             },
             "from": [
@@ -5126,7 +5126,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
               "sourceRange": []
             },
             "from": [
@@ -5143,7 +5143,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
               "sourceRange": []
             },
             "from": [
@@ -5160,7 +5160,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
               "sourceRange": []
             },
             "from": [
@@ -5177,7 +5177,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
               "sourceRange": []
             },
             "from": [
@@ -5194,7 +5194,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4ea8409b-834f-5214-b812-e276f2ff01f4",
               "sourceRange": []
             },
             "from": [
@@ -5211,7 +5211,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
               "sourceRange": []
             },
             "from": [
@@ -5228,7 +5228,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
               "sourceRange": []
             },
             "from": [
@@ -5245,7 +5245,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a0df0eb6-009b-594d-815d-31646979be80",
               "sourceRange": []
             },
             "from": [
@@ -5262,7 +5262,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
               "sourceRange": []
             },
             "from": [
@@ -5279,7 +5279,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
               "sourceRange": []
             },
             "from": [
@@ -5296,7 +5296,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
               "sourceRange": []
             },
             "from": [
@@ -5313,7 +5313,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c444b134-67e1-507a-bb00-d4998ba97afb",
               "sourceRange": []
             },
             "from": [
@@ -5330,7 +5330,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
               "sourceRange": []
             },
             "from": [
@@ -5347,7 +5347,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
               "sourceRange": []
             },
             "from": [
@@ -5364,7 +5364,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
               "sourceRange": []
             },
             "from": [
@@ -5381,7 +5381,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
               "sourceRange": []
             },
             "from": [
@@ -5398,7 +5398,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c8da3189-2eee-5307-9477-076b12db84a5",
               "sourceRange": []
             },
             "from": [
@@ -5415,7 +5415,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
               "sourceRange": []
             },
             "from": [
@@ -5432,7 +5432,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f2e3fae3-4069-58be-a5a5-17ae327df966",
               "sourceRange": []
             },
             "from": [
@@ -5449,7 +5449,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
               "sourceRange": []
             },
             "from": [
@@ -5466,7 +5466,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
               "sourceRange": []
             },
             "from": [
@@ -5483,7 +5483,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
               "sourceRange": []
             },
             "from": [
@@ -5500,7 +5500,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
               "sourceRange": []
             },
             "from": [
@@ -5517,7 +5517,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
               "sourceRange": []
             },
             "from": [
@@ -5534,7 +5534,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
               "sourceRange": []
             },
             "from": [
@@ -5551,7 +5551,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
               "sourceRange": []
             },
             "from": [
@@ -5568,7 +5568,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
               "sourceRange": []
             },
             "from": [
@@ -5585,7 +5585,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
               "sourceRange": []
             },
             "from": [
@@ -5602,7 +5602,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
               "sourceRange": []
             },
             "from": [
@@ -5619,7 +5619,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
               "sourceRange": []
             },
             "from": [
@@ -5636,7 +5636,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
               "sourceRange": []
             },
             "from": [
@@ -5653,7 +5653,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
               "sourceRange": []
             },
             "from": [
@@ -5670,7 +5670,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
               "sourceRange": []
             },
             "from": [
@@ -5687,7 +5687,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
               "sourceRange": []
             },
             "from": [
@@ -5704,7 +5704,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
               "sourceRange": []
             },
             "from": [
@@ -5721,7 +5721,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "08138142-a558-56a4-a23f-2f334e02b011",
               "sourceRange": []
             },
             "from": [
@@ -5738,7 +5738,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
               "sourceRange": []
             },
             "from": [
@@ -5755,7 +5755,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
               "sourceRange": []
             },
             "from": [
@@ -5772,7 +5772,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
               "sourceRange": []
             },
             "from": [
@@ -5789,7 +5789,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "906a1f18-6a62-5deb-b39b-61d540081804",
               "sourceRange": []
             },
             "from": [
@@ -5806,7 +5806,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
               "sourceRange": []
             },
             "from": [
@@ -5823,7 +5823,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
               "sourceRange": []
             },
             "from": [
@@ -5840,7 +5840,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
               "sourceRange": []
             },
             "from": [
@@ -5857,7 +5857,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
               "sourceRange": []
             },
             "from": [
@@ -5874,7 +5874,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
               "sourceRange": []
             },
             "from": [
@@ -5891,7 +5891,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
               "sourceRange": []
             },
             "from": [
@@ -5908,7 +5908,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
               "sourceRange": []
             },
             "from": [
@@ -5925,7 +5925,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
               "sourceRange": []
             },
             "from": [
@@ -5942,7 +5942,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
               "sourceRange": []
             },
             "from": [
@@ -5959,7 +5959,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
               "sourceRange": []
             },
             "from": [
@@ -5976,7 +5976,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
               "sourceRange": []
             },
             "from": [
@@ -5993,7 +5993,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
               "sourceRange": []
             },
             "from": [
@@ -6010,7 +6010,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "969d96c2-dff1-582e-8974-a3f5fef9c547",
               "sourceRange": []
             },
             "from": [
@@ -6027,7 +6027,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
               "sourceRange": []
             },
             "from": [
@@ -6044,7 +6044,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
               "sourceRange": []
             },
             "from": [
@@ -6061,7 +6061,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e3e760fc-c341-586d-9f2f-a9afbbddf645",
               "sourceRange": []
             },
             "from": [
@@ -6078,7 +6078,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
               "sourceRange": []
             },
             "from": [
@@ -6095,7 +6095,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
               "sourceRange": []
             },
             "from": [
@@ -6112,7 +6112,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2ab8a671-6218-5516-901a-d1a83480ded7",
               "sourceRange": []
             },
             "from": [
@@ -6129,7 +6129,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
               "sourceRange": []
             },
             "from": [
@@ -6146,7 +6146,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
               "sourceRange": []
             },
             "from": [
@@ -6163,7 +6163,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b8cc464b-6248-5cb4-8c70-30f634da184c",
               "sourceRange": []
             },
             "from": [
@@ -6180,7 +6180,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
               "sourceRange": []
             },
             "from": [
@@ -6197,7 +6197,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bdd2605a-480e-5ad5-b52f-c6889529c457",
               "sourceRange": []
             },
             "from": [
@@ -6214,7 +6214,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8eada7d4-6cff-576e-9660-4b58911de9a7",
               "sourceRange": []
             },
             "from": [
@@ -6231,7 +6231,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fc66f518-029e-5b30-8772-13859f39ce6d",
               "sourceRange": []
             },
             "from": [
@@ -6248,7 +6248,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "61b354b3-059b-5095-a0b8-2636217c6cee",
               "sourceRange": []
             },
             "from": [
@@ -6265,7 +6265,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
               "sourceRange": []
             },
             "from": [
@@ -6282,7 +6282,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7239bb75-ea9c-5e04-812d-426e933ce851",
               "sourceRange": []
             },
             "from": [
@@ -6299,7 +6299,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
               "sourceRange": []
             },
             "from": [
@@ -6316,7 +6316,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
               "sourceRange": []
             },
             "from": [
@@ -6333,7 +6333,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
               "sourceRange": []
             },
             "from": [
@@ -6350,7 +6350,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ff863943-02de-5b48-baf7-471ff32b980f",
               "sourceRange": []
             },
             "from": [
@@ -6367,7 +6367,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "662e081e-0c36-5b97-b2b8-ea0464220525",
               "sourceRange": []
             },
             "from": [
@@ -6384,7 +6384,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
               "sourceRange": []
             },
             "from": [
@@ -6401,7 +6401,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
               "sourceRange": []
             },
             "from": [
@@ -6418,7 +6418,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
               "sourceRange": []
             },
             "from": [
@@ -6435,7 +6435,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "93fe6743-e0aa-5d65-834b-87a82208c703",
               "sourceRange": []
             },
             "from": [
@@ -6452,7 +6452,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
               "sourceRange": []
             },
             "from": [
@@ -6469,7 +6469,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
               "sourceRange": []
             },
             "from": [
@@ -6486,7 +6486,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d4cbda13-cf30-51b5-adde-debccd5ae685",
               "sourceRange": []
             },
             "from": [
@@ -6503,7 +6503,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
               "sourceRange": []
             },
             "from": [
@@ -6520,7 +6520,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4608674b-5141-508f-8ee7-95c7819212bb",
               "sourceRange": []
             },
             "from": [
@@ -6537,7 +6537,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
               "sourceRange": []
             },
             "from": [
@@ -6554,7 +6554,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9209892e-e35e-575e-b305-9935eac5ab33",
               "sourceRange": []
             },
             "from": [
@@ -6571,7 +6571,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
               "sourceRange": []
             },
             "from": [
@@ -6588,7 +6588,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
               "sourceRange": []
             },
             "from": [
@@ -6605,7 +6605,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "95d80984-dc84-541c-af31-df26752c9fd4",
               "sourceRange": []
             },
             "from": [
@@ -6622,7 +6622,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
               "sourceRange": []
             },
             "from": [
@@ -6639,7 +6639,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7f18bf81-bc67-555b-bc5f-0a5fbcd2f487",
               "sourceRange": []
             },
             "from": [
@@ -6656,7 +6656,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
               "sourceRange": []
             },
             "from": [
@@ -6673,7 +6673,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
               "sourceRange": []
             },
             "from": [
@@ -6690,8 +6690,8 @@ description: Variables in memory after executing kittycad_svg.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "kind": "XY",
           "objectId": 0,
           "origin": {
@@ -6732,16 +6732,16 @@ description: Variables in memory after executing kittycad_svg.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "506981d9-24cb-5406-8957-a785873dbbe6",
+      "endCapId": "71cf49d5-c916-54d5-a259-eb79bb5df199",
       "units": "mm",
       "sectional": false
     }

@@ -6,8 +6,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
   "__sketch_113_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+      "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
       "objectId": 112,
       "value": "start",
       "xAxis": {
@@ -23,8 +23,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -33,8 +33,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
   "__sketch_137_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+      "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
       "objectId": 136,
       "value": "start",
       "xAxis": {
@@ -50,8 +50,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -60,8 +60,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
   "__sketch_161_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
+      "artifactId": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
       "objectId": 160,
       "value": "end",
       "xAxis": {
@@ -77,8 +77,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -87,8 +87,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -138,12 +138,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e827ca04-75af-515e-a695-635e931f45af",
+          "id": "e0ee3e9c-01ec-55e8-8367-8100f1358709",
           "sourceRange": [],
           "tag": {
             "commentStart": 580,
@@ -156,8 +156,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "822c699a-d957-517b-8085-4b142b91766f",
+          "id": "82a3a8d4-c746-5b8c-a733-1ba5907c3c74",
           "sourceRange": [],
           "tag": {
             "commentStart": 661,
@@ -170,8 +170,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c2fa8257-76ac-5f12-ac08-b77ce119157c",
+          "id": "3a3e44ca-f2b5-56ff-80e8-25074b30f428",
           "sourceRange": [],
           "tag": {
             "commentStart": 812,
@@ -184,8 +184,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8ab429b1-8898-55e1-be07-f64d1a572273",
+          "id": "e7d66afd-cfa4-56f8-a1a5-9da5cabf9707",
           "sourceRange": [],
           "tag": {
             "commentStart": 933,
@@ -198,8 +198,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c0589eb1-56da-5399-91ab-47e0794d4ba9",
+          "id": "845e7100-5890-57c5-af01-ca653a75423c",
           "sourceRange": [],
           "tag": {
             "commentStart": 1054,
@@ -212,8 +212,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "291a147e-16c4-5ea4-8f51-680256ad0c95",
+          "id": "298115ba-a9cd-5a9a-ba9f-765d7ded82b6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1177,
@@ -226,8 +226,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0d2c327e-4b44-59d1-8978-77ace132deaf",
+          "id": "65459020-f485-5305-9dff-b77ddc27c63a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1303,
@@ -240,8 +240,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "231d084d-d1c8-5310-b190-e872bdc3b147",
+          "id": "f3edd61c-dda5-553d-9c29-2aded4a38c25",
           "sourceRange": [],
           "tag": {
             "commentStart": 1430,
@@ -254,8 +254,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "880c4097-243b-5133-b12f-b95b8a91bdfe",
+          "id": "305dc93a-d63d-5b22-b8f4-418a37be633d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1556,
@@ -268,8 +268,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d8673fff-c647-5939-9489-b1ca3e1413c8",
+          "id": "6fb826da-dfef-55ee-9745-411538434c7f",
           "sourceRange": [],
           "tag": {
             "commentStart": 1681,
@@ -282,8 +282,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2bfb715f-8304-5580-894a-26c71fc97e1c",
+          "id": "6858f98d-eae7-50da-8e38-56f5ef1113bd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1804,
@@ -296,8 +296,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9bd97d05-cc28-5fd4-b057-f438a1c52aaf",
+          "id": "e3229d8f-2b77-5f3a-b86b-9177ae793c21",
           "sourceRange": [],
           "tag": {
             "commentStart": 1929,
@@ -310,8 +310,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0abc5dde-68ce-5ecf-9e6c-2bcdf2295532",
+          "id": "f90c6080-d9c3-56a2-9a52-e19081b789f1",
           "sourceRange": [],
           "tag": {
             "commentStart": 2059,
@@ -324,8 +324,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c0eb2bca-db86-55d1-a844-1872bca70536",
+          "id": "a18aa13c-2d12-51b4-af8f-9c525967b96c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2190,
@@ -338,8 +338,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1c8c7c29-5c50-5f65-8144-5bdbbdfa1111",
+          "id": "ca2b68a2-30aa-52d2-8ecf-cdaf23500bc3",
           "sourceRange": [],
           "tag": {
             "commentStart": 2322,
@@ -352,8 +352,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "881f9ef4-4e68-5fd3-ab44-95325f057ab6",
+          "id": "3e734f15-be5f-5118-ae57-5d6ce2f16795",
           "sourceRange": [],
           "tag": {
             "commentStart": 2453,
@@ -366,8 +366,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a14efc63-4e86-53d1-bf2f-f53190567451",
+          "id": "6b322270-73b2-5990-bda7-277f5e688bab",
           "sourceRange": [],
           "tag": {
             "commentStart": 2581,
@@ -380,8 +380,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9dc9f8c2-e155-5751-a159-f352cbe5de32",
+          "id": "fd13719b-94bf-52b6-acc2-a6668f6a7577",
           "sourceRange": [],
           "tag": {
             "commentStart": 2707,
@@ -394,8 +394,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ed4dc165-055e-51d1-8d1f-1c6c994f84c0",
+          "id": "8d51e38b-0ba8-5dd3-a2cf-659900889ed2",
           "sourceRange": [],
           "tag": {
             "commentStart": 2832,
@@ -408,8 +408,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "709bbcfd-d7e1-50e3-85ce-c6fd1378c4dd",
+          "id": "db4fdb78-b74f-5d51-8a8a-7a584f66de0f",
           "sourceRange": [],
           "tag": {
             "commentStart": 2989,
@@ -425,11 +425,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "40d8c462-7810-5666-bb09-1db7308cf666",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e0ee3e9c-01ec-55e8-8367-8100f1358709",
               "sourceRange": []
             },
             "from": [
@@ -453,7 +453,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "82a3a8d4-c746-5b8c-a733-1ba5907c3c74",
               "sourceRange": []
             },
             "ccw": false,
@@ -483,7 +483,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3a3e44ca-f2b5-56ff-80e8-25074b30f428",
               "sourceRange": []
             },
             "from": [
@@ -507,7 +507,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e7d66afd-cfa4-56f8-a1a5-9da5cabf9707",
               "sourceRange": []
             },
             "from": [
@@ -531,7 +531,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "845e7100-5890-57c5-af01-ca653a75423c",
               "sourceRange": []
             },
             "from": [
@@ -555,7 +555,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "298115ba-a9cd-5a9a-ba9f-765d7ded82b6",
               "sourceRange": []
             },
             "from": [
@@ -579,7 +579,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "65459020-f485-5305-9dff-b77ddc27c63a",
               "sourceRange": []
             },
             "from": [
@@ -603,7 +603,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f3edd61c-dda5-553d-9c29-2aded4a38c25",
               "sourceRange": []
             },
             "from": [
@@ -627,7 +627,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "305dc93a-d63d-5b22-b8f4-418a37be633d",
               "sourceRange": []
             },
             "from": [
@@ -651,7 +651,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6fb826da-dfef-55ee-9745-411538434c7f",
               "sourceRange": []
             },
             "from": [
@@ -675,7 +675,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6858f98d-eae7-50da-8e38-56f5ef1113bd",
               "sourceRange": []
             },
             "from": [
@@ -699,7 +699,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e3229d8f-2b77-5f3a-b86b-9177ae793c21",
               "sourceRange": []
             },
             "from": [
@@ -723,7 +723,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f90c6080-d9c3-56a2-9a52-e19081b789f1",
               "sourceRange": []
             },
             "from": [
@@ -747,7 +747,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a18aa13c-2d12-51b4-af8f-9c525967b96c",
               "sourceRange": []
             },
             "from": [
@@ -771,7 +771,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ca2b68a2-30aa-52d2-8ecf-cdaf23500bc3",
               "sourceRange": []
             },
             "from": [
@@ -795,7 +795,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3e734f15-be5f-5118-ae57-5d6ce2f16795",
               "sourceRange": []
             },
             "from": [
@@ -819,7 +819,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6b322270-73b2-5990-bda7-277f5e688bab",
               "sourceRange": []
             },
             "from": [
@@ -843,7 +843,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fd13719b-94bf-52b6-acc2-a6668f6a7577",
               "sourceRange": []
             },
             "from": [
@@ -867,7 +867,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8d51e38b-0ba8-5dd3-a2cf-659900889ed2",
               "sourceRange": []
             },
             "ccw": false,
@@ -897,7 +897,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "db4fdb78-b74f-5d51-8a8a-7a584f66de0f",
               "sourceRange": []
             },
             "from": [
@@ -921,8 +921,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -963,7 +963,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
             "sourceRange": []
           }
         },
@@ -1049,13 +1049,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "line9"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "originalId": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "originSketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+      "endCapId": "eda557e1-6ac1-518d-af3c-a56a8df352f5",
       "units": "mm",
       "sectional": false
     }
@@ -1064,12 +1064,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "artifactId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4b3adf9e-3f21-5b94-8ad4-0f73f5c468ce",
+          "id": "8e9d3955-ad5d-50a0-81ff-69910b0c9b3d",
           "sourceRange": [],
           "tag": {
             "commentStart": 4256,
@@ -1082,8 +1082,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "81a8f32d-a9bd-58d6-9858-be4bcd812736",
+          "id": "5170661d-078a-5756-9b5d-42b1541c2fbd",
           "sourceRange": [],
           "tag": {
             "commentStart": 4333,
@@ -1096,8 +1096,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f2ccd774-ee55-5889-84e5-0420aef67b00",
+          "id": "e1c6ca7e-81d4-5312-b335-5c5afda59bf9",
           "sourceRange": [],
           "tag": {
             "commentStart": 4451,
@@ -1110,8 +1110,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e753211b-9ca1-52a2-8ae3-9e42de6ef01a",
+          "id": "e1ff10d0-9fa2-523b-8847-ea93a761f678",
           "sourceRange": [],
           "tag": {
             "commentStart": 4571,
@@ -1127,11 +1127,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "40d8c462-7810-5666-bb09-1db7308cf666",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8e9d3955-ad5d-50a0-81ff-69910b0c9b3d",
               "sourceRange": []
             },
             "from": [
@@ -1155,7 +1155,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5170661d-078a-5756-9b5d-42b1541c2fbd",
               "sourceRange": []
             },
             "from": [
@@ -1179,7 +1179,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e1c6ca7e-81d4-5312-b335-5c5afda59bf9",
               "sourceRange": []
             },
             "from": [
@@ -1203,7 +1203,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e1ff10d0-9fa2-523b-8847-ea93a761f678",
               "sourceRange": []
             },
             "from": [
@@ -1228,8 +1228,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+          "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
           "objectId": 112,
           "value": "start",
           "xAxis": {
@@ -1245,8 +1245,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+            "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -1263,7 +1263,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
             "sourceRange": []
           }
         },
@@ -1285,13 +1285,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "93954f29-a246-54bd-ac2a-62572f26d508",
+        "originalId": "93954f29-a246-54bd-ac2a-62572f26d508",
+        "originSketchId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "63a74baf-aef2-5dff-a596-3240fe165d63",
+      "endCapId": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
       "units": "mm",
       "sectional": false
     }
@@ -1300,12 +1300,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3ff369c8-c193-500f-9412-16baab50dacb",
+          "id": "aee505d9-c88f-5a0b-8030-64eebd380995",
           "sourceRange": [],
           "tag": {
             "commentStart": 5115,
@@ -1318,8 +1318,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4c61878a-1970-5d11-afab-83a120c45742",
+          "id": "a1d710dc-e435-5ce0-9959-449aa4d7e775",
           "sourceRange": [],
           "tag": {
             "commentStart": 5194,
@@ -1332,8 +1332,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "08e5cb69-6bd2-5fac-accd-62a3c07b1e6b",
+          "id": "2c3196e5-8976-5d03-9872-ec69b95a79a8",
           "sourceRange": [],
           "tag": {
             "commentStart": 5314,
@@ -1346,8 +1346,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5e28a655-8a9c-5896-97ac-838e54f805b6",
+          "id": "e55b8989-702b-546f-b450-a9fb9a84d112",
           "sourceRange": [],
           "tag": {
             "commentStart": 5436,
@@ -1363,11 +1363,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "40d8c462-7810-5666-bb09-1db7308cf666",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "aee505d9-c88f-5a0b-8030-64eebd380995",
               "sourceRange": []
             },
             "from": [
@@ -1391,7 +1391,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a1d710dc-e435-5ce0-9959-449aa4d7e775",
               "sourceRange": []
             },
             "from": [
@@ -1415,7 +1415,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2c3196e5-8976-5d03-9872-ec69b95a79a8",
               "sourceRange": []
             },
             "from": [
@@ -1439,7 +1439,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e55b8989-702b-546f-b450-a9fb9a84d112",
               "sourceRange": []
             },
             "from": [
@@ -1464,8 +1464,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+          "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
           "objectId": 136,
           "value": "start",
           "xAxis": {
@@ -1481,8 +1481,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+            "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -1499,7 +1499,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
             "sourceRange": []
           }
         },
@@ -1521,13 +1521,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+        "originalId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+        "originSketchId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b1c85ba6-414b-5b64-9307-2d757764e0fd",
+      "endCapId": "4dc93974-1439-5164-99ea-ce5fc72ab0ac",
       "units": "mm",
       "sectional": false
     }
@@ -1536,12 +1536,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "artifactId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "700546a9-93f4-54a3-9bf4-eca9a55b6498",
+          "id": "19644314-deac-5e0e-992e-eb8f841574ba",
           "sourceRange": [],
           "tag": {
             "commentStart": 5980,
@@ -1554,8 +1554,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7d71732e-5d01-5c96-b8e6-72e5da80a069",
+          "id": "3d645d25-bc71-5cfe-8c52-21c945e15bdf",
           "sourceRange": [],
           "tag": {
             "commentStart": 6058,
@@ -1568,8 +1568,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0fe7c80c-b553-57d4-aba9-2e25c270f4c2",
+          "id": "11c2772f-d4b4-58bd-ae8c-6a64259e3e9d",
           "sourceRange": [],
           "tag": {
             "commentStart": 6176,
@@ -1582,8 +1582,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d7554344-81a7-59b7-a0dc-d406dcfa11e6",
+          "id": "dffe63c3-8639-5bff-b527-6f78b3027f1e",
           "sourceRange": [],
           "tag": {
             "commentStart": 6297,
@@ -1599,11 +1599,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "40d8c462-7810-5666-bb09-1db7308cf666",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19644314-deac-5e0e-992e-eb8f841574ba",
               "sourceRange": []
             },
             "from": [
@@ -1627,7 +1627,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3d645d25-bc71-5cfe-8c52-21c945e15bdf",
               "sourceRange": []
             },
             "from": [
@@ -1651,7 +1651,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "11c2772f-d4b4-58bd-ae8c-6a64259e3e9d",
               "sourceRange": []
             },
             "from": [
@@ -1675,7 +1675,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dffe63c3-8639-5bff-b527-6f78b3027f1e",
               "sourceRange": []
             },
             "from": [
@@ -1700,8 +1700,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
+          "artifactId": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
           "objectId": 160,
           "value": "end",
           "xAxis": {
@@ -1717,8 +1717,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+            "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -1735,7 +1735,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
             "sourceRange": []
           }
         },
@@ -1757,13 +1757,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+        "originalId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+        "originSketchId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "76f8fe00-2a0c-5479-a056-7ae0d940a5e4",
+      "endCapId": "01b84f7a-9bc2-5d20-b39e-9bd87b5ee90b",
       "units": "mm",
       "sectional": false
     }
@@ -1790,11 +1790,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "40d8c462-7810-5666-bb09-1db7308cf666",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e0ee3e9c-01ec-55e8-8367-8100f1358709",
             "sourceRange": []
           },
           "from": [
@@ -1818,7 +1818,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "82a3a8d4-c746-5b8c-a733-1ba5907c3c74",
             "sourceRange": []
           },
           "ccw": false,
@@ -1848,7 +1848,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3a3e44ca-f2b5-56ff-80e8-25074b30f428",
             "sourceRange": []
           },
           "from": [
@@ -1872,7 +1872,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e7d66afd-cfa4-56f8-a1a5-9da5cabf9707",
             "sourceRange": []
           },
           "from": [
@@ -1896,7 +1896,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "845e7100-5890-57c5-af01-ca653a75423c",
             "sourceRange": []
           },
           "from": [
@@ -1920,7 +1920,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "298115ba-a9cd-5a9a-ba9f-765d7ded82b6",
             "sourceRange": []
           },
           "from": [
@@ -1944,7 +1944,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "65459020-f485-5305-9dff-b77ddc27c63a",
             "sourceRange": []
           },
           "from": [
@@ -1968,7 +1968,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f3edd61c-dda5-553d-9c29-2aded4a38c25",
             "sourceRange": []
           },
           "from": [
@@ -1992,7 +1992,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "305dc93a-d63d-5b22-b8f4-418a37be633d",
             "sourceRange": []
           },
           "from": [
@@ -2016,7 +2016,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6fb826da-dfef-55ee-9745-411538434c7f",
             "sourceRange": []
           },
           "from": [
@@ -2040,7 +2040,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6858f98d-eae7-50da-8e38-56f5ef1113bd",
             "sourceRange": []
           },
           "from": [
@@ -2064,7 +2064,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e3229d8f-2b77-5f3a-b86b-9177ae793c21",
             "sourceRange": []
           },
           "from": [
@@ -2088,7 +2088,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f90c6080-d9c3-56a2-9a52-e19081b789f1",
             "sourceRange": []
           },
           "from": [
@@ -2112,7 +2112,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a18aa13c-2d12-51b4-af8f-9c525967b96c",
             "sourceRange": []
           },
           "from": [
@@ -2136,7 +2136,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ca2b68a2-30aa-52d2-8ecf-cdaf23500bc3",
             "sourceRange": []
           },
           "from": [
@@ -2160,7 +2160,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3e734f15-be5f-5118-ae57-5d6ce2f16795",
             "sourceRange": []
           },
           "from": [
@@ -2184,7 +2184,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6b322270-73b2-5990-bda7-277f5e688bab",
             "sourceRange": []
           },
           "from": [
@@ -2208,7 +2208,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fd13719b-94bf-52b6-acc2-a6668f6a7577",
             "sourceRange": []
           },
           "from": [
@@ -2232,7 +2232,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8d51e38b-0ba8-5dd3-a2cf-659900889ed2",
             "sourceRange": []
           },
           "ccw": false,
@@ -2262,7 +2262,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "db4fdb78-b74f-5d51-8a8a-7a584f66de0f",
             "sourceRange": []
           },
           "from": [
@@ -2286,8 +2286,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -2328,7 +2328,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
           "sourceRange": []
         }
       },
@@ -2414,9 +2414,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "line9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "originalId": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "originSketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "units": "mm"
     }
   },
@@ -2424,11 +2424,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "93954f29-a246-54bd-ac2a-62572f26d508",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8e9d3955-ad5d-50a0-81ff-69910b0c9b3d",
             "sourceRange": []
           },
           "from": [
@@ -2452,7 +2452,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5170661d-078a-5756-9b5d-42b1541c2fbd",
             "sourceRange": []
           },
           "from": [
@@ -2476,7 +2476,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e1c6ca7e-81d4-5312-b335-5c5afda59bf9",
             "sourceRange": []
           },
           "from": [
@@ -2500,7 +2500,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e1ff10d0-9fa2-523b-8847-ea93a761f678",
             "sourceRange": []
           },
           "from": [
@@ -2525,8 +2525,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+        "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
         "objectId": 112,
         "value": "start",
         "xAxis": {
@@ -2542,8 +2542,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+          "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -2560,7 +2560,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
           "sourceRange": []
         }
       },
@@ -2582,9 +2582,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "93954f29-a246-54bd-ac2a-62572f26d508",
+      "originalId": "93954f29-a246-54bd-ac2a-62572f26d508",
+      "originSketchId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
       "units": "mm"
     }
   },
@@ -2592,11 +2592,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "aee505d9-c88f-5a0b-8030-64eebd380995",
             "sourceRange": []
           },
           "from": [
@@ -2620,7 +2620,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a1d710dc-e435-5ce0-9959-449aa4d7e775",
             "sourceRange": []
           },
           "from": [
@@ -2644,7 +2644,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2c3196e5-8976-5d03-9872-ec69b95a79a8",
             "sourceRange": []
           },
           "from": [
@@ -2668,7 +2668,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e55b8989-702b-546f-b450-a9fb9a84d112",
             "sourceRange": []
           },
           "from": [
@@ -2693,8 +2693,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+        "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
         "objectId": 136,
         "value": "start",
         "xAxis": {
@@ -2710,8 +2710,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+          "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -2728,7 +2728,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
           "sourceRange": []
         }
       },
@@ -2750,9 +2750,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+      "originalId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
+      "originSketchId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
       "units": "mm"
     }
   },
@@ -2760,11 +2760,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19644314-deac-5e0e-992e-eb8f841574ba",
             "sourceRange": []
           },
           "from": [
@@ -2788,7 +2788,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3d645d25-bc71-5cfe-8c52-21c945e15bdf",
             "sourceRange": []
           },
           "from": [
@@ -2812,7 +2812,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "11c2772f-d4b4-58bd-ae8c-6a64259e3e9d",
             "sourceRange": []
           },
           "from": [
@@ -2836,7 +2836,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dffe63c3-8639-5bff-b527-6f78b3027f1e",
             "sourceRange": []
           },
           "from": [
@@ -2861,8 +2861,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
+        "artifactId": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
         "objectId": 160,
         "value": "end",
         "xAxis": {
@@ -2878,8 +2878,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+          "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -2896,7 +2896,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
           "sourceRange": []
         }
       },
@@ -2918,9 +2918,9 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+      "originalId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
+      "originSketchId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
       "units": "mm"
     }
   },
@@ -2942,7 +2942,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "objectId": 77,
                 "kind": {
                   "arc": {
@@ -3048,8 +3048,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3078,7 +3078,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc19"
@@ -3094,7 +3094,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 8,
                 "kind": {
                   "arc": {
@@ -3200,8 +3200,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3230,7 +3230,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -3246,7 +3246,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -3320,8 +3320,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3350,7 +3350,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3366,7 +3366,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -3440,8 +3440,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3470,7 +3470,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -3486,7 +3486,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "objectId": 44,
                 "kind": {
                   "line": {
@@ -3560,8 +3560,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3590,7 +3590,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -3606,7 +3606,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 48,
                 "kind": {
                   "line": {
@@ -3680,8 +3680,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3710,7 +3710,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -3726,7 +3726,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "objectId": 52,
                 "kind": {
                   "line": {
@@ -3800,8 +3800,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3830,7 +3830,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line13"
@@ -3846,7 +3846,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "objectId": 56,
                 "kind": {
                   "line": {
@@ -3920,8 +3920,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3950,7 +3950,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line14"
@@ -3966,7 +3966,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 60,
                 "kind": {
                   "line": {
@@ -4040,8 +4040,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4070,7 +4070,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line15"
@@ -4086,7 +4086,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "objectId": 64,
                 "kind": {
                   "line": {
@@ -4160,8 +4160,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4190,7 +4190,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line16"
@@ -4206,7 +4206,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "objectId": 68,
                 "kind": {
                   "line": {
@@ -4280,8 +4280,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4310,7 +4310,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line17"
@@ -4326,7 +4326,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "objectId": 72,
                 "kind": {
                   "line": {
@@ -4400,8 +4400,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4430,7 +4430,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line18"
@@ -4446,7 +4446,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "objectId": 81,
                 "kind": {
                   "line": {
@@ -4520,8 +4520,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4550,7 +4550,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line20"
@@ -4566,7 +4566,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -4640,8 +4640,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4670,7 +4670,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4686,7 +4686,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -4760,8 +4760,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4790,7 +4790,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4806,7 +4806,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -4880,8 +4880,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4910,7 +4910,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -4926,7 +4926,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -5000,8 +5000,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5030,7 +5030,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -5046,7 +5046,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -5120,8 +5120,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5150,7 +5150,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -5166,7 +5166,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 32,
                 "kind": {
                   "line": {
@@ -5240,8 +5240,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5270,7 +5270,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -5286,7 +5286,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 36,
                 "kind": {
                   "line": {
@@ -5360,8 +5360,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5390,7 +5390,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -5407,11 +5407,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -5435,7 +5435,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -5465,7 +5465,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -5489,7 +5489,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -5513,7 +5513,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -5537,7 +5537,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -5561,7 +5561,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "from": [
@@ -5585,7 +5585,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                     "sourceRange": []
                   },
                   "from": [
@@ -5609,7 +5609,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "from": [
@@ -5633,7 +5633,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "from": [
@@ -5657,7 +5657,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "from": [
@@ -5681,7 +5681,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -5705,7 +5705,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                     "sourceRange": []
                   },
                   "from": [
@@ -5729,7 +5729,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                     "sourceRange": []
                   },
                   "from": [
@@ -5753,7 +5753,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                     "sourceRange": []
                   },
                   "from": [
@@ -5777,7 +5777,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                     "sourceRange": []
                   },
                   "from": [
@@ -5801,7 +5801,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                     "sourceRange": []
                   },
                   "from": [
@@ -5825,7 +5825,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                     "sourceRange": []
                   },
                   "from": [
@@ -5849,7 +5849,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -5879,7 +5879,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                     "sourceRange": []
                   },
                   "from": [
@@ -5903,8 +5903,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -5945,7 +5945,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
                   "sourceRange": []
                 }
               },
@@ -6031,8 +6031,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+              "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -6052,7 +6052,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
                 "objectId": 116,
                 "kind": {
                   "line": {
@@ -6127,8 +6127,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+                  "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
                   "objectId": 112,
                   "value": "start",
                   "xAxis": {
@@ -6144,13 +6144,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6166,7 +6166,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
                 "objectId": 119,
                 "kind": {
                   "line": {
@@ -6241,8 +6241,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+                  "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
                   "objectId": 112,
                   "value": "start",
                   "xAxis": {
@@ -6258,13 +6258,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -6280,7 +6280,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
                 "objectId": 123,
                 "kind": {
                   "line": {
@@ -6355,8 +6355,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+                  "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
                   "objectId": 112,
                   "value": "start",
                   "xAxis": {
@@ -6372,13 +6372,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -6394,7 +6394,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
                 "objectId": 127,
                 "kind": {
                   "line": {
@@ -6469,8 +6469,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+                  "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
                   "objectId": 112,
                   "value": "start",
                   "xAxis": {
@@ -6486,13 +6486,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -6509,11 +6509,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
                     "sourceRange": []
                   },
                   "from": [
@@ -6537,7 +6537,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
                     "sourceRange": []
                   },
                   "from": [
@@ -6561,7 +6561,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
                     "sourceRange": []
                   },
                   "from": [
@@ -6585,7 +6585,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
                     "sourceRange": []
                   },
                   "from": [
@@ -6610,8 +6610,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+                "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
                 "objectId": 112,
                 "value": "start",
                 "xAxis": {
@@ -6627,8 +6627,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -6645,7 +6645,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                   "sourceRange": []
                 }
               },
@@ -6667,8 +6667,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+              "originalId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -6688,7 +6688,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
                 "objectId": 140,
                 "kind": {
                   "line": {
@@ -6763,8 +6763,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+                  "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
                   "objectId": 136,
                   "value": "start",
                   "xAxis": {
@@ -6780,13 +6780,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6802,7 +6802,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                 "objectId": 143,
                 "kind": {
                   "line": {
@@ -6877,8 +6877,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+                  "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
                   "objectId": 136,
                   "value": "start",
                   "xAxis": {
@@ -6894,13 +6894,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -6916,7 +6916,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fa75438f-b2d0-5142-b452-608454e1806a",
                 "objectId": 147,
                 "kind": {
                   "line": {
@@ -6991,8 +6991,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+                  "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
                   "objectId": 136,
                   "value": "start",
                   "xAxis": {
@@ -7008,13 +7008,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7030,7 +7030,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
                 "objectId": 151,
                 "kind": {
                   "line": {
@@ -7105,8 +7105,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+                  "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
                   "objectId": 136,
                   "value": "start",
                   "xAxis": {
@@ -7122,13 +7122,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -7145,11 +7145,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0a3927a3-4dca-5e67-855f-5c8045a33997",
                     "sourceRange": []
                   },
                   "from": [
@@ -7173,7 +7173,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
                     "sourceRange": []
                   },
                   "from": [
@@ -7197,7 +7197,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fa75438f-b2d0-5142-b452-608454e1806a",
                     "sourceRange": []
                   },
                   "from": [
@@ -7221,7 +7221,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
                     "sourceRange": []
                   },
                   "from": [
@@ -7246,8 +7246,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
+                "artifactId": "fd2ab00b-e3c0-5a09-9173-45b64c0696b2",
                 "objectId": 136,
                 "value": "start",
                 "xAxis": {
@@ -7263,8 +7263,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -7281,7 +7281,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
                   "sourceRange": []
                 }
               },
@@ -7303,8 +7303,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
+              "originalId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -7324,7 +7324,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
                 "objectId": 164,
                 "kind": {
                   "line": {
@@ -7399,8 +7399,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
+                  "artifactId": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
                   "objectId": 160,
                   "value": "end",
                   "xAxis": {
@@ -7416,13 +7416,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -7438,7 +7438,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
                 "objectId": 167,
                 "kind": {
                   "line": {
@@ -7513,8 +7513,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
+                  "artifactId": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
                   "objectId": 160,
                   "value": "end",
                   "xAxis": {
@@ -7530,13 +7530,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -7552,7 +7552,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
                 "objectId": 171,
                 "kind": {
                   "line": {
@@ -7627,8 +7627,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
+                  "artifactId": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
                   "objectId": 160,
                   "value": "end",
                   "xAxis": {
@@ -7644,13 +7644,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7666,7 +7666,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
                 "objectId": 175,
                 "kind": {
                   "line": {
@@ -7741,8 +7741,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
+                  "artifactId": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
                   "objectId": 160,
                   "value": "end",
                   "xAxis": {
@@ -7758,13 +7758,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                    "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -7781,11 +7781,11 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
                     "sourceRange": []
                   },
                   "from": [
@@ -7809,7 +7809,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
                     "sourceRange": []
                   },
                   "from": [
@@ -7833,7 +7833,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
                     "sourceRange": []
                   },
                   "from": [
@@ -7857,7 +7857,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
                     "sourceRange": []
                   },
                   "from": [
@@ -7882,8 +7882,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
+                "artifactId": "e5a36507-bb3b-59a0-aa77-b7328dc53b8d",
                 "objectId": 160,
                 "value": "end",
                 "xAxis": {
@@ -7899,8 +7899,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "40d8c462-7810-5666-bb09-1db7308cf666",
+                  "creatorSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -7917,7 +7917,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
                   "sourceRange": []
                 }
               },
@@ -7939,8 +7939,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
+              "originalId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
               "units": "mm",
               "isClosed": "implicitly"
             }

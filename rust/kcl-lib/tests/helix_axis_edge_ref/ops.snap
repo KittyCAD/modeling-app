@@ -10,7 +10,7 @@ description: Operations executed helix_axis_edge_ref.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed helix_axis_edge_ref.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -107,12 +107,12 @@ description: Operations executed helix_axis_edge_ref.kcl
                   {
                     "type": "TagIdentifier",
                     "value": "seg01",
-                    "artifact_id": "[uuid]"
+                    "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
                   },
                   {
                     "type": "TagIdentifier",
                     "value": "capStart001",
-                    "artifact_id": "[uuid]"
+                    "artifact_id": "33aa9496-5ecf-5157-ab0b-51ae219ee4df"
                   }
                 ]
               }

@@ -184,7 +184,7 @@ description: Operations executed round-table.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -380,7 +380,7 @@ description: Operations executed round-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -410,7 +410,7 @@ description: Operations executed round-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93"
           }
         },
         "sourceRange": []
@@ -607,7 +607,7 @@ description: Operations executed round-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
               }
             ]
           },
@@ -637,7 +637,7 @@ description: Operations executed round-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7"
           }
         },
         "sourceRange": []
@@ -707,7 +707,7 @@ description: Operations executed round-table.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -903,7 +903,7 @@ description: Operations executed round-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6023bee8-3980-5182-88ac-ac06420ce00f"
               }
             ]
           },
@@ -933,7 +933,7 @@ description: Operations executed round-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d"
           }
         },
         "sourceRange": []

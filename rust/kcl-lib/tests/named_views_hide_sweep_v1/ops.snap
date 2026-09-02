@@ -10,7 +10,7 @@ description: Operations executed named_views_hide_sweep_v1.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -41,7 +41,7 @@ description: Operations executed named_views_hide_sweep_v1.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -73,7 +73,7 @@ description: Operations executed named_views_hide_sweep_v1.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe"
           }
         },
         "sourceRange": []
@@ -83,7 +83,7 @@ description: Operations executed named_views_hide_sweep_v1.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
             }
           },
           "sourceRange": []
@@ -115,7 +115,7 @@ description: Operations executed named_views_hide_sweep_v1.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -147,7 +147,7 @@ description: Operations executed named_views_hide_sweep_v1.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3"
           }
         },
         "sourceRange": []
@@ -193,7 +193,7 @@ description: Operations executed named_views_hide_sweep_v1.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
           }
         },
         "sourceRange": []

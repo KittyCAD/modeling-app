@@ -6,8 +6,8 @@ description: Variables in memory after executing i-beam.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -77,11 +77,11 @@ description: Variables in memory after executing i-beam.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "085eca26-4d64-51c6-b620-a59119c62846",
             "sourceRange": []
           },
           "from": [
@@ -105,7 +105,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a69bc1bf-39f8-5daf-87e5-788c6177e736",
             "sourceRange": []
           },
           "from": [
@@ -129,7 +129,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a0ec1ef3-f65f-516c-ae4b-e760073cd9e9",
             "sourceRange": []
           },
           "from": [
@@ -153,7 +153,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562",
             "sourceRange": []
           },
           "from": [
@@ -177,7 +177,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e2d7e3fb-0644-5a31-8768-5625e181bb63",
             "sourceRange": []
           },
           "from": [
@@ -201,7 +201,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c06f4ff3-7b73-5ffe-b6b4-c67512dbdec1",
             "sourceRange": []
           },
           "from": [
@@ -225,7 +225,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "33fcb3d8-897c-5465-b0ca-f26eeaebe51c",
             "sourceRange": []
           },
           "from": [
@@ -249,7 +249,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "835db4c2-dcae-5fcd-bca8-0cc91f3e573f",
             "sourceRange": []
           },
           "from": [
@@ -273,7 +273,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9",
             "sourceRange": []
           },
           "from": [
@@ -297,7 +297,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "419ab881-03e8-5110-b946-c60a7684fa2e",
             "sourceRange": []
           },
           "from": [
@@ -321,7 +321,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bc49ade1-12eb-56a2-97ee-28f4559d562b",
             "sourceRange": []
           },
           "from": [
@@ -345,7 +345,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9ac26fb4-9b9c-5e04-8cfe-d9d689960c39",
             "sourceRange": []
           },
           "from": [
@@ -369,7 +369,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f1a6a131-96c0-582a-a81b-3678a558665e",
             "sourceRange": []
           },
           "ccw": true,
@@ -399,7 +399,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "aa117e39-18d2-50d4-97a4-68da3df7b7b8",
             "sourceRange": []
           },
           "ccw": true,
@@ -429,7 +429,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b0ef3aa2-b8db-5fbb-8826-65a2b59fbc91",
             "sourceRange": []
           },
           "ccw": true,
@@ -459,7 +459,7 @@ description: Variables in memory after executing i-beam.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ecac7c9f-ddfe-535a-8cc7-5c43f95bab45",
             "sourceRange": []
           },
           "ccw": true,
@@ -489,8 +489,8 @@ description: Variables in memory after executing i-beam.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -531,7 +531,7 @@ description: Variables in memory after executing i-beam.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
           "sourceRange": []
         }
       },
@@ -601,9 +601,9 @@ description: Variables in memory after executing i-beam.kcl
           "value": "line26"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "originalId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "originSketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "units": "in"
     }
   },
@@ -616,7 +616,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                 "objectId": 124,
                 "kind": {
                   "arc": {
@@ -722,8 +722,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -752,7 +752,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -768,7 +768,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                 "objectId": 131,
                 "kind": {
                   "arc": {
@@ -874,8 +874,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -904,7 +904,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -920,7 +920,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
                 "objectId": 138,
                 "kind": {
                   "arc": {
@@ -1026,8 +1026,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1056,7 +1056,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -1072,7 +1072,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
                 "objectId": 143,
                 "kind": {
                   "arc": {
@@ -1178,8 +1178,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1208,7 +1208,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -1224,7 +1224,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1299,8 +1299,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1329,7 +1329,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1345,7 +1345,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 39,
                 "kind": {
                   "line": {
@@ -1420,8 +1420,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1450,7 +1450,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -1466,7 +1466,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "objectId": 43,
                 "kind": {
                   "line": {
@@ -1541,8 +1541,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1571,7 +1571,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -1587,7 +1587,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 47,
                 "kind": {
                   "line": {
@@ -1662,8 +1662,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1692,7 +1692,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -1708,7 +1708,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "objectId": 52,
                 "kind": {
                   "line": {
@@ -1783,8 +1783,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1813,7 +1813,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line13"
@@ -1829,7 +1829,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 57,
                 "kind": {
                   "line": {
@@ -1904,8 +1904,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1934,7 +1934,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line14"
@@ -1950,7 +1950,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                 "objectId": 79,
                 "kind": {
                   "line": {
@@ -2024,8 +2024,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2054,7 +2054,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line15"
@@ -2070,7 +2070,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "objectId": 82,
                 "kind": {
                   "line": {
@@ -2144,8 +2144,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2174,7 +2174,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line16"
@@ -2190,7 +2190,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                 "objectId": 86,
                 "kind": {
                   "line": {
@@ -2264,8 +2264,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2294,7 +2294,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line17"
@@ -2310,7 +2310,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
                 "objectId": 90,
                 "kind": {
                   "line": {
@@ -2384,8 +2384,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2414,7 +2414,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line18"
@@ -2430,7 +2430,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
                 "objectId": 93,
                 "kind": {
                   "line": {
@@ -2504,8 +2504,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2534,7 +2534,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line19"
@@ -2550,7 +2550,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -2625,8 +2625,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2655,7 +2655,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2671,7 +2671,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                 "objectId": 96,
                 "kind": {
                   "line": {
@@ -2745,8 +2745,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2775,7 +2775,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line20"
@@ -2791,7 +2791,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "objectId": 100,
                 "kind": {
                   "line": {
@@ -2865,8 +2865,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2895,7 +2895,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line21"
@@ -2911,7 +2911,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
                 "objectId": 104,
                 "kind": {
                   "line": {
@@ -2985,8 +2985,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3015,7 +3015,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line22"
@@ -3031,7 +3031,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
                 "objectId": 108,
                 "kind": {
                   "line": {
@@ -3105,8 +3105,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3135,7 +3135,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line23"
@@ -3151,7 +3151,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                 "objectId": 112,
                 "kind": {
                   "line": {
@@ -3225,8 +3225,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3255,7 +3255,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line24"
@@ -3271,7 +3271,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "objectId": 116,
                 "kind": {
                   "line": {
@@ -3345,8 +3345,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3375,7 +3375,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line25"
@@ -3391,7 +3391,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                 "objectId": 120,
                 "kind": {
                   "line": {
@@ -3465,8 +3465,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3495,7 +3495,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line26"
@@ -3511,7 +3511,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -3586,8 +3586,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3616,7 +3616,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3632,7 +3632,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -3707,8 +3707,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3737,7 +3737,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -3753,7 +3753,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -3828,8 +3828,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3858,7 +3858,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -3874,7 +3874,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -3949,8 +3949,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3979,7 +3979,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -3995,7 +3995,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -4070,8 +4070,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4100,7 +4100,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -4116,7 +4116,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 31,
                 "kind": {
                   "line": {
@@ -4191,8 +4191,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4221,7 +4221,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -4237,7 +4237,7 @@ description: Variables in memory after executing i-beam.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -4312,8 +4312,8 @@ description: Variables in memory after executing i-beam.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4342,7 +4342,7 @@ description: Variables in memory after executing i-beam.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -4359,11 +4359,11 @@ description: Variables in memory after executing i-beam.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                     "sourceRange": []
                   },
                   "from": [
@@ -4387,7 +4387,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -4411,7 +4411,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                     "sourceRange": []
                   },
                   "from": [
@@ -4435,7 +4435,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c8da3189-2eee-5307-9477-076b12db84a5",
                     "sourceRange": []
                   },
                   "from": [
@@ -4452,7 +4452,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
                     "sourceRange": []
                   },
                   "from": [
@@ -4476,7 +4476,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
                     "sourceRange": []
                   },
                   "from": [
@@ -4493,7 +4493,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
                     "sourceRange": []
                   },
                   "from": [
@@ -4517,7 +4517,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                     "sourceRange": []
                   },
                   "from": [
@@ -4541,7 +4541,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                     "sourceRange": []
                   },
                   "from": [
@@ -4565,7 +4565,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
                     "sourceRange": []
                   },
                   "from": [
@@ -4589,7 +4589,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
                     "sourceRange": []
                   },
                   "from": [
@@ -4613,7 +4613,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f2e3fae3-4069-58be-a5a5-17ae327df966",
                     "sourceRange": []
                   },
                   "from": [
@@ -4630,7 +4630,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                     "sourceRange": []
                   },
                   "from": [
@@ -4654,7 +4654,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                     "sourceRange": []
                   },
                   "from": [
@@ -4678,7 +4678,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
                     "sourceRange": []
                   },
                   "from": [
@@ -4695,7 +4695,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                     "sourceRange": []
                   },
                   "from": [
@@ -4719,7 +4719,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
                     "sourceRange": []
                   },
                   "from": [
@@ -4736,7 +4736,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4766,7 +4766,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
                     "sourceRange": []
                   },
                   "from": [
@@ -4783,7 +4783,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4813,7 +4813,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
                     "sourceRange": []
                   },
                   "from": [
@@ -4830,7 +4830,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4860,7 +4860,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bae7e631-b71d-5980-89ea-29b2140a8a32",
                     "sourceRange": []
                   },
                   "from": [
@@ -4877,7 +4877,7 @@ description: Variables in memory after executing i-beam.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4907,8 +4907,8 @@ description: Variables in memory after executing i-beam.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -4949,7 +4949,7 @@ description: Variables in memory after executing i-beam.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
                   "sourceRange": []
                 }
               },
@@ -5019,8 +5019,8 @@ description: Variables in memory after executing i-beam.kcl
                   "value": "line26"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
+              "originalId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
               "units": "in",
               "isClosed": "no"
             }
@@ -5053,12 +5053,12 @@ description: Variables in memory after executing i-beam.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "artifactId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8880a5b4-5f95-5b2c-9832-23ff45f1dfab",
+          "id": "085eca26-4d64-51c6-b620-a59119c62846",
           "sourceRange": [],
           "tag": {
             "commentStart": 3087,
@@ -5071,8 +5071,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "23a647b0-7826-526e-8bfa-04f5a3913f46",
+          "id": "a69bc1bf-39f8-5daf-87e5-788c6177e736",
           "sourceRange": [],
           "tag": {
             "commentStart": 3164,
@@ -5085,8 +5085,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "abca37e9-4653-57bb-8979-912492ba05d4",
+          "id": "a0ec1ef3-f65f-516c-ae4b-e760073cd9e9",
           "sourceRange": [],
           "tag": {
             "commentStart": 3284,
@@ -5099,8 +5099,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d3465b18-e85d-50f3-9750-23fafe6173c5",
+          "id": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562",
           "sourceRange": [],
           "tag": {
             "commentStart": 3407,
@@ -5113,8 +5113,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "67f0a2f9-d3d2-5d31-8876-074bd20c83d3",
+          "id": "e2d7e3fb-0644-5a31-8768-5625e181bb63",
           "sourceRange": [],
           "tag": {
             "commentStart": 3488,
@@ -5127,8 +5127,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6a71d85-4ee8-507e-892e-9f6493c96810",
+          "id": "c06f4ff3-7b73-5ffe-b6b4-c67512dbdec1",
           "sourceRange": [],
           "tag": {
             "commentStart": 3572,
@@ -5141,8 +5141,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ac603a9-483a-5353-a8b8-fa58867b48e5",
+          "id": "33fcb3d8-897c-5465-b0ca-f26eeaebe51c",
           "sourceRange": [],
           "tag": {
             "commentStart": 3694,
@@ -5155,8 +5155,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1973de48-25ad-5914-81ac-166e7281813f",
+          "id": "835db4c2-dcae-5fcd-bca8-0cc91f3e573f",
           "sourceRange": [],
           "tag": {
             "commentStart": 3814,
@@ -5169,8 +5169,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "113dba88-4564-563e-b9ac-61352ed1d77c",
+          "id": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9",
           "sourceRange": [],
           "tag": {
             "commentStart": 3938,
@@ -5183,8 +5183,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "226c86ac-24b0-52cd-8c2f-fdf16c6ef239",
+          "id": "419ab881-03e8-5110-b946-c60a7684fa2e",
           "sourceRange": [],
           "tag": {
             "commentStart": 4065,
@@ -5197,8 +5197,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "003cbca6-380a-56ee-a99a-695df364486e",
+          "id": "bc49ade1-12eb-56a2-97ee-28f4559d562b",
           "sourceRange": [],
           "tag": {
             "commentStart": 4189,
@@ -5211,8 +5211,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4394f705-7354-511b-924f-fb2fae85aaf0",
+          "id": "9ac26fb4-9b9c-5e04-8cfe-d9d689960c39",
           "sourceRange": [],
           "tag": {
             "commentStart": 4314,
@@ -5225,8 +5225,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6c57a54e-ef63-5e67-9c15-a54892632a58",
+          "id": "f1a6a131-96c0-582a-a81b-3678a558665e",
           "sourceRange": [],
           "tag": {
             "commentStart": 4397,
@@ -5239,8 +5239,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "94bf5edf-9c70-5893-8379-ee23bcae2f59",
+          "id": "aa117e39-18d2-50d4-97a4-68da3df7b7b8",
           "sourceRange": [],
           "tag": {
             "commentStart": 4614,
@@ -5253,8 +5253,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "53c66ad8-ce0b-5e66-a0f4-f23d99bd1337",
+          "id": "b0ef3aa2-b8db-5fbb-8826-65a2b59fbc91",
           "sourceRange": [],
           "tag": {
             "commentStart": 4834,
@@ -5267,8 +5267,8 @@ description: Variables in memory after executing i-beam.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "06bdd975-98c9-5cac-a447-92b039ea2906",
+          "id": "ecac7c9f-ddfe-535a-8cc7-5c43f95bab45",
           "sourceRange": [],
           "tag": {
             "commentStart": 4976,
@@ -5284,11 +5284,11 @@ description: Variables in memory after executing i-beam.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "085eca26-4d64-51c6-b620-a59119c62846",
               "sourceRange": []
             },
             "from": [
@@ -5312,7 +5312,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a69bc1bf-39f8-5daf-87e5-788c6177e736",
               "sourceRange": []
             },
             "from": [
@@ -5336,7 +5336,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a0ec1ef3-f65f-516c-ae4b-e760073cd9e9",
               "sourceRange": []
             },
             "from": [
@@ -5360,7 +5360,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562",
               "sourceRange": []
             },
             "from": [
@@ -5384,7 +5384,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e2d7e3fb-0644-5a31-8768-5625e181bb63",
               "sourceRange": []
             },
             "from": [
@@ -5408,7 +5408,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c06f4ff3-7b73-5ffe-b6b4-c67512dbdec1",
               "sourceRange": []
             },
             "from": [
@@ -5432,7 +5432,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "33fcb3d8-897c-5465-b0ca-f26eeaebe51c",
               "sourceRange": []
             },
             "from": [
@@ -5456,7 +5456,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "835db4c2-dcae-5fcd-bca8-0cc91f3e573f",
               "sourceRange": []
             },
             "from": [
@@ -5480,7 +5480,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9",
               "sourceRange": []
             },
             "from": [
@@ -5504,7 +5504,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "419ab881-03e8-5110-b946-c60a7684fa2e",
               "sourceRange": []
             },
             "from": [
@@ -5528,7 +5528,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bc49ade1-12eb-56a2-97ee-28f4559d562b",
               "sourceRange": []
             },
             "from": [
@@ -5552,7 +5552,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9ac26fb4-9b9c-5e04-8cfe-d9d689960c39",
               "sourceRange": []
             },
             "from": [
@@ -5576,7 +5576,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f1a6a131-96c0-582a-a81b-3678a558665e",
               "sourceRange": []
             },
             "ccw": true,
@@ -5606,7 +5606,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "aa117e39-18d2-50d4-97a4-68da3df7b7b8",
               "sourceRange": []
             },
             "ccw": true,
@@ -5636,7 +5636,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b0ef3aa2-b8db-5fbb-8826-65a2b59fbc91",
               "sourceRange": []
             },
             "ccw": true,
@@ -5666,7 +5666,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ecac7c9f-ddfe-535a-8cc7-5c43f95bab45",
               "sourceRange": []
             },
             "ccw": true,
@@ -5696,8 +5696,8 @@ description: Variables in memory after executing i-beam.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -5738,7 +5738,7 @@ description: Variables in memory after executing i-beam.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5a7368ed-12c7-59b9-88f4-186289245e86",
             "sourceRange": []
           }
         },
@@ -5808,13 +5808,13 @@ description: Variables in memory after executing i-beam.kcl
             "value": "line26"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "originalId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "originSketchId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "eaa1236b-609f-53a9-9ccb-a031763e526b",
+      "endCapId": "a34245b1-ee6b-5b12-9d11-a0e3bd734c7c",
       "units": "in",
       "sectional": false
     }

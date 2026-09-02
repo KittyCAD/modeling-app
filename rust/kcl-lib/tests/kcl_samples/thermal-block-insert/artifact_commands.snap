@@ -5,7 +5,7 @@ description: Artifact commands thermal-block-insert.kcl
 {
   "public/kcl-samples/thermal-block-insert/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "to": {
           "x": -200.0,
           "y": -0.00000000000003643700893909418,
@@ -75,18 +75,18 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -150,11 +150,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -167,11 +167,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -184,11 +184,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -201,11 +201,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -218,11 +218,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -235,11 +235,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -252,11 +252,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -269,11 +269,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -286,11 +286,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -303,11 +303,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -320,11 +320,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -337,11 +337,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -354,11 +354,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -371,11 +371,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -388,11 +388,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -405,11 +405,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -422,11 +422,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -439,11 +439,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -456,11 +456,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -473,11 +473,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "segment": {
           "type": "line",
           "end": {
@@ -490,7 +490,7 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -515,20 +515,20 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6ae8c147-090c-5277-8840-6daa34bb4685",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ca431487-8e9a-59ce-a472-84fe45652fab",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ca431487-8e9a-59ce-a472-84fe45652fab",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -540,18 +540,18 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "662e081e-0c36-5b97-b2b8-ea0464220525",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f89f295-7088-5e46-8594-1b84a8601b0a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "to": {
           "x": -199.99999999999997,
           "y": 0.00000000000003784013013352836,
@@ -560,18 +560,18 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -584,11 +584,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -601,11 +601,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -618,11 +618,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -635,11 +635,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -652,11 +652,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -669,11 +669,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -686,11 +686,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -703,11 +703,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa75438f-b2d0-5142-b452-608454e1806a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -720,11 +720,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -737,11 +737,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -754,11 +754,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -771,11 +771,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -788,11 +788,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -805,11 +805,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -822,11 +822,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -839,11 +839,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -856,11 +856,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -873,11 +873,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ea8409b-834f-5214-b812-e276f2ff01f4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -890,11 +890,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -907,11 +907,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -924,11 +924,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0df0eb6-009b-594d-815d-31646979be80",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -941,11 +941,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -958,11 +958,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "segment": {
           "type": "line",
           "end": {
@@ -975,37 +975,37 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b7074da6-ba4d-5c11-9954-823a94aa7064",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
+        "segment": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
+        "intersection_segment": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "662e081e-0c36-5b97-b2b8-ea0464220525",
+        "segment": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "intersection_segment": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1017,11 +1017,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b7074da6-ba4d-5c11-9954-823a94aa7064",
         "distance": 200.0,
         "faces": null,
         "opposite": "None",
@@ -1030,44 +1030,44 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f3e5d974-3ee8-52ce-a294-da34987457f8",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b7074da6-ba4d-5c11-9954-823a94aa7064"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b7074da6-ba4d-5c11-9954-823a94aa7064",
+        "edge_id": "2721bbfd-da33-5f48-9e53-4e57d0d2afb9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b7074da6-ba4d-5c11-9954-823a94aa7064",
+        "edge_id": "2721bbfd-da33-5f48-9e53-4e57d0d2afb9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ca431487-8e9a-59ce-a472-84fe45652fab",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1079,11 +1079,11 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
         "distance": 200.0,
         "faces": null,
         "opposite": "None",
@@ -1092,53 +1092,53 @@ description: Artifact commands thermal-block-insert.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e54f67fd-5312-580f-b00e-e78b0877011e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c902ac1e-80c0-5a28-b5a8-0ef58e8fd399",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5fd1215-9080-56e3-9845-e939e4245bdb",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
+        "edge_id": "491ec856-b834-5874-9d3f-ee9c619a7685"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f24ed84c-9623-59b6-bf31-be6202c5a133",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
+        "edge_id": "491ec856-b834-5874-9d3f-ee9c619a7685"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "349ba77a-8183-57f6-8580-b06227eac5bd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "662e081e-0c36-5b97-b2b8-ea0464220525",
         "hidden": true
       }
     }

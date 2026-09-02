@@ -1671,11 +1671,11 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -1705,7 +1705,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
           }
         },
         "sourceRange": []
@@ -1747,7 +1747,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
           }
         },
         "sourceRange": []
@@ -1773,7 +1773,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -1826,7 +1826,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
           }
         },
         "sourceRange": []
@@ -3186,11 +3186,11 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcacf2c-f132-502a-87e1-0b0ffa846931"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc312d38-2fa6-5583-a605-44880f646499"
               }
             ]
           },
@@ -3220,7 +3220,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8"
           }
         },
         "sourceRange": []
@@ -3262,7 +3262,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad"
           }
         },
         "sourceRange": []
@@ -4434,11 +4434,11 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a54ad82c-be8d-599a-9764-c6498922dd5c"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "724b87fd-c709-5232-b7a1-547c15affb9b"
               }
             ]
           },
@@ -4468,7 +4468,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde"
           }
         },
         "sourceRange": []
@@ -4514,7 +4514,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
           }
         },
         "sourceRange": []
@@ -4559,7 +4559,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
           }
         },
         "sourceRange": []
@@ -4592,7 +4592,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc"
           }
         },
         "sourceRange": []
@@ -4618,7 +4618,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
           }
         },
         "sourceRange": []
@@ -4628,7 +4628,7 @@ description: Operations executed gallows-bracket.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
             }
           },
           "sourceRange": []
@@ -4657,7 +4657,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140"
           }
         },
         "sourceRange": []
@@ -4750,7 +4750,7 @@ description: Operations executed gallows-bracket.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -5717,7 +5717,7 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e02115f0-d853-5684-82c8-298aa25e4541"
               }
             ]
           },
@@ -5747,7 +5747,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7"
           }
         },
         "sourceRange": []
@@ -5789,7 +5789,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b"
           }
         },
         "sourceRange": []
@@ -5815,7 +5815,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
           }
         },
         "sourceRange": []
@@ -5903,7 +5903,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140"
           }
         },
         "sourceRange": []
@@ -5916,19 +5916,19 @@ description: Operations executed gallows-bracket.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "52a58279-4e4c-5e63-8a25-c76e002b85fc"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "e753211b-9ca1-52a2-8ae3-9e42de6ef01a"
                 }
               }
             ]
@@ -7242,11 +7242,11 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b6048962-8de8-56e0-bd4c-204ee5451b34"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bae7e631-b71d-5980-89ea-29b2140a8a32"
               }
             ]
           },
@@ -7276,7 +7276,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7239bb75-ea9c-5e04-812d-426e933ce851"
           }
         },
         "sourceRange": []
@@ -7318,7 +7318,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5"
           }
         },
         "sourceRange": []
@@ -8490,11 +8490,11 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4"
               }
             ]
           },
@@ -8524,7 +8524,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66"
           }
         },
         "sourceRange": []
@@ -8570,7 +8570,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222"
           }
         },
         "sourceRange": []
@@ -8615,7 +8615,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222"
           }
         },
         "sourceRange": []
@@ -8648,7 +8648,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9afb6023-b93a-59ec-afe5-e351f8385d69"
           }
         },
         "sourceRange": []
@@ -8674,7 +8674,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc"
           }
         },
         "sourceRange": []
@@ -8684,7 +8684,7 @@ description: Operations executed gallows-bracket.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222"
             }
           },
           "sourceRange": []
@@ -8713,7 +8713,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
           }
         },
         "sourceRange": []
@@ -8778,7 +8778,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
           }
         },
         "sourceRange": []
@@ -8830,7 +8830,7 @@ description: Operations executed gallows-bracket.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -9797,7 +9797,7 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4728ade4-a3a9-5b06-851f-c0795fb8ba92"
               }
             ]
           },
@@ -9827,7 +9827,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c9e17bd3-c74a-55cb-86c0-84f065310bc3"
           }
         },
         "sourceRange": []
@@ -9869,7 +9869,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "edad1eb5-5562-5615-b23f-ee6623df14ee"
           }
         },
         "sourceRange": []
@@ -9895,7 +9895,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
           }
         },
         "sourceRange": []
@@ -9905,7 +9905,7 @@ description: Operations executed gallows-bracket.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46"
             }
           },
           "sourceRange": []
@@ -11217,11 +11217,11 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cbd0a735-3417-50fd-a670-41b483234c04"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
               }
             ]
           },
@@ -11251,7 +11251,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1eb67267-23ae-55ad-a211-5f61fb90442f"
           }
         },
         "sourceRange": []
@@ -11293,7 +11293,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0d85720f-31f4-5aac-90ae-672aa1715f9d"
           }
         },
         "sourceRange": []
@@ -12465,11 +12465,11 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "27284bc1-5676-5b5a-baa2-003a7224d266"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "47ae25d7-94a7-5b84-85ef-b0a4633920cd"
               }
             ]
           },
@@ -12499,7 +12499,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "585c0507-64ec-597f-addc-f52df0ac2e7f"
           }
         },
         "sourceRange": []
@@ -12545,7 +12545,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79"
           }
         },
         "sourceRange": []
@@ -12622,7 +12622,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126"
           }
         },
         "sourceRange": []
@@ -12648,7 +12648,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ce0f2476-67d7-5345-810e-e93bbaf612ef"
           }
         },
         "sourceRange": []
@@ -12658,7 +12658,7 @@ description: Operations executed gallows-bracket.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79"
             }
           },
           "sourceRange": []
@@ -13833,11 +13833,11 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9cbc0821-9ccb-59b5-8a88-96912ec71e5e"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "71136424-dffe-5ef9-9646-f40c0804ce04"
               }
             ]
           },
@@ -13867,7 +13867,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6aa5aed0-b871-5456-a13d-c13c223ba521"
           }
         },
         "sourceRange": []
@@ -13913,7 +13913,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "dc339cd1-ef80-56b6-8a39-06e7e7c74e72"
           }
         },
         "sourceRange": []
@@ -13990,7 +13990,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c3df3fc6-c09a-5bdd-8ebe-0efe60f1711d"
           }
         },
         "sourceRange": []
@@ -14016,7 +14016,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f955175a-2142-57a5-a066-84dd5c24cf81"
           }
         },
         "sourceRange": []
@@ -14026,7 +14026,7 @@ description: Operations executed gallows-bracket.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "dc339cd1-ef80-56b6-8a39-06e7e7c74e72"
             }
           },
           "sourceRange": []
@@ -14055,7 +14055,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0"
           }
         },
         "sourceRange": []
@@ -14120,7 +14120,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0"
           }
         },
         "sourceRange": []
@@ -14185,7 +14185,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0"
           }
         },
         "sourceRange": []
@@ -14238,7 +14238,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0"
           }
         },
         "sourceRange": []
@@ -15170,11 +15170,11 @@ description: Operations executed gallows-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a3fed421-ce33-5a4f-b048-d3a68dfce32d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "296133c8-94a5-5fd9-851a-d484fa3dc66a"
               }
             ]
           },
@@ -15204,7 +15204,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b05ba4c9-ccf7-5d0a-a9a2-950f363725c8"
           }
         },
         "sourceRange": []
@@ -15230,7 +15230,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f"
           }
         },
         "sourceRange": []
@@ -15276,7 +15276,7 @@ description: Operations executed gallows-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0f69e9fb-8cfe-5f9d-b54f-96265c6afc83"
           }
         },
         "sourceRange": []
@@ -15332,25 +15332,25 @@ description: Operations executed gallows-bracket.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f2e3fae3-4069-58be-a5a5-17ae327df966"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "60f59271-6b58-59b1-94ae-dad793e5c6cd"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0f69e9fb-8cfe-5f9d-b54f-96265c6afc83"
               }
             }
           ]

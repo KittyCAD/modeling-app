@@ -6,8 +6,8 @@ description: Variables in memory after executing camshaft.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "kind": "Custom",
       "objectId": 0,
       "origin": {
@@ -39,8 +39,8 @@ description: Variables in memory after executing camshaft.kcl
   "__sketch_27_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+      "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
       "kind": "Custom",
       "objectId": 26,
       "origin": {
@@ -72,8 +72,8 @@ description: Variables in memory after executing camshaft.kcl
   "__sketch_53_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -104,8 +104,8 @@ description: Variables in memory after executing camshaft.kcl
   "__sketch_59_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -174,12 +174,12 @@ description: Variables in memory after executing camshaft.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+      "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "59f06533-4c77-59c2-a7a5-7f32b605cc9b",
+          "id": "7f42517b-dc07-5b0f-a02f-d6e761b38ad5",
           "sourceRange": [],
           "tag": {
             "commentStart": 4682,
@@ -195,11 +195,11 @@ description: Variables in memory after executing camshaft.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7f42517b-dc07-5b0f-a02f-d6e761b38ad5",
               "sourceRange": []
             },
             "ccw": true,
@@ -229,8 +229,8 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+          "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
           "kind": "Custom",
           "objectId": 52,
           "origin": {
@@ -271,7 +271,7 @@ description: Variables in memory after executing camshaft.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
             "sourceRange": []
           }
         },
@@ -281,13 +281,13 @@ description: Variables in memory after executing camshaft.kcl
             "value": "shaft"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+        "originalId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+        "originSketchId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "11e5e783-5195-5aec-b5c3-33dab90099cd",
+      "endCapId": "0ef283cd-ca1e-59ff-b253-7396de2e39b3",
       "units": "in",
       "sectional": false
     }
@@ -308,12 +308,12 @@ description: Variables in memory after executing camshaft.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+      "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f535c46c-af36-5853-8eee-82f8ac749ecd",
+          "id": "9076fac9-8dc4-5a25-8fbf-e3f2c0d70b84",
           "sourceRange": [],
           "tag": {
             "commentStart": 2399,
@@ -326,8 +326,8 @@ description: Variables in memory after executing camshaft.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "62684c29-0407-5629-a0ad-98dc86578e27",
+          "id": "611a7e93-6aa0-555e-a3ce-6a3079ed898f",
           "sourceRange": [],
           "tag": {
             "commentStart": 2604,
@@ -340,8 +340,8 @@ description: Variables in memory after executing camshaft.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9a397f2a-9e8a-53e5-8c19-5cdb08492c95",
+          "id": "c32fcce5-9a50-5fb0-ba9a-2bf87f66813b",
           "sourceRange": [],
           "tag": {
             "commentStart": 2903,
@@ -354,8 +354,8 @@ description: Variables in memory after executing camshaft.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5b010224-2823-5bc8-b783-67a1d63cd2d0",
+          "id": "293c57d0-a9fa-5c1c-b722-9b40ed24bce8",
           "sourceRange": [],
           "tag": {
             "commentStart": 3167,
@@ -371,11 +371,11 @@ description: Variables in memory after executing camshaft.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9076fac9-8dc4-5a25-8fbf-e3f2c0d70b84",
               "sourceRange": []
             },
             "ccw": true,
@@ -405,7 +405,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "611a7e93-6aa0-555e-a3ce-6a3079ed898f",
               "sourceRange": []
             },
             "ccw": true,
@@ -435,7 +435,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c32fcce5-9a50-5fb0-ba9a-2bf87f66813b",
               "sourceRange": []
             },
             "ccw": true,
@@ -465,7 +465,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "293c57d0-a9fa-5c1c-b722-9b40ed24bce8",
               "sourceRange": []
             },
             "ccw": true,
@@ -495,8 +495,8 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+          "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -537,7 +537,7 @@ description: Variables in memory after executing camshaft.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
             "sourceRange": []
           }
         },
@@ -559,13 +559,13 @@ description: Variables in memory after executing camshaft.kcl
             "value": "rightFlank"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "originalId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
+        "originSketchId": "7d4c814d-f292-503d-a012-68ab58c77524",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "69be4309-723b-5909-8f6d-ee4508791c13",
+      "endCapId": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
       "units": "in",
       "sectional": false
     }
@@ -597,7 +597,7 @@ description: Variables in memory after executing camshaft.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                 "objectId": 31,
                 "kind": {
                   "arc": {
@@ -703,8 +703,8 @@ description: Variables in memory after executing camshaft.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+                  "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -733,7 +733,7 @@ description: Variables in memory after executing camshaft.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7d4c814d-f292-503d-a012-68ab58c77524",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "baseArc"
@@ -749,7 +749,7 @@ description: Variables in memory after executing camshaft.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                 "objectId": 45,
                 "kind": {
                   "arc": {
@@ -855,8 +855,8 @@ description: Variables in memory after executing camshaft.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+                  "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -885,7 +885,7 @@ description: Variables in memory after executing camshaft.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7d4c814d-f292-503d-a012-68ab58c77524",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftFlank"
@@ -902,11 +902,11 @@ description: Variables in memory after executing camshaft.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "7d4c814d-f292-503d-a012-68ab58c77524",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -936,7 +936,7 @@ description: Variables in memory after executing camshaft.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -966,7 +966,7 @@ description: Variables in memory after executing camshaft.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -996,7 +996,7 @@ description: Variables in memory after executing camshaft.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1026,8 +1026,8 @@ description: Variables in memory after executing camshaft.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+                "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "kind": "Custom",
                 "objectId": 26,
                 "origin": {
@@ -1068,7 +1068,7 @@ description: Variables in memory after executing camshaft.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                   "sourceRange": []
                 }
               },
@@ -1090,8 +1090,8 @@ description: Variables in memory after executing camshaft.kcl
                   "value": "rightFlank"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
+              "originalId": "7d4c814d-f292-503d-a012-68ab58c77524",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -1105,7 +1105,7 @@ description: Variables in memory after executing camshaft.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "objectId": 40,
                 "kind": {
                   "arc": {
@@ -1211,8 +1211,8 @@ description: Variables in memory after executing camshaft.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+                  "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -1241,7 +1241,7 @@ description: Variables in memory after executing camshaft.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7d4c814d-f292-503d-a012-68ab58c77524",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "noseArc"
@@ -1257,7 +1257,7 @@ description: Variables in memory after executing camshaft.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                 "objectId": 35,
                 "kind": {
                   "arc": {
@@ -1363,8 +1363,8 @@ description: Variables in memory after executing camshaft.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+                  "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -1393,7 +1393,7 @@ description: Variables in memory after executing camshaft.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7d4c814d-f292-503d-a012-68ab58c77524",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightFlank"
@@ -1410,12 +1410,12 @@ description: Variables in memory after executing camshaft.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
+      "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "094c2621-b6dc-5b8d-b217-525224318aa7",
+          "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
           "sourceRange": [],
           "tag": {
             "commentStart": 914,
@@ -1428,8 +1428,8 @@ description: Variables in memory after executing camshaft.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
+          "id": "eb9d56c1-169a-5445-ae15-f24345ec7c75",
           "sourceRange": [],
           "tag": {
             "commentStart": 1119,
@@ -1442,8 +1442,8 @@ description: Variables in memory after executing camshaft.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
+          "id": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
           "sourceRange": [],
           "tag": {
             "commentStart": 1418,
@@ -1456,8 +1456,8 @@ description: Variables in memory after executing camshaft.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
+          "id": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
           "sourceRange": [],
           "tag": {
             "commentStart": 1682,
@@ -1473,11 +1473,11 @@ description: Variables in memory after executing camshaft.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "de7be92e-614b-5db2-af67-45ab2a0e944d",
               "sourceRange": []
             },
             "ccw": true,
@@ -1507,7 +1507,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb9d56c1-169a-5445-ae15-f24345ec7c75",
               "sourceRange": []
             },
             "ccw": true,
@@ -1537,7 +1537,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
               "sourceRange": []
             },
             "ccw": true,
@@ -1567,7 +1567,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
               "sourceRange": []
             },
             "ccw": true,
@@ -1597,8 +1597,8 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1639,7 +1639,7 @@ description: Variables in memory after executing camshaft.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
             "sourceRange": []
           }
         },
@@ -1661,13 +1661,13 @@ description: Variables in memory after executing camshaft.kcl
             "value": "rightFlank"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+        "originalId": "53a9149e-1246-5c44-9e3c-558201ff438c",
+        "originSketchId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b620e86e-3390-5b73-897e-9d5291058003",
+      "endCapId": "17940c6a-8399-5d56-9384-d0d6f676d048",
       "units": "in",
       "sectional": false
     }
@@ -1708,7 +1708,7 @@ description: Variables in memory after executing camshaft.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -1814,8 +1814,8 @@ description: Variables in memory after executing camshaft.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1844,7 +1844,7 @@ description: Variables in memory after executing camshaft.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "baseArc"
@@ -1860,7 +1860,7 @@ description: Variables in memory after executing camshaft.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 19,
                 "kind": {
                   "arc": {
@@ -1966,8 +1966,8 @@ description: Variables in memory after executing camshaft.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1996,7 +1996,7 @@ description: Variables in memory after executing camshaft.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftFlank"
@@ -2013,11 +2013,11 @@ description: Variables in memory after executing camshaft.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2047,7 +2047,7 @@ description: Variables in memory after executing camshaft.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2077,7 +2077,7 @@ description: Variables in memory after executing camshaft.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2107,7 +2107,7 @@ description: Variables in memory after executing camshaft.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2137,8 +2137,8 @@ description: Variables in memory after executing camshaft.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2179,7 +2179,7 @@ description: Variables in memory after executing camshaft.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                   "sourceRange": []
                 }
               },
@@ -2201,8 +2201,8 @@ description: Variables in memory after executing camshaft.kcl
                   "value": "rightFlank"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
+              "originalId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -2216,7 +2216,7 @@ description: Variables in memory after executing camshaft.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 14,
                 "kind": {
                   "arc": {
@@ -2322,8 +2322,8 @@ description: Variables in memory after executing camshaft.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2352,7 +2352,7 @@ description: Variables in memory after executing camshaft.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "noseArc"
@@ -2368,7 +2368,7 @@ description: Variables in memory after executing camshaft.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 9,
                 "kind": {
                   "arc": {
@@ -2474,8 +2474,8 @@ description: Variables in memory after executing camshaft.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2504,7 +2504,7 @@ description: Variables in memory after executing camshaft.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightFlank"
@@ -2579,11 +2579,11 @@ description: Variables in memory after executing camshaft.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d5eaf678-0440-563f-ac19-e473850b9270",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2613,8 +2613,8 @@ description: Variables in memory after executing camshaft.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                 "kind": "Custom",
                 "objectId": 52,
                 "origin": {
@@ -2655,7 +2655,7 @@ description: Variables in memory after executing camshaft.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
                   "sourceRange": []
                 }
               },
@@ -2665,8 +2665,8 @@ description: Variables in memory after executing camshaft.kcl
                   "value": "shaft"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+              "originalId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
               "units": "in",
               "isClosed": "no"
             }
@@ -2680,7 +2680,7 @@ description: Variables in memory after executing camshaft.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d5eaf678-0440-563f-ac19-e473850b9270",
                 "objectId": 56,
                 "kind": {
                   "circle": {
@@ -2754,8 +2754,8 @@ description: Variables in memory after executing camshaft.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
+                  "id": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
                   "kind": "Custom",
                   "objectId": 52,
                   "origin": {
@@ -2784,7 +2784,7 @@ description: Variables in memory after executing camshaft.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "shaft"
@@ -2810,12 +2810,12 @@ description: Variables in memory after executing camshaft.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
+      "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "427a5837-1791-5157-a917-2a220de0ef7a",
+          "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
           "sourceRange": [],
           "tag": {
             "commentStart": 1163,
@@ -2828,22 +2828,22 @@ description: Variables in memory after executing camshaft.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cd50d72a-3e0d-5bd4-8f27-0aa0ebcbf495",
+          "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d8bc3c34-c5ba-5a3b-bcdc-14fca7f95eed",
+          "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3e207211-d2a7-58c7-b5f9-d16e3680848b",
+          "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -2852,11 +2852,11 @@ description: Variables in memory after executing camshaft.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
               "sourceRange": []
             },
             "from": [
@@ -2880,7 +2880,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
               "sourceRange": []
             },
             "from": [
@@ -2897,7 +2897,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
               "sourceRange": []
             },
             "from": [
@@ -2914,7 +2914,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
               "sourceRange": []
             },
             "from": [
@@ -2931,7 +2931,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
               "sourceRange": []
             },
             "from": [
@@ -2948,8 +2948,8 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+          "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
           "kind": "Custom",
           "objectId": 57,
           "origin": {
@@ -2990,7 +2990,7 @@ description: Variables in memory after executing camshaft.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
             "sourceRange": []
           }
         },
@@ -3000,12 +3000,12 @@ description: Variables in memory after executing camshaft.kcl
             "value": "seg01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "originalId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "74913545-afce-528a-a4fc-efb2e38867ce",
+      "endCapId": "fb6ca44a-5138-53e0-9297-562318693cf7",
       "units": "in",
       "sectional": false
     }
@@ -3014,12 +3014,12 @@ description: Variables in memory after executing camshaft.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+      "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "427a5837-1791-5157-a917-2a220de0ef7a",
+          "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
           "sourceRange": [],
           "tag": {
             "commentStart": 1163,
@@ -3032,22 +3032,22 @@ description: Variables in memory after executing camshaft.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cd50d72a-3e0d-5bd4-8f27-0aa0ebcbf495",
+          "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d8bc3c34-c5ba-5a3b-bcdc-14fca7f95eed",
+          "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3e207211-d2a7-58c7-b5f9-d16e3680848b",
+          "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -3056,11 +3056,11 @@ description: Variables in memory after executing camshaft.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
               "sourceRange": []
             },
             "from": [
@@ -3084,7 +3084,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
               "sourceRange": []
             },
             "from": [
@@ -3101,7 +3101,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
               "sourceRange": []
             },
             "from": [
@@ -3118,7 +3118,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
               "sourceRange": []
             },
             "from": [
@@ -3135,7 +3135,7 @@ description: Variables in memory after executing camshaft.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
               "sourceRange": []
             },
             "from": [
@@ -3152,8 +3152,8 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+          "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
           "kind": "Custom",
           "objectId": 57,
           "origin": {
@@ -3194,7 +3194,7 @@ description: Variables in memory after executing camshaft.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
             "sourceRange": []
           }
         },
@@ -3204,12 +3204,12 @@ description: Variables in memory after executing camshaft.kcl
             "value": "seg01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
+        "originalId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "74913545-afce-528a-a4fc-efb2e38867ce",
+      "endCapId": "fb6ca44a-5138-53e0-9297-562318693cf7",
       "units": "in",
       "sectional": false
     }
@@ -3218,12 +3218,12 @@ description: Variables in memory after executing camshaft.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+      "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b92195b9-d197-54ab-9317-4af63841ca8c",
+          "id": "69b31a2d-6e63-51f8-89f3-679fea249385",
           "sourceRange": [],
           "tag": {
             "commentStart": 5023,
@@ -3239,11 +3239,11 @@ description: Variables in memory after executing camshaft.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "69b31a2d-6e63-51f8-89f3-679fea249385",
               "sourceRange": []
             },
             "ccw": true,
@@ -3273,8 +3273,8 @@ description: Variables in memory after executing camshaft.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+          "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
           "kind": "Custom",
           "objectId": 58,
           "origin": {
@@ -3315,7 +3315,7 @@ description: Variables in memory after executing camshaft.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
             "sourceRange": []
           }
         },
@@ -3325,13 +3325,13 @@ description: Variables in memory after executing camshaft.kcl
             "value": "bore"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+        "originalId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
+        "originSketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "09b454db-b1d2-5aba-a841-9d8bd9f040fb",
+      "endCapId": "bdc336c6-3f83-5d3f-88d6-915dc7c83f6f",
       "units": "in",
       "sectional": false
     }
@@ -3345,7 +3345,7 @@ description: Variables in memory after executing camshaft.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
                 "objectId": 62,
                 "kind": {
                   "circle": {
@@ -3419,8 +3419,8 @@ description: Variables in memory after executing camshaft.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+                  "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
                   "kind": "Custom",
                   "objectId": 58,
                   "origin": {
@@ -3449,7 +3449,7 @@ description: Variables in memory after executing camshaft.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "40d8c462-7810-5666-bb09-1db7308cf666",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bore"
@@ -3466,11 +3466,11 @@ description: Variables in memory after executing camshaft.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "40d8c462-7810-5666-bb09-1db7308cf666",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3500,8 +3500,8 @@ description: Variables in memory after executing camshaft.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+                "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
                 "kind": "Custom",
                 "objectId": 58,
                 "origin": {
@@ -3542,7 +3542,7 @@ description: Variables in memory after executing camshaft.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
                   "sourceRange": []
                 }
               },
@@ -3552,8 +3552,8 @@ description: Variables in memory after executing camshaft.kcl
                   "value": "bore"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+              "originalId": "40d8c462-7810-5666-bb09-1db7308cf666",
               "units": "in",
               "isClosed": "no"
             }

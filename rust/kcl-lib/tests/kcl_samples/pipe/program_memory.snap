@@ -6,8 +6,8 @@ description: Variables in memory after executing pipe.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -49,12 +49,12 @@ description: Variables in memory after executing pipe.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6f8e950d-e6e3-5526-ab84-3b9b17d62df9",
+          "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
           "sourceRange": [],
           "tag": {
             "commentStart": 361,
@@ -67,8 +67,8 @@ description: Variables in memory after executing pipe.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1c8c7308-3a35-5560-adc8-fa0d351181c5",
+          "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
           "sourceRange": [],
           "tag": {
             "commentStart": 483,
@@ -84,11 +84,11 @@ description: Variables in memory after executing pipe.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
               "sourceRange": []
             },
             "ccw": true,
@@ -118,7 +118,7 @@ description: Variables in memory after executing pipe.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
               "sourceRange": []
             },
             "ccw": true,
@@ -148,8 +148,8 @@ description: Variables in memory after executing pipe.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -190,7 +190,7 @@ description: Variables in memory after executing pipe.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           }
         },
@@ -204,13 +204,13 @@ description: Variables in memory after executing pipe.kcl
             "value": "circle2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+        "originalId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+        "originSketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b356ed22-c663-5d43-b6bd-e3795b5d05ea",
+      "endCapId": "2c683dfd-78db-5deb-a4b7-e4e2f0096423",
       "units": "in",
       "sectional": false
     }
@@ -251,7 +251,7 @@ description: Variables in memory after executing pipe.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -325,8 +325,8 @@ description: Variables in memory after executing pipe.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -355,7 +355,7 @@ description: Variables in memory after executing pipe.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -371,7 +371,7 @@ description: Variables in memory after executing pipe.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 8,
                 "kind": {
                   "circle": {
@@ -445,8 +445,8 @@ description: Variables in memory after executing pipe.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -475,7 +475,7 @@ description: Variables in memory after executing pipe.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -492,11 +492,11 @@ description: Variables in memory after executing pipe.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -526,7 +526,7 @@ description: Variables in memory after executing pipe.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "from": [
@@ -543,7 +543,7 @@ description: Variables in memory after executing pipe.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -573,8 +573,8 @@ description: Variables in memory after executing pipe.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -615,7 +615,7 @@ description: Variables in memory after executing pipe.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                   "sourceRange": []
                 }
               },
@@ -629,8 +629,8 @@ description: Variables in memory after executing pipe.kcl
                   "value": "circle2"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+              "originalId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "units": "in",
               "isClosed": "no"
             }
@@ -654,11 +654,11 @@ description: Variables in memory after executing pipe.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a77db112-51c4-5a35-b8a5-dbaeb4ea6453",
             "sourceRange": []
           },
           "ccw": true,
@@ -688,7 +688,7 @@ description: Variables in memory after executing pipe.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9f8a93e9-cc1a-56af-9ae2-4c6d178a3446",
             "sourceRange": []
           },
           "ccw": true,
@@ -718,8 +718,8 @@ description: Variables in memory after executing pipe.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -760,7 +760,7 @@ description: Variables in memory after executing pipe.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
           "sourceRange": []
         }
       },
@@ -774,9 +774,9 @@ description: Variables in memory after executing pipe.kcl
           "value": "circle2"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "originalId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "originSketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "units": "in"
     }
   }

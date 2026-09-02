@@ -5,7 +5,7 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
 {
   "public/kcl-samples/curtain-wall-anchor-plate/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -44,20 +44,20 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -69,18 +69,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "to": {
           "x": 0.000000000000000012899999939592062,
           "y": -0.000000000000000012700014964436954,
@@ -89,18 +89,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -113,11 +113,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -130,11 +130,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -147,11 +147,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -164,11 +164,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -181,11 +181,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -198,33 +198,33 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "segment": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "intersection_segment": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -236,11 +236,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "distance": 200.0,
         "faces": null,
         "opposite": "None",
@@ -249,68 +249,68 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "edge_id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "edge_id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "e6d910f3-f438-5bd9-91a4-357f3e469646"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d4c814d-f292-503d-a012-68ab58c77524",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "edge_id": "e8e8a799-080a-5af7-b552-92f258391b5a"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "edge_ids": [
-          "[uuid]"
+          "e8e8a799-080a-5af7-b552-92f258391b5a"
         ],
         "cut_type": {
           "fillet": {
@@ -324,35 +324,35 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "70234578-22da-5570-b77f-9ab44bbf8710"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "edge_id": "375909ca-005f-5bf2-83c9-5f0b348dac37"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc312d38-2fa6-5583-a605-44880f646499",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "edge_ids": [
-          "[uuid]"
+          "375909ca-005f-5bf2-83c9-5f0b348dac37"
         ],
         "cut_type": {
           "fillet": {
@@ -366,7 +366,7 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -391,20 +391,20 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -416,18 +416,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "to": {
           "x": 176.0,
           "y": -64.0,
@@ -436,18 +436,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "segment": {
           "type": "line",
           "end": {
@@ -460,11 +460,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "segment": {
           "type": "arc",
           "center": {
@@ -485,11 +485,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "segment": {
           "type": "line",
           "end": {
@@ -502,11 +502,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "segment": {
           "type": "arc",
           "center": {
@@ -527,33 +527,33 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+        "segment": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+        "intersection_segment": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -565,11 +565,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
@@ -578,44 +578,44 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "edge_id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "edge_id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
         "transforms": [
           {
             "translate": {
@@ -637,66 +637,66 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
+        "resultArtifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
+        "sourceTopologyId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "edge_id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "edge_id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
         "transforms": [
           {
             "translate": {
@@ -718,37 +718,37 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "eedabccb-e42b-5224-a499-7c2981b239e5"
         ],
         "tool_ids": [
-          "[uuid]"
+          "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "4b789d9f-4de7-52cb-ab04-7565c5456f13"
         ],
         "tool_ids": [
-          "[uuid]"
+          "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -773,20 +773,20 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f5ca073-184d-543b-9da6-2db6719123a8",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -798,18 +798,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "to": {
           "x": -10.000000000000043,
           "y": 0.00000000000000015883264053847466,
@@ -818,18 +818,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "segment": {
           "type": "line",
           "end": {
@@ -842,11 +842,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "segment": {
           "type": "line",
           "end": {
@@ -859,11 +859,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "segment": {
           "type": "line",
           "end": {
@@ -876,11 +876,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "segment": {
           "type": "line",
           "end": {
@@ -893,11 +893,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "segment": {
           "type": "line",
           "end": {
@@ -910,11 +910,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "segment": {
           "type": "line",
           "end": {
@@ -927,33 +927,33 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+        "segment": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
+        "intersection_segment": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -965,11 +965,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "distance": 7.0,
         "faces": null,
         "opposite": "None",
@@ -978,44 +978,44 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "edge_id": "dfac5b28-4b3a-586f-985e-7dd31fa5962d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "edge_id": "dfac5b28-4b3a-586f-985e-7dd31fa5962d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1023,18 +1023,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "08138142-a558-56a4-a23f-2f334e02b011",
         "to": {
           "x": 5.0,
           "y": 0.0,
@@ -1043,18 +1043,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "08138142-a558-56a4-a23f-2f334e02b011",
         "segment": {
           "type": "arc",
           "center": {
@@ -1075,33 +1075,33 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "08138142-a558-56a4-a23f-2f334e02b011",
+        "segment": "30efa5e2-105e-56b9-85d8-16e0935167b0",
+        "intersection_segment": "30efa5e2-105e-56b9-85d8-16e0935167b0",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "08138142-a558-56a4-a23f-2f334e02b011",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1109,11 +1109,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
         "distance": 26.0,
         "faces": null,
         "opposite": "None",
@@ -1122,40 +1122,40 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4559fd3-915b-52c0-aaa4-3c74444e5f37",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "edge_id": "af85d4ff-154d-5200-b3f4-c4a444c3bfb5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "969d96c2-dff1-582e-8974-a3f5fef9c547",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "edge_id": "af85d4ff-154d-5200-b3f4-c4a444c3bfb5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1180,11 +1180,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1194,20 +1194,20 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9209892e-e35e-575e-b305-9935eac5ab33",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1219,18 +1219,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44d94cee-dac7-5b9f-829d-112d277b8975",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
         "to": {
           "x": -15.0,
           "y": -15.0,
@@ -1239,18 +1239,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95d80984-dc84-541c-af31-df26752c9fd4",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d22753f-e63a-506c-bc84-6006343b9a0b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
         "segment": {
           "type": "line",
           "end": {
@@ -1263,11 +1263,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34ea98a5-fab3-5283-9445-5a3b25071d26",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
         "segment": {
           "type": "line",
           "end": {
@@ -1280,11 +1280,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
         "segment": {
           "type": "line",
           "end": {
@@ -1297,11 +1297,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8cc464b-6248-5cb4-8c70-30f634da184c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
         "segment": {
           "type": "line",
           "end": {
@@ -1314,33 +1314,33 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+        "segment": "2d22753f-e63a-506c-bc84-6006343b9a0b",
+        "intersection_segment": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f18bf81-bc67-555b-bc5f-0a5fbcd2f487",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1352,11 +1352,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
@@ -1365,44 +1365,44 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8f72543d-c84d-5018-865e-36a2fd66854c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96889f64-587b-51f2-b62f-b230408206cc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+        "edge_id": "d7e1353f-fc10-53b3-a9c5-0aa4156c0c8f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeec94d2-cb3d-5ff5-98df-ea40a7022f7f",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+        "edge_id": "d7e1353f-fc10-53b3-a9c5-0aa4156c0c8f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "887f8b95-6182-5637-a45b-e92f2860796c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cb660a24-3edc-5389-bd54-5de6148435d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1410,18 +1410,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c91b9ebe-ef24-5090-8a15-d377717956bf",
         "to": {
           "x": -12.000000000000002,
           "y": -0.0000000000000012851246740515602,
@@ -1430,18 +1430,18 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "75786bd7-c284-566d-b238-3f6b11158ab4",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96b5306d-8365-5f19-adf7-7b3e844826ca",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c91b9ebe-ef24-5090-8a15-d377717956bf",
         "segment": {
           "type": "line",
           "end": {
@@ -1454,11 +1454,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c91b9ebe-ef24-5090-8a15-d377717956bf",
         "segment": {
           "type": "line",
           "end": {
@@ -1471,11 +1471,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "43582f56-4d15-5082-9796-67d8e5ee6e44",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c91b9ebe-ef24-5090-8a15-d377717956bf",
         "segment": {
           "type": "line",
           "end": {
@@ -1488,11 +1488,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e9531b65-3013-5f8b-bebc-accdbd43919c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c91b9ebe-ef24-5090-8a15-d377717956bf",
         "segment": {
           "type": "line",
           "end": {
@@ -1505,11 +1505,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c91b9ebe-ef24-5090-8a15-d377717956bf",
         "segment": {
           "type": "line",
           "end": {
@@ -1522,11 +1522,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c91b9ebe-ef24-5090-8a15-d377717956bf",
         "segment": {
           "type": "line",
           "end": {
@@ -1539,33 +1539,33 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6ae8c147-090c-5277-8840-6daa34bb4685",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "c91b9ebe-ef24-5090-8a15-d377717956bf",
+        "segment": "96b5306d-8365-5f19-adf7-7b3e844826ca",
+        "intersection_segment": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c91b9ebe-ef24-5090-8a15-d377717956bf",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "cb660a24-3edc-5389-bd54-5de6148435d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1573,11 +1573,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f89f295-7088-5e46-8594-1b84a8601b0a",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "6ae8c147-090c-5277-8840-6daa34bb4685",
         "distance": 7.0,
         "faces": null,
         "opposite": "None",
@@ -1586,57 +1586,57 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b7074da6-ba4d-5c11-9954-823a94aa7064",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "6ae8c147-090c-5277-8840-6daa34bb4685"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+        "edge_id": "282922d1-af6f-5a57-851b-6ab0b4216939"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+        "edge_id": "282922d1-af6f-5a57-851b-6ab0b4216939"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f3e5d974-3ee8-52ce-a294-da34987457f8",
       "range": [],
       "command": {
         "type": "boolean_union",
         "solid_ids": [
-          "[uuid]",
-          "[uuid]"
+          "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+          "a7b34ba2-fd7c-5682-81f5-8deb44c234d5"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "f3e5d974-3ee8-52ce-a294-da34987457f8",
         "transforms": [
           {
             "translate": null,
@@ -1658,11 +1658,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "f3e5d974-3ee8-52ce-a294-da34987457f8",
         "transforms": [
           {
             "translate": {
@@ -1684,11 +1684,11 @@ description: Artifact commands curtain-wall-anchor-plate.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "f3e5d974-3ee8-52ce-a294-da34987457f8",
         "transform": [],
         "transforms": [
           [

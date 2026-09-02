@@ -6,8 +6,8 @@ description: Variables in memory after executing mounting-plate.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -100,12 +100,12 @@ description: Variables in memory after executing mounting-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+      "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "601e05e9-49f7-59c3-a00d-f12b96b078d4",
+          "id": "f9d30a83-6c52-5210-8692-c03e8449257c",
           "sourceRange": [],
           "tag": {
             "commentStart": 428,
@@ -118,8 +118,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a51efcc9-9a8b-5066-9320-f2965bb56887",
+          "id": "a95ef48b-946e-5958-a9d5-2fe77aea9661",
           "sourceRange": [],
           "tag": {
             "commentStart": 500,
@@ -132,8 +132,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "147c5ed6-cc93-5d16-9a4c-12409fe75375",
+          "id": "9b27d593-d183-505a-a316-8c83796dae84",
           "sourceRange": [],
           "tag": {
             "commentStart": 574,
@@ -146,8 +146,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09b7f34a-73d5-5ef8-8ced-d89a0a3b3eae",
+          "id": "1f2671ce-102d-5124-b423-b4c6e40b6276",
           "sourceRange": [],
           "tag": {
             "commentStart": 651,
@@ -160,8 +160,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2d8d4488-96a5-5943-96fd-7368543cc833",
+          "id": "3e0cbe61-6bd0-5219-aea9-c9750983b38a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1262,
@@ -174,8 +174,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f22dc41f-63e6-5cfe-9079-a2f64bc1be6a",
+          "id": "ba9d9fa0-6a88-5f98-8158-391612fa9514",
           "sourceRange": [],
           "tag": {
             "commentStart": 1351,
@@ -188,8 +188,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "dfc17f36-5404-5c38-bf01-32fa89907a92",
+          "id": "e3d14a4e-0b08-5a72-a413-939188ef7d30",
           "sourceRange": [],
           "tag": {
             "commentStart": 1441,
@@ -202,8 +202,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "43ff4a65-a0e7-55b9-8174-b0803e6d0701",
+          "id": "e907b160-c0ab-57ff-af46-fbe257901ecf",
           "sourceRange": [],
           "tag": {
             "commentStart": 1532,
@@ -216,8 +216,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+          "id": "9912e66c-96e0-523c-b215-1ae3fee8d068",
           "sourceRange": [],
           "tag": {
             "commentStart": 1624,
@@ -233,11 +233,11 @@ description: Variables in memory after executing mounting-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f9d30a83-6c52-5210-8692-c03e8449257c",
               "sourceRange": []
             },
             "from": [
@@ -261,7 +261,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a95ef48b-946e-5958-a9d5-2fe77aea9661",
               "sourceRange": []
             },
             "from": [
@@ -285,7 +285,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9b27d593-d183-505a-a316-8c83796dae84",
               "sourceRange": []
             },
             "from": [
@@ -309,7 +309,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1f2671ce-102d-5124-b423-b4c6e40b6276",
               "sourceRange": []
             },
             "from": [
@@ -333,7 +333,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3e0cbe61-6bd0-5219-aea9-c9750983b38a",
               "sourceRange": []
             },
             "ccw": true,
@@ -363,7 +363,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ba9d9fa0-6a88-5f98-8158-391612fa9514",
               "sourceRange": []
             },
             "ccw": true,
@@ -393,7 +393,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e3d14a4e-0b08-5a72-a413-939188ef7d30",
               "sourceRange": []
             },
             "ccw": true,
@@ -423,7 +423,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e907b160-c0ab-57ff-af46-fbe257901ecf",
               "sourceRange": []
             },
             "ccw": true,
@@ -453,7 +453,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9912e66c-96e0-523c-b215-1ae3fee8d068",
               "sourceRange": []
             },
             "ccw": true,
@@ -483,8 +483,8 @@ description: Variables in memory after executing mounting-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -525,7 +525,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
             "sourceRange": []
           }
         },
@@ -567,17 +567,17 @@ description: Variables in memory after executing mounting-plate.kcl
             "value": "upperRight"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+        "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+        "originSketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "d9778433-77d0-5969-a400-6cc704125d95",
+      "endCapId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -586,12 +586,12 @@ description: Variables in memory after executing mounting-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "37246835-6ec6-5f96-a6f2-9a36b01199f0",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -600,12 +600,12 @@ description: Variables in memory after executing mounting-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e7569603-9502-562d-b474-5eaed3222038",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -614,12 +614,12 @@ description: Variables in memory after executing mounting-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "3c87d2b8-2980-55db-b1f4-e70f900939ac",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -628,7 +628,7 @@ description: Variables in memory after executing mounting-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "6a6d2cd8-580d-5243-9e9b-0cc867839802",
           "tag": null
         }
       ],
@@ -649,11 +649,11 @@ description: Variables in memory after executing mounting-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f9d30a83-6c52-5210-8692-c03e8449257c",
             "sourceRange": []
           },
           "from": [
@@ -677,7 +677,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a95ef48b-946e-5958-a9d5-2fe77aea9661",
             "sourceRange": []
           },
           "from": [
@@ -701,7 +701,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9b27d593-d183-505a-a316-8c83796dae84",
             "sourceRange": []
           },
           "from": [
@@ -725,7 +725,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1f2671ce-102d-5124-b423-b4c6e40b6276",
             "sourceRange": []
           },
           "from": [
@@ -749,7 +749,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3e0cbe61-6bd0-5219-aea9-c9750983b38a",
             "sourceRange": []
           },
           "ccw": true,
@@ -779,7 +779,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ba9d9fa0-6a88-5f98-8158-391612fa9514",
             "sourceRange": []
           },
           "ccw": true,
@@ -809,7 +809,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e3d14a4e-0b08-5a72-a413-939188ef7d30",
             "sourceRange": []
           },
           "ccw": true,
@@ -839,7 +839,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e907b160-c0ab-57ff-af46-fbe257901ecf",
             "sourceRange": []
           },
           "ccw": true,
@@ -869,7 +869,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9912e66c-96e0-523c-b215-1ae3fee8d068",
             "sourceRange": []
           },
           "ccw": true,
@@ -899,8 +899,8 @@ description: Variables in memory after executing mounting-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -941,7 +941,7 @@ description: Variables in memory after executing mounting-plate.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
           "sourceRange": []
         }
       },
@@ -983,9 +983,9 @@ description: Variables in memory after executing mounting-plate.kcl
           "value": "upperRight"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+      "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+      "originSketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "units": "in"
     }
   },
@@ -998,7 +998,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -1072,8 +1072,8 @@ description: Variables in memory after executing mounting-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1102,7 +1102,7 @@ description: Variables in memory after executing mounting-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomEdge"
@@ -1118,7 +1118,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "objectId": 40,
                 "kind": {
                   "circle": {
@@ -1192,8 +1192,8 @@ description: Variables in memory after executing mounting-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1222,7 +1222,7 @@ description: Variables in memory after executing mounting-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerHole"
@@ -1238,7 +1238,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1312,8 +1312,8 @@ description: Variables in memory after executing mounting-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1342,7 +1342,7 @@ description: Variables in memory after executing mounting-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftEdge"
@@ -1358,7 +1358,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                 "objectId": 34,
                 "kind": {
                   "circle": {
@@ -1432,8 +1432,8 @@ description: Variables in memory after executing mounting-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1462,7 +1462,7 @@ description: Variables in memory after executing mounting-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerLeft"
@@ -1478,7 +1478,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "objectId": 37,
                 "kind": {
                   "circle": {
@@ -1552,8 +1552,8 @@ description: Variables in memory after executing mounting-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1582,7 +1582,7 @@ description: Variables in memory after executing mounting-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerRight"
@@ -1599,11 +1599,11 @@ description: Variables in memory after executing mounting-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1627,7 +1627,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1651,7 +1651,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -1675,7 +1675,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1699,7 +1699,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                     "sourceRange": []
                   },
                   "from": [
@@ -1716,7 +1716,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b681387-29ea-57f1-8713-d63280827139",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1746,7 +1746,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                     "sourceRange": []
                   },
                   "from": [
@@ -1763,7 +1763,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1793,7 +1793,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
                     "sourceRange": []
                   },
                   "from": [
@@ -1810,7 +1810,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1840,7 +1840,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "01e801cc-22ef-5071-814b-847d3fcf22d5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1857,7 +1857,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1887,7 +1887,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
                     "sourceRange": []
                   },
                   "from": [
@@ -1904,7 +1904,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1934,8 +1934,8 @@ description: Variables in memory after executing mounting-plate.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1976,7 +1976,7 @@ description: Variables in memory after executing mounting-plate.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
                   "sourceRange": []
                 }
               },
@@ -2018,8 +2018,8 @@ description: Variables in memory after executing mounting-plate.kcl
                   "value": "upperRight"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
+              "originalId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -2033,7 +2033,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -2107,8 +2107,8 @@ description: Variables in memory after executing mounting-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2137,7 +2137,7 @@ description: Variables in memory after executing mounting-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightEdge"
@@ -2153,7 +2153,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -2227,8 +2227,8 @@ description: Variables in memory after executing mounting-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2257,7 +2257,7 @@ description: Variables in memory after executing mounting-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -2273,7 +2273,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7b681387-29ea-57f1-8713-d63280827139",
                 "objectId": 28,
                 "kind": {
                   "circle": {
@@ -2347,8 +2347,8 @@ description: Variables in memory after executing mounting-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2377,7 +2377,7 @@ description: Variables in memory after executing mounting-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperLeft"
@@ -2393,7 +2393,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 31,
                 "kind": {
                   "circle": {
@@ -2467,8 +2467,8 @@ description: Variables in memory after executing mounting-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2497,7 +2497,7 @@ description: Variables in memory after executing mounting-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperRight"
@@ -2532,12 +2532,12 @@ description: Variables in memory after executing mounting-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+      "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "601e05e9-49f7-59c3-a00d-f12b96b078d4",
+          "id": "f9d30a83-6c52-5210-8692-c03e8449257c",
           "sourceRange": [],
           "tag": {
             "commentStart": 428,
@@ -2550,8 +2550,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a51efcc9-9a8b-5066-9320-f2965bb56887",
+          "id": "a95ef48b-946e-5958-a9d5-2fe77aea9661",
           "sourceRange": [],
           "tag": {
             "commentStart": 500,
@@ -2564,8 +2564,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "147c5ed6-cc93-5d16-9a4c-12409fe75375",
+          "id": "9b27d593-d183-505a-a316-8c83796dae84",
           "sourceRange": [],
           "tag": {
             "commentStart": 574,
@@ -2578,8 +2578,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09b7f34a-73d5-5ef8-8ced-d89a0a3b3eae",
+          "id": "1f2671ce-102d-5124-b423-b4c6e40b6276",
           "sourceRange": [],
           "tag": {
             "commentStart": 651,
@@ -2592,8 +2592,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2d8d4488-96a5-5943-96fd-7368543cc833",
+          "id": "3e0cbe61-6bd0-5219-aea9-c9750983b38a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1262,
@@ -2606,8 +2606,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f22dc41f-63e6-5cfe-9079-a2f64bc1be6a",
+          "id": "ba9d9fa0-6a88-5f98-8158-391612fa9514",
           "sourceRange": [],
           "tag": {
             "commentStart": 1351,
@@ -2620,8 +2620,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "dfc17f36-5404-5c38-bf01-32fa89907a92",
+          "id": "e3d14a4e-0b08-5a72-a413-939188ef7d30",
           "sourceRange": [],
           "tag": {
             "commentStart": 1441,
@@ -2634,8 +2634,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "43ff4a65-a0e7-55b9-8174-b0803e6d0701",
+          "id": "e907b160-c0ab-57ff-af46-fbe257901ecf",
           "sourceRange": [],
           "tag": {
             "commentStart": 1532,
@@ -2648,8 +2648,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "818523fe-3d71-5eb9-bbd4-1830261b1eab",
+          "id": "9912e66c-96e0-523c-b215-1ae3fee8d068",
           "sourceRange": [],
           "tag": {
             "commentStart": 1624,
@@ -2665,11 +2665,11 @@ description: Variables in memory after executing mounting-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f9d30a83-6c52-5210-8692-c03e8449257c",
               "sourceRange": []
             },
             "from": [
@@ -2693,7 +2693,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a95ef48b-946e-5958-a9d5-2fe77aea9661",
               "sourceRange": []
             },
             "from": [
@@ -2717,7 +2717,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9b27d593-d183-505a-a316-8c83796dae84",
               "sourceRange": []
             },
             "from": [
@@ -2741,7 +2741,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1f2671ce-102d-5124-b423-b4c6e40b6276",
               "sourceRange": []
             },
             "from": [
@@ -2765,7 +2765,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3e0cbe61-6bd0-5219-aea9-c9750983b38a",
               "sourceRange": []
             },
             "ccw": true,
@@ -2795,7 +2795,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ba9d9fa0-6a88-5f98-8158-391612fa9514",
               "sourceRange": []
             },
             "ccw": true,
@@ -2825,7 +2825,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e3d14a4e-0b08-5a72-a413-939188ef7d30",
               "sourceRange": []
             },
             "ccw": true,
@@ -2855,7 +2855,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e907b160-c0ab-57ff-af46-fbe257901ecf",
               "sourceRange": []
             },
             "ccw": true,
@@ -2885,7 +2885,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9912e66c-96e0-523c-b215-1ae3fee8d068",
               "sourceRange": []
             },
             "ccw": true,
@@ -2915,8 +2915,8 @@ description: Variables in memory after executing mounting-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2957,7 +2957,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
             "sourceRange": []
           }
         },
@@ -2999,13 +2999,13 @@ description: Variables in memory after executing mounting-plate.kcl
             "value": "upperRight"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+        "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+        "originSketchId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "d9778433-77d0-5969-a400-6cc704125d95",
+      "endCapId": "b59ff7b1-7ec1-5309-9c8b-6817c48e09e3",
       "units": "in",
       "sectional": false
     }

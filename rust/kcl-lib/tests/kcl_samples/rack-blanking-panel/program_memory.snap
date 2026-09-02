@@ -6,8 +6,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
   "__sketch_101_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,12 +71,12 @@ description: Variables in memory after executing rack-blanking-panel.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
+      "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cdf72250-142c-516c-9cb8-b510dc3e5bcd",
+          "id": "59483f0b-b518-51fe-9f83-6ff55cd8c3cb",
           "sourceRange": [],
           "tag": {
             "commentStart": 587,
@@ -89,8 +89,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5b450177-f674-5029-8d31-5488f41ee77b",
+          "id": "db4604fe-b24e-5624-aa6b-4a3e1c2cdc30",
           "sourceRange": [],
           "tag": {
             "commentStart": 670,
@@ -103,8 +103,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a1911f07-44ad-5b05-b81c-4ab4cefa5bf8",
+          "id": "89fdbbc6-fe4b-5229-af6b-ade0a675147c",
           "sourceRange": [],
           "tag": {
             "commentStart": 846,
@@ -117,8 +117,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "acd64b6b-0b58-5355-ad46-1a2980f2dbd3",
+          "id": "f9b6d3cc-e047-52a9-a885-52d4ec71185e",
           "sourceRange": [],
           "tag": {
             "commentStart": 959,
@@ -131,8 +131,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2ec8effb-3ccc-5b5e-8cab-d2105d3514b5",
+          "id": "39740fdb-9049-5d1e-b75e-4ea0ac9d5452",
           "sourceRange": [],
           "tag": {
             "commentStart": 1135,
@@ -145,8 +145,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e3d14a4e-0b08-5a72-a413-939188ef7d30",
+          "id": "24e629b4-3db1-5255-b0c6-8a232bbe5bd2",
           "sourceRange": [],
           "tag": {
             "commentStart": 1255,
@@ -159,8 +159,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "061cde25-319d-5ddc-a242-f27585697be5",
+          "id": "7ae9817d-cbb2-5c59-907c-b4b2e4d5321b",
           "sourceRange": [],
           "tag": {
             "commentStart": 1375,
@@ -173,8 +173,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "deee01bc-d52c-5e85-97dd-6a07babeb55c",
+          "id": "11fe3d3c-e97c-50e6-ac95-b6493350d6f9",
           "sourceRange": [],
           "tag": {
             "commentStart": 1496,
@@ -187,8 +187,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "81a6d0c7-32f7-5952-a185-6c9ad226d719",
+          "id": "018bd47f-1cec-5462-ae8c-6ada78e24bad",
           "sourceRange": [],
           "tag": {
             "commentStart": 1674,
@@ -201,8 +201,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bea0f84e-fa3c-5040-9027-75d8efa9bfb9",
+          "id": "698a6121-6648-5c3c-aacb-ac6e3e90b3dd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1797,
@@ -215,8 +215,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8e854b63-d5d0-572b-a2e5-6731530522cf",
+          "id": "f8b2be5e-76f7-59b5-8b7f-44a71502a5b1",
           "sourceRange": [],
           "tag": {
             "commentStart": 1975,
@@ -229,8 +229,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "80d543d1-2c0e-54a1-8672-ad76a70bf4ab",
+          "id": "b3abf94b-440e-5d9c-988b-cc982196b62c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2098,
@@ -246,11 +246,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "59483f0b-b518-51fe-9f83-6ff55cd8c3cb",
               "sourceRange": []
             },
             "from": [
@@ -274,7 +274,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "db4604fe-b24e-5624-aa6b-4a3e1c2cdc30",
               "sourceRange": []
             },
             "ccw": true,
@@ -304,7 +304,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89fdbbc6-fe4b-5229-af6b-ade0a675147c",
               "sourceRange": []
             },
             "from": [
@@ -328,7 +328,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f9b6d3cc-e047-52a9-a885-52d4ec71185e",
               "sourceRange": []
             },
             "ccw": true,
@@ -358,7 +358,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "39740fdb-9049-5d1e-b75e-4ea0ac9d5452",
               "sourceRange": []
             },
             "from": [
@@ -382,7 +382,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "24e629b4-3db1-5255-b0c6-8a232bbe5bd2",
               "sourceRange": []
             },
             "from": [
@@ -406,7 +406,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7ae9817d-cbb2-5c59-907c-b4b2e4d5321b",
               "sourceRange": []
             },
             "from": [
@@ -430,7 +430,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "11fe3d3c-e97c-50e6-ac95-b6493350d6f9",
               "sourceRange": []
             },
             "ccw": false,
@@ -460,7 +460,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "018bd47f-1cec-5462-ae8c-6ada78e24bad",
               "sourceRange": []
             },
             "from": [
@@ -484,7 +484,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "698a6121-6648-5c3c-aacb-ac6e3e90b3dd",
               "sourceRange": []
             },
             "ccw": false,
@@ -514,7 +514,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f8b2be5e-76f7-59b5-8b7f-44a71502a5b1",
               "sourceRange": []
             },
             "from": [
@@ -538,7 +538,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3abf94b-440e-5d9c-988b-cc982196b62c",
               "sourceRange": []
             },
             "from": [
@@ -562,8 +562,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -604,7 +604,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
             "sourceRange": []
           }
         },
@@ -658,13 +658,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "value": "line8"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93",
+        "originalId": "3312f826-b323-5332-871a-6a8a59a3ae93",
+        "originSketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "6a618b69-19db-5302-9c6b-86e3382f47b0",
+      "endCapId": "495f9b35-1071-569e-b0c9-5f0ef5835b40",
       "units": "in",
       "sectional": false
     }
@@ -678,7 +678,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 8,
                 "kind": {
                   "arc": {
@@ -784,8 +784,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -814,7 +814,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc1"
@@ -830,7 +830,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 18,
                 "kind": {
                   "arc": {
@@ -936,8 +936,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -966,7 +966,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -982,7 +982,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 36,
                 "kind": {
                   "arc": {
@@ -1088,8 +1088,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1118,7 +1118,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -1134,7 +1134,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "objectId": 46,
                 "kind": {
                   "arc": {
@@ -1240,8 +1240,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1270,7 +1270,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -1286,7 +1286,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1360,8 +1360,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1390,7 +1390,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1406,7 +1406,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "objectId": 73,
                 "kind": {
                   "line": {
@@ -1481,8 +1481,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1511,7 +1511,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -1527,7 +1527,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
                 "objectId": 78,
                 "kind": {
                   "line": {
@@ -1602,8 +1602,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1632,7 +1632,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -1648,7 +1648,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1722,8 +1722,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1752,7 +1752,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1768,7 +1768,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -1842,8 +1842,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1872,7 +1872,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1888,7 +1888,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -1962,8 +1962,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1992,7 +1992,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2008,7 +2008,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 31,
                 "kind": {
                   "line": {
@@ -2082,8 +2082,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2112,7 +2112,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -2128,7 +2128,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                 "objectId": 41,
                 "kind": {
                   "line": {
@@ -2202,8 +2202,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2232,7 +2232,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2248,7 +2248,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "objectId": 51,
                 "kind": {
                   "line": {
@@ -2322,8 +2322,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2352,7 +2352,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -2368,7 +2368,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "objectId": 55,
                 "kind": {
                   "line": {
@@ -2442,8 +2442,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2472,7 +2472,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -2488,7 +2488,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                 "objectId": 86,
                 "kind": {
                   "line": {
@@ -2563,8 +2563,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2593,7 +2593,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -2610,11 +2610,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2638,7 +2638,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2668,7 +2668,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
                     "sourceRange": []
                   },
                   "from": [
@@ -2685,7 +2685,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -2709,7 +2709,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2739,7 +2739,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -2763,7 +2763,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "from": [
@@ -2787,7 +2787,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                     "sourceRange": []
                   },
                   "from": [
@@ -2811,7 +2811,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2841,7 +2841,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                     "sourceRange": []
                   },
                   "from": [
@@ -2865,7 +2865,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2895,7 +2895,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
                     "sourceRange": []
                   },
                   "from": [
@@ -2912,7 +2912,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                     "sourceRange": []
                   },
                   "from": [
@@ -2936,7 +2936,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                     "sourceRange": []
                   },
                   "from": [
@@ -2960,8 +2960,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -3002,7 +3002,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
                   "sourceRange": []
                 }
               },
@@ -3056,8 +3056,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "value": "line8"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
+              "originalId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -3084,12 +3084,12 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+          "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "49863f95-e0a2-5967-b4ce-7d4fa9648eb9",
+              "id": "516206c9-f8d3-5e0a-bbca-d170294d9a25",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4682,
@@ -3105,11 +3105,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "516206c9-f8d3-5e0a-bbca-d170294d9a25",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3139,8 +3139,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+              "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
               "kind": "Custom",
               "objectId": 100,
               "origin": {
@@ -3181,7 +3181,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                 "sourceRange": []
               }
             },
@@ -3195,13 +3195,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+            "originalId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+            "originSketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "322a33da-ee3e-5b4d-bdf8-a423b7e22dd6",
+          "endCapId": "badf5ecf-afac-5d39-81fb-9444bea1d11a",
           "units": "in",
           "sectional": false
         }
@@ -3210,12 +3210,12 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "91fbdbb6-014c-5a64-8899-25510779398f",
+          "artifactId": "91fbdbb6-014c-5a64-8899-25510779398f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "49863f95-e0a2-5967-b4ce-7d4fa9648eb9",
+              "id": "516206c9-f8d3-5e0a-bbca-d170294d9a25",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4682,
@@ -3231,11 +3231,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "91fbdbb6-014c-5a64-8899-25510779398f",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "516206c9-f8d3-5e0a-bbca-d170294d9a25",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3265,8 +3265,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+              "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
               "kind": "Custom",
               "objectId": 100,
               "origin": {
@@ -3307,7 +3307,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                 "sourceRange": []
               }
             },
@@ -3321,13 +3321,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+            "originalId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+            "originSketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "322a33da-ee3e-5b4d-bdf8-a423b7e22dd6",
+          "endCapId": "badf5ecf-afac-5d39-81fb-9444bea1d11a",
           "units": "in",
           "sectional": false
         }
@@ -3336,12 +3336,12 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "bee9909d-abbf-534c-b266-2c2c04133834",
+          "artifactId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "910026ee-8700-5100-938f-9f61c1f24a40",
+              "id": "c9d62c3a-7649-5611-938b-3f98aac1affa",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4552,
@@ -3357,11 +3357,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "bee9909d-abbf-534c-b266-2c2c04133834",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c9d62c3a-7649-5611-938b-3f98aac1affa",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3391,8 +3391,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+              "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
               "kind": "Custom",
               "objectId": 100,
               "origin": {
@@ -3433,7 +3433,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                 "sourceRange": []
               }
             },
@@ -3447,13 +3447,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834",
+            "originalId": "bee9909d-abbf-534c-b266-2c2c04133834",
+            "originSketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "ebef6f7c-e2ab-54ff-b770-cebe8cf77d25",
+          "endCapId": "ad5bccac-0a79-54b9-917c-26e484779949",
           "units": "in",
           "sectional": false
         }
@@ -3462,12 +3462,12 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "e9845133-2572-5f28-a028-247d6186663f",
+          "artifactId": "e9845133-2572-5f28-a028-247d6186663f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "910026ee-8700-5100-938f-9f61c1f24a40",
+              "id": "c9d62c3a-7649-5611-938b-3f98aac1affa",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4552,
@@ -3483,11 +3483,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "e9845133-2572-5f28-a028-247d6186663f",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c9d62c3a-7649-5611-938b-3f98aac1affa",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3517,8 +3517,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+              "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
               "kind": "Custom",
               "objectId": 100,
               "origin": {
@@ -3559,7 +3559,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                 "sourceRange": []
               }
             },
@@ -3573,13 +3573,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834",
+            "originalId": "bee9909d-abbf-534c-b266-2c2c04133834",
+            "originSketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "ebef6f7c-e2ab-54ff-b770-cebe8cf77d25",
+          "endCapId": "ad5bccac-0a79-54b9-917c-26e484779949",
           "units": "in",
           "sectional": false
         }
@@ -3622,7 +3622,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
                 "objectId": 127,
                 "kind": {
                   "circle": {
@@ -3696,8 +3696,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+                  "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
@@ -3726,7 +3726,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -3742,7 +3742,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
                 "objectId": 131,
                 "kind": {
                   "circle": {
@@ -3816,8 +3816,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+                  "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
@@ -3846,7 +3846,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -3862,7 +3862,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5f95e913-96e4-58df-abe6-125bedd61cad",
                 "objectId": 104,
                 "kind": {
                   "line": {
@@ -3937,8 +3937,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+                  "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
@@ -3967,7 +3967,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3983,7 +3983,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                 "objectId": 108,
                 "kind": {
                   "line": {
@@ -4058,8 +4058,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+                  "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
@@ -4088,7 +4088,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4104,7 +4104,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
                 "objectId": 112,
                 "kind": {
                   "line": {
@@ -4179,8 +4179,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+                  "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
@@ -4209,7 +4209,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4225,7 +4225,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "40d8c462-7810-5666-bb09-1db7308cf666",
                 "objectId": 116,
                 "kind": {
                   "line": {
@@ -4300,8 +4300,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+                  "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
                   "kind": "Custom",
                   "objectId": 100,
                   "origin": {
@@ -4330,7 +4330,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4347,11 +4347,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4381,7 +4381,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "93954f29-a246-54bd-ac2a-62572f26d508",
                     "sourceRange": []
                   },
                   "from": [
@@ -4398,7 +4398,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4428,8 +4428,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+                "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
                 "kind": "Custom",
                 "objectId": 100,
                 "origin": {
@@ -4470,7 +4470,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                   "sourceRange": []
                 }
               },
@@ -4484,8 +4484,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   "value": "circle2"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+              "originalId": "44621ebd-5856-5dfd-9426-dda5d969f375",
               "units": "in",
               "isClosed": "no"
             }
@@ -4500,12 +4500,12 @@ description: Variables in memory after executing rack-blanking-panel.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
+      "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cdf72250-142c-516c-9cb8-b510dc3e5bcd",
+          "id": "59483f0b-b518-51fe-9f83-6ff55cd8c3cb",
           "sourceRange": [],
           "tag": {
             "commentStart": 587,
@@ -4518,8 +4518,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5b450177-f674-5029-8d31-5488f41ee77b",
+          "id": "db4604fe-b24e-5624-aa6b-4a3e1c2cdc30",
           "sourceRange": [],
           "tag": {
             "commentStart": 670,
@@ -4532,8 +4532,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a1911f07-44ad-5b05-b81c-4ab4cefa5bf8",
+          "id": "89fdbbc6-fe4b-5229-af6b-ade0a675147c",
           "sourceRange": [],
           "tag": {
             "commentStart": 846,
@@ -4546,8 +4546,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "acd64b6b-0b58-5355-ad46-1a2980f2dbd3",
+          "id": "f9b6d3cc-e047-52a9-a885-52d4ec71185e",
           "sourceRange": [],
           "tag": {
             "commentStart": 959,
@@ -4560,8 +4560,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2ec8effb-3ccc-5b5e-8cab-d2105d3514b5",
+          "id": "39740fdb-9049-5d1e-b75e-4ea0ac9d5452",
           "sourceRange": [],
           "tag": {
             "commentStart": 1135,
@@ -4574,8 +4574,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e3d14a4e-0b08-5a72-a413-939188ef7d30",
+          "id": "24e629b4-3db1-5255-b0c6-8a232bbe5bd2",
           "sourceRange": [],
           "tag": {
             "commentStart": 1255,
@@ -4588,8 +4588,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "061cde25-319d-5ddc-a242-f27585697be5",
+          "id": "7ae9817d-cbb2-5c59-907c-b4b2e4d5321b",
           "sourceRange": [],
           "tag": {
             "commentStart": 1375,
@@ -4602,8 +4602,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "deee01bc-d52c-5e85-97dd-6a07babeb55c",
+          "id": "11fe3d3c-e97c-50e6-ac95-b6493350d6f9",
           "sourceRange": [],
           "tag": {
             "commentStart": 1496,
@@ -4616,8 +4616,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "81a6d0c7-32f7-5952-a185-6c9ad226d719",
+          "id": "018bd47f-1cec-5462-ae8c-6ada78e24bad",
           "sourceRange": [],
           "tag": {
             "commentStart": 1674,
@@ -4630,8 +4630,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bea0f84e-fa3c-5040-9027-75d8efa9bfb9",
+          "id": "698a6121-6648-5c3c-aacb-ac6e3e90b3dd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1797,
@@ -4644,8 +4644,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8e854b63-d5d0-572b-a2e5-6731530522cf",
+          "id": "f8b2be5e-76f7-59b5-8b7f-44a71502a5b1",
           "sourceRange": [],
           "tag": {
             "commentStart": 1975,
@@ -4658,8 +4658,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "80d543d1-2c0e-54a1-8672-ad76a70bf4ab",
+          "id": "b3abf94b-440e-5d9c-988b-cc982196b62c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2098,
@@ -4675,11 +4675,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "59483f0b-b518-51fe-9f83-6ff55cd8c3cb",
               "sourceRange": []
             },
             "from": [
@@ -4703,7 +4703,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "db4604fe-b24e-5624-aa6b-4a3e1c2cdc30",
               "sourceRange": []
             },
             "ccw": true,
@@ -4733,7 +4733,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89fdbbc6-fe4b-5229-af6b-ade0a675147c",
               "sourceRange": []
             },
             "from": [
@@ -4757,7 +4757,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f9b6d3cc-e047-52a9-a885-52d4ec71185e",
               "sourceRange": []
             },
             "ccw": true,
@@ -4787,7 +4787,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "39740fdb-9049-5d1e-b75e-4ea0ac9d5452",
               "sourceRange": []
             },
             "from": [
@@ -4811,7 +4811,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "24e629b4-3db1-5255-b0c6-8a232bbe5bd2",
               "sourceRange": []
             },
             "from": [
@@ -4835,7 +4835,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7ae9817d-cbb2-5c59-907c-b4b2e4d5321b",
               "sourceRange": []
             },
             "from": [
@@ -4859,7 +4859,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "11fe3d3c-e97c-50e6-ac95-b6493350d6f9",
               "sourceRange": []
             },
             "ccw": false,
@@ -4889,7 +4889,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "018bd47f-1cec-5462-ae8c-6ada78e24bad",
               "sourceRange": []
             },
             "from": [
@@ -4913,7 +4913,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "698a6121-6648-5c3c-aacb-ac6e3e90b3dd",
               "sourceRange": []
             },
             "ccw": false,
@@ -4943,7 +4943,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f8b2be5e-76f7-59b5-8b7f-44a71502a5b1",
               "sourceRange": []
             },
             "from": [
@@ -4967,7 +4967,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3abf94b-440e-5d9c-988b-cc982196b62c",
               "sourceRange": []
             },
             "from": [
@@ -4991,8 +4991,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -5033,7 +5033,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
             "sourceRange": []
           }
         },
@@ -5087,13 +5087,13 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "value": "line8"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93",
+        "originalId": "3312f826-b323-5332-871a-6a8a59a3ae93",
+        "originSketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "6a618b69-19db-5302-9c6b-86e3382f47b0",
+      "endCapId": "495f9b35-1071-569e-b0c9-5f0ef5835b40",
       "units": "in",
       "sectional": false
     }
@@ -5102,11 +5102,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "516206c9-f8d3-5e0a-bbca-d170294d9a25",
             "sourceRange": []
           },
           "ccw": true,
@@ -5136,8 +5136,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+        "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
         "kind": "Custom",
         "objectId": 100,
         "origin": {
@@ -5178,7 +5178,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
           "sourceRange": []
         }
       },
@@ -5192,9 +5192,9 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "value": "circle2"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+      "originalId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
+      "originSketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "units": "in"
     }
   },
@@ -5202,11 +5202,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "bee9909d-abbf-534c-b266-2c2c04133834",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c9d62c3a-7649-5611-938b-3f98aac1affa",
             "sourceRange": []
           },
           "ccw": true,
@@ -5236,8 +5236,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+        "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
         "kind": "Custom",
         "objectId": 100,
         "origin": {
@@ -5278,7 +5278,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
           "sourceRange": []
         }
       },
@@ -5292,9 +5292,9 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "value": "circle2"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834",
+      "originalId": "bee9909d-abbf-534c-b266-2c2c04133834",
+      "originSketchId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "units": "in"
     }
   },
@@ -5302,11 +5302,11 @@ description: Variables in memory after executing rack-blanking-panel.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "59483f0b-b518-51fe-9f83-6ff55cd8c3cb",
             "sourceRange": []
           },
           "from": [
@@ -5330,7 +5330,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "db4604fe-b24e-5624-aa6b-4a3e1c2cdc30",
             "sourceRange": []
           },
           "ccw": true,
@@ -5360,7 +5360,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89fdbbc6-fe4b-5229-af6b-ade0a675147c",
             "sourceRange": []
           },
           "from": [
@@ -5384,7 +5384,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f9b6d3cc-e047-52a9-a885-52d4ec71185e",
             "sourceRange": []
           },
           "ccw": true,
@@ -5414,7 +5414,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "39740fdb-9049-5d1e-b75e-4ea0ac9d5452",
             "sourceRange": []
           },
           "from": [
@@ -5438,7 +5438,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "24e629b4-3db1-5255-b0c6-8a232bbe5bd2",
             "sourceRange": []
           },
           "from": [
@@ -5462,7 +5462,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7ae9817d-cbb2-5c59-907c-b4b2e4d5321b",
             "sourceRange": []
           },
           "from": [
@@ -5486,7 +5486,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "11fe3d3c-e97c-50e6-ac95-b6493350d6f9",
             "sourceRange": []
           },
           "ccw": false,
@@ -5516,7 +5516,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "018bd47f-1cec-5462-ae8c-6ada78e24bad",
             "sourceRange": []
           },
           "from": [
@@ -5540,7 +5540,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "698a6121-6648-5c3c-aacb-ac6e3e90b3dd",
             "sourceRange": []
           },
           "ccw": false,
@@ -5570,7 +5570,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f8b2be5e-76f7-59b5-8b7f-44a71502a5b1",
             "sourceRange": []
           },
           "from": [
@@ -5594,7 +5594,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b3abf94b-440e-5d9c-988b-cc982196b62c",
             "sourceRange": []
           },
           "from": [
@@ -5618,8 +5618,8 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -5660,7 +5660,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "a54ad82c-be8d-599a-9764-c6498922dd5c",
           "sourceRange": []
         }
       },
@@ -5714,9 +5714,9 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "value": "line8"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93",
+      "originalId": "3312f826-b323-5332-871a-6a8a59a3ae93",
+      "originSketchId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "units": "in"
     }
   },

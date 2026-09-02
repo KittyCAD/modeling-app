@@ -6,8 +6,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_125_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+      "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "kind": "Custom",
       "objectId": 124,
       "origin": {
@@ -39,8 +39,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_130_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
+      "artifactId": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
       "objectId": 129,
       "value": "end",
       "xAxis": {
@@ -56,8 +56,8 @@ description: Variables in memory after executing snowman.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+        "creatorSketchId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -66,8 +66,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_135_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "1583b450-a578-582f-8d23-686bccf95d8b",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -98,8 +98,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_13_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -130,8 +130,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_140_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -162,8 +162,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_145_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -194,8 +194,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -226,8 +226,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_25_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -258,8 +258,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_37_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -290,8 +290,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_49_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -322,8 +322,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_61_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -354,8 +354,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_73_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -386,8 +386,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_85_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -418,8 +418,8 @@ description: Variables in memory after executing snowman.kcl
   "__sketch_97_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -471,7 +471,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "af94b4da-da53-5386-a65f-ed75c251c9ff",
                 "objectId": 143,
                 "kind": {
                   "circle": {
@@ -545,8 +545,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+                  "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
                   "kind": "Custom",
                   "objectId": 139,
                   "origin": {
@@ -575,7 +575,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -592,11 +592,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "af94b4da-da53-5386-a65f-ed75c251c9ff",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -626,8 +626,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+                "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
                 "kind": "Custom",
                 "objectId": 139,
                 "origin": {
@@ -668,7 +668,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "67d03316-0deb-5224-a7ce-b3394ba08db9",
                   "sourceRange": []
                 }
               },
@@ -678,8 +678,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
+              "originalId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
               "units": "mm",
               "isClosed": "no"
             }
@@ -699,7 +699,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
                 "objectId": 138,
                 "kind": {
                   "circle": {
@@ -773,8 +773,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040",
+                  "id": "7faa0516-2581-52ca-b80e-97150bf2f040",
                   "kind": "Custom",
                   "objectId": 134,
                   "origin": {
@@ -803,7 +803,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -820,11 +820,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -854,8 +854,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040",
+                "id": "7faa0516-2581-52ca-b80e-97150bf2f040",
                 "kind": "Custom",
                 "objectId": 134,
                 "origin": {
@@ -896,7 +896,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
                   "sourceRange": []
                 }
               },
@@ -906,8 +906,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
+              "originalId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
               "units": "mm",
               "isClosed": "no"
             }
@@ -971,12 +971,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
+      "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb62f7ce-0111-5842-b514-ef5815b2ee56",
+          "id": "c95f7da0-b9ff-55b6-9802-795e489f8ce4",
           "sourceRange": [],
           "tag": {
             "commentStart": 8151,
@@ -992,11 +992,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c95f7da0-b9ff-55b6-9802-795e489f8ce4",
               "sourceRange": []
             },
             "ccw": true,
@@ -1026,8 +1026,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+          "id": "6ae8c147-090c-5277-8840-6daa34bb4685",
           "kind": "Custom",
           "objectId": 144,
           "origin": {
@@ -1068,7 +1068,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
             "sourceRange": []
           }
         },
@@ -1078,13 +1078,13 @@ description: Variables in memory after executing snowman.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
+        "originalId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
+        "originSketchId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "ce7a9435-94f7-513a-acab-6f7988c00591",
+      "endCapId": "541ce261-feeb-5472-8e0e-66e32285ece8",
       "units": "mm",
       "sectional": false
     }
@@ -1120,12 +1120,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb0b3009-1694-5623-98ce-4ab9986356e2",
+          "id": "cb91d51d-a3c8-546d-8d81-5cd86845c71e",
           "sourceRange": [],
           "tag": {
             "commentStart": 911,
@@ -1141,11 +1141,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7337cce0-8c11-5e1e-8fac-6baaf617fc94",
               "sourceRange": []
             },
             "from": [
@@ -1169,7 +1169,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cb91d51d-a3c8-546d-8d81-5cd86845c71e",
               "sourceRange": []
             },
             "ccw": true,
@@ -1199,8 +1199,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1241,7 +1241,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           }
         },
@@ -1255,9 +1255,9 @@ description: Variables in memory after executing snowman.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originSketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
         "units": "mm"
       },
       "startCapId": null,
@@ -1270,11 +1270,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7337cce0-8c11-5e1e-8fac-6baaf617fc94",
             "sourceRange": []
           },
           "from": [
@@ -1298,7 +1298,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cb91d51d-a3c8-546d-8d81-5cd86845c71e",
             "sourceRange": []
           },
           "ccw": true,
@@ -1328,8 +1328,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -1370,7 +1370,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
           "sourceRange": []
         }
       },
@@ -1384,9 +1384,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "originSketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "units": "mm"
     }
   },
@@ -1399,7 +1399,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 8,
                 "kind": {
                   "arc": {
@@ -1505,8 +1505,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1535,7 +1535,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -1551,7 +1551,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1625,8 +1625,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1655,7 +1655,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1672,11 +1672,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1700,7 +1700,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1730,8 +1730,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1772,7 +1772,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                   "sourceRange": []
                 }
               },
@@ -1786,8 +1786,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
+              "originalId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1802,12 +1802,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+      "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3d1bdef1-c537-5723-9a0e-08ac54423202",
+          "id": "46ef413e-7f7d-51c7-92e8-52410b572f94",
           "sourceRange": [],
           "tag": {
             "commentStart": 2604,
@@ -1823,11 +1823,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
               "sourceRange": []
             },
             "from": [
@@ -1851,7 +1851,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "46ef413e-7f7d-51c7-92e8-52410b572f94",
               "sourceRange": []
             },
             "ccw": true,
@@ -1881,8 +1881,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
+          "id": "468f6520-a683-5392-9492-de009fdcddef",
           "kind": "Custom",
           "objectId": 36,
           "origin": {
@@ -1923,7 +1923,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d5eaf678-0440-563f-ac19-e473850b9270",
             "sourceRange": []
           }
         },
@@ -1937,9 +1937,9 @@ description: Variables in memory after executing snowman.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+        "originalId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+        "originSketchId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
         "units": "mm"
       },
       "startCapId": null,
@@ -1952,11 +1952,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
             "sourceRange": []
           },
           "from": [
@@ -1980,7 +1980,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "46ef413e-7f7d-51c7-92e8-52410b572f94",
             "sourceRange": []
           },
           "ccw": true,
@@ -2010,8 +2010,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
+        "id": "468f6520-a683-5392-9492-de009fdcddef",
         "kind": "Custom",
         "objectId": 36,
         "origin": {
@@ -2052,7 +2052,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "d5eaf678-0440-563f-ac19-e473850b9270",
           "sourceRange": []
         }
       },
@@ -2066,9 +2066,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+      "originalId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+      "originSketchId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
       "units": "mm"
     }
   },
@@ -2081,7 +2081,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
                 "objectId": 44,
                 "kind": {
                   "arc": {
@@ -2187,8 +2187,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
+                  "id": "468f6520-a683-5392-9492-de009fdcddef",
                   "kind": "Custom",
                   "objectId": 36,
                   "origin": {
@@ -2217,7 +2217,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -2233,7 +2233,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -2307,8 +2307,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
+                  "id": "468f6520-a683-5392-9492-de009fdcddef",
                   "kind": "Custom",
                   "objectId": 36,
                   "origin": {
@@ -2337,7 +2337,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2354,11 +2354,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
                     "sourceRange": []
                   },
                   "from": [
@@ -2382,7 +2382,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2412,8 +2412,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
+                "id": "468f6520-a683-5392-9492-de009fdcddef",
                 "kind": "Custom",
                 "objectId": 36,
                 "origin": {
@@ -2454,7 +2454,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "d5eaf678-0440-563f-ac19-e473850b9270",
                   "sourceRange": []
                 }
               },
@@ -2468,8 +2468,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
+              "originalId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -2484,12 +2484,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+      "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "10d545a9-9035-5a93-8e30-359511c487c6",
+          "id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
           "sourceRange": [],
           "tag": {
             "commentStart": 3086,
@@ -2505,11 +2505,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7abef581-6d8a-5087-8146-e180624ca783",
               "sourceRange": []
             },
             "from": [
@@ -2533,7 +2533,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
               "sourceRange": []
             },
             "ccw": true,
@@ -2563,8 +2563,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+          "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
           "kind": "Custom",
           "objectId": 48,
           "origin": {
@@ -2605,7 +2605,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
             "sourceRange": []
           }
         },
@@ -2619,9 +2619,9 @@ description: Variables in memory after executing snowman.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+        "originalId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+        "originSketchId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
         "units": "mm"
       },
       "startCapId": null,
@@ -2634,11 +2634,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7abef581-6d8a-5087-8146-e180624ca783",
             "sourceRange": []
           },
           "from": [
@@ -2662,7 +2662,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
             "sourceRange": []
           },
           "ccw": true,
@@ -2692,8 +2692,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+        "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
         "kind": "Custom",
         "objectId": 48,
         "origin": {
@@ -2734,7 +2734,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
           "sourceRange": []
         }
       },
@@ -2748,9 +2748,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+      "originalId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+      "originSketchId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "units": "mm"
     }
   },
@@ -2763,7 +2763,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
                 "objectId": 56,
                 "kind": {
                   "arc": {
@@ -2869,8 +2869,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+                  "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
                   "kind": "Custom",
                   "objectId": 48,
                   "origin": {
@@ -2899,7 +2899,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -2915,7 +2915,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "objectId": 52,
                 "kind": {
                   "line": {
@@ -2989,8 +2989,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+                  "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
                   "kind": "Custom",
                   "objectId": 48,
                   "origin": {
@@ -3019,7 +3019,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3036,11 +3036,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                     "sourceRange": []
                   },
                   "from": [
@@ -3064,7 +3064,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3094,8 +3094,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+                "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
                 "kind": "Custom",
                 "objectId": 48,
                 "origin": {
@@ -3136,7 +3136,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
                   "sourceRange": []
                 }
               },
@@ -3150,8 +3150,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
+              "originalId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -3166,12 +3166,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
+      "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "015993a5-3f0f-5368-bc38-acedccb3a828",
+          "id": "b51c5a08-d18b-5d3d-9d1e-a25c0d6870f5",
           "sourceRange": [],
           "tag": {
             "commentStart": 3555,
@@ -3187,11 +3187,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a6e0a956-32d8-5a11-a3bf-275df4acaaf5",
               "sourceRange": []
             },
             "from": [
@@ -3215,7 +3215,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b51c5a08-d18b-5d3d-9d1e-a25c0d6870f5",
               "sourceRange": []
             },
             "ccw": true,
@@ -3245,8 +3245,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+          "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
           "kind": "Custom",
           "objectId": 60,
           "origin": {
@@ -3287,7 +3287,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
             "sourceRange": []
           }
         },
@@ -3301,9 +3301,9 @@ description: Variables in memory after executing snowman.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+        "originalId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+        "originSketchId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
         "units": "mm"
       },
       "startCapId": null,
@@ -3316,11 +3316,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a6e0a956-32d8-5a11-a3bf-275df4acaaf5",
             "sourceRange": []
           },
           "from": [
@@ -3344,7 +3344,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b51c5a08-d18b-5d3d-9d1e-a25c0d6870f5",
             "sourceRange": []
           },
           "ccw": true,
@@ -3374,8 +3374,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+        "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
         "kind": "Custom",
         "objectId": 60,
         "origin": {
@@ -3416,7 +3416,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "sourceRange": []
         }
       },
@@ -3430,9 +3430,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+      "originalId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+      "originSketchId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
       "units": "mm"
     }
   },
@@ -3445,7 +3445,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
                 "objectId": 68,
                 "kind": {
                   "arc": {
@@ -3551,8 +3551,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                   "kind": "Custom",
                   "objectId": 60,
                   "origin": {
@@ -3581,7 +3581,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -3597,7 +3597,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
                 "objectId": 64,
                 "kind": {
                   "line": {
@@ -3671,8 +3671,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                  "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                   "kind": "Custom",
                   "objectId": 60,
                   "origin": {
@@ -3701,7 +3701,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3718,11 +3718,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
                     "sourceRange": []
                   },
                   "from": [
@@ -3746,7 +3746,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -3776,8 +3776,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+                "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
                 "kind": "Custom",
                 "objectId": 60,
                 "origin": {
@@ -3818,7 +3818,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
                   "sourceRange": []
                 }
               },
@@ -3832,8 +3832,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+              "originalId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -3878,12 +3878,12 @@ description: Variables in memory after executing snowman.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
+          "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "3d1bdef1-c537-5723-9a0e-08ac54423202",
+              "id": "46ef413e-7f7d-51c7-92e8-52410b572f94",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2604,
@@ -3899,11 +3899,11 @@ description: Variables in memory after executing snowman.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
                   "sourceRange": []
                 },
                 "from": [
@@ -3927,7 +3927,7 @@ description: Variables in memory after executing snowman.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "46ef413e-7f7d-51c7-92e8-52410b572f94",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3957,8 +3957,8 @@ description: Variables in memory after executing snowman.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "468f6520-a683-5392-9492-de009fdcddef",
+              "id": "468f6520-a683-5392-9492-de009fdcddef",
               "kind": "Custom",
               "objectId": 36,
               "origin": {
@@ -3999,7 +3999,7 @@ description: Variables in memory after executing snowman.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "d5eaf678-0440-563f-ac19-e473850b9270",
                 "sourceRange": []
               }
             },
@@ -4013,9 +4013,9 @@ description: Variables in memory after executing snowman.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+            "originalId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+            "originSketchId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
             "units": "mm"
           },
           "startCapId": null,
@@ -4028,12 +4028,12 @@ description: Variables in memory after executing snowman.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+          "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "10d545a9-9035-5a93-8e30-359511c487c6",
+              "id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3086,
@@ -4049,11 +4049,11 @@ description: Variables in memory after executing snowman.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7abef581-6d8a-5087-8146-e180624ca783",
                   "sourceRange": []
                 },
                 "from": [
@@ -4077,7 +4077,7 @@ description: Variables in memory after executing snowman.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "82815bbe-2d4f-56a2-a8af-8361195bcb5d",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4107,8 +4107,8 @@ description: Variables in memory after executing snowman.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+              "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
               "kind": "Custom",
               "objectId": 48,
               "origin": {
@@ -4149,7 +4149,7 @@ description: Variables in memory after executing snowman.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
                 "sourceRange": []
               }
             },
@@ -4163,9 +4163,9 @@ description: Variables in memory after executing snowman.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+            "originalId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
+            "originSketchId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
             "units": "mm"
           },
           "startCapId": null,
@@ -4178,12 +4178,12 @@ description: Variables in memory after executing snowman.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
+          "artifactId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "015993a5-3f0f-5368-bc38-acedccb3a828",
+              "id": "b51c5a08-d18b-5d3d-9d1e-a25c0d6870f5",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3555,
@@ -4199,11 +4199,11 @@ description: Variables in memory after executing snowman.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "a6e0a956-32d8-5a11-a3bf-275df4acaaf5",
                   "sourceRange": []
                 },
                 "from": [
@@ -4227,7 +4227,7 @@ description: Variables in memory after executing snowman.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "b51c5a08-d18b-5d3d-9d1e-a25c0d6870f5",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4257,8 +4257,8 @@ description: Variables in memory after executing snowman.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
+              "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
               "kind": "Custom",
               "objectId": 60,
               "origin": {
@@ -4299,7 +4299,7 @@ description: Variables in memory after executing snowman.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
                 "sourceRange": []
               }
             },
@@ -4313,9 +4313,9 @@ description: Variables in memory after executing snowman.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+            "originalId": "44621ebd-5856-5dfd-9426-dda5d969f375",
+            "originSketchId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
             "units": "mm"
           },
           "startCapId": null,
@@ -4335,12 +4335,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+      "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eeabb0c0-64fa-5297-8107-ee8264523bda",
+          "id": "67ec3fd6-269d-5d7f-aed0-a79fdd488a32",
           "sourceRange": [],
           "tag": {
             "commentStart": 4243,
@@ -4356,11 +4356,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c1350d6a-83f6-5873-a10a-23bc14b7ecd5",
               "sourceRange": []
             },
             "from": [
@@ -4384,7 +4384,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "67ec3fd6-269d-5d7f-aed0-a79fdd488a32",
               "sourceRange": []
             },
             "ccw": true,
@@ -4414,8 +4414,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+          "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
           "kind": "Custom",
           "objectId": 72,
           "origin": {
@@ -4456,7 +4456,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
             "sourceRange": []
           }
         },
@@ -4470,9 +4470,9 @@ description: Variables in memory after executing snowman.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+        "originalId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+        "originSketchId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
         "units": "mm"
       },
       "startCapId": null,
@@ -4485,11 +4485,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c1350d6a-83f6-5873-a10a-23bc14b7ecd5",
             "sourceRange": []
           },
           "from": [
@@ -4513,7 +4513,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "67ec3fd6-269d-5d7f-aed0-a79fdd488a32",
             "sourceRange": []
           },
           "ccw": true,
@@ -4543,8 +4543,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+        "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
         "kind": "Custom",
         "objectId": 72,
         "origin": {
@@ -4585,7 +4585,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
           "sourceRange": []
         }
       },
@@ -4599,9 +4599,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+      "originalId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+      "originSketchId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "units": "mm"
     }
   },
@@ -4614,7 +4614,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
                 "objectId": 80,
                 "kind": {
                   "arc": {
@@ -4720,8 +4720,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                  "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
@@ -4750,7 +4750,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -4766,7 +4766,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19107e89-bf40-5541-88a5-5106b6de636d",
                 "objectId": 76,
                 "kind": {
                   "line": {
@@ -4840,8 +4840,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                  "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                   "kind": "Custom",
                   "objectId": 72,
                   "origin": {
@@ -4870,7 +4870,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4887,11 +4887,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19107e89-bf40-5541-88a5-5106b6de636d",
                     "sourceRange": []
                   },
                   "from": [
@@ -4915,7 +4915,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4945,8 +4945,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+                "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "kind": "Custom",
                 "objectId": 72,
                 "origin": {
@@ -4987,7 +4987,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
                   "sourceRange": []
                 }
               },
@@ -5001,8 +5001,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+              "originalId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -5026,11 +5026,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "685faca9-4c52-509e-bb06-421f33ba67d4",
             "sourceRange": []
           },
           "from": [
@@ -5054,7 +5054,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "866013db-a0fb-552c-9fb4-bba2ef50e690",
             "sourceRange": []
           },
           "ccw": true,
@@ -5084,8 +5084,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+        "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
         "kind": "Custom",
         "objectId": 84,
         "origin": {
@@ -5126,7 +5126,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
           "sourceRange": []
         }
       },
@@ -5140,9 +5140,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "1f5ca073-184d-543b-9da6-2db6719123a8",
+      "originalId": "1f5ca073-184d-543b-9da6-2db6719123a8",
+      "originSketchId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
       "units": "mm"
     }
   },
@@ -5155,7 +5155,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
                 "objectId": 92,
                 "kind": {
                   "arc": {
@@ -5261,8 +5261,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+                  "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
@@ -5291,7 +5291,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -5307,7 +5307,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
                 "objectId": 88,
                 "kind": {
                   "line": {
@@ -5381,8 +5381,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+                  "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
                   "kind": "Custom",
                   "objectId": 84,
                   "origin": {
@@ -5411,7 +5411,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5428,11 +5428,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
                     "sourceRange": []
                   },
                   "from": [
@@ -5456,7 +5456,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -5486,8 +5486,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+                "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
                 "kind": "Custom",
                 "objectId": 84,
                 "origin": {
@@ -5528,7 +5528,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
                   "sourceRange": []
                 }
               },
@@ -5542,8 +5542,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
+              "originalId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -5558,12 +5558,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
+      "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1bdea2d0-0bae-5fe7-b245-e7488a153849",
+          "id": "866013db-a0fb-552c-9fb4-bba2ef50e690",
           "sourceRange": [],
           "tag": {
             "commentStart": 4715,
@@ -5579,11 +5579,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "685faca9-4c52-509e-bb06-421f33ba67d4",
               "sourceRange": []
             },
             "from": [
@@ -5607,7 +5607,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "866013db-a0fb-552c-9fb4-bba2ef50e690",
               "sourceRange": []
             },
             "ccw": true,
@@ -5637,8 +5637,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+          "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
           "kind": "Custom",
           "objectId": 84,
           "origin": {
@@ -5679,7 +5679,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
             "sourceRange": []
           }
         },
@@ -5693,9 +5693,9 @@ description: Variables in memory after executing snowman.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "1f5ca073-184d-543b-9da6-2db6719123a8",
+        "originalId": "1f5ca073-184d-543b-9da6-2db6719123a8",
+        "originSketchId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
         "units": "mm"
       },
       "startCapId": null,
@@ -5738,12 +5738,12 @@ description: Variables in memory after executing snowman.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+          "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "eeabb0c0-64fa-5297-8107-ee8264523bda",
+              "id": "67ec3fd6-269d-5d7f-aed0-a79fdd488a32",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4243,
@@ -5759,11 +5759,11 @@ description: Variables in memory after executing snowman.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c1350d6a-83f6-5873-a10a-23bc14b7ecd5",
                   "sourceRange": []
                 },
                 "from": [
@@ -5787,7 +5787,7 @@ description: Variables in memory after executing snowman.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "67ec3fd6-269d-5d7f-aed0-a79fdd488a32",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5817,8 +5817,8 @@ description: Variables in memory after executing snowman.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
+              "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
               "kind": "Custom",
               "objectId": 72,
               "origin": {
@@ -5859,7 +5859,7 @@ description: Variables in memory after executing snowman.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
                 "sourceRange": []
               }
             },
@@ -5873,9 +5873,9 @@ description: Variables in memory after executing snowman.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+            "originalId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
+            "originSketchId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
             "units": "mm"
           },
           "startCapId": null,
@@ -5888,12 +5888,12 @@ description: Variables in memory after executing snowman.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
+          "artifactId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "1bdea2d0-0bae-5fe7-b245-e7488a153849",
+              "id": "866013db-a0fb-552c-9fb4-bba2ef50e690",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4715,
@@ -5909,11 +5909,11 @@ description: Variables in memory after executing snowman.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "685faca9-4c52-509e-bb06-421f33ba67d4",
                   "sourceRange": []
                 },
                 "from": [
@@ -5937,7 +5937,7 @@ description: Variables in memory after executing snowman.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "866013db-a0fb-552c-9fb4-bba2ef50e690",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -5967,8 +5967,8 @@ description: Variables in memory after executing snowman.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
+              "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
               "kind": "Custom",
               "objectId": 84,
               "origin": {
@@ -6009,7 +6009,7 @@ description: Variables in memory after executing snowman.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
                 "sourceRange": []
               }
             },
@@ -6023,9 +6023,9 @@ description: Variables in memory after executing snowman.kcl
                 "value": "line1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "1f5ca073-184d-543b-9da6-2db6719123a8",
+            "originalId": "1f5ca073-184d-543b-9da6-2db6719123a8",
+            "originSketchId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
             "units": "mm"
           },
           "startCapId": null,
@@ -6040,12 +6040,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+      "artifactId": "43582f56-4d15-5082-9796-67d8e5ee6e44",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "afd82398-8b23-59a3-9837-8fd64144a0e3",
+          "id": "25b2c1dc-393a-51c2-a3ec-35a47317dc47",
           "sourceRange": [],
           "tag": {
             "commentStart": 6657,
@@ -6061,11 +6061,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25b2c1dc-393a-51c2-a3ec-35a47317dc47",
               "sourceRange": []
             },
             "ccw": true,
@@ -6096,8 +6096,8 @@ description: Variables in memory after executing snowman.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
+          "artifactId": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
           "objectId": 129,
           "value": "end",
           "xAxis": {
@@ -6113,8 +6113,8 @@ description: Variables in memory after executing snowman.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+            "creatorSketchId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -6131,7 +6131,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
             "sourceRange": []
           }
         },
@@ -6141,13 +6141,13 @@ description: Variables in memory after executing snowman.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
+        "originalId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
+        "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
         "units": "mm"
       },
       "startCapId": null,
-      "endCapId": "[uuid]",
+      "endCapId": "f5f3fffe-9291-58a6-b265-2a1036d83690",
       "units": "mm",
       "sectional": false
     }
@@ -6156,12 +6156,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+      "artifactId": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8b9bcc1e-4751-51dc-a3a1-e2225e47af69",
+          "id": "b06d8c77-4dd0-5835-a7fe-d6156d6fdc52",
           "sourceRange": [],
           "tag": {
             "commentStart": 6405,
@@ -6177,11 +6177,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b06d8c77-4dd0-5835-a7fe-d6156d6fdc52",
               "sourceRange": []
             },
             "ccw": true,
@@ -6211,8 +6211,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+          "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
           "kind": "Custom",
           "objectId": 124,
           "origin": {
@@ -6253,7 +6253,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
             "sourceRange": []
           }
         },
@@ -6263,13 +6263,13 @@ description: Variables in memory after executing snowman.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+        "originalId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+        "originSketchId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "fab5184d-b57c-5fdd-9d58-165d259dd2da",
+      "endCapId": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
       "units": "mm",
       "sectional": false
     }
@@ -6277,8 +6277,8 @@ description: Variables in memory after executing snowman.kcl
   "hatBrimPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+      "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "kind": "Custom",
       "objectId": 124,
       "origin": {
@@ -6347,12 +6347,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+      "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "45c86744-f72c-5399-b733-e4de8fd466eb",
+          "id": "663e209d-df18-5e9b-b139-668cc41baf79",
           "sourceRange": [],
           "tag": {
             "commentStart": 1981,
@@ -6368,11 +6368,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9eee21ba-6c99-5df4-a742-d43a03ad5000",
               "sourceRange": []
             },
             "from": [
@@ -6396,7 +6396,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "663e209d-df18-5e9b-b139-668cc41baf79",
               "sourceRange": []
             },
             "ccw": true,
@@ -6426,8 +6426,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+          "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
           "kind": "Custom",
           "objectId": 24,
           "origin": {
@@ -6468,7 +6468,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
             "sourceRange": []
           }
         },
@@ -6482,9 +6482,9 @@ description: Variables in memory after executing snowman.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+        "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+        "originSketchId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "units": "mm"
       },
       "startCapId": null,
@@ -6497,11 +6497,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9eee21ba-6c99-5df4-a742-d43a03ad5000",
             "sourceRange": []
           },
           "from": [
@@ -6525,7 +6525,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "663e209d-df18-5e9b-b139-668cc41baf79",
             "sourceRange": []
           },
           "ccw": true,
@@ -6555,8 +6555,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+        "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
         "kind": "Custom",
         "objectId": 24,
         "origin": {
@@ -6597,7 +6597,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
           "sourceRange": []
         }
       },
@@ -6611,9 +6611,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+      "originalId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
+      "originSketchId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "units": "mm"
     }
   },
@@ -6626,7 +6626,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
                 "objectId": 32,
                 "kind": {
                   "arc": {
@@ -6732,8 +6732,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+                  "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
                   "kind": "Custom",
                   "objectId": 24,
                   "origin": {
@@ -6762,7 +6762,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -6778,7 +6778,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -6852,8 +6852,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+                  "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
                   "kind": "Custom",
                   "objectId": 24,
                   "origin": {
@@ -6882,7 +6882,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -6899,11 +6899,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                     "sourceRange": []
                   },
                   "from": [
@@ -6927,7 +6927,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -6957,8 +6957,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
+                "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
                 "kind": "Custom",
                 "objectId": 24,
                 "origin": {
@@ -6999,7 +6999,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
                   "sourceRange": []
                 }
               },
@@ -7013,8 +7013,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+              "originalId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -7029,12 +7029,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+      "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6e314b5c-b382-5e2f-b313-ce47c5664ed2",
+          "id": "3597050f-5a34-5df2-9706-471344f6e406",
           "sourceRange": [],
           "tag": {
             "commentStart": 7533,
@@ -7050,11 +7050,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3597050f-5a34-5df2-9706-471344f6e406",
               "sourceRange": []
             },
             "ccw": true,
@@ -7084,8 +7084,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+          "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
           "kind": "Custom",
           "objectId": 139,
           "origin": {
@@ -7126,7 +7126,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "67d03316-0deb-5224-a7ce-b3394ba08db9",
             "sourceRange": []
           }
         },
@@ -7136,13 +7136,13 @@ description: Variables in memory after executing snowman.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+        "originalId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+        "originSketchId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "34e011b3-781f-5f47-9fcc-4052db4f920d",
+      "endCapId": "49d34a55-d81e-5c9a-8c9c-f8621d93f4e2",
       "units": "mm",
       "sectional": false
     }
@@ -7171,12 +7171,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "db427524-76a6-553d-bb6b-6ac873083b95",
+          "id": "680d8dcc-80d3-575f-8a83-671eeae5295a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1447,
@@ -7192,11 +7192,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "46781404-ca48-5e2f-815f-819b6959e96b",
               "sourceRange": []
             },
             "from": [
@@ -7220,7 +7220,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "680d8dcc-80d3-575f-8a83-671eeae5295a",
               "sourceRange": []
             },
             "ccw": true,
@@ -7250,8 +7250,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+          "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
           "kind": "Custom",
           "objectId": 12,
           "origin": {
@@ -7292,7 +7292,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
             "sourceRange": []
           }
         },
@@ -7306,9 +7306,9 @@ description: Variables in memory after executing snowman.kcl
             "value": "line1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+        "originalId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+        "originSketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "units": "mm"
       },
       "startCapId": null,
@@ -7321,11 +7321,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "46781404-ca48-5e2f-815f-819b6959e96b",
             "sourceRange": []
           },
           "from": [
@@ -7349,7 +7349,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "680d8dcc-80d3-575f-8a83-671eeae5295a",
             "sourceRange": []
           },
           "ccw": true,
@@ -7379,8 +7379,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "kind": "Custom",
         "objectId": 12,
         "origin": {
@@ -7421,7 +7421,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
           "sourceRange": []
         }
       },
@@ -7435,9 +7435,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "line1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+      "originalId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+      "originSketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "units": "mm"
     }
   },
@@ -7450,7 +7450,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                 "objectId": 20,
                 "kind": {
                   "arc": {
@@ -7556,8 +7556,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                  "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                   "kind": "Custom",
                   "objectId": 12,
                   "origin": {
@@ -7586,7 +7586,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -7602,7 +7602,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -7676,8 +7676,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                  "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                   "kind": "Custom",
                   "objectId": 12,
                   "origin": {
@@ -7706,7 +7706,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc141785-f204-5d03-bdf3-aa7163368c30",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -7723,11 +7723,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                     "sourceRange": []
                   },
                   "from": [
@@ -7751,7 +7751,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -7781,8 +7781,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "kind": "Custom",
                 "objectId": 12,
                 "origin": {
@@ -7823,7 +7823,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
                   "sourceRange": []
                 }
               },
@@ -7837,8 +7837,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "line1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+              "originalId": "cc141785-f204-5d03-bdf3-aa7163368c30",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -7853,12 +7853,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bdd2605a-480e-5ad5-b52f-c6889529c457",
+      "artifactId": "fc66f518-029e-5b30-8772-13859f39ce6d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "19e7e84e-c8ed-5b6f-8b60-95b2a85ba645",
+          "id": "64e0c035-e34c-5324-a06c-8c131069ef20",
           "sourceRange": [],
           "tag": {
             "commentStart": 5254,
@@ -7871,8 +7871,8 @@ description: Variables in memory after executing snowman.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "054020d3-687b-5cab-8a07-e8a493e4fdc9",
+          "id": "1d856b4a-8fd2-57df-95a6-eceda972e15b",
           "sourceRange": [],
           "tag": {
             "commentStart": 5324,
@@ -7885,8 +7885,8 @@ description: Variables in memory after executing snowman.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5dd6b152-01a1-5952-b10f-b56d68560768",
+          "id": "a3733cb2-93d9-5eed-89e6-e95cbe9239b3",
           "sourceRange": [],
           "tag": {
             "commentStart": 5438,
@@ -7899,8 +7899,8 @@ description: Variables in memory after executing snowman.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "51ddd5d9-8b56-5307-ae21-6c79280504ad",
+          "id": "ceb2329d-ca41-527c-8e60-5622e7935015",
           "sourceRange": [],
           "tag": {
             "commentStart": 5590,
@@ -7913,8 +7913,8 @@ description: Variables in memory after executing snowman.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8cebbf20-198b-5520-953d-1f2812a90eb8",
+          "id": "0ab187f4-712f-56d2-be7f-c1153d76640e",
           "sourceRange": [],
           "tag": {
             "commentStart": 5714,
@@ -7927,8 +7927,8 @@ description: Variables in memory after executing snowman.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "107229ac-cf14-56d7-bb49-765eb7ff025f",
+          "id": "b6238f19-9b61-56f8-b2d3-39435d1660b6",
           "sourceRange": [],
           "tag": {
             "commentStart": 5863,
@@ -7944,11 +7944,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bdd2605a-480e-5ad5-b52f-c6889529c457",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "64e0c035-e34c-5324-a06c-8c131069ef20",
               "sourceRange": []
             },
             "from": [
@@ -7972,7 +7972,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1d856b4a-8fd2-57df-95a6-eceda972e15b",
               "sourceRange": []
             },
             "from": [
@@ -7996,7 +7996,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a3733cb2-93d9-5eed-89e6-e95cbe9239b3",
               "sourceRange": []
             },
             "ccw": false,
@@ -8026,7 +8026,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ceb2329d-ca41-527c-8e60-5622e7935015",
               "sourceRange": []
             },
             "from": [
@@ -8050,7 +8050,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0ab187f4-712f-56d2-be7f-c1153d76640e",
               "sourceRange": []
             },
             "ccw": false,
@@ -8080,7 +8080,7 @@ description: Variables in memory after executing snowman.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b6238f19-9b61-56f8-b2d3-39435d1660b6",
               "sourceRange": []
             },
             "from": [
@@ -8104,8 +8104,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+          "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
           "kind": "Custom",
           "objectId": 96,
           "origin": {
@@ -8146,7 +8146,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b8cc464b-6248-5cb4-8c70-30f634da184c",
             "sourceRange": []
           }
         },
@@ -8176,9 +8176,9 @@ description: Variables in memory after executing snowman.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
+        "originalId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
+        "originSketchId": "44b2dfb0-0721-57cd-a796-4401a664e194",
         "units": "mm"
       },
       "startCapId": null,
@@ -8214,7 +8214,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
                 "objectId": 108,
                 "kind": {
                   "arc": {
@@ -8320,8 +8320,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+                  "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
                   "kind": "Custom",
                   "objectId": 96,
                   "origin": {
@@ -8350,7 +8350,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44b2dfb0-0721-57cd-a796-4401a664e194",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc3"
@@ -8366,7 +8366,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                 "objectId": 117,
                 "kind": {
                   "arc": {
@@ -8472,8 +8472,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+                  "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
                   "kind": "Custom",
                   "objectId": 96,
                   "origin": {
@@ -8502,7 +8502,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44b2dfb0-0721-57cd-a796-4401a664e194",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc5"
@@ -8518,7 +8518,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
                 "objectId": 100,
                 "kind": {
                   "line": {
@@ -8592,8 +8592,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+                  "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
                   "kind": "Custom",
                   "objectId": 96,
                   "origin": {
@@ -8622,7 +8622,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44b2dfb0-0721-57cd-a796-4401a664e194",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -8638,7 +8638,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
                 "objectId": 103,
                 "kind": {
                   "line": {
@@ -8712,8 +8712,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+                  "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
                   "kind": "Custom",
                   "objectId": 96,
                   "origin": {
@@ -8742,7 +8742,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44b2dfb0-0721-57cd-a796-4401a664e194",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -8758,7 +8758,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
                 "objectId": 112,
                 "kind": {
                   "line": {
@@ -8832,8 +8832,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+                  "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
                   "kind": "Custom",
                   "objectId": 96,
                   "origin": {
@@ -8862,7 +8862,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44b2dfb0-0721-57cd-a796-4401a664e194",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -8878,7 +8878,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "08138142-a558-56a4-a23f-2f334e02b011",
                 "objectId": 121,
                 "kind": {
                   "line": {
@@ -8952,8 +8952,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+                  "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
                   "kind": "Custom",
                   "objectId": 96,
                   "origin": {
@@ -8982,7 +8982,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "44b2dfb0-0721-57cd-a796-4401a664e194",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -8999,11 +8999,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
                     "sourceRange": []
                   },
                   "from": [
@@ -9027,7 +9027,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
                     "sourceRange": []
                   },
                   "from": [
@@ -9051,7 +9051,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -9081,7 +9081,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
                     "sourceRange": []
                   },
                   "from": [
@@ -9105,7 +9105,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -9135,7 +9135,7 @@ description: Variables in memory after executing snowman.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "08138142-a558-56a4-a23f-2f334e02b011",
                     "sourceRange": []
                   },
                   "from": [
@@ -9159,8 +9159,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+                "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
                 "kind": "Custom",
                 "objectId": 96,
                 "origin": {
@@ -9201,7 +9201,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "b8cc464b-6248-5cb4-8c70-30f634da184c",
                   "sourceRange": []
                 }
               },
@@ -9231,8 +9231,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "44b2dfb0-0721-57cd-a796-4401a664e194",
+              "originalId": "44b2dfb0-0721-57cd-a796-4401a664e194",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -9274,11 +9274,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "bdd2605a-480e-5ad5-b52f-c6889529c457",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "64e0c035-e34c-5324-a06c-8c131069ef20",
             "sourceRange": []
           },
           "from": [
@@ -9302,7 +9302,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1d856b4a-8fd2-57df-95a6-eceda972e15b",
             "sourceRange": []
           },
           "from": [
@@ -9326,7 +9326,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a3733cb2-93d9-5eed-89e6-e95cbe9239b3",
             "sourceRange": []
           },
           "ccw": false,
@@ -9356,7 +9356,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ceb2329d-ca41-527c-8e60-5622e7935015",
             "sourceRange": []
           },
           "from": [
@@ -9380,7 +9380,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0ab187f4-712f-56d2-be7f-c1153d76640e",
             "sourceRange": []
           },
           "ccw": false,
@@ -9410,7 +9410,7 @@ description: Variables in memory after executing snowman.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b6238f19-9b61-56f8-b2d3-39435d1660b6",
             "sourceRange": []
           },
           "from": [
@@ -9434,8 +9434,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
         "kind": "Custom",
         "objectId": 96,
         "origin": {
@@ -9476,7 +9476,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "b8cc464b-6248-5cb4-8c70-30f634da184c",
           "sourceRange": []
         }
       },
@@ -9506,9 +9506,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
+      "originalId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
+      "originSketchId": "44b2dfb0-0721-57cd-a796-4401a664e194",
       "units": "mm"
     }
   },
@@ -9516,11 +9516,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b06d8c77-4dd0-5835-a7fe-d6156d6fdc52",
             "sourceRange": []
           },
           "ccw": true,
@@ -9550,8 +9550,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+        "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
         "kind": "Custom",
         "objectId": 124,
         "origin": {
@@ -9592,7 +9592,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
           "sourceRange": []
         }
       },
@@ -9602,9 +9602,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+      "originalId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+      "originSketchId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
       "units": "mm"
     }
   },
@@ -9612,11 +9612,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "25b2c1dc-393a-51c2-a3ec-35a47317dc47",
             "sourceRange": []
           },
           "ccw": true,
@@ -9647,8 +9647,8 @@ description: Variables in memory after executing snowman.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
+        "artifactId": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
         "objectId": 129,
         "value": "end",
         "xAxis": {
@@ -9664,8 +9664,8 @@ description: Variables in memory after executing snowman.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+          "creatorSketchId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -9682,7 +9682,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
           "sourceRange": []
         }
       },
@@ -9692,9 +9692,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
+      "originalId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
+      "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
       "units": "mm"
     }
   },
@@ -9702,11 +9702,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "065d6e6f-62af-500d-aae0-fe097d5f952b",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad9f3727-4540-5037-b79a-755bedbcb72f",
             "sourceRange": []
           },
           "ccw": true,
@@ -9736,8 +9736,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040",
+        "id": "7faa0516-2581-52ca-b80e-97150bf2f040",
         "kind": "Custom",
         "objectId": 134,
         "origin": {
@@ -9778,7 +9778,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
           "sourceRange": []
         }
       },
@@ -9788,9 +9788,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "065d6e6f-62af-500d-aae0-fe097d5f952b",
+      "originalId": "065d6e6f-62af-500d-aae0-fe097d5f952b",
+      "originSketchId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
       "units": "mm"
     }
   },
@@ -9798,11 +9798,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3597050f-5a34-5df2-9706-471344f6e406",
             "sourceRange": []
           },
           "ccw": true,
@@ -9832,8 +9832,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+        "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "kind": "Custom",
         "objectId": 139,
         "origin": {
@@ -9874,7 +9874,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "67d03316-0deb-5224-a7ce-b3394ba08db9",
           "sourceRange": []
         }
       },
@@ -9884,9 +9884,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+      "originalId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+      "originSketchId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
       "units": "mm"
     }
   },
@@ -9894,11 +9894,11 @@ description: Variables in memory after executing snowman.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c95f7da0-b9ff-55b6-9802-795e489f8ce4",
             "sourceRange": []
           },
           "ccw": true,
@@ -9928,8 +9928,8 @@ description: Variables in memory after executing snowman.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+        "id": "6ae8c147-090c-5277-8840-6daa34bb4685",
         "kind": "Custom",
         "objectId": 144,
         "origin": {
@@ -9970,7 +9970,7 @@ description: Variables in memory after executing snowman.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
           "sourceRange": []
         }
       },
@@ -9980,9 +9980,9 @@ description: Variables in memory after executing snowman.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
+      "originalId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
+      "originSketchId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
       "units": "mm"
     }
   },
@@ -9990,12 +9990,12 @@ description: Variables in memory after executing snowman.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "065d6e6f-62af-500d-aae0-fe097d5f952b",
+      "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2925d6f8-6b65-55d1-88c2-7f41ad6e2dd4",
+          "id": "ad9f3727-4540-5037-b79a-755bedbcb72f",
           "sourceRange": [],
           "tag": {
             "commentStart": 7063,
@@ -10011,11 +10011,11 @@ description: Variables in memory after executing snowman.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "065d6e6f-62af-500d-aae0-fe097d5f952b",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ad9f3727-4540-5037-b79a-755bedbcb72f",
               "sourceRange": []
             },
             "ccw": true,
@@ -10045,8 +10045,8 @@ description: Variables in memory after executing snowman.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040",
+          "id": "7faa0516-2581-52ca-b80e-97150bf2f040",
           "kind": "Custom",
           "objectId": 134,
           "origin": {
@@ -10087,7 +10087,7 @@ description: Variables in memory after executing snowman.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
             "sourceRange": []
           }
         },
@@ -10097,13 +10097,13 @@ description: Variables in memory after executing snowman.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "065d6e6f-62af-500d-aae0-fe097d5f952b",
+        "originalId": "065d6e6f-62af-500d-aae0-fe097d5f952b",
+        "originSketchId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "1be4bf6b-6484-5f1b-8cd9-915d531a507d",
+      "endCapId": "554a9ab6-0ebd-5919-a740-e994a170727e",
       "units": "mm",
       "sectional": false
     }
@@ -10117,7 +10117,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
                 "objectId": 128,
                 "kind": {
                   "circle": {
@@ -10191,8 +10191,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+                  "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
                   "kind": "Custom",
                   "objectId": 124,
                   "origin": {
@@ -10221,7 +10221,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -10238,11 +10238,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10272,8 +10272,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+                "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
                 "kind": "Custom",
                 "objectId": 124,
                 "origin": {
@@ -10314,7 +10314,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
                   "sourceRange": []
                 }
               },
@@ -10324,8 +10324,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
+              "originalId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
               "units": "mm",
               "isClosed": "no"
             }
@@ -10345,7 +10345,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8f72543d-c84d-5018-865e-36a2fd66854c",
                 "objectId": 133,
                 "kind": {
                   "circle": {
@@ -10420,8 +10420,8 @@ description: Variables in memory after executing snowman.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
+                  "artifactId": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
                   "objectId": 129,
                   "value": "end",
                   "xAxis": {
@@ -10437,13 +10437,13 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                    "creatorSketchId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -10460,11 +10460,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8f72543d-c84d-5018-865e-36a2fd66854c",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10495,8 +10495,8 @@ description: Variables in memory after executing snowman.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
+                "artifactId": "7eb4441b-0eb2-5d8a-9950-9618293f7c1e",
                 "objectId": 129,
                 "value": "end",
                 "xAxis": {
@@ -10512,8 +10512,8 @@ description: Variables in memory after executing snowman.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
+                  "creatorSketchId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -10530,7 +10530,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "985c5da4-4467-570a-8e44-4d58a9c442ba",
                   "sourceRange": []
                 }
               },
@@ -10540,8 +10540,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
+              "originalId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
               "units": "mm",
               "isClosed": "no"
             }
@@ -10561,7 +10561,7 @@ description: Variables in memory after executing snowman.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2f89f295-7088-5e46-8594-1b84a8601b0a",
                 "objectId": 148,
                 "kind": {
                   "circle": {
@@ -10635,8 +10635,8 @@ description: Variables in memory after executing snowman.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+                  "id": "6ae8c147-090c-5277-8840-6daa34bb4685",
                   "kind": "Custom",
                   "objectId": 144,
                   "origin": {
@@ -10665,7 +10665,7 @@ description: Variables in memory after executing snowman.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -10682,11 +10682,11 @@ description: Variables in memory after executing snowman.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "ca586750-6453-56e0-b4cf-8e561096e7ca",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f89f295-7088-5e46-8594-1b84a8601b0a",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -10716,8 +10716,8 @@ description: Variables in memory after executing snowman.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+                "id": "6ae8c147-090c-5277-8840-6daa34bb4685",
                 "kind": "Custom",
                 "objectId": 144,
                 "origin": {
@@ -10758,7 +10758,7 @@ description: Variables in memory after executing snowman.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
                   "sourceRange": []
                 }
               },
@@ -10768,8 +10768,8 @@ description: Variables in memory after executing snowman.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
+              "originalId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
               "units": "mm",
               "isClosed": "no"
             }

@@ -12,7 +12,7 @@ description: Variables in memory after executing import_async.kcl
   },
   "myScrew": {
     "type": "ImportedGeometry",
-    "id": "[uuid]",
+    "id": "3b9b7e44-df88-5f85-82a2-d6c192b9ae40",
     "value": [
       "2-5-long-m8-chc-screw.stl"
     ]

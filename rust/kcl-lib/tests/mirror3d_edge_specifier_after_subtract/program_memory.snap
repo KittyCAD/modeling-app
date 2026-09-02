@@ -6,8 +6,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
   "__sketch_12_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -71,11 +71,11 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
             "sourceRange": []
           },
           "from": [
@@ -99,7 +99,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
             "sourceRange": []
           },
           "from": [
@@ -123,7 +123,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
             "sourceRange": []
           },
           "from": [
@@ -147,8 +147,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -189,7 +189,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
           "sourceRange": []
         }
       },
@@ -215,9 +215,9 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "value": "yoyo"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "originSketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "units": "mm"
     }
   },
@@ -230,7 +230,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -304,8 +304,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -334,7 +334,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hi"
@@ -350,7 +350,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -424,8 +424,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -454,7 +454,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -471,11 +471,11 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -499,7 +499,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -523,7 +523,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -547,8 +547,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -589,7 +589,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                   "sourceRange": []
                 }
               },
@@ -607,8 +607,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                   "value": "yoyo"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+              "originalId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -622,7 +622,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -696,8 +696,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -726,7 +726,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "yoyo"
@@ -743,12 +743,12 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+      "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+          "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
           "sourceRange": [],
           "tag": {
             "commentStart": 137,
@@ -761,8 +761,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b04d04fa-99c4-5f05-a3f5-19f132230c6a",
+          "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
           "sourceRange": [],
           "tag": {
             "commentStart": 186,
@@ -775,8 +775,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5c385f17-1c26-5e87-91b4-ca7b9ef86668",
+          "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
           "sourceRange": [],
           "tag": {
             "commentStart": 232,
@@ -789,8 +789,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
+          "id": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
           "sourceRange": [],
           "tag": {
             "commentStart": 422,
@@ -803,8 +803,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
+          "id": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
           "sourceRange": [],
           "tag": {
             "commentStart": 400,
@@ -830,11 +830,11 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
               "sourceRange": []
             },
             "from": [
@@ -858,7 +858,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
               "sourceRange": []
             },
             "from": [
@@ -882,7 +882,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
               "sourceRange": []
             },
             "from": [
@@ -906,8 +906,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -948,7 +948,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           }
         },
@@ -974,13 +974,13 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "value": "yoyo"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originSketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
+      "endCapId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
       "units": "mm",
       "sectional": false
     }
@@ -989,12 +989,12 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
+      "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+          "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
           "sourceRange": [],
           "tag": {
             "commentStart": 137,
@@ -1007,8 +1007,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b04d04fa-99c4-5f05-a3f5-19f132230c6a",
+          "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
           "sourceRange": [],
           "tag": {
             "commentStart": 186,
@@ -1021,8 +1021,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5c385f17-1c26-5e87-91b4-ca7b9ef86668",
+          "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
           "sourceRange": [],
           "tag": {
             "commentStart": 232,
@@ -1035,8 +1035,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
+          "id": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
           "sourceRange": [],
           "tag": {
             "commentStart": 422,
@@ -1049,8 +1049,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
+          "id": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
           "sourceRange": [],
           "tag": {
             "commentStart": 400,
@@ -1076,11 +1076,11 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
               "sourceRange": []
             },
             "from": [
@@ -1104,7 +1104,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
               "sourceRange": []
             },
             "from": [
@@ -1128,7 +1128,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
               "sourceRange": []
             },
             "from": [
@@ -1152,8 +1152,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1194,7 +1194,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           }
         },
@@ -1220,13 +1220,13 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "value": "yoyo"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+        "originSketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
+      "endCapId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
       "units": "mm",
       "sectional": false
     }
@@ -1235,11 +1235,11 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "47ff4dac-32f2-5e48-962f-6870d4f8f118",
             "sourceRange": []
           },
           "from": [
@@ -1263,7 +1263,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "21b7dbba-2b34-5938-ba83-578fad340cef",
             "sourceRange": []
           },
           "from": [
@@ -1287,7 +1287,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d73842c9-bff4-5e4d-a787-f94edc024edd",
             "sourceRange": []
           },
           "from": [
@@ -1311,8 +1311,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+        "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
         "kind": "Custom",
         "objectId": 11,
         "origin": {
@@ -1353,7 +1353,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "907cac50-3701-5367-b35c-4ec2132c824f",
           "sourceRange": []
         }
       },
@@ -1371,9 +1371,9 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "value": "cut3"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+      "originalId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+      "originSketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "units": "mm"
     }
   },
@@ -1386,7 +1386,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -1460,8 +1460,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                  "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                   "kind": "Custom",
                   "objectId": 11,
                   "origin": {
@@ -1490,7 +1490,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cut1"
@@ -1506,7 +1506,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 18,
                 "kind": {
                   "line": {
@@ -1580,8 +1580,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                  "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                   "kind": "Custom",
                   "objectId": 11,
                   "origin": {
@@ -1610,7 +1610,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cut2"
@@ -1626,7 +1626,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -1700,8 +1700,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                  "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                   "kind": "Custom",
                   "objectId": 11,
                   "origin": {
@@ -1730,7 +1730,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "cut3"
@@ -1747,11 +1747,11 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                     "sourceRange": []
                   },
                   "from": [
@@ -1775,7 +1775,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
                     "sourceRange": []
                   },
                   "from": [
@@ -1792,7 +1792,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                     "sourceRange": []
                   },
                   "from": [
@@ -1816,7 +1816,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                     "sourceRange": []
                   },
                   "from": [
@@ -1840,8 +1840,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "kind": "Custom",
                 "objectId": 11,
                 "origin": {
@@ -1882,7 +1882,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "907cac50-3701-5367-b35c-4ec2132c824f",
                   "sourceRange": []
                 }
               },
@@ -1900,8 +1900,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
                   "value": "cut3"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e",
+              "originalId": "037b0f2d-13ef-58af-b918-43b89e77393e",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1916,12 +1916,12 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
+      "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9700197b-45f4-5326-aea5-9ad8044a1658",
+          "id": "47ff4dac-32f2-5e48-962f-6870d4f8f118",
           "sourceRange": [],
           "tag": {
             "commentStart": 468,
@@ -1934,8 +1934,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515",
+          "id": "21b7dbba-2b34-5938-ba83-578fad340cef",
           "sourceRange": [],
           "tag": {
             "commentStart": 524,
@@ -1948,8 +1948,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3132128b-3a82-5446-aa11-78053c088f3c",
+          "id": "d73842c9-bff4-5e4d-a787-f94edc024edd",
           "sourceRange": [],
           "tag": {
             "commentStart": 581,
@@ -1965,11 +1965,11 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "47ff4dac-32f2-5e48-962f-6870d4f8f118",
               "sourceRange": []
             },
             "from": [
@@ -1993,7 +1993,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "21b7dbba-2b34-5938-ba83-578fad340cef",
               "sourceRange": []
             },
             "from": [
@@ -2017,7 +2017,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d73842c9-bff4-5e4d-a787-f94edc024edd",
               "sourceRange": []
             },
             "from": [
@@ -2041,8 +2041,8 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+          "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
           "kind": "Custom",
           "objectId": 11,
           "origin": {
@@ -2083,7 +2083,7 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "907cac50-3701-5367-b35c-4ec2132c824f",
             "sourceRange": []
           }
         },
@@ -2101,13 +2101,13 @@ description: Variables in memory after executing mirror3d_edge_specifier_after_s
             "value": "cut3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+        "originalId": "2f481fd4-203e-57d7-b5d6-b16289577621",
+        "originSketchId": "037b0f2d-13ef-58af-b918-43b89e77393e",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "d27c391a-48c5-5870-82af-504bc5a5ef5e",
+      "endCapId": "01d0bb6a-52f1-5551-8109-5992382e6bd1",
       "units": "mm",
       "sectional": false
     }

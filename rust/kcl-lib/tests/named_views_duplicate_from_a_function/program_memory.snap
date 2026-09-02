@@ -6,7 +6,7 @@ description: Variables in memory after executing named_views_duplicate_from_a_fu
   "first": {
     "type": "NamedView",
     "value": {
-      "artifactId": "[uuid]",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "name": "Front",
       "camera": {
         "look": {

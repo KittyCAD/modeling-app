@@ -6,8 +6,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
   "__sketch_14_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
   "__sketch_34_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+      "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "kind": "Custom",
       "objectId": 33,
       "origin": {
@@ -104,12 +104,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7c287d08-c119-5e22-a243-1509bdd910b0",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1383,
@@ -122,8 +122,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "663e209d-df18-5e9b-b139-668cc41baf79",
+          "id": "094c2621-b6dc-5b8d-b217-525224318aa7",
           "sourceRange": [],
           "tag": {
             "commentStart": 1463,
@@ -136,8 +136,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "af001eb6-1559-57ab-b4d9-c2c7d90fc87f",
+          "id": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
           "sourceRange": [],
           "tag": {
             "commentStart": 1580,
@@ -150,8 +150,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cd6a35d8-2b4b-5381-84ab-2e95ff0ca7bc",
+          "id": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1697,
@@ -167,11 +167,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -195,7 +195,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "094c2621-b6dc-5b8d-b217-525224318aa7",
               "sourceRange": []
             },
             "from": [
@@ -219,7 +219,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
               "sourceRange": []
             },
             "from": [
@@ -243,7 +243,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
               "sourceRange": []
             },
             "from": [
@@ -267,8 +267,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
           "kind": "Custom",
           "objectId": 13,
           "origin": {
@@ -309,7 +309,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
             "sourceRange": []
           }
         },
@@ -331,13 +331,13 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+        "originalId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+        "originSketchId": "deb86259-17a0-5782-a352-d25992246cc0",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "e726c9e8-0d5e-5ce1-a92c-50537311e343",
+      "endCapId": "d169a9ce-60ca-51e3-b2b1-475132b3db14",
       "units": "mm",
       "sectional": false
     }
@@ -346,11 +346,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
             "sourceRange": []
           },
           "from": [
@@ -374,7 +374,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "094c2621-b6dc-5b8d-b217-525224318aa7",
             "sourceRange": []
           },
           "from": [
@@ -398,7 +398,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
             "sourceRange": []
           },
           "from": [
@@ -422,7 +422,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
             "sourceRange": []
           },
           "from": [
@@ -446,8 +446,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+        "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
         "kind": "Custom",
         "objectId": 13,
         "origin": {
@@ -488,7 +488,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
           "sourceRange": []
         }
       },
@@ -510,9 +510,9 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+      "originalId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+      "originSketchId": "deb86259-17a0-5782-a352-d25992246cc0",
       "units": "mm"
     }
   },
@@ -525,7 +525,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                 "objectId": 17,
                 "kind": {
                   "line": {
@@ -599,8 +599,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -629,7 +629,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "deb86259-17a0-5782-a352-d25992246cc0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -645,7 +645,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -719,8 +719,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -749,7 +749,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "deb86259-17a0-5782-a352-d25992246cc0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -765,7 +765,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -839,8 +839,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -869,7 +869,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "deb86259-17a0-5782-a352-d25992246cc0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -885,7 +885,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -959,8 +959,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                  "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                   "kind": "Custom",
                   "objectId": 13,
                   "origin": {
@@ -989,7 +989,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "deb86259-17a0-5782-a352-d25992246cc0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1006,11 +1006,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "deb86259-17a0-5782-a352-d25992246cc0",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                     "sourceRange": []
                   },
                   "from": [
@@ -1034,7 +1034,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                     "sourceRange": []
                   },
                   "from": [
@@ -1058,7 +1058,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                     "sourceRange": []
                   },
                   "from": [
@@ -1082,7 +1082,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                     "sourceRange": []
                   },
                   "from": [
@@ -1106,8 +1106,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                 "kind": "Custom",
                 "objectId": 13,
                 "origin": {
@@ -1148,7 +1148,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
                   "sourceRange": []
                 }
               },
@@ -1170,8 +1170,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "deb86259-17a0-5782-a352-d25992246cc0",
+              "originalId": "deb86259-17a0-5782-a352-d25992246cc0",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1191,12 +1191,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+      "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7c287d08-c119-5e22-a243-1509bdd910b0",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1383,
@@ -1209,8 +1209,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "663e209d-df18-5e9b-b139-668cc41baf79",
+          "id": "094c2621-b6dc-5b8d-b217-525224318aa7",
           "sourceRange": [],
           "tag": {
             "commentStart": 1463,
@@ -1223,8 +1223,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "af001eb6-1559-57ab-b4d9-c2c7d90fc87f",
+          "id": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
           "sourceRange": [],
           "tag": {
             "commentStart": 1580,
@@ -1237,8 +1237,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cd6a35d8-2b4b-5381-84ab-2e95ff0ca7bc",
+          "id": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1697,
@@ -1254,11 +1254,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -1282,7 +1282,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "094c2621-b6dc-5b8d-b217-525224318aa7",
               "sourceRange": []
             },
             "from": [
@@ -1306,7 +1306,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ed22babf-097a-522b-8ea6-c0fd4a48d939",
               "sourceRange": []
             },
             "from": [
@@ -1330,7 +1330,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5178ccdd-325b-5c19-ac1f-2742126e4fdc",
               "sourceRange": []
             },
             "from": [
@@ -1354,8 +1354,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
+          "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
           "kind": "Custom",
           "objectId": 13,
           "origin": {
@@ -1396,7 +1396,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
             "sourceRange": []
           }
         },
@@ -1418,17 +1418,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+        "originalId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
+        "originSketchId": "deb86259-17a0-5782-a352-d25992246cc0",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "e726c9e8-0d5e-5ce1-a92c-50537311e343",
+      "endCapId": "d169a9ce-60ca-51e3-b2b1-475132b3db14",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "5288de96-84bb-518a-848b-5092b5d33e48",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -1437,12 +1437,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "a9edeab8-e678-5885-9ffb-eeaa2ff7d8f7",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "5288de96-84bb-518a-848b-5092b5d33e48",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -1451,12 +1451,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "287f0daf-d2bd-5fdf-8704-7b978471c682",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "5288de96-84bb-518a-848b-5092b5d33e48",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -1465,12 +1465,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "586626d0-af09-5f7a-8f0f-a73450477d1b",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "5288de96-84bb-518a-848b-5092b5d33e48",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -1479,7 +1479,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "89536a88-4703-54c3-9662-8f7ee1dbff12",
           "tag": null
         }
       ],
@@ -1494,12 +1494,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
+          "artifactId": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "12755a48-6fe9-56d1-b454-f53fa453ea56",
+              "id": "c35e3dc0-568b-56c0-9da0-11e5b1910e52",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2176,
@@ -1512,8 +1512,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "01e76c6e-fc58-5e57-abe1-e5681abb4a02",
+              "id": "01e76c6e-fc58-5e57-abe1-e5681abb4a02",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2663,
@@ -1535,11 +1535,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c35e3dc0-568b-56c0-9da0-11e5b1910e52",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1569,8 +1569,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+              "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
               "kind": "Custom",
               "objectId": 33,
               "origin": {
@@ -1611,7 +1611,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
                 "sourceRange": []
               }
             },
@@ -1625,17 +1625,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+            "originalId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+            "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "4addd1bb-54a9-50d2-bf08-c3879aaf7dcb",
+          "endCapId": "01e76c6e-fc58-5e57-abe1-e5681abb4a02",
           "edgeCuts": [
             {
               "type": "fillet",
-              "id": "[uuid]",
+              "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
               "radius": {
                 "n": 2.0,
                 "ty": {
@@ -1644,7 +1644,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "angle": "degrees"
                 }
               },
-              "edgeId": "[uuid]",
+              "edgeId": "96d1423f-5564-5cba-b03a-1bbeff4433fb",
               "tag": null
             }
           ],
@@ -1656,12 +1656,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "99b118a9-c433-5bfe-b05a-1e7b32964373",
+          "artifactId": "99b118a9-c433-5bfe-b05a-1e7b32964373",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "12755a48-6fe9-56d1-b454-f53fa453ea56",
+              "id": "c35e3dc0-568b-56c0-9da0-11e5b1910e52",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2176,
@@ -1674,8 +1674,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "01e76c6e-fc58-5e57-abe1-e5681abb4a02",
+              "id": "01e76c6e-fc58-5e57-abe1-e5681abb4a02",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2663,
@@ -1697,11 +1697,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "99b118a9-c433-5bfe-b05a-1e7b32964373",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c35e3dc0-568b-56c0-9da0-11e5b1910e52",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1731,8 +1731,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+              "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
               "kind": "Custom",
               "objectId": 33,
               "origin": {
@@ -1773,7 +1773,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
                 "sourceRange": []
               }
             },
@@ -1787,17 +1787,17 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+            "originalId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+            "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "4addd1bb-54a9-50d2-bf08-c3879aaf7dcb",
+          "endCapId": "01e76c6e-fc58-5e57-abe1-e5681abb4a02",
           "edgeCuts": [
             {
               "type": "fillet",
-              "id": "[uuid]",
+              "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
               "radius": {
                 "n": 2.0,
                 "ty": {
@@ -1806,7 +1806,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "angle": "degrees"
                 }
               },
-              "edgeId": "[uuid]",
+              "edgeId": "96d1423f-5564-5cba-b03a-1bbeff4433fb",
               "tag": null
             }
           ],
@@ -1829,11 +1829,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
             "sourceRange": []
           },
           "ccw": true,
@@ -1863,8 +1863,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -1905,7 +1905,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "7b681387-29ea-57f1-8713-d63280827139",
           "sourceRange": []
         }
       },
@@ -1915,9 +1915,9 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "originalId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+      "originSketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "units": "mm"
     }
   },
@@ -1930,7 +1930,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 8,
                 "kind": {
                   "circle": {
@@ -2004,8 +2004,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2034,7 +2034,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2050,7 +2050,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -2125,8 +2125,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2155,7 +2155,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2172,11 +2172,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2206,8 +2206,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2248,7 +2248,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7b681387-29ea-57f1-8713-d63280827139",
                   "sourceRange": []
                 }
               },
@@ -2258,8 +2258,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "originalId": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "units": "mm",
               "isClosed": "no"
             }
@@ -2286,12 +2286,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
+          "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "18ab3082-0711-5c03-bd88-cda0bf7f093d",
+              "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
               "sourceRange": [],
               "tag": {
                 "commentStart": 843,
@@ -2307,11 +2307,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2341,8 +2341,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "kind": "Custom",
               "objectId": 0,
               "origin": {
@@ -2383,7 +2383,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "7b681387-29ea-57f1-8713-d63280827139",
                 "sourceRange": []
               }
             },
@@ -2393,13 +2393,13 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+            "originalId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+            "originSketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "2258db0c-4e41-5818-9856-c9aee535914a",
+          "endCapId": "688fd424-1de4-51a2-b455-344b29542d3f",
           "units": "mm",
           "sectional": false
         }
@@ -2408,12 +2408,12 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "9caa7489-3e9c-5975-89aa-788cbb36099c",
+          "artifactId": "9caa7489-3e9c-5975-89aa-788cbb36099c",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "18ab3082-0711-5c03-bd88-cda0bf7f093d",
+              "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
               "sourceRange": [],
               "tag": {
                 "commentStart": 843,
@@ -2429,11 +2429,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "9caa7489-3e9c-5975-89aa-788cbb36099c",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2463,8 +2463,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "kind": "Custom",
               "objectId": 0,
               "origin": {
@@ -2505,7 +2505,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "7b681387-29ea-57f1-8713-d63280827139",
                 "sourceRange": []
               }
             },
@@ -2515,13 +2515,13 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+            "originalId": "e00e9caf-6e9e-5221-8545-b199546c367f",
+            "originSketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "2258db0c-4e41-5818-9856-c9aee535914a",
+          "endCapId": "688fd424-1de4-51a2-b455-344b29542d3f",
           "units": "mm",
           "sectional": false
         }
@@ -2532,11 +2532,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c35e3dc0-568b-56c0-9da0-11e5b1910e52",
             "sourceRange": []
           },
           "ccw": true,
@@ -2566,8 +2566,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+        "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
         "kind": "Custom",
         "objectId": 33,
         "origin": {
@@ -2608,7 +2608,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
           "sourceRange": []
         }
       },
@@ -2622,9 +2622,9 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+      "originalId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+      "originSketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "units": "mm"
     }
   },
@@ -2637,7 +2637,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                 "objectId": 37,
                 "kind": {
                   "circle": {
@@ -2711,8 +2711,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+                  "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                   "kind": "Custom",
                   "objectId": 33,
                   "origin": {
@@ -2741,7 +2741,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2757,7 +2757,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -2832,8 +2832,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+                  "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                   "kind": "Custom",
                   "objectId": 33,
                   "origin": {
@@ -2862,7 +2862,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2879,11 +2879,11 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2913,8 +2913,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
+                "id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
                 "kind": "Custom",
                 "objectId": 33,
                 "origin": {
@@ -2955,7 +2955,7 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
                   "sourceRange": []
                 }
               },
@@ -2965,8 +2965,8 @@ description: Variables in memory after executing scrub-daddy-holder.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
+              "originalId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
               "units": "mm",
               "isClosed": "no"
             }

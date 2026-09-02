@@ -26,7 +26,7 @@ description: Operations executed nested_windows_main_kcl.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa"
         },
         "sourceRange": []
       },
@@ -55,7 +55,7 @@ description: Operations executed nested_windows_main_kcl.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d"
           }
         },
         "sourceRange": []

@@ -5,7 +5,7 @@ description: Artifact commands pillow-block-bearing.kcl
 {
   "public/kcl-samples/pillow-block-bearing/ball-bearing.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e24d3b1-23b0-5737-82c9-f5aee2198f63",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -44,20 +44,20 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30de0822-b074-5a3d-8e56-5ee84848f0aa",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e77cd6-284a-5393-8426-ce794ee2bbeb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -69,18 +69,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b3363643-a2a3-53f3-840f-ce40f523e89d",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eba47597-5e68-54db-ad83-474786d003ca",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b3363643-a2a3-53f3-840f-ce40f523e89d",
         "to": {
           "x": 30.32125,
           "y": 0.0254,
@@ -89,18 +89,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21af3cf8-1df1-59e7-806c-96d9205e4a7f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b3363643-a2a3-53f3-840f-ce40f523e89d",
         "segment": {
           "type": "arc",
           "center": {
@@ -121,11 +121,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a93807f2-bb75-552f-8f69-73c95b73e483",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b3363643-a2a3-53f3-840f-ce40f523e89d",
         "segment": {
           "type": "line",
           "end": {
@@ -138,24 +138,24 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b104d16-efec-521a-b275-43ab461a46f7",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "b3363643-a2a3-53f3-840f-ce40f523e89d",
+        "segment": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d",
+        "intersection_segment": "a93807f2-bb75-552f-8f69-73c95b73e483",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "628f15ef-635e-5eac-8d21-2e7ffa497d33",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "9b104d16-efec-521a-b275-43ab461a46f7",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -177,37 +177,37 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5c756ffc-2dc8-514e-b14b-2aae9db7f650",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9b104d16-efec-521a-b275-43ab461a46f7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4406885d-65f3-5dd4-808b-a175b3d8319f",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9b104d16-efec-521a-b275-43ab461a46f7",
+        "edge_id": "fdcbf4c3-ccb2-5f98-aec0-61f3f37e060f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e03f3e97-c883-51b4-bb9d-ecf1eb14e8e6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9b104d16-efec-521a-b275-43ab461a46f7",
+        "edge_id": "fdcbf4c3-ccb2-5f98-aec0-61f3f37e060f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28006c95-3b9c-5732-a899-10c8e6ab53bc",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "9b104d16-efec-521a-b275-43ab461a46f7",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -224,7 +224,7 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "645a4310-7ed7-5f61-bc8b-599ccb33e782",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -249,11 +249,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "65483b02-03ab-5e41-8455-d0591ab9fdc6",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "645a4310-7ed7-5f61-bc8b-599ccb33e782",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -263,20 +263,20 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f55963f-0c01-5119-803a-f8afc32ba3c2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "645a4310-7ed7-5f61-bc8b-599ccb33e782",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "785288fd-da19-5b8c-927e-e052f39df4d1",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "645a4310-7ed7-5f61-bc8b-599ccb33e782",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -288,18 +288,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "911f77e5-ae36-5ef9-aa8f-89ec7975d552",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6d7e8d10-8b15-5475-afaa-948dd7cc25e8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "911f77e5-ae36-5ef9-aa8f-89ec7975d552",
         "to": {
           "x": 28.9321875,
           "y": 2.749630645,
@@ -308,18 +308,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd90c906-9ecf-5d76-9686-cbdbe219dae8",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e3552bce-740f-5d25-b5c8-dc7373b771e4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "911f77e5-ae36-5ef9-aa8f-89ec7975d552",
         "segment": {
           "type": "arc",
           "center": {
@@ -340,11 +340,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "451389f5-0508-53af-befd-4e7dc409ce93",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "911f77e5-ae36-5ef9-aa8f-89ec7975d552",
         "to": {
           "x": 28.9321875,
           "y": 2.749630645,
@@ -353,11 +353,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7afd9142-4986-5642-903b-b79c4d488db6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "911f77e5-ae36-5ef9-aa8f-89ec7975d552",
         "segment": {
           "type": "line",
           "end": {
@@ -370,11 +370,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1d48cca8-b31f-531b-9cf2-2cc47dbfa095",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "911f77e5-ae36-5ef9-aa8f-89ec7975d552",
         "segment": {
           "type": "line",
           "end": {
@@ -387,11 +387,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fb6eeade-ef56-5ba6-ab83-b0d91f1aa944",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "911f77e5-ae36-5ef9-aa8f-89ec7975d552",
         "segment": {
           "type": "line",
           "end": {
@@ -404,24 +404,24 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b3f571cf-a507-5510-a6c4-b3754477a444",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "911f77e5-ae36-5ef9-aa8f-89ec7975d552",
+        "segment": "e3552bce-740f-5d25-b5c8-dc7373b771e4",
+        "intersection_segment": "7afd9142-4986-5642-903b-b79c4d488db6",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "24f05b2b-a713-5e9c-a9c0-7dd439085394",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "b3f571cf-a507-5510-a6c4-b3754477a444",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -443,37 +443,37 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c56e9810-3d70-598b-aec3-00815dc1a78e",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b3f571cf-a507-5510-a6c4-b3754477a444"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b495341-726e-51b4-bddf-460c9e0756ac",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b3f571cf-a507-5510-a6c4-b3754477a444",
+        "edge_id": "02cb2aae-7146-5fe5-8933-7bdd39d20891"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f341dbdc-cc40-5d7e-9fda-9cb4c7d29a1b",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b3f571cf-a507-5510-a6c4-b3754477a444",
+        "edge_id": "02cb2aae-7146-5fe5-8933-7bdd39d20891"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb57c42f-80f3-5258-ad0b-3adcfb2d4b91",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "b3f571cf-a507-5510-a6c4-b3754477a444",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -490,7 +490,7 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba898db1-0ff7-5f44-b164-9f3e8806a39a",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -515,20 +515,20 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1dad485e-36f7-5f95-b2d8-25adae637a7d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ba898db1-0ff7-5f44-b164-9f3e8806a39a",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7fc87969-04f4-5bd5-aab8-40f570953914",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ba898db1-0ff7-5f44-b164-9f3e8806a39a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -540,18 +540,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c9bf618-20c9-514c-b042-add4fba561ac",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "70b21199-601d-5967-bd85-000361c2c047",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7c9bf618-20c9-514c-b042-add4fba561ac",
         "to": {
           "x": 28.23765625,
           "y": 6.35,
@@ -560,18 +560,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "73596c95-dab6-5951-ad31-3d5b802d0831",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d1851c6-87dc-5344-ad52-8853d5d0d6ea",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7c9bf618-20c9-514c-b042-add4fba561ac",
         "segment": {
           "type": "arc",
           "center": {
@@ -592,7 +592,7 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "952a08ac-d434-50a0-9d57-f89da6bf9bcb",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -617,20 +617,20 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3e0f7d0d-831d-537d-92d2-78a783cfd7c8",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "952a08ac-d434-50a0-9d57-f89da6bf9bcb",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "000c9693-711c-5555-9ef6-e4a6ea115a0c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "952a08ac-d434-50a0-9d57-f89da6bf9bcb",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -642,18 +642,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3a3212db-9cc5-5980-b190-5bd4983ad313",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
         "to": {
           "x": 31.559499999999996,
           "y": 12.7,
@@ -662,18 +662,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5ebc28b-074e-5a84-9f67-779880083459",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "02c96b06-63c8-522b-a2a0-e5a882440927",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
         "segment": {
           "type": "line",
           "end": {
@@ -686,11 +686,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5c714122-0389-5701-b7c9-3c110e7526e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
         "segment": {
           "type": "line",
           "end": {
@@ -703,11 +703,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d54a27e-9066-5bc4-8d3f-502734e673ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
         "segment": {
           "type": "line",
           "end": {
@@ -720,11 +720,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e640b62-739e-5a75-8e05-1bc5debdd51e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
         "segment": {
           "type": "line",
           "end": {
@@ -737,11 +737,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dade990a-ebbb-52e1-95cc-98ad6ee31c27",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
         "segment": {
           "type": "line",
           "end": {
@@ -754,11 +754,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e10303f0-c64c-5467-bfd6-8da758d0e54e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
         "segment": {
           "type": "line",
           "end": {
@@ -771,24 +771,24 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d80bdb4b-aaf6-5d20-ac1e-57ee202f0097",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1b7054a0-c731-547d-86fe-1cbeb3e93c05",
+        "segment": "02c96b06-63c8-522b-a2a0-e5a882440927",
+        "intersection_segment": "5c714122-0389-5701-b7c9-3c110e7526e3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "70fb7e8e-c34a-513b-8500-dc6c265df8e0",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "d80bdb4b-aaf6-5d20-ac1e-57ee202f0097",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -810,37 +810,37 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d94fbf3c-e85e-5ddb-ab47-e77d2151e87b",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "d80bdb4b-aaf6-5d20-ac1e-57ee202f0097"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a366705b-f054-5a13-94ee-dba6deeedab5",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d80bdb4b-aaf6-5d20-ac1e-57ee202f0097",
+        "edge_id": "8abede59-fc38-54b6-852e-8b44d4253dbb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "81649ab4-c26f-5087-b21d-5a093c9c4590",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d80bdb4b-aaf6-5d20-ac1e-57ee202f0097",
+        "edge_id": "8abede59-fc38-54b6-852e-8b44d4253dbb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "68ef114d-02bd-51f6-8297-a7887596be9b",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "d80bdb4b-aaf6-5d20-ac1e-57ee202f0097",
         "color": {
           "r": 0.07058824,
           "g": 0.07058824,
@@ -853,7 +853,7 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f18c80e-223e-5c85-9b03-898c6c7f4b0c",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -878,20 +878,20 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b61f65e5-a014-5031-a1e3-c9e4c1143391",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6f18c80e-223e-5c85-9b03-898c6c7f4b0c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c03caee-0f80-50e0-ab08-bd6c423be82a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6f18c80e-223e-5c85-9b03-898c6c7f4b0c",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -903,18 +903,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "038c1496-0a5a-5c29-945e-6dea9194e57e",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1bf2e390-72e1-5229-b08e-4646da1e5200",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "to": {
           "x": 22.224999999999998,
           "y": 0.635,
@@ -923,18 +923,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f113b586-b626-55fe-a236-67f5d7ea0964",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b11f16f3-d1c8-5014-bbf1-df7999757c47",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -947,11 +947,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a10a8d5c-90bc-5c2e-ada0-dfa218639434",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -964,11 +964,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0238263f-f237-53e4-8f20-998cbc62d61b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -981,11 +981,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4cfdb6c9-90ba-54e0-853e-b2097d5c85da",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -998,11 +998,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dc1ecbfa-ce2a-5911-b0f9-e4a31bff4160",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -1015,11 +1015,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f3ba2813-e279-54fe-82e3-b685d68cdaea",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -1032,11 +1032,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5abd47ad-1128-5a57-9b60-b1a709d3bef4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -1049,11 +1049,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d95e316-0eac-565e-a8e2-192365bb82f5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -1066,11 +1066,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "423f267f-5294-55b0-b5a4-738bcb19b952",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -1083,11 +1083,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bcc50536-4863-52f2-8bf5-a25e72cd726d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -1100,11 +1100,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e2f4f45d-d38e-5786-a36f-aed6376b51ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -1117,11 +1117,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33743cf5-d78c-50c1-a562-82acc74495ca",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "038c1496-0a5a-5c29-945e-6dea9194e57e",
         "segment": {
           "type": "line",
           "end": {
@@ -1134,24 +1134,24 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28bcfee8-f7ec-5d96-a280-b0f790a138f9",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "038c1496-0a5a-5c29-945e-6dea9194e57e",
+        "segment": "b11f16f3-d1c8-5014-bbf1-df7999757c47",
+        "intersection_segment": "a10a8d5c-90bc-5c2e-ada0-dfa218639434",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ebabe5ee-e91a-5397-957d-8066fe4de498",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "28bcfee8-f7ec-5d96-a280-b0f790a138f9",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1173,37 +1173,37 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2128dde6-7045-5d16-a133-ed6a3d89ad11",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "28bcfee8-f7ec-5d96-a280-b0f790a138f9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8831c06-bd41-560a-a95d-01e1214e160f",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "28bcfee8-f7ec-5d96-a280-b0f790a138f9",
+        "edge_id": "d371c746-6066-504c-927c-5febf98a51e9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "332437f3-10c2-5b9f-b424-7a25548ab25f",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "28bcfee8-f7ec-5d96-a280-b0f790a138f9",
+        "edge_id": "d371c746-6066-504c-927c-5febf98a51e9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d428ee0a-8164-5cde-9adc-84f005b4f10d",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "28bcfee8-f7ec-5d96-a280-b0f790a138f9",
         "color": {
           "r": 0.9411765,
           "g": 0.9411765,
@@ -1216,24 +1216,24 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3e42627b-193c-5587-9e8f-6c15a37ecd14",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "7c9bf618-20c9-514c-b042-add4fba561ac",
+        "segment": "9d1851c6-87dc-5344-ad52-8853d5d0d6ea",
+        "intersection_segment": "9d1851c6-87dc-5344-ad52-8853d5d0d6ea",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "492b08c1-0dc4-5aaf-aa82-127c34b5335f",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "3e42627b-193c-5587-9e8f-6c15a37ecd14",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1255,37 +1255,37 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "977697c4-73c7-5187-9329-09c5c4b57104",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "3e42627b-193c-5587-9e8f-6c15a37ecd14"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "26a04a98-39e7-5ba6-8d46-ef767e485b01",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "3e42627b-193c-5587-9e8f-6c15a37ecd14",
+        "edge_id": "76b4742c-3fb6-5660-a46f-28d4c087b956"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7bc3f103-5e33-5d70-bed7-c63fd811baf1",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "3e42627b-193c-5587-9e8f-6c15a37ecd14",
+        "edge_id": "76b4742c-3fb6-5660-a46f-28d4c087b956"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc78d291-eec0-5dec-a0c2-d12f3e0cd66b",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "3e42627b-193c-5587-9e8f-6c15a37ecd14",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -1304,7 +1304,7 @@ description: Artifact commands pillow-block-bearing.kcl
   ],
   "public/kcl-samples/pillow-block-bearing/block.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1329,20 +1329,20 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9a89775-cfba-5031-8e02-ff7b852c56d9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dae2d208-7706-5747-b592-90417506cbf1",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1354,18 +1354,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21294103-205a-51c9-9939-ab6cf5fa2f07",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
         "to": {
           "x": -77.7875,
           "y": -52.387499999999996,
@@ -1374,18 +1374,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f5c1b33-d042-5dcb-a15f-7fef02bfe413",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "37dccfff-51c8-54b8-ad35-58f377eb2c42",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
         "segment": {
           "type": "line",
           "end": {
@@ -1398,11 +1398,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "515e71b6-5068-5314-a362-727be5fd92ee",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
         "segment": {
           "type": "line",
           "end": {
@@ -1415,11 +1415,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "630e2c20-474e-5cd6-8b4f-09f30ec93091",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
         "segment": {
           "type": "line",
           "end": {
@@ -1432,11 +1432,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca3286b6-95ff-5556-ac85-a67dc66d9b83",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
         "segment": {
           "type": "line",
           "end": {
@@ -1449,11 +1449,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0208f2f8-c61e-57fc-96d1-c8e9e64f25d8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
         "to": {
           "x": 33.3375,
           "y": 0.0,
@@ -1462,11 +1462,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf0e612a-1375-5a2f-9673-f21d5f4965a8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
         "segment": {
           "type": "arc",
           "center": {
@@ -1487,24 +1487,24 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
+        "segment": "37dccfff-51c8-54b8-ad35-58f377eb2c42",
+        "intersection_segment": "515e71b6-5068-5314-a362-727be5fd92ee",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3dc2dc28-0a63-5046-8f2e-985a412b54bc",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1516,11 +1516,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6be835dd-eec1-5cac-b5f4-dd6eda804b7a",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
         "distance": 12.7,
         "faces": null,
         "opposite": "None",
@@ -1529,44 +1529,44 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6b47b38f-ef39-55ee-86a3-09330b344cbd",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2539e202-3451-5d40-8c6f-50b822800d7a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbce07c6-5d48-59a5-a7ea-998c756458c3",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "edge_id": "21b7dbba-2b34-5938-ba83-578fad340cef"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "85871638-7fe9-5686-b80c-00d76d5a95c4",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "edge_id": "21b7dbba-2b34-5938-ba83-578fad340cef"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c891370e-d9d1-56ca-9db7-c6dbc0b67bf8",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
         "color": {
           "r": 0.11764706,
           "g": 0.38431373,
@@ -1579,96 +1579,96 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08f30374-37d7-5a7c-a606-c19ce1a055d5",
       "range": [],
       "command": {
         "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "edge_id": "792711b1-5932-5b55-aec6-b4a6b03d1220",
+        "face_id": "09a92e47-7935-5cf8-ae85-87fda5706c1d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0e403565-ae76-5417-9231-63bff71f63cc",
       "range": [],
       "command": {
         "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "edge_id": "21b7dbba-2b34-5938-ba83-578fad340cef",
+        "face_id": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149842c9-793f-5b13-bf13-041f386982f2",
       "range": [],
       "command": {
         "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "edge_id": "99194547-d759-57c0-aabc-e5c9d6f3a53b",
+        "face_id": "039162c5-93c6-5638-90da-9cdc27116f82"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d3f0a7e-4083-52ce-8054-b816fa6704a8",
       "range": [],
       "command": {
         "type": "solid3d_get_next_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "edge_id": "d73842c9-bff4-5e4d-a787-f94edc024edd",
+        "face_id": "0f126e7b-acca-5f24-aab5-a8b751c9d51e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76025370-77a9-5076-9f04-fc0a175b85b0",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "edge_id": "cc891d2d-6661-5674-b06c-461f2f806e1f"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "31cc1b97-b3fb-559c-8cc5-a5965da9ba5a",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "edge_id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "691a7178-7ad0-5445-ad53-53d08dd46282",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "edge_id": "f65fd9f3-2cf8-5b07-991e-aab90163da64"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9416edc-ddb4-56c7-9309-3efb23608c50",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "edge_id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db2ad7c6-e062-5c1e-a086-01b201ca4910",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
         "edge_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "cc891d2d-6661-5674-b06c-461f2f806e1f",
+          "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
+          "f65fd9f3-2cf8-5b07-991e-aab90163da64",
+          "f895e225-9bb5-57f6-901c-f8cdc25b6a2c"
         ],
         "cut_type": {
           "fillet": {
@@ -1679,14 +1679,14 @@ description: Artifact commands pillow-block-bearing.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "52540e74-3d7a-5ae5-87ce-76b81c914fc4",
+          "f203f7cf-d99b-5239-a007-846590cbf667",
+          "a38efef1-7b01-551d-b122-cef40ed1403c"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93be3bcc-48af-500d-9d79-fd3aa827af91",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1711,11 +1711,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dc6651e8-c7e0-55ae-80b6-1f75337bc7a2",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1725,20 +1725,20 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ddf73b0f-cf9d-5c37-baf5-cfe65ad2c434",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "70a191b3-3571-58c1-b550-a18cddce3b7c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1750,18 +1750,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "276fb2f9-c709-5be5-a53b-374550944444",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0626690a-8b24-5abf-af9b-8bb5e6e260a3",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "276fb2f9-c709-5be5-a53b-374550944444",
         "to": {
           "x": -53.974999999999994,
           "y": -38.099999999999994,
@@ -1770,18 +1770,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c52fef6e-44f2-5461-9aa6-5d73da3fbbdf",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93ab5cfd-a566-59d3-8a82-1e668b63f2f5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "276fb2f9-c709-5be5-a53b-374550944444",
         "segment": {
           "type": "arc",
           "center": {
@@ -1802,24 +1802,24 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e505c23-dde9-5385-a5ca-bff76165a83f",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "276fb2f9-c709-5be5-a53b-374550944444",
+        "segment": "93ab5cfd-a566-59d3-8a82-1e668b63f2f5",
+        "intersection_segment": "93ab5cfd-a566-59d3-8a82-1e668b63f2f5",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "777079f5-c614-5a9a-aaa3-fe40609a4932",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "93be3bcc-48af-500d-9d79-fd3aa827af91",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1831,11 +1831,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b239de75-3f80-5e55-ba15-53afc928f527",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "4e505c23-dde9-5385-a5ca-bff76165a83f",
         "distance": -4.762499999999999,
         "faces": null,
         "opposite": "None",
@@ -1844,44 +1844,44 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cd4471f-0b9c-5fe2-85d9-ef5e7b9655e5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4888986b-b59b-5518-981e-71fe0ebb5474",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "4e505c23-dde9-5385-a5ca-bff76165a83f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f33355cc-779b-5caf-8737-6fea66c9d2ad",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4e505c23-dde9-5385-a5ca-bff76165a83f",
+        "edge_id": "1cb215f6-5b8b-526f-a53a-233832c57f7a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88d53866-cebd-5812-a4d1-b473ef522ec8",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4e505c23-dde9-5385-a5ca-bff76165a83f",
+        "edge_id": "1cb215f6-5b8b-526f-a53a-233832c57f7a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9f9dd22-ede7-5364-996b-910e720628a9",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "4e505c23-dde9-5385-a5ca-bff76165a83f",
         "transform": [],
         "transforms": [
           [
@@ -1917,11 +1917,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "61f4c49f-bbaa-5086-b0f4-d2c20a721238",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "4e505c23-dde9-5385-a5ca-bff76165a83f",
         "transform": [],
         "transforms": [
           [
@@ -1957,11 +1957,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3a21569a-e35c-573e-ac8e-baab933c3ce6",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "9f5722b5-fe8a-5e65-ba05-a3ceaf870622",
         "transform": [],
         "transforms": [
           [
@@ -1997,25 +1997,25 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8d10d7a-2979-59ad-a964-392421834e2a",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "e59d71a1-61af-585c-bfd1-c3c90d0039de"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "4e505c23-dde9-5385-a5ca-bff76165a83f",
+          "52c3d06f-462c-58ab-a960-694e89bbb2cf",
+          "9f5722b5-fe8a-5e65-ba05-a3ceaf870622",
+          "fb41e859-51cf-587b-9c5a-daad4487e32d"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3487d1cb-da0f-53cd-ac77-59fd978cf8d2",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2040,11 +2040,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d8d5c995-45fd-5e61-a869-55f54706aac7",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "3487d1cb-da0f-53cd-ac77-59fd978cf8d2",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2054,20 +2054,20 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2322b274-acb1-54e5-b6e7-e471b1d3aba7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "3487d1cb-da0f-53cd-ac77-59fd978cf8d2",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76be7e47-ac50-56a8-80df-ffd16a051bb8",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3487d1cb-da0f-53cd-ac77-59fd978cf8d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2079,18 +2079,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e627540b-e0da-54b3-ab1b-20a3ba26e95e",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "545abb42-d8d5-5979-accf-ed93cdbfbc2a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e627540b-e0da-54b3-ab1b-20a3ba26e95e",
         "to": {
           "x": -58.7375,
           "y": -38.099999999999994,
@@ -2099,18 +2099,18 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbfcf96e-c8a5-5413-b3ef-d94ab9394720",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8038abe0-f104-567d-90cd-f71bd47954df",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e627540b-e0da-54b3-ab1b-20a3ba26e95e",
         "segment": {
           "type": "arc",
           "center": {
@@ -2131,24 +2131,24 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84791802-ac56-5214-afde-b71ec4265f1b",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "e627540b-e0da-54b3-ab1b-20a3ba26e95e",
+        "segment": "8038abe0-f104-567d-90cd-f71bd47954df",
+        "intersection_segment": "8038abe0-f104-567d-90cd-f71bd47954df",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d92c90e1-7514-5ccd-aa46-d6567f1d43f7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3487d1cb-da0f-53cd-ac77-59fd978cf8d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2160,11 +2160,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ac76f166-501c-51bd-92cc-429a0ccc48df",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "84791802-ac56-5214-afde-b71ec4265f1b",
         "distance": -7.9375,
         "faces": null,
         "opposite": "None",
@@ -2173,44 +2173,44 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6edc55a-0f3c-5fb0-aacc-bbe8a8801906",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "23fa6977-0d4f-50c4-97d4-94d17f316c1a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "84791802-ac56-5214-afde-b71ec4265f1b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a07b6b1-57d3-5aed-b4d4-a39b6372d794",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "84791802-ac56-5214-afde-b71ec4265f1b",
+        "edge_id": "16180119-143a-5d53-abaf-87fe64ff7443"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "64f818b2-a003-5a93-8e89-b807867faa41",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "84791802-ac56-5214-afde-b71ec4265f1b",
+        "edge_id": "16180119-143a-5d53-abaf-87fe64ff7443"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dccc941d-0f53-5e76-a77d-7eaabd51ce74",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "84791802-ac56-5214-afde-b71ec4265f1b",
         "transform": [],
         "transforms": [
           [
@@ -2246,11 +2246,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48a54318-ef33-5582-ad9a-28dd917a06ab",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "84791802-ac56-5214-afde-b71ec4265f1b",
         "transform": [],
         "transforms": [
           [
@@ -2286,11 +2286,11 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "653bc6d5-c166-5a14-9542-bddf0fe281d6",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "5fbc0947-6aec-599e-8dd9-953b4450b5e8",
         "transform": [],
         "transforms": [
           [
@@ -2326,29 +2326,29 @@ description: Artifact commands pillow-block-bearing.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "81c06928-6302-5370-bac1-7ae6b91cfb62",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "c8d10d7a-2979-59ad-a964-392421834e2a"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "84791802-ac56-5214-afde-b71ec4265f1b",
+          "20bd7f58-8b14-5875-9524-e60388e031d3",
+          "5fbc0947-6aec-599e-8dd9-953b4450b5e8",
+          "95b43b24-7943-5fda-a0a2-d866e5967f28"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03560a39-a060-549f-9433-a8ffd16cc38b",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "81c06928-6302-5370-bac1-7ae6b91cfb62",
         "color": {
           "r": 0.11764706,
           "g": 0.38431373,

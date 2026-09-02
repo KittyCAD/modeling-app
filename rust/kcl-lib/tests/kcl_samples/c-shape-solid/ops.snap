@@ -1707,7 +1707,7 @@ description: Operations executed c-shape-solid.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1737,7 +1737,7 @@ description: Operations executed c-shape-solid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d"
           }
         },
         "sourceRange": []
@@ -1763,7 +1763,7 @@ description: Operations executed c-shape-solid.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d"
           }
         },
         "sourceRange": []

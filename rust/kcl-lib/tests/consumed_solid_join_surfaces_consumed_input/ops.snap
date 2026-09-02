@@ -722,11 +722,11 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "meta": {
                 "type": "Object",
@@ -734,18 +734,18 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             }
           },
@@ -778,7 +778,7 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
           }
         },
         "sourceRange": []
@@ -1531,11 +1531,11 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6023bee8-3980-5182-88ac-ac06420ce00f"
               },
               "meta": {
                 "type": "Object",
@@ -1543,18 +1543,18 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "deb86259-17a0-5782-a352-d25992246cc0"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
               }
             }
           },
@@ -1587,7 +1587,7 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d"
           }
         },
         "sourceRange": []
@@ -1629,7 +1629,7 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
           }
         },
         "sourceRange": []
@@ -1642,7 +1642,7 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
                 }
               }
             ]
@@ -2384,11 +2384,11 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
             "value": {
               "bottom": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
               },
               "left": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205"
               },
               "meta": {
                 "type": "Object",
@@ -2396,18 +2396,18 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd"
                     }
                   }
                 }
               },
               "right": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0917d07d-5996-5994-8a06-602d43e2b6f3"
               },
               "top": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0"
               }
             }
           },
@@ -2440,7 +2440,7 @@ description: Operations executed consumed_solid_join_surfaces_consumed_input.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
           }
         },
         "sourceRange": []

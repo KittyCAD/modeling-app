@@ -1111,11 +1111,11 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f1634645-3502-580b-a84b-0466ff4d66c4"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9aa4f613-d255-5aaa-abf2-88a262722a67"
               }
             ]
           },
@@ -1145,7 +1145,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "43e735ed-de79-5875-b5ed-06327ad4e801"
           }
         },
         "sourceRange": []
@@ -1212,7 +1212,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4af4f276-ac5b-5bf4-a3c7-e642dffac2bc"
           }
         },
         "sourceRange": []
@@ -1236,19 +1236,19 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "6776257b-68c1-514b-8dc5-76e55663c17d"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "a7d7d52d-fd72-5f5f-9503-f29d9661b6f1"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194"
               }
             ]
           },
@@ -1281,7 +1281,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "a24223d0-3225-5880-a5b6-6d11466e7f39"
         },
         "sourceRange": []
       },
@@ -2143,7 +2143,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -2303,7 +2303,7 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4f02c872-a65a-5add-bdcb-a8186428c0d7"
               }
             ]
           },
@@ -2333,7 +2333,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "96e78904-c80e-52c1-bef5-79efbf0ae161"
           }
         },
         "sourceRange": []
@@ -2343,7 +2343,7 @@ description: Operations executed hand-trolley.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "614f6ed4-a48a-5909-b569-6a72b73c919b"
             }
           },
           "sourceRange": []
@@ -3752,7 +3752,7 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "72bea877-60fc-52a3-a7c3-a80e6114db19"
               }
             ]
           },
@@ -3782,7 +3782,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d92e058b-de0b-5e17-b33b-fc0ecfb44dd9"
           }
         },
         "sourceRange": []
@@ -3792,7 +3792,7 @@ description: Operations executed hand-trolley.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "6f846f28-557b-5c02-8368-03982e99749e"
             }
           },
           "sourceRange": []
@@ -3820,7 +3820,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -4425,11 +4425,11 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a06a58e3-42fa-55ff-b2be-7606be6a52a2"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "743a178f-d494-5f7c-99b0-4af042ce416c"
               }
             ]
           },
@@ -4459,7 +4459,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5513a70-7a8b-5d61-a9ef-a112cd9ab00a"
           }
         },
         "sourceRange": []
@@ -4505,7 +4505,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe295ca0-b410-5328-8da5-220ec2caf40a"
           }
         },
         "sourceRange": []
@@ -4596,7 +4596,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "28273f31-a51e-5e33-8772-211d41623a58"
         },
         "sourceRange": []
       },
@@ -7505,11 +7505,11 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d4963c28-2b9a-5b22-abb8-3178f8176ddb"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "afd1bca6-3aa2-5503-ba55-98490b005876"
               }
             ]
           },
@@ -7539,7 +7539,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9b4c55ef-b69a-5e62-b2ef-0bc5d14883b5"
           }
         },
         "sourceRange": []
@@ -7587,7 +7587,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "28273f31-a51e-5e33-8772-211d41623a58"
         },
         "sourceRange": []
       },
@@ -7834,7 +7834,7 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0ca5bc5f-dda4-526d-948c-b2c4b3769d55"
               }
             ]
           },
@@ -7864,7 +7864,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6690aa30-80f5-5c2e-8bed-e319fff4736e"
           }
         },
         "sourceRange": []
@@ -7916,13 +7916,13 @@ description: Operations executed hand-trolley.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "865f582e-5835-585c-b9e1-14e99a1cd9e3"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d9d21b63-c8d0-5579-82b6-6318fc3fb3bf"
               }
             }
           ]
@@ -8125,7 +8125,7 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "55f891ee-63b9-5377-88a4-55539a975d0e"
               }
             ]
           },
@@ -8155,7 +8155,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9029a9d2-c0fa-521a-a8ab-5874da5d12c6"
           }
         },
         "sourceRange": []
@@ -8203,7 +8203,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -11689,11 +11689,11 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c376f71a-9e73-50ea-8a0e-3b98aecfe9eb"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "097bb9bb-4b67-581d-aead-a085edc8194e"
               }
             ]
           },
@@ -11723,7 +11723,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "51cd99a5-6185-55f4-8f2c-86fe4408f74d"
           }
         },
         "sourceRange": []
@@ -11806,7 +11806,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -13301,11 +13301,11 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "27d726f1-65af-501b-9546-ede8be9a66c7"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1fcf4dfb-4616-5104-8623-9f669dd1ba52"
               }
             ]
           },
@@ -13335,7 +13335,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f2dd381-1417-5ea8-9a12-c40812a22582"
           }
         },
         "sourceRange": []
@@ -13423,7 +13423,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e4304052-93fd-5046-9d1b-3e8d4362c471"
           }
         },
         "sourceRange": []
@@ -13489,13 +13489,13 @@ description: Operations executed hand-trolley.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cac3b70a-5992-5e51-99bc-761755f5fb14"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e4304052-93fd-5046-9d1b-3e8d4362c471"
               }
             }
           ]
@@ -13608,55 +13608,55 @@ description: Operations executed hand-trolley.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "4af4f276-ac5b-5bf4-a3c7-e642dffac2bc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "865f582e-5835-585c-b9e1-14e99a1cd9e3"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d9d21b63-c8d0-5579-82b6-6318fc3fb3bf"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "929e546b-c4e6-50d4-845d-41af4f401ddd"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9f848ba9-a7d6-5ad3-843d-24c2a07daf4e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fe295ca0-b410-5328-8da5-220ec2caf40a"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3bf050e5-f8a6-594f-be4c-6e5450c55863"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "aa4cd033-1685-578f-bef7-aaa0db7ef06f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cac3b70a-5992-5e51-99bc-761755f5fb14"
               }
             }
           ]
@@ -13776,13 +13776,13 @@ description: Operations executed hand-trolley.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "df501bce-ee73-5bbb-a915-4340869de198"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ef9e6ac4-2880-5adf-a605-aaa64f0d7475"
               }
             }
           ]
@@ -15314,11 +15314,11 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "515e71b6-5068-5314-a362-727be5fd92ee"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "782a6a40-2456-5e7d-9296-7cc2489d740e"
               }
             ]
           },
@@ -15348,7 +15348,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f203f7cf-d99b-5239-a007-846590cbf667"
           }
         },
         "sourceRange": []
@@ -15415,7 +15415,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a38efef1-7b01-551d-b122-cef40ed1403c"
           }
         },
         "sourceRange": []
@@ -15439,19 +15439,19 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "91217df3-8781-5744-b00a-419896828ac7"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "e5cb0b26-d931-5985-976e-197e8d3b2093"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "c929f0d6-92f3-5ed0-bb81-1fbdd2a44e6a"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "c17133b1-efd3-5427-8d4b-88dc70f07b3c"
               }
             ]
           },
@@ -15484,7 +15484,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "a24223d0-3225-5880-a5b6-6d11466e7f39"
         },
         "sourceRange": []
       },
@@ -16346,7 +16346,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -16506,7 +16506,7 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "34bc3ace-6258-5a7f-ab7c-03504068e99a"
               }
             ]
           },
@@ -16536,7 +16536,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "092a9eb8-f612-5cda-82eb-5c3bcc8656b3"
           }
         },
         "sourceRange": []
@@ -16546,7 +16546,7 @@ description: Operations executed hand-trolley.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "2322b274-acb1-54e5-b6e7-e471b1d3aba7"
             }
           },
           "sourceRange": []
@@ -17955,7 +17955,7 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a9f2c469-9657-5d50-be70-1eb1da48d2b6"
               }
             ]
           },
@@ -17985,7 +17985,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7436b250-657c-588d-9101-b2c590d211d9"
           }
         },
         "sourceRange": []
@@ -17995,7 +17995,7 @@ description: Operations executed hand-trolley.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "67f4e1e0-65bf-50b7-a39d-c2ef8b8fff5d"
             }
           },
           "sourceRange": []
@@ -18023,7 +18023,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -18628,11 +18628,11 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "43cb4642-4e31-5086-a7ef-c984d833f704"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a8c0e7f9-2d38-51ea-a2aa-0fd0b969cd72"
               }
             ]
           },
@@ -18662,7 +18662,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3134662a-f352-5dfe-939f-6ef594643527"
           }
         },
         "sourceRange": []
@@ -18708,7 +18708,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "69af4bdb-f49e-5527-a15f-0410fe93428f"
           }
         },
         "sourceRange": []
@@ -18799,7 +18799,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "28273f31-a51e-5e33-8772-211d41623a58"
         },
         "sourceRange": []
       },
@@ -21708,11 +21708,11 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a0dfd345-a67c-505f-8050-4c35e2189afe"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "67f09e47-5e08-5eca-97fc-ac42c7bdfe25"
               }
             ]
           },
@@ -21742,7 +21742,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "91a4de72-0a19-56f1-8d34-7f50c7bb65d0"
           }
         },
         "sourceRange": []
@@ -21790,7 +21790,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "28273f31-a51e-5e33-8772-211d41623a58"
         },
         "sourceRange": []
       },
@@ -22037,7 +22037,7 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4c94afe5-05f8-571b-b222-e05a4e6ac0c9"
               }
             ]
           },
@@ -22067,7 +22067,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f8389a5a-158a-50a3-932e-332084bc0f43"
           }
         },
         "sourceRange": []
@@ -22119,13 +22119,13 @@ description: Operations executed hand-trolley.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c79ace8f-b9f0-596e-8032-621a17bed2f6"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0e737fa9-d995-502f-8e03-43bd2912683e"
               }
             }
           ]
@@ -22218,31 +22218,31 @@ description: Operations executed hand-trolley.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a38efef1-7b01-551d-b122-cef40ed1403c"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c79ace8f-b9f0-596e-8032-621a17bed2f6"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0e737fa9-d995-502f-8e03-43bd2912683e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c4747e1d-3ad4-56f0-a72c-1a4b047c8a77"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a"
               }
             },
             {
@@ -22251,19 +22251,19 @@ description: Operations executed hand-trolley.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "69af4bdb-f49e-5527-a15f-0410fe93428f"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "d90345f4-30a7-530d-aad5-f064bc540586"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "36fb77e0-e16b-5b66-807c-d16eb94ebc13"
                   }
                 }
               ]
@@ -22274,25 +22274,25 @@ description: Operations executed hand-trolley.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "c79ace8f-b9f0-596e-8032-621a17bed2f6"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "5ca12d0d-2014-59d0-9594-b5b23d4eb9e2"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "0e737fa9-d995-502f-8e03-43bd2912683e"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "f906b5ec-6ed1-5dff-a9bf-49fa7495b9f5"
                   }
                 }
               ]
@@ -22372,7 +22372,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -25858,11 +25858,11 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a93807f2-bb75-552f-8f69-73c95b73e483"
               }
             ]
           },
@@ -25892,7 +25892,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e2b13034-ec38-5783-aa1e-79a9ee809837"
           }
         },
         "sourceRange": []
@@ -25980,7 +25980,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "df501bce-ee73-5bbb-a915-4340869de198"
           }
         },
         "sourceRange": []
@@ -26042,7 +26042,7 @@ description: Operations executed hand-trolley.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8e69a893-18e5-5f3a-a03e-45635c692121"
         },
         "sourceRange": []
       },
@@ -27537,11 +27537,11 @@ description: Operations executed hand-trolley.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cb30d890-5b74-5d39-8507-bddb7606dc7b"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c3367b30-b26f-5cca-846b-7481b48e21a4"
               }
             ]
           },
@@ -27571,7 +27571,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "39af0fbc-bcfd-50ae-9bce-75fb9e2cadb9"
           }
         },
         "sourceRange": []
@@ -27659,7 +27659,7 @@ description: Operations executed hand-trolley.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef9e6ac4-2880-5adf-a605-aaa64f0d7475"
           }
         },
         "sourceRange": []

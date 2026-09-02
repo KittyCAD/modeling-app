@@ -16,12 +16,12 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+      "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bd305f8c-79b5-5b00-8996-32d99826fed2",
+          "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
           "sourceRange": [],
           "tag": {
             "commentStart": 878,
@@ -34,8 +34,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "59b35597-a3bb-5ed3-947f-8c3f366e9491",
+          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
           "sourceRange": [],
           "tag": {
             "commentStart": 941,
@@ -48,8 +48,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8d0f250a-af2c-5d44-91b3-0fa55acccbff",
+          "id": "7b681387-29ea-57f1-8713-d63280827139",
           "sourceRange": [],
           "tag": {
             "commentStart": 996,
@@ -62,8 +62,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "35772b6a-b5dc-5e89-b75c-a70d7c850968",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
           "sourceRange": [],
           "tag": {
             "commentStart": 1021,
@@ -79,11 +79,11 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
               "sourceRange": []
             },
             "from": [
@@ -107,7 +107,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
               "sourceRange": []
             },
             "from": [
@@ -131,7 +131,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "sourceRange": []
             },
             "from": [
@@ -155,7 +155,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
               "sourceRange": []
             },
             "from": [
@@ -179,8 +179,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "kind": "XY",
           "objectId": 1,
           "origin": {
@@ -221,7 +221,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
             "sourceRange": []
           }
         },
@@ -243,16 +243,16 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "value": "edge4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
+        "originalId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "50854142-6db4-531e-ab69-489fa496a253",
+      "endCapId": "aa902c82-5422-5ff9-9fea-9b4045a2d715",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
           "radius": {
             "n": 1.0,
             "ty": {
@@ -261,12 +261,12 @@ description: Variables in memory after executing fillet-and-shell.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "dc700ece-abf1-5d4d-b57d-8fa8eecf901d",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
           "radius": {
             "n": 1.0,
             "ty": {
@@ -275,12 +275,12 @@ description: Variables in memory after executing fillet-and-shell.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
           "radius": {
             "n": 1.0,
             "ty": {
@@ -289,12 +289,12 @@ description: Variables in memory after executing fillet-and-shell.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
           "radius": {
             "n": 1.0,
             "ty": {
@@ -303,7 +303,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "57dcebaf-f488-5f18-a3d0-8a7c5e588523",
           "tag": null
         }
       ],
@@ -428,11 +428,11 @@ description: Variables in memory after executing fillet-and-shell.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           },
           "from": [
@@ -449,7 +449,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "from": [
@@ -466,7 +466,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
             "sourceRange": []
           },
           "from": [
@@ -483,7 +483,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           },
           "from": [
@@ -500,8 +500,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
         "kind": "XY",
         "objectId": 0,
         "origin": {
@@ -542,12 +542,12 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
           "sourceRange": []
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "units": "mm"
     }
   },

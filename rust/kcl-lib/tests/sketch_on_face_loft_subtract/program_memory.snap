@@ -6,8 +6,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
   "__sketch_23_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
   "__sketch_45_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+      "artifactId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
       "objectId": 44,
       "value": "theEnd",
       "xAxis": {
@@ -87,8 +87,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+        "creatorSketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -97,8 +97,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
   "__sketch_67_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "kind": "Custom",
       "objectId": 66,
       "origin": {
@@ -136,7 +136,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "deb86259-17a0-5782-a352-d25992246cc0",
                 "objectId": 26,
                 "kind": {
                   "line": {
@@ -210,8 +210,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                  "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -240,7 +240,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -256,7 +256,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                 "objectId": 29,
                 "kind": {
                   "line": {
@@ -330,8 +330,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                  "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -360,7 +360,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -376,7 +376,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "objectId": 32,
                 "kind": {
                   "line": {
@@ -450,8 +450,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                  "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -480,7 +480,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -496,7 +496,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -570,8 +570,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                  "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -600,7 +600,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -617,11 +617,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "deb86259-17a0-5782-a352-d25992246cc0",
                     "sourceRange": []
                   },
                   "from": [
@@ -645,7 +645,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                     "sourceRange": []
                   },
                   "from": [
@@ -669,7 +669,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
                     "sourceRange": []
                   },
                   "from": [
@@ -693,7 +693,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "907cac50-3701-5367-b35c-4ec2132c824f",
                     "sourceRange": []
                   },
                   "from": [
@@ -717,8 +717,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+                "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                 "kind": "Custom",
                 "objectId": 22,
                 "origin": {
@@ -759,7 +759,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
                   "sourceRange": []
                 }
               },
@@ -781,8 +781,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+              "originalId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -797,12 +797,12 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+      "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
           "sourceRange": [],
           "tag": {
             "commentStart": 766,
@@ -815,8 +815,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "46ef413e-7f7d-51c7-92e8-52410b572f94",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 850,
@@ -829,8 +829,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9b3ed7b2-ab34-5e27-aa76-78d32accbb8f",
+          "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
           "sourceRange": [],
           "tag": {
             "commentStart": 932,
@@ -843,8 +843,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5ac5e12d-2e01-543e-98d2-cb87b8695e72",
+          "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
           "sourceRange": [],
           "tag": {
             "commentStart": 1014,
@@ -857,8 +857,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+          "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
           "sourceRange": [],
           "tag": {
             "commentStart": 1484,
@@ -880,11 +880,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
               "sourceRange": []
             },
             "from": [
@@ -908,7 +908,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "from": [
@@ -932,7 +932,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
               "sourceRange": []
             },
             "from": [
@@ -956,7 +956,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
               "sourceRange": []
             },
             "from": [
@@ -980,8 +980,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+          "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
           "kind": "Custom",
           "objectId": 22,
           "origin": {
@@ -1022,7 +1022,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
             "sourceRange": []
           }
         },
@@ -1048,13 +1048,13 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
             "value": "theEnd"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+        "originalId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+        "originSketchId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "0c8445ab-4d19-5096-a4c1-6ba4e51a6eca",
+      "endCapId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
       "units": "mm",
       "sectional": false
     }
@@ -1062,8 +1062,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
   "baseTopFace": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+      "artifactId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
       "objectId": 44,
       "value": "theEnd",
       "xAxis": {
@@ -1079,8 +1079,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+        "creatorSketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -1095,7 +1095,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
                 "objectId": 48,
                 "kind": {
                   "line": {
@@ -1170,8 +1170,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+                  "artifactId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
                   "objectId": 44,
                   "value": "theEnd",
                   "xAxis": {
@@ -1187,13 +1187,13 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                    "creatorSketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1209,7 +1209,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "objectId": 51,
                 "kind": {
                   "line": {
@@ -1284,8 +1284,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+                  "artifactId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
                   "objectId": 44,
                   "value": "theEnd",
                   "xAxis": {
@@ -1301,13 +1301,13 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                    "creatorSketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1323,7 +1323,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
                 "objectId": 54,
                 "kind": {
                   "line": {
@@ -1398,8 +1398,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+                  "artifactId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
                   "objectId": 44,
                   "value": "theEnd",
                   "xAxis": {
@@ -1415,13 +1415,13 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                    "creatorSketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1437,7 +1437,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
                 "objectId": 57,
                 "kind": {
                   "line": {
@@ -1512,8 +1512,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+                  "artifactId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
                   "objectId": 44,
                   "value": "theEnd",
                   "xAxis": {
@@ -1529,13 +1529,13 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                    "creatorSketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1552,11 +1552,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
                     "sourceRange": []
                   },
                   "from": [
@@ -1580,7 +1580,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1604,7 +1604,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
                     "sourceRange": []
                   },
                   "from": [
@@ -1628,7 +1628,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
                     "sourceRange": []
                   },
                   "from": [
@@ -1653,8 +1653,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+                "artifactId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
                 "objectId": 44,
                 "value": "theEnd",
                 "xAxis": {
@@ -1670,8 +1670,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+                  "creatorSketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -1688,7 +1688,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
                   "sourceRange": []
                 }
               },
@@ -1710,8 +1710,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
+              "originalId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1726,12 +1726,12 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+      "artifactId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b124b380-9f3e-5a36-a0f5-c862e264e442",
+          "id": "f1dc35d5-0ed3-5bb8-938c-683a8731e9bd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1590,
@@ -1744,8 +1744,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb99ea53-9f9d-5349-85d3-436ac2fcefb2",
+          "id": "f980c99e-8870-5fbb-8248-319159dc99fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1673,
@@ -1758,8 +1758,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "619ba9ff-09fd-5643-a29d-ca9132792d62",
+          "id": "a4117a30-2b51-5046-b23f-e2fed86da938",
           "sourceRange": [],
           "tag": {
             "commentStart": 1755,
@@ -1772,8 +1772,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "40828a07-d8be-51db-819f-2375028afc75",
+          "id": "2370ce36-9caa-51e3-8ad2-7ba6ec8f9ba8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1836,
@@ -1789,11 +1789,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f1dc35d5-0ed3-5bb8-938c-683a8731e9bd",
               "sourceRange": []
             },
             "from": [
@@ -1817,7 +1817,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f980c99e-8870-5fbb-8248-319159dc99fc",
               "sourceRange": []
             },
             "from": [
@@ -1841,7 +1841,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a4117a30-2b51-5046-b23f-e2fed86da938",
               "sourceRange": []
             },
             "from": [
@@ -1865,7 +1865,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2370ce36-9caa-51e3-8ad2-7ba6ec8f9ba8",
               "sourceRange": []
             },
             "from": [
@@ -1890,8 +1890,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+          "artifactId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
           "objectId": 44,
           "value": "theEnd",
           "xAxis": {
@@ -1907,8 +1907,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+            "creatorSketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -1925,7 +1925,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -1947,13 +1947,13 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "originalId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "originSketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "eeabb0c0-64fa-5297-8107-ee8264523bda",
+      "endCapId": "27e6e5c8-17e3-548b-8a3a-e1a0ea2349bd",
       "units": "mm",
       "sectional": false
     }
@@ -1961,8 +1961,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
   "pyramidTopPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "kind": "Custom",
       "objectId": 66,
       "origin": {
@@ -2000,7 +2000,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
                 "objectId": 70,
                 "kind": {
                   "line": {
@@ -2074,8 +2074,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+                  "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
                   "kind": "Custom",
                   "objectId": 66,
                   "origin": {
@@ -2104,7 +2104,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2120,7 +2120,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                 "objectId": 73,
                 "kind": {
                   "line": {
@@ -2194,8 +2194,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+                  "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
                   "kind": "Custom",
                   "objectId": 66,
                   "origin": {
@@ -2224,7 +2224,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2240,7 +2240,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
                 "objectId": 76,
                 "kind": {
                   "line": {
@@ -2314,8 +2314,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+                  "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
                   "kind": "Custom",
                   "objectId": 66,
                   "origin": {
@@ -2344,7 +2344,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2360,7 +2360,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
                 "objectId": 79,
                 "kind": {
                   "line": {
@@ -2434,8 +2434,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+                  "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
                   "kind": "Custom",
                   "objectId": 66,
                   "origin": {
@@ -2464,7 +2464,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -2481,11 +2481,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
                     "sourceRange": []
                   },
                   "from": [
@@ -2509,7 +2509,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e8637a6d-00c2-5b87-831e-2db8c2223948",
                     "sourceRange": []
                   },
                   "from": [
@@ -2533,7 +2533,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0919e597-7112-50da-97bb-e5ba198e1dcd",
                     "sourceRange": []
                   },
                   "from": [
@@ -2557,7 +2557,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
                     "sourceRange": []
                   },
                   "from": [
@@ -2581,8 +2581,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+                "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
                 "kind": "Custom",
                 "objectId": 66,
                 "origin": {
@@ -2623,7 +2623,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
                   "sourceRange": []
                 }
               },
@@ -2645,8 +2645,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
+              "originalId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -2661,11 +2661,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -2689,7 +2689,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -2713,7 +2713,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -2737,7 +2737,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -2761,8 +2761,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -2803,7 +2803,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
           "sourceRange": []
         }
       },
@@ -2825,9 +2825,9 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e",
+      "originalId": "037b0f2d-13ef-58af-b918-43b89e77393e",
+      "originSketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "units": "mm"
     }
   },
@@ -2835,11 +2835,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "40d8c462-7810-5666-bb09-1db7308cf666",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f1dc35d5-0ed3-5bb8-938c-683a8731e9bd",
             "sourceRange": []
           },
           "from": [
@@ -2863,7 +2863,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f980c99e-8870-5fbb-8248-319159dc99fc",
             "sourceRange": []
           },
           "from": [
@@ -2887,7 +2887,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a4117a30-2b51-5046-b23f-e2fed86da938",
             "sourceRange": []
           },
           "from": [
@@ -2911,7 +2911,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2370ce36-9caa-51e3-8ad2-7ba6ec8f9ba8",
             "sourceRange": []
           },
           "from": [
@@ -2936,8 +2936,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+        "artifactId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
         "objectId": 44,
         "value": "theEnd",
         "xAxis": {
@@ -2953,8 +2953,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+          "creatorSketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -2971,7 +2971,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
           "sourceRange": []
         }
       },
@@ -2993,9 +2993,9 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "originalId": "40d8c462-7810-5666-bb09-1db7308cf666",
+      "originSketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
       "units": "mm"
     }
   },
@@ -3003,11 +3003,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "596470ab-316b-5569-92ba-64c1e0a93873",
             "sourceRange": []
           },
           "from": [
@@ -3031,7 +3031,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b4bb5869-c4a2-5776-837b-23210d5454b6",
             "sourceRange": []
           },
           "from": [
@@ -3055,7 +3055,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "aea8cd61-0d37-54f5-81f4-c44ddd97eab0",
             "sourceRange": []
           },
           "from": [
@@ -3079,7 +3079,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "26991de8-4fb6-5ad5-886b-bbb293e57cbb",
             "sourceRange": []
           },
           "from": [
@@ -3103,8 +3103,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
         "kind": "Custom",
         "objectId": 66,
         "origin": {
@@ -3145,7 +3145,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
           "sourceRange": []
         }
       },
@@ -3167,9 +3167,9 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+      "originalId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+      "originSketchId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
       "units": "mm"
     }
   },
@@ -3177,11 +3177,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e445bc8a-9094-57cc-b3ce-a572fc71ab16",
             "sourceRange": []
           },
           "from": [
@@ -3205,7 +3205,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
             "sourceRange": []
           },
           "from": [
@@ -3229,7 +3229,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
             "sourceRange": []
           },
           "from": [
@@ -3253,7 +3253,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
             "sourceRange": []
           },
           "from": [
@@ -3277,8 +3277,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+        "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
         "kind": "Custom",
         "objectId": 22,
         "origin": {
@@ -3319,7 +3319,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
           "sourceRange": []
         }
       },
@@ -3345,9 +3345,9 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "value": "theEnd"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+      "originalId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+      "originSketchId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "units": "mm"
     }
   },
@@ -3355,12 +3355,12 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "artifactId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b124b380-9f3e-5a36-a0f5-c862e264e442",
+          "id": "f1dc35d5-0ed3-5bb8-938c-683a8731e9bd",
           "sourceRange": [],
           "tag": {
             "commentStart": 1590,
@@ -3373,8 +3373,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb99ea53-9f9d-5349-85d3-436ac2fcefb2",
+          "id": "f980c99e-8870-5fbb-8248-319159dc99fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1673,
@@ -3387,8 +3387,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "619ba9ff-09fd-5643-a29d-ca9132792d62",
+          "id": "a4117a30-2b51-5046-b23f-e2fed86da938",
           "sourceRange": [],
           "tag": {
             "commentStart": 1755,
@@ -3401,8 +3401,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "40828a07-d8be-51db-819f-2375028afc75",
+          "id": "2370ce36-9caa-51e3-8ad2-7ba6ec8f9ba8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1836,
@@ -3418,11 +3418,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f1dc35d5-0ed3-5bb8-938c-683a8731e9bd",
               "sourceRange": []
             },
             "from": [
@@ -3446,7 +3446,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f980c99e-8870-5fbb-8248-319159dc99fc",
               "sourceRange": []
             },
             "from": [
@@ -3470,7 +3470,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a4117a30-2b51-5046-b23f-e2fed86da938",
               "sourceRange": []
             },
             "from": [
@@ -3494,7 +3494,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2370ce36-9caa-51e3-8ad2-7ba6ec8f9ba8",
               "sourceRange": []
             },
             "from": [
@@ -3519,8 +3519,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+          "artifactId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
           "objectId": 44,
           "value": "theEnd",
           "xAxis": {
@@ -3536,8 +3536,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
+            "creatorSketchId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -3554,7 +3554,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -3576,13 +3576,13 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "originalId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "originSketchId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "eeabb0c0-64fa-5297-8107-ee8264523bda",
+      "endCapId": "27e6e5c8-17e3-548b-8a3a-e1a0ea2349bd",
       "units": "mm",
       "sectional": false
     }
@@ -3596,12 +3596,12 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
+      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 34,
@@ -3614,8 +3614,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 115,
@@ -3628,8 +3628,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 196,
@@ -3642,8 +3642,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 277,
@@ -3659,11 +3659,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -3687,7 +3687,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -3711,7 +3711,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -3735,7 +3735,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -3759,8 +3759,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -3801,7 +3801,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
             "sourceRange": []
           }
         },
@@ -3823,13 +3823,13 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e",
+        "originalId": "037b0f2d-13ef-58af-b918-43b89e77393e",
+        "originSketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "units": "mm",
       "sectional": false
     }
@@ -3843,7 +3843,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -3917,8 +3917,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3947,7 +3947,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3963,7 +3963,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -4037,8 +4037,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4067,7 +4067,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4083,7 +4083,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -4157,8 +4157,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4187,7 +4187,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -4203,7 +4203,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -4277,8 +4277,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4307,7 +4307,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -4324,11 +4324,11 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -4352,7 +4352,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -4376,7 +4376,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -4400,7 +4400,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -4424,8 +4424,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -4466,7 +4466,7 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                   "sourceRange": []
                 }
               },
@@ -4488,8 +4488,8 @@ description: Variables in memory after executing sketch_on_face_loft_subtract.kc
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+              "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
               "units": "mm",
               "isClosed": "implicitly"
             }

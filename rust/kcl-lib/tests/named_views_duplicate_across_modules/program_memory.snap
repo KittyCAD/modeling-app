@@ -6,7 +6,7 @@ description: Variables in memory after executing named_views_duplicate_across_mo
   "importedFront": {
     "type": "NamedView",
     "value": {
-      "artifactId": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "name": "Front",
       "camera": {
         "look": {
@@ -24,7 +24,7 @@ description: Variables in memory after executing named_views_duplicate_across_mo
   "localFront": {
     "type": "NamedView",
     "value": {
-      "artifactId": "[uuid]",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "name": "Front",
       "camera": {
         "look": {
@@ -42,7 +42,7 @@ description: Variables in memory after executing named_views_duplicate_across_mo
   "panelFront": {
     "type": "NamedView",
     "value": {
-      "artifactId": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "name": "Front",
       "camera": {
         "look": {

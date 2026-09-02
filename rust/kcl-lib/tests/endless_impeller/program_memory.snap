@@ -6,8 +6,8 @@ description: Variables in memory after executing endless_impeller.kcl
   "face1": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "092755e4-e002-58b9-a194-69b526ae6929",
+      "artifactId": "092755e4-e002-58b9-a194-69b526ae6929",
       "objectId": 14,
       "value": "line1",
       "xAxis": {
@@ -23,8 +23,8 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+        "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -33,8 +33,8 @@ description: Variables in memory after executing endless_impeller.kcl
   "face2": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "b5dc18e1-9cda-5dfd-8ad6-311e0721ff70",
+      "artifactId": "b5dc18e1-9cda-5dfd-8ad6-311e0721ff70",
       "objectId": 28,
       "value": "line1",
       "xAxis": {
@@ -50,8 +50,8 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+        "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -60,8 +60,8 @@ description: Variables in memory after executing endless_impeller.kcl
   "face3": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d02dfd29-5703-523e-8855-60e0a84d23fb",
+      "artifactId": "d02dfd29-5703-523e-8855-60e0a84d23fb",
       "objectId": 42,
       "value": "line1",
       "xAxis": {
@@ -77,8 +77,8 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+        "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -87,8 +87,8 @@ description: Variables in memory after executing endless_impeller.kcl
   "face4": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "3644bf53-226b-5476-97a2-89784e77c0ce",
+      "artifactId": "3644bf53-226b-5476-97a2-89784e77c0ce",
       "objectId": 56,
       "value": "line1",
       "xAxis": {
@@ -104,8 +104,8 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+        "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -114,8 +114,8 @@ description: Variables in memory after executing endless_impeller.kcl
   "face5": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562",
+      "artifactId": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562",
       "objectId": 70,
       "value": "line1",
       "xAxis": {
@@ -131,8 +131,8 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+        "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -141,8 +141,8 @@ description: Variables in memory after executing endless_impeller.kcl
   "face6": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "582e9cae-b924-5f94-a673-a416ed71e256",
+      "artifactId": "582e9cae-b924-5f94-a673-a416ed71e256",
       "objectId": 84,
       "value": "line1",
       "xAxis": {
@@ -158,8 +158,8 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+        "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -169,11 +169,11 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -197,7 +197,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -221,7 +221,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -245,7 +245,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -269,8 +269,8 @@ description: Variables in memory after executing endless_impeller.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -311,7 +311,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
           "sourceRange": []
         }
       },
@@ -333,9 +333,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "originalId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "originSketchId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "units": "mm"
     }
   },
@@ -343,11 +343,11 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
             "sourceRange": []
           },
           "from": [
@@ -371,7 +371,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
             "sourceRange": []
           },
           "from": [
@@ -395,7 +395,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
             "sourceRange": []
           },
           "from": [
@@ -419,7 +419,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
             "sourceRange": []
           },
           "from": [
@@ -444,8 +444,8 @@ description: Variables in memory after executing endless_impeller.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "092755e4-e002-58b9-a194-69b526ae6929",
+        "artifactId": "092755e4-e002-58b9-a194-69b526ae6929",
         "objectId": 14,
         "value": "line1",
         "xAxis": {
@@ -461,8 +461,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -479,7 +479,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
           "sourceRange": []
         }
       },
@@ -501,9 +501,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "originalId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "originSketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "units": "mm"
     }
   },
@@ -511,11 +511,11 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "aa480aa5-0232-5559-8482-8b8c75a73901",
             "sourceRange": []
           },
           "from": [
@@ -539,7 +539,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "15251de4-ee7e-5432-adb9-6fcfd2f02f3e",
             "sourceRange": []
           },
           "from": [
@@ -563,7 +563,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9d384729-9b9e-5c06-8d62-3f4e7bf908c8",
             "sourceRange": []
           },
           "from": [
@@ -587,7 +587,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5f28331c-87e4-56a9-beb5-2acec58303fc",
             "sourceRange": []
           },
           "from": [
@@ -612,8 +612,8 @@ description: Variables in memory after executing endless_impeller.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "b5dc18e1-9cda-5dfd-8ad6-311e0721ff70",
+        "artifactId": "b5dc18e1-9cda-5dfd-8ad6-311e0721ff70",
         "objectId": 28,
         "value": "line1",
         "xAxis": {
@@ -629,8 +629,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -647,7 +647,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
           "sourceRange": []
         }
       },
@@ -669,9 +669,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+      "originalId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+      "originSketchId": "cc312d38-2fa6-5583-a605-44880f646499",
       "units": "mm"
     }
   },
@@ -679,11 +679,11 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "050632ca-0120-5c43-88f8-3b06a91e2ca8",
             "sourceRange": []
           },
           "from": [
@@ -707,7 +707,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "69e9c7f9-02b2-5ba0-a8da-41a4b864326a",
             "sourceRange": []
           },
           "from": [
@@ -731,7 +731,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "64e85e5d-9695-50ba-95eb-daa09a73b47c",
             "sourceRange": []
           },
           "from": [
@@ -755,7 +755,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d167a801-aa36-5141-b84e-08cc1d32c291",
             "sourceRange": []
           },
           "from": [
@@ -780,8 +780,8 @@ description: Variables in memory after executing endless_impeller.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "d02dfd29-5703-523e-8855-60e0a84d23fb",
+        "artifactId": "d02dfd29-5703-523e-8855-60e0a84d23fb",
         "objectId": 42,
         "value": "line1",
         "xAxis": {
@@ -797,8 +797,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -815,7 +815,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
           "sourceRange": []
         }
       },
@@ -837,9 +837,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+      "originalId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+      "originSketchId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
       "units": "mm"
     }
   },
@@ -847,11 +847,11 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b61fa422-9e95-5647-81ed-d0c3cb2c04c1",
             "sourceRange": []
           },
           "from": [
@@ -875,7 +875,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0d9f43a5-8dba-548e-bf1c-6f95794350f8",
             "sourceRange": []
           },
           "from": [
@@ -899,7 +899,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a1f8f202-5aee-5cde-a8c4-7156a0e1d644",
             "sourceRange": []
           },
           "from": [
@@ -923,7 +923,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b1da2303-1b48-50b2-bfb9-df10432cfc99",
             "sourceRange": []
           },
           "from": [
@@ -948,8 +948,8 @@ description: Variables in memory after executing endless_impeller.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "3644bf53-226b-5476-97a2-89784e77c0ce",
+        "artifactId": "3644bf53-226b-5476-97a2-89784e77c0ce",
         "objectId": 56,
         "value": "line1",
         "xAxis": {
@@ -965,8 +965,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -983,7 +983,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
           "sourceRange": []
         }
       },
@@ -1005,9 +1005,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "originalId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+      "originSketchId": "724b87fd-c709-5232-b7a1-547c15affb9b",
       "units": "mm"
     }
   },
@@ -1015,11 +1015,11 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0ba3d4b9-aa3c-51c1-abeb-118ce51a9c31",
             "sourceRange": []
           },
           "from": [
@@ -1043,7 +1043,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7b0d65ab-8235-52c6-9825-e69a9fa5f61c",
             "sourceRange": []
           },
           "from": [
@@ -1067,7 +1067,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4d24457f-d9c9-5d0f-9179-f05204d53059",
             "sourceRange": []
           },
           "from": [
@@ -1091,7 +1091,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "acd5a0c5-516b-5a24-a7ac-08a93c4411a7",
             "sourceRange": []
           },
           "from": [
@@ -1116,8 +1116,8 @@ description: Variables in memory after executing endless_impeller.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562",
+        "artifactId": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562",
         "objectId": 70,
         "value": "line1",
         "xAxis": {
@@ -1133,8 +1133,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -1151,7 +1151,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
           "sourceRange": []
         }
       },
@@ -1173,9 +1173,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+      "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+      "originSketchId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "units": "mm"
     }
   },
@@ -1183,11 +1183,11 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "33d1ebef-f828-571f-90b5-a2c8ce59da34",
             "sourceRange": []
           },
           "from": [
@@ -1211,7 +1211,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "297f9439-9249-58e0-82a3-7078133fd69a",
             "sourceRange": []
           },
           "from": [
@@ -1235,7 +1235,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "570a2e68-80ce-5520-990c-09dd3cd376e5",
             "sourceRange": []
           },
           "from": [
@@ -1259,7 +1259,7 @@ description: Variables in memory after executing endless_impeller.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2d68a0c8-5446-52df-9a71-f1046d2d1bb8",
             "sourceRange": []
           },
           "from": [
@@ -1284,8 +1284,8 @@ description: Variables in memory after executing endless_impeller.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "582e9cae-b924-5f94-a673-a416ed71e256",
+        "artifactId": "582e9cae-b924-5f94-a673-a416ed71e256",
         "objectId": 84,
         "value": "line1",
         "xAxis": {
@@ -1301,8 +1301,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+          "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -1319,7 +1319,7 @@ description: Variables in memory after executing endless_impeller.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
           "sourceRange": []
         }
       },
@@ -1341,9 +1341,9 @@ description: Variables in memory after executing endless_impeller.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
+      "originalId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
+      "originSketchId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "units": "mm"
     }
   },
@@ -1351,12 +1351,12 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 380,
@@ -1369,8 +1369,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 460,
@@ -1383,8 +1383,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 540,
@@ -1397,8 +1397,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 622,
@@ -1414,11 +1414,11 @@ description: Variables in memory after executing endless_impeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -1442,7 +1442,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -1466,7 +1466,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -1490,7 +1490,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -1514,8 +1514,8 @@ description: Variables in memory after executing endless_impeller.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1556,7 +1556,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "sourceRange": []
           }
         },
@@ -1578,13 +1578,13 @@ description: Variables in memory after executing endless_impeller.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+        "originalId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+        "originSketchId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "units": "mm",
       "sectional": false
     }
@@ -1593,12 +1593,12 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b5dc18e1-9cda-5dfd-8ad6-311e0721ff70",
+          "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 380,
@@ -1611,8 +1611,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8c0deb2f-1671-58eb-a5a0-7f73ec91728e",
+          "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
           "sourceRange": [],
           "tag": {
             "commentStart": 460,
@@ -1625,8 +1625,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9f4eb1aa-edde-5423-b838-744539667ee8",
+          "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
           "sourceRange": [],
           "tag": {
             "commentStart": 540,
@@ -1639,8 +1639,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0c8445ab-4d19-5096-a4c1-6ba4e51a6eca",
+          "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
           "sourceRange": [],
           "tag": {
             "commentStart": 622,
@@ -1656,11 +1656,11 @@ description: Variables in memory after executing endless_impeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0c75a61d-26b4-5acd-8f0e-489be682e7fc",
               "sourceRange": []
             },
             "from": [
@@ -1684,7 +1684,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "375909ca-005f-5bf2-83c9-5f0b348dac37",
               "sourceRange": []
             },
             "from": [
@@ -1708,7 +1708,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
               "sourceRange": []
             },
             "from": [
@@ -1732,7 +1732,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "03e35b5c-8bc5-59d9-aa1f-2795a6b6c194",
               "sourceRange": []
             },
             "from": [
@@ -1757,8 +1757,8 @@ description: Variables in memory after executing endless_impeller.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "092755e4-e002-58b9-a194-69b526ae6929",
+          "artifactId": "092755e4-e002-58b9-a194-69b526ae6929",
           "objectId": 14,
           "value": "line1",
           "xAxis": {
@@ -1774,8 +1774,8 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+            "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -1792,7 +1792,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "72dddee3-1330-5c4f-b767-659f762ad674",
             "sourceRange": []
           }
         },
@@ -1814,13 +1814,13 @@ description: Variables in memory after executing endless_impeller.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+        "originalId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+        "originSketchId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "4f07c4a4-9f9f-5339-919a-dd8dd209dc8a",
+      "endCapId": "760cc82f-86e1-519e-8024-b4672b5540ed",
       "units": "mm",
       "sectional": false
     }
@@ -1829,12 +1829,12 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "artifactId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d02dfd29-5703-523e-8855-60e0a84d23fb",
+          "id": "aa480aa5-0232-5559-8482-8b8c75a73901",
           "sourceRange": [],
           "tag": {
             "commentStart": 380,
@@ -1847,8 +1847,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "859a47fa-c0f0-5efa-a92a-3fd04ba0e64c",
+          "id": "15251de4-ee7e-5432-adb9-6fcfd2f02f3e",
           "sourceRange": [],
           "tag": {
             "commentStart": 460,
@@ -1861,8 +1861,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3fc79f83-b6f5-5167-8e24-170c4dc1f391",
+          "id": "9d384729-9b9e-5c06-8d62-3f4e7bf908c8",
           "sourceRange": [],
           "tag": {
             "commentStart": 540,
@@ -1875,8 +1875,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cb58b047-e015-52f8-bdab-22ea3f04a8be",
+          "id": "5f28331c-87e4-56a9-beb5-2acec58303fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 622,
@@ -1892,11 +1892,11 @@ description: Variables in memory after executing endless_impeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "aa480aa5-0232-5559-8482-8b8c75a73901",
               "sourceRange": []
             },
             "from": [
@@ -1920,7 +1920,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "15251de4-ee7e-5432-adb9-6fcfd2f02f3e",
               "sourceRange": []
             },
             "from": [
@@ -1944,7 +1944,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9d384729-9b9e-5c06-8d62-3f4e7bf908c8",
               "sourceRange": []
             },
             "from": [
@@ -1968,7 +1968,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5f28331c-87e4-56a9-beb5-2acec58303fc",
               "sourceRange": []
             },
             "from": [
@@ -1993,8 +1993,8 @@ description: Variables in memory after executing endless_impeller.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "b5dc18e1-9cda-5dfd-8ad6-311e0721ff70",
+          "artifactId": "b5dc18e1-9cda-5dfd-8ad6-311e0721ff70",
           "objectId": 28,
           "value": "line1",
           "xAxis": {
@@ -2010,8 +2010,8 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+            "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -2028,7 +2028,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
             "sourceRange": []
           }
         },
@@ -2050,13 +2050,13 @@ description: Variables in memory after executing endless_impeller.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "originalId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
+        "originSketchId": "cc312d38-2fa6-5583-a605-44880f646499",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "d2868796-698a-57b3-843e-4b5e70611f2e",
+      "endCapId": "524e9e2f-8502-51de-a3e4-3c6738820a29",
       "units": "mm",
       "sectional": false
     }
@@ -2065,12 +2065,12 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3644bf53-226b-5476-97a2-89784e77c0ce",
+          "id": "050632ca-0120-5c43-88f8-3b06a91e2ca8",
           "sourceRange": [],
           "tag": {
             "commentStart": 380,
@@ -2083,8 +2083,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a585215f-ce60-5f65-b050-5780c59a37e0",
+          "id": "69e9c7f9-02b2-5ba0-a8da-41a4b864326a",
           "sourceRange": [],
           "tag": {
             "commentStart": 460,
@@ -2097,8 +2097,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb64c57f-0d96-592a-8a3e-adf871a35313",
+          "id": "64e85e5d-9695-50ba-95eb-daa09a73b47c",
           "sourceRange": [],
           "tag": {
             "commentStart": 540,
@@ -2111,8 +2111,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "edc37c73-cbbb-58b6-b536-3ccab64f8e13",
+          "id": "d167a801-aa36-5141-b84e-08cc1d32c291",
           "sourceRange": [],
           "tag": {
             "commentStart": 622,
@@ -2128,11 +2128,11 @@ description: Variables in memory after executing endless_impeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "050632ca-0120-5c43-88f8-3b06a91e2ca8",
               "sourceRange": []
             },
             "from": [
@@ -2156,7 +2156,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "69e9c7f9-02b2-5ba0-a8da-41a4b864326a",
               "sourceRange": []
             },
             "from": [
@@ -2180,7 +2180,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "64e85e5d-9695-50ba-95eb-daa09a73b47c",
               "sourceRange": []
             },
             "from": [
@@ -2204,7 +2204,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d167a801-aa36-5141-b84e-08cc1d32c291",
               "sourceRange": []
             },
             "from": [
@@ -2229,8 +2229,8 @@ description: Variables in memory after executing endless_impeller.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "d02dfd29-5703-523e-8855-60e0a84d23fb",
+          "artifactId": "d02dfd29-5703-523e-8855-60e0a84d23fb",
           "objectId": 42,
           "value": "line1",
           "xAxis": {
@@ -2246,8 +2246,8 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+            "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -2264,7 +2264,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
             "sourceRange": []
           }
         },
@@ -2286,13 +2286,13 @@ description: Variables in memory after executing endless_impeller.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+        "originalId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+        "originSketchId": "ec50dfc5-8660-5f82-906a-6429c34099eb",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "ccf56b59-12b6-511d-9def-7f8f475eba15",
+      "endCapId": "e27253dc-a98e-59a3-8938-3ef02521dd49",
       "units": "mm",
       "sectional": false
     }
@@ -2301,12 +2301,12 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562",
+          "id": "b61fa422-9e95-5647-81ed-d0c3cb2c04c1",
           "sourceRange": [],
           "tag": {
             "commentStart": 380,
@@ -2319,8 +2319,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f1a6a131-96c0-582a-a81b-3678a558665e",
+          "id": "0d9f43a5-8dba-548e-bf1c-6f95794350f8",
           "sourceRange": [],
           "tag": {
             "commentStart": 460,
@@ -2333,8 +2333,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a69bc1bf-39f8-5daf-87e5-788c6177e736",
+          "id": "a1f8f202-5aee-5cde-a8c4-7156a0e1d644",
           "sourceRange": [],
           "tag": {
             "commentStart": 540,
@@ -2347,8 +2347,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a0ec1ef3-f65f-516c-ae4b-e760073cd9e9",
+          "id": "b1da2303-1b48-50b2-bfb9-df10432cfc99",
           "sourceRange": [],
           "tag": {
             "commentStart": 622,
@@ -2364,11 +2364,11 @@ description: Variables in memory after executing endless_impeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b61fa422-9e95-5647-81ed-d0c3cb2c04c1",
               "sourceRange": []
             },
             "from": [
@@ -2392,7 +2392,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0d9f43a5-8dba-548e-bf1c-6f95794350f8",
               "sourceRange": []
             },
             "from": [
@@ -2416,7 +2416,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a1f8f202-5aee-5cde-a8c4-7156a0e1d644",
               "sourceRange": []
             },
             "from": [
@@ -2440,7 +2440,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b1da2303-1b48-50b2-bfb9-df10432cfc99",
               "sourceRange": []
             },
             "from": [
@@ -2465,8 +2465,8 @@ description: Variables in memory after executing endless_impeller.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "3644bf53-226b-5476-97a2-89784e77c0ce",
+          "artifactId": "3644bf53-226b-5476-97a2-89784e77c0ce",
           "objectId": 56,
           "value": "line1",
           "xAxis": {
@@ -2482,8 +2482,8 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+            "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -2500,7 +2500,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
             "sourceRange": []
           }
         },
@@ -2522,13 +2522,13 @@ description: Variables in memory after executing endless_impeller.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+        "originalId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+        "originSketchId": "724b87fd-c709-5232-b7a1-547c15affb9b",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "aa117e39-18d2-50d4-97a4-68da3df7b7b8",
+      "endCapId": "e2d7e3fb-0644-5a31-8768-5625e181bb63",
       "units": "mm",
       "sectional": false
     }
@@ -2537,12 +2537,12 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "582e9cae-b924-5f94-a673-a416ed71e256",
+          "id": "0ba3d4b9-aa3c-51c1-abeb-118ce51a9c31",
           "sourceRange": [],
           "tag": {
             "commentStart": 380,
@@ -2555,8 +2555,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d3db64c9-13ef-5d50-944e-fd9241df4743",
+          "id": "7b0d65ab-8235-52c6-9825-e69a9fa5f61c",
           "sourceRange": [],
           "tag": {
             "commentStart": 460,
@@ -2569,8 +2569,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cfb3863e-d054-5cb4-92f3-4194588c61ce",
+          "id": "4d24457f-d9c9-5d0f-9179-f05204d53059",
           "sourceRange": [],
           "tag": {
             "commentStart": 540,
@@ -2583,8 +2583,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ccc762e3-5873-5325-bfc3-2736c307ed0b",
+          "id": "acd5a0c5-516b-5a24-a7ac-08a93c4411a7",
           "sourceRange": [],
           "tag": {
             "commentStart": 622,
@@ -2600,11 +2600,11 @@ description: Variables in memory after executing endless_impeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0ba3d4b9-aa3c-51c1-abeb-118ce51a9c31",
               "sourceRange": []
             },
             "from": [
@@ -2628,7 +2628,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b0d65ab-8235-52c6-9825-e69a9fa5f61c",
               "sourceRange": []
             },
             "from": [
@@ -2652,7 +2652,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4d24457f-d9c9-5d0f-9179-f05204d53059",
               "sourceRange": []
             },
             "from": [
@@ -2676,7 +2676,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "acd5a0c5-516b-5a24-a7ac-08a93c4411a7",
               "sourceRange": []
             },
             "from": [
@@ -2701,8 +2701,8 @@ description: Variables in memory after executing endless_impeller.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562",
+          "artifactId": "72ccb3f5-ee3d-5a2e-aded-60d97c4e1562",
           "objectId": 70,
           "value": "line1",
           "xAxis": {
@@ -2718,8 +2718,8 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+            "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -2736,7 +2736,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
             "sourceRange": []
           }
         },
@@ -2758,13 +2758,13 @@ description: Variables in memory after executing endless_impeller.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+        "originalId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
+        "originSketchId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "5d347530-6af1-5ef1-8f90-b113a9a18249",
+      "endCapId": "2854e285-79d4-5239-8813-6f6ba09933d6",
       "units": "mm",
       "sectional": false
     }
@@ -2773,12 +2773,12 @@ description: Variables in memory after executing endless_impeller.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "76ce3235-640c-58eb-962b-849fcd596f05",
+          "id": "33d1ebef-f828-571f-90b5-a2c8ce59da34",
           "sourceRange": [],
           "tag": {
             "commentStart": 380,
@@ -2791,8 +2791,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "80f148c1-8198-5e9c-ab37-60a9679fb1d8",
+          "id": "297f9439-9249-58e0-82a3-7078133fd69a",
           "sourceRange": [],
           "tag": {
             "commentStart": 460,
@@ -2805,8 +2805,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b1c73997-6c9c-579e-806c-94791d27f051",
+          "id": "570a2e68-80ce-5520-990c-09dd3cd376e5",
           "sourceRange": [],
           "tag": {
             "commentStart": 540,
@@ -2819,8 +2819,8 @@ description: Variables in memory after executing endless_impeller.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "962c0ed0-0a91-5e0e-ad65-0925bc3fe2dd",
+          "id": "2d68a0c8-5446-52df-9a71-f1046d2d1bb8",
           "sourceRange": [],
           "tag": {
             "commentStart": 622,
@@ -2836,11 +2836,11 @@ description: Variables in memory after executing endless_impeller.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "33d1ebef-f828-571f-90b5-a2c8ce59da34",
               "sourceRange": []
             },
             "from": [
@@ -2864,7 +2864,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "297f9439-9249-58e0-82a3-7078133fd69a",
               "sourceRange": []
             },
             "from": [
@@ -2888,7 +2888,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "570a2e68-80ce-5520-990c-09dd3cd376e5",
               "sourceRange": []
             },
             "from": [
@@ -2912,7 +2912,7 @@ description: Variables in memory after executing endless_impeller.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2d68a0c8-5446-52df-9a71-f1046d2d1bb8",
               "sourceRange": []
             },
             "from": [
@@ -2937,8 +2937,8 @@ description: Variables in memory after executing endless_impeller.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "582e9cae-b924-5f94-a673-a416ed71e256",
+          "artifactId": "582e9cae-b924-5f94-a673-a416ed71e256",
           "objectId": 84,
           "value": "line1",
           "xAxis": {
@@ -2954,8 +2954,8 @@ description: Variables in memory after executing endless_impeller.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+            "creatorSketchId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -2972,7 +2972,7 @@ description: Variables in memory after executing endless_impeller.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
             "sourceRange": []
           }
         },
@@ -2994,13 +2994,13 @@ description: Variables in memory after executing endless_impeller.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
+        "originalId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
+        "originSketchId": "93954f29-a246-54bd-ac2a-62572f26d508",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "30caa709-ce84-519d-9889-583acd85a32f",
+      "endCapId": "9e5c7f25-e745-53ce-94d2-ca52815e0174",
       "units": "mm",
       "sectional": false
     }

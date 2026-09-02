@@ -5,7 +5,7 @@ description: Artifact commands translate_helix.kcl
 {
   "rust/kcl-lib/tests/translate_helix/input.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "entity_make_helix_from_params",
@@ -30,7 +30,7 @@ description: Artifact commands translate_helix.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "range": [],
       "command": {
         "type": "entity_make_helix_from_params",
@@ -55,7 +55,7 @@ description: Artifact commands translate_helix.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "entity_make_helix_from_params",
@@ -80,11 +80,11 @@ description: Artifact commands translate_helix.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "3c085bb9-a401-55d5-8042-5a9095193d55",
         "transforms": [
           {
             "translate": {
@@ -106,11 +106,11 @@ description: Artifact commands translate_helix.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "transforms": [
           {
             "translate": {
@@ -132,7 +132,7 @@ description: Artifact commands translate_helix.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "entity_make_helix_from_params",
@@ -157,11 +157,11 @@ description: Artifact commands translate_helix.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "transforms": [
           {
             "translate": {

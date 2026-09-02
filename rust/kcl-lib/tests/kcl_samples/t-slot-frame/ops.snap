@@ -2583,59 +2583,59 @@ description: Operations executed t-slot-frame.kcl
           "value": {
             "arc10": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
             },
             "arc12": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6"
             },
             "arc14": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
             },
             "arc2": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
             },
             "arc4": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
             },
             "arc6": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
             },
             "arc8": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149"
             },
             "line1": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
             },
             "line11": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "f084ad07-5777-5607-a544-c69f455c2aab"
             },
             "line13": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3"
             },
             "line3": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
             },
             "line5": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "41c630c9-9d44-581b-98af-caee575bea48"
             },
             "line7": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
             },
             "line9": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "7b681387-29ea-57f1-8713-d63280827139"
             },
             "meta": {
               "type": "Object",
@@ -2643,7 +2643,7 @@ description: Operations executed t-slot-frame.kcl
                 "sketch": {
                   "type": "Sketch",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
                   }
                 }
               }
@@ -2748,7 +2748,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
           }
         },
         "sourceRange": []
@@ -2849,7 +2849,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
           }
         },
         "sourceRange": []
@@ -2954,11 +2954,11 @@ description: Operations executed t-slot-frame.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -3005,7 +3005,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b"
           }
         },
         "sourceRange": []
@@ -3085,7 +3085,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b"
           }
         },
         "sourceRange": []
@@ -3494,7 +3494,7 @@ description: Operations executed t-slot-frame.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d5eaf678-0440-563f-ac19-e473850b9270"
               }
             ]
           },
@@ -3537,7 +3537,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0919e597-7112-50da-97bb-e5ba198e1dcd"
           }
         },
         "sourceRange": []
@@ -3592,7 +3592,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "20dfacb2-a19d-5f06-80d9-1dae939bbd58"
           }
         },
         "sourceRange": []
@@ -3605,7 +3605,7 @@ description: Operations executed t-slot-frame.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf"
                 }
               }
             ]
@@ -3652,19 +3652,19 @@ description: Operations executed t-slot-frame.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01"
               }
             }
           ]
@@ -3708,7 +3708,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
           }
         },
         "sourceRange": []
@@ -3751,7 +3751,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
           }
         },
         "sourceRange": []
@@ -3843,13 +3843,13 @@ description: Operations executed t-slot-frame.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b581bc77-6380-5c1e-b09d-08ed22b45cd4"
               }
             }
           ]
@@ -6396,59 +6396,59 @@ description: Operations executed t-slot-frame.kcl
           "value": {
             "arc10": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
             },
             "arc12": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "379ff142-2e45-5f2a-b984-2aa6871ea1bd"
             },
             "arc14": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde"
             },
             "arc2": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "2ed3043b-96d9-5307-babe-4ee1188fa544"
             },
             "arc4": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "b5a5f9c1-90db-5435-9bb1-97963b81c501"
             },
             "arc6": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "40d8c462-7810-5666-bb09-1db7308cf666"
             },
             "arc8": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "f65c8713-a1f8-5ea9-a702-cab0411afc85"
             },
             "line1": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
             },
             "line11": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "ca502980-7bdd-5694-85c5-3eb8ffa8242b"
             },
             "line13": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13"
             },
             "line3": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "5f95e913-96e4-58df-abe6-125bedd61cad"
             },
             "line5": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
             },
             "line7": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5"
             },
             "line9": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab"
             },
             "meta": {
               "type": "Object",
@@ -6456,7 +6456,7 @@ description: Operations executed t-slot-frame.kcl
                 "sketch": {
                   "type": "Sketch",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa"
                   }
                 }
               }
@@ -6561,7 +6561,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa"
           }
         },
         "sourceRange": []
@@ -6662,7 +6662,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa"
           }
         },
         "sourceRange": []
@@ -6767,11 +6767,11 @@ description: Operations executed t-slot-frame.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2ed3043b-96d9-5307-babe-4ee1188fa544"
               }
             ]
           },
@@ -6818,7 +6818,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978"
           }
         },
         "sourceRange": []
@@ -6898,7 +6898,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978"
           }
         },
         "sourceRange": []
@@ -7307,7 +7307,7 @@ description: Operations executed t-slot-frame.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6f85cbad-5e6d-549c-850d-909283a25e83"
               }
             ]
           },
@@ -7350,7 +7350,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a"
           }
         },
         "sourceRange": []
@@ -7405,7 +7405,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34"
           }
         },
         "sourceRange": []
@@ -7418,7 +7418,7 @@ description: Operations executed t-slot-frame.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a"
                 }
               }
             ]
@@ -7465,19 +7465,19 @@ description: Operations executed t-slot-frame.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "08138142-a558-56a4-a23f-2f334e02b011"
               }
             }
           ]
@@ -7521,7 +7521,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ae192af4-cbf2-5f1b-a2e5-767390f86588"
           }
         },
         "sourceRange": []
@@ -7613,13 +7613,13 @@ description: Operations executed t-slot-frame.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ae192af4-cbf2-5f1b-a2e5-767390f86588"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "639d8cfd-3a68-545f-b375-7815a99a1431"
               }
             }
           ]
@@ -10166,59 +10166,59 @@ description: Operations executed t-slot-frame.kcl
           "value": {
             "arc10": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "93fe6743-e0aa-5d65-834b-87a82208c703"
             },
             "arc12": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98"
             },
             "arc14": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "bb771349-7de5-54b4-b74b-b946bb9dbc58"
             },
             "arc2": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "b8cc464b-6248-5cb4-8c70-30f634da184c"
             },
             "arc4": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "fc66f518-029e-5b30-8772-13859f39ce6d"
             },
             "arc6": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc"
             },
             "arc8": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "662e081e-0c36-5b97-b2b8-ea0464220525"
             },
             "line1": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "e5f7766f-25a6-52cd-9cbf-632be25dd038"
             },
             "line11": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4"
             },
             "line13": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "1a7ba310-a1b1-5111-b970-012df26c5aeb"
             },
             "line3": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "bdd2605a-480e-5ad5-b52f-c6889529c457"
             },
             "line5": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "b45580d1-28b2-5700-a6b3-7be443b3bfd8"
             },
             "line7": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326"
             },
             "line9": {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322"
             },
             "meta": {
               "type": "Object",
@@ -10226,7 +10226,7 @@ description: Operations executed t-slot-frame.kcl
                 "sketch": {
                   "type": "Sketch",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "95d80984-dc84-541c-af31-df26752c9fd4"
                   }
                 }
               }
@@ -10331,7 +10331,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "95d80984-dc84-541c-af31-df26752c9fd4"
           }
         },
         "sourceRange": []
@@ -10432,7 +10432,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "95d80984-dc84-541c-af31-df26752c9fd4"
           }
         },
         "sourceRange": []
@@ -10537,11 +10537,11 @@ description: Operations executed t-slot-frame.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e5f7766f-25a6-52cd-9cbf-632be25dd038"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b8cc464b-6248-5cb4-8c70-30f634da184c"
               }
             ]
           },
@@ -10588,7 +10588,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd"
           }
         },
         "sourceRange": []
@@ -10668,7 +10668,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd"
           }
         },
         "sourceRange": []
@@ -11077,7 +11077,7 @@ description: Operations executed t-slot-frame.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca586750-6453-56e0-b4cf-8e561096e7ca"
               }
             ]
           },
@@ -11120,7 +11120,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c902ac1e-80c0-5a28-b5a8-0ef58e8fd399"
           }
         },
         "sourceRange": []
@@ -11175,7 +11175,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9e7bf977-5ef0-5034-a49f-a9e7744d4434"
           }
         },
         "sourceRange": []
@@ -11188,7 +11188,7 @@ description: Operations executed t-slot-frame.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "b5fd1215-9080-56e3-9845-e939e4245bdb"
                 }
               }
             ]
@@ -11235,19 +11235,19 @@ description: Operations executed t-slot-frame.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "95d80984-dc84-541c-af31-df26752c9fd4"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "95d80984-dc84-541c-af31-df26752c9fd4"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b"
               }
             }
           ]
@@ -11291,7 +11291,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04"
           }
         },
         "sourceRange": []
@@ -11334,7 +11334,7 @@ description: Operations executed t-slot-frame.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04"
           }
         },
         "sourceRange": []
@@ -11426,13 +11426,13 @@ description: Operations executed t-slot-frame.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cbd0a735-3417-50fd-a670-41b483234c04"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f0fa6350-ab85-5561-b6c5-384f0351f4db"
               }
             }
           ]

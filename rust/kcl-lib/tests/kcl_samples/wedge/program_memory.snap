@@ -6,8 +6,8 @@ description: Variables in memory after executing wedge.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -62,7 +62,7 @@ description: Variables in memory after executing wedge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -136,8 +136,8 @@ description: Variables in memory after executing wedge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -166,7 +166,7 @@ description: Variables in memory after executing wedge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -182,7 +182,7 @@ description: Variables in memory after executing wedge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -256,8 +256,8 @@ description: Variables in memory after executing wedge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -286,7 +286,7 @@ description: Variables in memory after executing wedge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -302,7 +302,7 @@ description: Variables in memory after executing wedge.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -376,8 +376,8 @@ description: Variables in memory after executing wedge.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -406,7 +406,7 @@ description: Variables in memory after executing wedge.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -423,11 +423,11 @@ description: Variables in memory after executing wedge.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -451,7 +451,7 @@ description: Variables in memory after executing wedge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -475,7 +475,7 @@ description: Variables in memory after executing wedge.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -499,8 +499,8 @@ description: Variables in memory after executing wedge.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -541,7 +541,7 @@ description: Variables in memory after executing wedge.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                   "sourceRange": []
                 }
               },
@@ -559,8 +559,8 @@ description: Variables in memory after executing wedge.kcl
                   "value": "line3"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "523b9fc1-d681-5ef3-b407-128525533bfe",
+              "originalId": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -575,11 +575,11 @@ description: Variables in memory after executing wedge.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
             "sourceRange": []
           },
           "from": [
@@ -603,7 +603,7 @@ description: Variables in memory after executing wedge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
             "sourceRange": []
           },
           "from": [
@@ -627,7 +627,7 @@ description: Variables in memory after executing wedge.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
             "sourceRange": []
           },
           "from": [
@@ -651,8 +651,8 @@ description: Variables in memory after executing wedge.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -693,7 +693,7 @@ description: Variables in memory after executing wedge.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
           "sourceRange": []
         }
       },
@@ -711,9 +711,9 @@ description: Variables in memory after executing wedge.kcl
           "value": "line3"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "originalId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "originSketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "units": "mm"
     }
   },
@@ -721,12 +721,12 @@ description: Variables in memory after executing wedge.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+      "artifactId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "de7be92e-614b-5db2-af67-45ab2a0e944d",
+          "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
           "sourceRange": [],
           "tag": {
             "commentStart": 319,
@@ -739,8 +739,8 @@ description: Variables in memory after executing wedge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b04d04fa-99c4-5f05-a3f5-19f132230c6a",
+          "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
           "sourceRange": [],
           "tag": {
             "commentStart": 389,
@@ -753,8 +753,8 @@ description: Variables in memory after executing wedge.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5c385f17-1c26-5e87-91b4-ca7b9ef86668",
+          "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
           "sourceRange": [],
           "tag": {
             "commentStart": 498,
@@ -770,11 +770,11 @@ description: Variables in memory after executing wedge.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb",
               "sourceRange": []
             },
             "from": [
@@ -798,7 +798,7 @@ description: Variables in memory after executing wedge.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bc451185-b0ef-5ce1-9c08-46bf9b850559",
               "sourceRange": []
             },
             "from": [
@@ -822,7 +822,7 @@ description: Variables in memory after executing wedge.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "126498f1-2635-5500-bf0d-757df8fb0e18",
               "sourceRange": []
             },
             "from": [
@@ -846,8 +846,8 @@ description: Variables in memory after executing wedge.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -888,7 +888,7 @@ description: Variables in memory after executing wedge.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "sourceRange": []
           }
         },
@@ -906,13 +906,13 @@ description: Variables in memory after executing wedge.kcl
             "value": "line3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+        "originalId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
+        "originSketchId": "523b9fc1-d681-5ef3-b407-128525533bfe",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
+      "endCapId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
       "units": "mm",
       "sectional": false
     }

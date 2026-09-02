@@ -10,7 +10,7 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -37,7 +37,7 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -65,7 +65,7 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           }
         },
         "sourceRange": []
@@ -114,7 +114,7 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
           }
         },
         "sourceRange": []
@@ -172,12 +172,12 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
                     {
                       "type": "TagIdentifier",
                       "value": "seg02",
-                      "artifact_id": "[uuid]"
+                      "artifact_id": "e00e9caf-6e9e-5221-8545-b199546c367f"
                     },
                     {
                       "type": "TagIdentifier",
                       "value": "rectangleSegmentA002",
-                      "artifact_id": "[uuid]"
+                      "artifact_id": "7b681387-29ea-57f1-8713-d63280827139"
                     }
                   ]
                 },
@@ -196,7 +196,7 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
                     {
                       "type": "TagIdentifier",
                       "value": "seg01",
-                      "artifact_id": "[uuid]"
+                      "artifact_id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493"
                     }
                   ]
                 }
@@ -211,12 +211,12 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
                     {
                       "type": "TagIdentifier",
                       "value": "seg04",
-                      "artifact_id": "[uuid]"
+                      "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
                     },
                     {
                       "type": "TagIdentifier",
                       "value": "rectangleSegmentA001",
-                      "artifact_id": "[uuid]"
+                      "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
                     }
                   ]
                 },
@@ -235,7 +235,7 @@ description: Operations executed blend_with_edge_specifier_objects.kcl
                     {
                       "type": "TagIdentifier",
                       "value": "seg03",
-                      "artifact_id": "[uuid]"
+                      "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
                     }
                   ]
                 }

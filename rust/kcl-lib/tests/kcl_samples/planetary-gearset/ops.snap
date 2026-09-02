@@ -171,7 +171,7 @@ description: Operations executed planetary-gearset.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "907cac50-3701-5367-b35c-4ec2132c824f"
           }
         },
         "sourceRange": []
@@ -324,7 +324,7 @@ description: Operations executed planetary-gearset.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
           }
         },
         "sourceRange": []
@@ -367,7 +367,7 @@ description: Operations executed planetary-gearset.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25"
           }
         },
         "sourceRange": []

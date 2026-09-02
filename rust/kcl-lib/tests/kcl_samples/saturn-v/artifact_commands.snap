@@ -5,7 +5,7 @@ description: Artifact commands saturn-v.kcl
 {
   "public/kcl-samples/saturn-v/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "to": {
           "x": -100.0,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "segment": {
           "type": "line",
           "end": {
@@ -133,24 +133,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -172,37 +172,37 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "edge_id": "bc451185-b0ef-5ce1-9c08-46bf9b850559"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "edge_id": "bc451185-b0ef-5ce1-9c08-46bf9b850559"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "transforms": [
           {
             "translate": {
@@ -224,11 +224,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "deb86259-17a0-5782-a352-d25992246cc0",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "color": {
           "r": 0.16078432,
           "g": 0.16078432,
@@ -241,66 +241,66 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+        "resultArtifactId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+        "sourceTopologyId": "cc141785-f204-5d03-bdf3-aa7163368c30"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "907cac50-3701-5367-b35c-4ec2132c824f",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e342814e-d7c1-537b-959c-f7fd92c90294",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8accf664-7097-5b74-b4cf-22cfff115a4f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "edge_id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "edge_id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "transforms": [
           {
             "translate": null,
@@ -322,66 +322,66 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+        "resultArtifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "sourceTopologyId": "cc141785-f204-5d03-bdf3-aa7163368c30"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "72dddee3-1330-5c4f-b767-659f762ad674"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "edge_id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "edge_id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "transforms": [
           {
             "translate": null,
@@ -403,66 +403,66 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
+        "resultArtifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+        "sourceTopologyId": "cc141785-f204-5d03-bdf3-aa7163368c30"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d4c814d-f292-503d-a012-68ab58c77524",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "cc141785-f204-5d03-bdf3-aa7163368c30"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "edge_id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc312d38-2fa6-5583-a605-44880f646499",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "edge_id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
         "transforms": [
           {
             "translate": null,
@@ -484,7 +484,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -509,20 +509,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a0ade6f-d355-5121-9adb-351976a78284",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -534,18 +534,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
         "to": {
           "x": -100.0,
           "y": 0.0,
@@ -554,18 +554,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
         "segment": {
           "type": "line",
           "end": {
@@ -578,11 +578,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
         "segment": {
           "type": "line",
           "end": {
@@ -595,11 +595,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
         "segment": {
           "type": "line",
           "end": {
@@ -612,24 +612,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+        "segment": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
+        "intersection_segment": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -651,37 +651,37 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "edge_id": "a78597bb-12cf-565b-b383-2fadea836030"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "edge_id": "a78597bb-12cf-565b-b383-2fadea836030"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "transforms": [
           {
             "translate": {
@@ -703,11 +703,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -720,66 +720,66 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+        "resultArtifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
+        "sourceTopologyId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "1da187cf-4f25-596d-a170-2007a75f41c6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "1da187cf-4f25-596d-a170-2007a75f41c6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "edge_id": "d9fec30d-ce49-5dee-bd99-387ddf890fb5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "edge_id": "d9fec30d-ce49-5dee-bd99-387ddf890fb5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "1da187cf-4f25-596d-a170-2007a75f41c6",
         "transforms": [
           {
             "translate": null,
@@ -801,11 +801,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "1da187cf-4f25-596d-a170-2007a75f41c6",
         "color": {
           "r": 0.0,
           "g": 0.0,
@@ -818,66 +818,66 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+        "resultArtifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
+        "sourceTopologyId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "724b87fd-c709-5232-b7a1-547c15affb9b",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "edge_id": "d9fec30d-ce49-5dee-bd99-387ddf890fb5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "edge_id": "d9fec30d-ce49-5dee-bd99-387ddf890fb5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
         "transforms": [
           {
             "translate": null,
@@ -899,11 +899,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -916,66 +916,66 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+        "resultArtifactId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
+        "sourceTopologyId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6be94036-fce8-50e0-a9cd-4631846bb4fc",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "edge_id": "d9fec30d-ce49-5dee-bd99-387ddf890fb5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "edge_id": "d9fec30d-ce49-5dee-bd99-387ddf890fb5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "transforms": [
           {
             "translate": null,
@@ -997,11 +997,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
         "color": {
           "r": 0.0,
           "g": 0.0,
@@ -1014,7 +1014,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1039,20 +1039,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1064,18 +1064,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "to": {
           "x": -4000.0,
           "y": 6000.0,
@@ -1084,18 +1084,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "segment": {
           "type": "line",
           "end": {
@@ -1108,11 +1108,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "segment": {
           "type": "line",
           "end": {
@@ -1125,11 +1125,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "segment": {
           "type": "line",
           "end": {
@@ -1142,11 +1142,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "segment": {
           "type": "line",
           "end": {
@@ -1159,24 +1159,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+        "segment": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
+        "intersection_segment": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b5a5f9c1-90db-5435-9bb1-97963b81c501",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1188,11 +1188,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
         "distance": 100.0,
         "faces": null,
         "opposite": "None",
@@ -1201,44 +1201,44 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+        "edge_id": "5dafa22d-7710-59be-af57-c2c7540e6558"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+        "edge_id": "5dafa22d-7710-59be-af57-c2c7540e6558"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -1251,66 +1251,66 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+        "resultArtifactId": "bee9909d-abbf-534c-b266-2c2c04133834",
+        "sourceTopologyId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "20f09319-bab0-5dd8-8c40-ce90cd688483"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+        "edge_id": "5dafa22d-7710-59be-af57-c2c7540e6558"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+        "edge_id": "5dafa22d-7710-59be-af57-c2c7540e6558"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
         "transforms": [
           {
             "translate": null,
@@ -1332,66 +1332,66 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+        "resultArtifactId": "d7d0ea25-9730-5767-b40a-0f2fd595f8fb",
+        "sourceTopologyId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa75438f-b2d0-5142-b452-608454e1806a",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+        "edge_id": "5dafa22d-7710-59be-af57-c2c7540e6558"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+        "edge_id": "5dafa22d-7710-59be-af57-c2c7540e6558"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f58fd62a-578c-542c-94f8-dd627caab5d0",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
         "transforms": [
           {
             "translate": null,
@@ -1413,66 +1413,66 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
       },
       "entityCloneInfo": {
-        "sourceArtifactId": "[uuid]",
-        "resultArtifactId": "[uuid]",
-        "sourceTopologyId": "[uuid]"
+        "sourceArtifactId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
+        "resultArtifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
+        "sourceTopologyId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "c0c1140b-284f-50ff-b80d-615b8b938475"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ea8409b-834f-5214-b812-e276f2ff01f4",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c0c1140b-284f-50ff-b80d-615b8b938475"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+        "edge_id": "5dafa22d-7710-59be-af57-c2c7540e6558"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
+        "edge_id": "5dafa22d-7710-59be-af57-c2c7540e6558"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0df0eb6-009b-594d-815d-31646979be80",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "transforms": [
           {
             "translate": null,
@@ -1494,7 +1494,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1519,11 +1519,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1533,20 +1533,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1558,18 +1558,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "to": {
           "x": 0.0,
           "y": -4500.0,
@@ -1578,18 +1578,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c444b134-67e1-507a-bb00-d4998ba97afb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "segment": {
           "type": "line",
           "end": {
@@ -1602,11 +1602,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "segment": {
           "type": "arc",
           "center": {
@@ -1627,24 +1627,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "segment": "c444b134-67e1-507a-bb00-d4998ba97afb",
+        "intersection_segment": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1656,11 +1656,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "6f85cbad-5e6d-549c-850d-909283a25e83",
         "distance": 14000.0,
         "faces": null,
         "opposite": "None",
@@ -1669,44 +1669,44 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "6f85cbad-5e6d-549c-850d-909283a25e83"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+        "edge_id": "24e629b4-3db1-5255-b0c6-8a232bbe5bd2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "6f85cbad-5e6d-549c-850d-909283a25e83",
+        "edge_id": "24e629b4-3db1-5255-b0c6-8a232bbe5bd2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44b2dfb0-0721-57cd-a796-4401a664e194",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "6f85cbad-5e6d-549c-850d-909283a25e83",
         "color": {
           "r": 0.0,
           "g": 0.0,
@@ -1719,20 +1719,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d22753f-e63a-506c-bc84-6006343b9a0b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34ea98a5-fab3-5283-9445-5a3b25071d26",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1744,18 +1744,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ab8a671-6218-5516-901a-d1a83480ded7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 0.0,
           "y": -4500.0,
@@ -1764,18 +1764,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1788,11 +1788,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1813,24 +1813,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
+        "segment": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+        "intersection_segment": "ba769d4c-3a67-5309-824d-fd59f263bb46",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "20bbd6cb-7788-53e4-9ee1-fbf9938e772d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1842,11 +1842,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8cc464b-6248-5cb4-8c70-30f634da184c",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
         "distance": 14000.0,
         "faces": null,
         "opposite": "None",
@@ -1855,44 +1855,44 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bdd2605a-480e-5ad5-b52f-c6889529c457",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8eada7d4-6cff-576e-9660-4b58911de9a7",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e5f7766f-25a6-52cd-9cbf-632be25dd038"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc66f518-029e-5b30-8772-13859f39ce6d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+        "edge_id": "d4836aee-19ec-578a-9fd5-cfb8103cc209"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "61b354b3-059b-5095-a0b8-2636217c6cee",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
+        "edge_id": "d4836aee-19ec-578a-9fd5-cfb8103cc209"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "e5f7766f-25a6-52cd-9cbf-632be25dd038",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -1905,7 +1905,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7239bb75-ea9c-5e04-812d-426e933ce851",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1930,11 +1930,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "7239bb75-ea9c-5e04-812d-426e933ce851",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1944,20 +1944,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7239bb75-ea9c-5e04-812d-426e933ce851",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7239bb75-ea9c-5e04-812d-426e933ce851",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1969,18 +1969,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4cbda13-cf30-51b5-adde-debccd5ae685",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "to": {
           "x": 4500.0,
           "y": 0.0,
@@ -1989,18 +1989,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
         "segment": {
           "type": "arc",
           "center": {
@@ -2021,24 +2021,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4608674b-5141-508f-8ee7-95c7819212bb",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
+        "segment": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+        "intersection_segment": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9209892e-e35e-575e-b305-9935eac5ab33",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7239bb75-ea9c-5e04-812d-426e933ce851",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2050,11 +2050,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "4608674b-5141-508f-8ee7-95c7819212bb",
         "distance": 18000.0,
         "faces": null,
         "opposite": "None",
@@ -2063,44 +2063,44 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb771349-7de5-54b4-b74b-b946bb9dbc58",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44d94cee-dac7-5b9f-829d-112d277b8975",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "4608674b-5141-508f-8ee7-95c7819212bb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95d80984-dc84-541c-af31-df26752c9fd4",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4608674b-5141-508f-8ee7-95c7819212bb",
+        "edge_id": "1be31c51-2f18-537c-b8a2-34ea115ff25a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4608674b-5141-508f-8ee7-95c7819212bb",
+        "edge_id": "1be31c51-2f18-537c-b8a2-34ea115ff25a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f18bf81-bc67-555b-bc5f-0a5fbcd2f487",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "4608674b-5141-508f-8ee7-95c7819212bb",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -2113,7 +2113,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2138,11 +2138,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55ffab66-c2ee-54fb-b1dc-3f6282f04664",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2152,20 +2152,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1583b450-a578-582f-8d23-686bccf95d8b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7faa0516-2581-52ca-b80e-97150bf2f040",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2177,18 +2177,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab136157-9d5c-5ca2-93db-6deedd96b088",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
         "to": {
           "x": -4500.0,
           "y": 0.0,
@@ -2197,18 +2197,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
         "segment": {
           "type": "line",
           "end": {
@@ -2221,11 +2221,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96889f64-587b-51f2-b62f-b230408206cc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
         "segment": {
           "type": "arc",
           "center": {
@@ -2246,24 +2246,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
+        "segment": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
+        "intersection_segment": "96889f64-587b-51f2-b62f-b230408206cc",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8166dfa8-fbe2-57c9-a383-b66e8c8b9070",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2275,11 +2275,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
         "distance": 9000.0,
         "faces": null,
         "opposite": "None",
@@ -2288,44 +2288,44 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0a7732a-2f75-5407-b203-7382d01c3918",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
+        "edge_id": "fac3f591-f4c3-5e97-8941-dc473d0cfe68"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e45a1872-b6f4-5ae2-9e86-803375beafa6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
+        "edge_id": "fac3f591-f4c3-5e97-8941-dc473d0cfe68"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "1c0dcb9c-b83b-520e-ab8f-34fc30f33e66",
         "color": {
           "r": 0.0,
           "g": 0.0,
@@ -2338,20 +2338,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d6c2537-3784-5667-8614-4423d6c6f752",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2363,18 +2363,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f296bd37-495b-5038-81a3-eade3812cc2e",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "67d03316-0deb-5224-a7ce-b3394ba08db9",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f296bd37-495b-5038-81a3-eade3812cc2e",
         "to": {
           "x": -4500.0,
           "y": 0.0,
@@ -2383,18 +2383,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f296bd37-495b-5038-81a3-eade3812cc2e",
         "segment": {
           "type": "line",
           "end": {
@@ -2407,11 +2407,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f296bd37-495b-5038-81a3-eade3812cc2e",
         "segment": {
           "type": "arc",
           "center": {
@@ -2432,24 +2432,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f296bd37-495b-5038-81a3-eade3812cc2e",
+        "segment": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
+        "intersection_segment": "fe6e67eb-7a61-566b-b101-f63111291cbc",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2461,11 +2461,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab87837d-7702-50ae-a973-1b474e1e48bf",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
         "distance": 9000.0,
         "faces": null,
         "opposite": "None",
@@ -2474,44 +2474,44 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92ead137-02a3-5a66-a3df-f1b87766c456",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+        "edge_id": "3644bf53-226b-5476-97a2-89784e77c0ce"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da427568-57f9-5fba-9ace-3a3e7be5bc36",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+        "edge_id": "3644bf53-226b-5476-97a2-89784e77c0ce"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "887f8b95-6182-5637-a45b-e92f2860796c",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -2524,7 +2524,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2549,11 +2549,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "75786bd7-c284-566d-b238-3f6b11158ab4",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2563,20 +2563,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f3e5d974-3ee8-52ce-a294-da34987457f8",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2588,18 +2588,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b7074da6-ba4d-5c11-9954-823a94aa7064",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b7074da6-ba4d-5c11-9954-823a94aa7064",
         "to": {
           "x": 4500.0,
           "y": 0.0,
@@ -2608,18 +2608,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b7074da6-ba4d-5c11-9954-823a94aa7064",
         "segment": {
           "type": "arc",
           "center": {
@@ -2640,24 +2640,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "b7074da6-ba4d-5c11-9954-823a94aa7064",
+        "segment": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
+        "intersection_segment": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e54f67fd-5312-580f-b00e-e78b0877011e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2669,11 +2669,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
         "distance": 2000.0,
         "faces": null,
         "opposite": "None",
@@ -2682,44 +2682,44 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c902ac1e-80c0-5a28-b5a8-0ef58e8fd399",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5fd1215-9080-56e3-9845-e939e4245bdb",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f24ed84c-9623-59b6-bf31-be6202c5a133",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
+        "edge_id": "001313e9-351c-5dda-8adb-ae2744dd0f59"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
+        "edge_id": "001313e9-351c-5dda-8adb-ae2744dd0f59"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "349ba77a-8183-57f6-8580-b06227eac5bd",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
         "color": {
           "r": 0.0,
           "g": 0.0,
@@ -2732,7 +2732,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2757,11 +2757,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84468ff1-4b26-5c88-8618-6cea09661aac",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2771,20 +2771,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77202593-ebf9-50c7-b715-41557309d9ab",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2796,18 +2796,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d2a2786-5258-5364-b1b2-b28334229017",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc243886-5941-5a64-8a15-a0b50bb063cb",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5d2a2786-5258-5364-b1b2-b28334229017",
         "to": {
           "x": 4500.0,
           "y": 0.0,
@@ -2816,18 +2816,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5d2a2786-5258-5364-b1b2-b28334229017",
         "segment": {
           "type": "arc",
           "center": {
@@ -2848,24 +2848,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "388597b8-4546-5655-b3a3-c3a0bba239ad",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "5d2a2786-5258-5364-b1b2-b28334229017",
+        "segment": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
+        "intersection_segment": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2877,11 +2877,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5584477d-a466-5baa-9972-325d4b097d17",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "388597b8-4546-5655-b3a3-c3a0bba239ad",
         "distance": 15000.0,
         "faces": null,
         "opposite": "None",
@@ -2890,44 +2890,44 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f129c320-ce75-58e1-b5e8-ff4a5bae64dc",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "388597b8-4546-5655-b3a3-c3a0bba239ad"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "806c3d5e-727c-5e29-9a69-c4ca7ed4e15b",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
+        "edge_id": "5c05f447-ece8-5a9e-9dbe-110a4267e2c3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cdb4d69-ec09-5ed8-9866-b9b01a5bad3e",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
+        "edge_id": "5c05f447-ece8-5a9e-9dbe-110a4267e2c3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "388597b8-4546-5655-b3a3-c3a0bba239ad",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -2940,7 +2940,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d569b1e-3e41-5603-8816-9c625622a434",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2965,20 +2965,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "9d569b1e-3e41-5603-8816-9c625622a434",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "9d569b1e-3e41-5603-8816-9c625622a434",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2990,18 +2990,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f50bec22-83af-5ac9-9f90-8e8d9796a811",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb96bce2-64b3-5697-9ac4-41978548d779",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f50bec22-83af-5ac9-9f90-8e8d9796a811",
         "to": {
           "x": 0.0,
           "y": 64000.0,
@@ -3010,18 +3010,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb172247-c469-54b8-920f-ca9ddc4fdbb3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f50bec22-83af-5ac9-9f90-8e8d9796a811",
         "segment": {
           "type": "line",
           "end": {
@@ -3034,11 +3034,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f50bec22-83af-5ac9-9f90-8e8d9796a811",
         "segment": {
           "type": "line",
           "end": {
@@ -3051,11 +3051,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f50bec22-83af-5ac9-9f90-8e8d9796a811",
         "segment": {
           "type": "line",
           "end": {
@@ -3068,11 +3068,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f531517-960e-5389-a7ca-a71161457c8a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f50bec22-83af-5ac9-9f90-8e8d9796a811",
         "segment": {
           "type": "line",
           "end": {
@@ -3085,24 +3085,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f50bec22-83af-5ac9-9f90-8e8d9796a811",
+        "segment": "eb172247-c469-54b8-920f-ca9ddc4fdbb3",
+        "intersection_segment": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27284bc1-5676-5b5a-baa2-003a7224d266",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3124,37 +3124,37 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "47ae25d7-94a7-5b84-85ef-b0a4633920cd",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "10afce2b-40ff-5ee3-a44b-bd101e341780",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
+        "edge_id": "da24fd15-2784-546f-b915-f3ebba8bbfad"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cdfcbbd0-d34e-5191-8ac3-35754fd4e366",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
+        "edge_id": "da24fd15-2784-546f-b915-f3ebba8bbfad"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e3cc8eef-e3a7-5b23-a5f4-a282dde807f0",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -3167,7 +3167,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2a07d524-7e15-5219-bc4a-25285a826b63",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3192,20 +3192,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2a07d524-7e15-5219-bc4a-25285a826b63",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7a96966c-8df1-5353-a0a1-c191f9108448",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2a07d524-7e15-5219-bc4a-25285a826b63",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3217,18 +3217,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "103770af-266b-591f-94e3-5934f2c750c9",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9deb8b6d-7844-5e18-8757-8a0874e53b4d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "103770af-266b-591f-94e3-5934f2c750c9",
         "to": {
           "x": 0.0,
           "y": 64000.0,
@@ -3237,18 +3237,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b470d865-8ffe-5e00-b769-eb89b95fa907",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "103770af-266b-591f-94e3-5934f2c750c9",
         "segment": {
           "type": "line",
           "end": {
@@ -3261,11 +3261,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4636f241-62ef-5015-8685-79b861e20d6d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "103770af-266b-591f-94e3-5934f2c750c9",
         "segment": {
           "type": "line",
           "end": {
@@ -3278,11 +3278,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "103770af-266b-591f-94e3-5934f2c750c9",
         "segment": {
           "type": "line",
           "end": {
@@ -3295,11 +3295,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1bdb8e2-0355-55d0-817d-37899c725e43",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "103770af-266b-591f-94e3-5934f2c750c9",
         "segment": {
           "type": "line",
           "end": {
@@ -3312,24 +3312,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0cae07ff-9f05-55d7-aa3b-48e0f7956432",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "103770af-266b-591f-94e3-5934f2c750c9",
+        "segment": "93084d86-3fba-5437-851f-9a4bb9523e0c",
+        "intersection_segment": "4636f241-62ef-5015-8685-79b861e20d6d",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "22eefce0-f976-5e04-8aaa-0e0718baacdf",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "0cae07ff-9f05-55d7-aa3b-48e0f7956432",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3351,37 +3351,37 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f492218-88c4-58fb-b433-2edbfe64d7db",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "0cae07ff-9f05-55d7-aa3b-48e0f7956432"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5e4e756-f536-5058-ac08-88b61ffce4e3",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "0cae07ff-9f05-55d7-aa3b-48e0f7956432",
+        "edge_id": "ada6f7b0-7ab2-59d1-a787-89634037a034"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f955175a-2142-57a5-a066-84dd5c24cf81",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "0cae07ff-9f05-55d7-aa3b-48e0f7956432",
+        "edge_id": "ada6f7b0-7ab2-59d1-a787-89634037a034"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50a84d8a-72ec-5bad-8017-05f4b519172d",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "0cae07ff-9f05-55d7-aa3b-48e0f7956432",
         "color": {
           "r": 0.0,
           "g": 0.0,
@@ -3394,7 +3394,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4f747c0-a435-5157-a365-493dbb747de6",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3419,20 +3419,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e64869-6726-5766-8485-52757d4e212a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d4f747c0-a435-5157-a365-493dbb747de6",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "23ae09dd-bfd8-58fb-a4a4-49da191174fe",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d4f747c0-a435-5157-a365-493dbb747de6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3444,18 +3444,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "810ee821-abbc-5cea-a7de-e079dbe0c1de",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
         "to": {
           "x": 0.0,
           "y": 66500.0,
@@ -3464,18 +3464,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e4bd49fb-f0b4-57f1-aa21-3c8ee7764cee",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "71136424-dffe-5ef9-9646-f40c0804ce04",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
         "segment": {
           "type": "line",
           "end": {
@@ -3488,11 +3488,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
         "segment": {
           "type": "line",
           "end": {
@@ -3505,11 +3505,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "611f15e9-bff8-53b7-b7e4-4d59a86ecb97",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
         "segment": {
           "type": "line",
           "end": {
@@ -3522,11 +3522,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
         "segment": {
           "type": "line",
           "end": {
@@ -3539,24 +3539,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "79e86604-4aa6-566d-9617-1f1721955eb2",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "b1cdf7ed-6958-5e8e-89b9-a5267c842343",
+        "segment": "71136424-dffe-5ef9-9646-f40c0804ce04",
+        "intersection_segment": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6aa5aed0-b871-5456-a13d-c13c223ba521",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "79e86604-4aa6-566d-9617-1f1721955eb2",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3578,37 +3578,37 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dc339cd1-ef80-56b6-8a39-06e7e7c74e72",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "79e86604-4aa6-566d-9617-1f1721955eb2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0b663ab0-47c0-55a6-9515-92d93b2b9ae6",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "79e86604-4aa6-566d-9617-1f1721955eb2",
+        "edge_id": "453e67a0-b972-53f0-b149-b4eb91778c9a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "231fdc8e-7db8-57be-817d-bb786c4edc0b",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "79e86604-4aa6-566d-9617-1f1721955eb2",
+        "edge_id": "453e67a0-b972-53f0-b149-b4eb91778c9a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6e62a43-bd44-5278-ba8a-920293303adb",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "79e86604-4aa6-566d-9617-1f1721955eb2",
         "color": {
           "r": 0.0,
           "g": 0.0,
@@ -3621,7 +3621,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8a4f959-6a67-573d-a52e-b915999bcc80",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3646,20 +3646,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9b5fabe-fd78-5319-89f2-15b20b9cfc57",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f8a4f959-6a67-573d-a52e-b915999bcc80",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3dbf9b85-7f37-54be-8a8c-03134dd06774",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f8a4f959-6a67-573d-a52e-b915999bcc80",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3671,18 +3671,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acde053d-9775-5aa2-bfd7-aa8500b243f0",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1ec6fecb-0505-5e02-86f5-4c58bf5323cd",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "acde053d-9775-5aa2-bfd7-aa8500b243f0",
         "to": {
           "x": 0.0,
           "y": 66500.0,
@@ -3691,18 +3691,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f20f97db-6c6e-5597-acd6-63874dd9452b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8675931-ab2b-5494-9fb8-5c9575d5cb1d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "acde053d-9775-5aa2-bfd7-aa8500b243f0",
         "segment": {
           "type": "line",
           "end": {
@@ -3715,11 +3715,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91e2b666-c0db-5d3c-875d-c0cfd8b5dd9e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "acde053d-9775-5aa2-bfd7-aa8500b243f0",
         "segment": {
           "type": "line",
           "end": {
@@ -3732,11 +3732,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "acde053d-9775-5aa2-bfd7-aa8500b243f0",
         "segment": {
           "type": "line",
           "end": {
@@ -3749,11 +3749,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "57441093-dfdf-5e5c-b0eb-9525e256fd63",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "acde053d-9775-5aa2-bfd7-aa8500b243f0",
         "segment": {
           "type": "line",
           "end": {
@@ -3766,24 +3766,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c399e30-11b0-54b4-ab2e-01904812cfa4",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "acde053d-9775-5aa2-bfd7-aa8500b243f0",
+        "segment": "f8675931-ab2b-5494-9fb8-5c9575d5cb1d",
+        "intersection_segment": "91e2b666-c0db-5d3c-875d-c0cfd8b5dd9e",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abe1c186-6e23-58cb-8ef3-aea74ac22ab8",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "6c399e30-11b0-54b4-ab2e-01904812cfa4",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3805,37 +3805,37 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "67150385-7d6d-5558-9b12-a25e9c433b14",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "6c399e30-11b0-54b4-ab2e-01904812cfa4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cea0279c-8b22-506e-8bcf-2b1743e5f5c7",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "6c399e30-11b0-54b4-ab2e-01904812cfa4",
+        "edge_id": "27b60cc9-5b82-52da-8630-b0ca4cafbde9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "35c5db46-d8f1-5ab0-a220-51057c9b6cac",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "6c399e30-11b0-54b4-ab2e-01904812cfa4",
+        "edge_id": "27b60cc9-5b82-52da-8630-b0ca4cafbde9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "843cd911-f601-52da-9a02-c9b168aa49a4",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "6c399e30-11b0-54b4-ab2e-01904812cfa4",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -3848,7 +3848,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f7f5047-af98-5f62-a2f5-70fb6b5d1787",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3873,11 +3873,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0fa6ca6a-d783-58fe-9a15-adf1c3200e81",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "3f7f5047-af98-5f62-a2f5-70fb6b5d1787",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -3887,20 +3887,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b5bd21f-4e8b-5eb5-b86b-6c5a708d5a3d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "3f7f5047-af98-5f62-a2f5-70fb6b5d1787",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3cff0e16-6db2-54dd-a35f-1609f20de855",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3f7f5047-af98-5f62-a2f5-70fb6b5d1787",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3912,18 +3912,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ba624ec-0a0b-564c-90e4-cfa74956d06b",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "286b9632-8f7e-58a1-9be7-c68cdb74bd58",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3ba624ec-0a0b-564c-90e4-cfa74956d06b",
         "to": {
           "x": 3200.0,
           "y": 0.0,
@@ -3932,18 +3932,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b13501d-0c35-5367-95cd-29691ec63825",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3ba624ec-0a0b-564c-90e4-cfa74956d06b",
         "segment": {
           "type": "arc",
           "center": {
@@ -3964,24 +3964,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9794ca46-f9b1-580c-a79d-2169f4b5a877",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "3ba624ec-0a0b-564c-90e4-cfa74956d06b",
+        "segment": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
+        "intersection_segment": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "3f7f5047-af98-5f62-a2f5-70fb6b5d1787",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3993,11 +3993,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abbeb3b2-3421-545a-b53f-5519bb63b75b",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9794ca46-f9b1-580c-a79d-2169f4b5a877",
         "distance": 9000.0,
         "faces": null,
         "opposite": "None",
@@ -4006,44 +4006,44 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ba5b88a-6ca4-5923-9f3c-edc551a4a985",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6377ba4-817c-5a60-be28-c49b95411e3d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9794ca46-f9b1-580c-a79d-2169f4b5a877"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a675f7bb-96df-5f26-82d6-a831562f09ed",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9794ca46-f9b1-580c-a79d-2169f4b5a877",
+        "edge_id": "ee55bba1-363d-5196-a56b-08cafee801c3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "37cf3a1a-36fb-57c7-8861-2c9334d3ac33",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9794ca46-f9b1-580c-a79d-2169f4b5a877",
+        "edge_id": "ee55bba1-363d-5196-a56b-08cafee801c3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f717c3a5-07e3-5d6b-8f26-693cfcec4d65",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9794ca46-f9b1-580c-a79d-2169f4b5a877",
         "color": {
           "r": 1.0,
           "g": 1.0,
@@ -4056,7 +4056,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3714fd9-fff5-53aa-af28-d9dfad2c0ed6",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4081,11 +4081,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c424e793-1f50-58e9-b280-c610d3a87b00",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "c3714fd9-fff5-53aa-af28-d9dfad2c0ed6",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -4095,20 +4095,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "56e2e620-3f83-5c90-a11d-6edf0c08df4b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c3714fd9-fff5-53aa-af28-d9dfad2c0ed6",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "70b90093-bfe8-51c2-9bce-b6896809f031",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c3714fd9-fff5-53aa-af28-d9dfad2c0ed6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4120,18 +4120,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "51255b9e-a0bc-52ca-95d8-c6f7ac19b7d8",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "00202371-af14-57f8-9184-c943a86b16b9",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "51255b9e-a0bc-52ca-95d8-c6f7ac19b7d8",
         "to": {
           "x": 3200.0,
           "y": 0.0,
@@ -4140,18 +4140,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "597d471d-1af6-5533-9f78-2ac54ac6c0f1",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c61a6d01-a717-510e-a928-c067138ea03c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "51255b9e-a0bc-52ca-95d8-c6f7ac19b7d8",
         "segment": {
           "type": "arc",
           "center": {
@@ -4172,24 +4172,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "51255b9e-a0bc-52ca-95d8-c6f7ac19b7d8",
+        "segment": "c61a6d01-a717-510e-a928-c067138ea03c",
+        "intersection_segment": "c61a6d01-a717-510e-a928-c067138ea03c",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b044af39-cbc3-54fa-9f39-031d1c56ae7d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c3714fd9-fff5-53aa-af28-d9dfad2c0ed6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4201,11 +4201,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "85c1de4b-c94f-5542-b722-a1ace11221a5",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
         "distance": 2000.0,
         "faces": null,
         "opposite": "None",
@@ -4214,44 +4214,44 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e6c6007-f848-596e-a16a-ec9a3e919448",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d18cac33-8289-57fc-b158-acc5374b53ba",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ded96391-9097-560e-913f-0484d96394a3",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
+        "edge_id": "14a21ef2-86a5-5ad3-91e8-9eba72274acc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "173e557f-e6b5-56e4-b0c9-29b84af91406",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
+        "edge_id": "14a21ef2-86a5-5ad3-91e8-9eba72274acc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f923424-cf19-52ea-89fc-c05221fc17da",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
         "color": {
           "r": 0.0,
           "g": 0.0,
@@ -4264,7 +4264,7 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "553e5255-1b16-5068-ae34-c728d5290538",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4289,20 +4289,20 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef75b5ec-d05f-5fb2-91d8-3df8cdba5ea9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "553e5255-1b16-5068-ae34-c728d5290538",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f6c12cae-a6a5-5787-9cee-d878f6a857bd",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "553e5255-1b16-5068-ae34-c728d5290538",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4314,18 +4314,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "97c51216-9375-5044-b1a7-a5aa7fc08140",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1139a380-6d14-50a7-8aca-3ff3d423d607",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "97c51216-9375-5044-b1a7-a5aa7fc08140",
         "to": {
           "x": 0.0,
           "y": 80000.0,
@@ -4334,18 +4334,18 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "589feeab-5bd5-57b3-8210-34189549c7ae",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a284338f-93ca-5bd0-93ec-db71e311620e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97c51216-9375-5044-b1a7-a5aa7fc08140",
         "segment": {
           "type": "line",
           "end": {
@@ -4358,11 +4358,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "190fcd82-dbf5-5b4c-8c91-69fd729ed3e6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97c51216-9375-5044-b1a7-a5aa7fc08140",
         "segment": {
           "type": "line",
           "end": {
@@ -4375,11 +4375,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b8d64af-2b11-5cb3-bb7f-78e356ec04a4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97c51216-9375-5044-b1a7-a5aa7fc08140",
         "segment": {
           "type": "line",
           "end": {
@@ -4392,11 +4392,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a033dab5-0390-57db-8839-ba1e2994485a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97c51216-9375-5044-b1a7-a5aa7fc08140",
         "segment": {
           "type": "line",
           "end": {
@@ -4409,11 +4409,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "22ba7afc-f279-51e5-b5e8-7cf66be455e6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97c51216-9375-5044-b1a7-a5aa7fc08140",
         "segment": {
           "type": "line",
           "end": {
@@ -4426,11 +4426,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ddae3a47-d1c4-5304-85bb-00753661f913",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97c51216-9375-5044-b1a7-a5aa7fc08140",
         "segment": {
           "type": "line",
           "end": {
@@ -4443,11 +4443,11 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4f12f4f7-d3b8-5e47-a4e1-a6dd36f64fee",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97c51216-9375-5044-b1a7-a5aa7fc08140",
         "segment": {
           "type": "line",
           "end": {
@@ -4460,24 +4460,24 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8282317b-7b33-5b29-a0b3-e7bdb56738b2",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "97c51216-9375-5044-b1a7-a5aa7fc08140",
+        "segment": "a284338f-93ca-5bd0-93ec-db71e311620e",
+        "intersection_segment": "190fcd82-dbf5-5b4c-8c91-69fd729ed3e6",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88dacb09-a1b7-5b29-9f59-88a39804e9c6",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "8282317b-7b33-5b29-a0b3-e7bdb56738b2",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4499,37 +4499,37 @@ description: Artifact commands saturn-v.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "545a676d-b0ca-51cf-8692-352f22a96abb",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8282317b-7b33-5b29-a0b3-e7bdb56738b2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6510dba2-d853-5488-8213-228f71d4dde9",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8282317b-7b33-5b29-a0b3-e7bdb56738b2",
+        "edge_id": "062b5d41-c033-5889-975f-c5c92d9cdba2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bba69a31-6872-538b-ae52-5fb777fa3c22",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8282317b-7b33-5b29-a0b3-e7bdb56738b2",
+        "edge_id": "062b5d41-c033-5889-975f-c5c92d9cdba2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff4c146e-5f80-5a26-becd-54747f974af4",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "8282317b-7b33-5b29-a0b3-e7bdb56738b2",
         "color": {
           "r": 1.0,
           "g": 1.0,

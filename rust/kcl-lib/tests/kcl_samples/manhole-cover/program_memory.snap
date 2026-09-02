@@ -6,8 +6,8 @@ description: Variables in memory after executing manhole-cover.kcl
   "__sketch_132_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+      "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
       "kind": "Custom",
       "objectId": 131,
       "origin": {
@@ -39,8 +39,8 @@ description: Variables in memory after executing manhole-cover.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -91,11 +91,11 @@ description: Variables in memory after executing manhole-cover.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "485a746b-cb46-544f-aaf3-7b44aeefae5f",
             "sourceRange": []
           },
           "ccw": true,
@@ -125,7 +125,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ccd61dbc-db94-57c8-b740-d5275cb2c51c",
             "sourceRange": []
           },
           "from": [
@@ -149,7 +149,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d21635fa-e0af-5200-afa8-653b57ceb206",
             "sourceRange": []
           },
           "ccw": false,
@@ -179,7 +179,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "151cb590-43b4-5570-8717-80c41bf0a9f9",
             "sourceRange": []
           },
           "from": [
@@ -203,7 +203,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "db2d2372-10b5-5faa-b0a9-9701227786e2",
             "sourceRange": []
           },
           "ccw": false,
@@ -233,7 +233,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c7740e5b-b4cb-5209-a1d4-870282a84cb1",
             "sourceRange": []
           },
           "from": [
@@ -257,7 +257,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "983d5d58-78ac-54c2-a881-8c1edf9c6e0f",
             "sourceRange": []
           },
           "ccw": false,
@@ -287,7 +287,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cdb261fa-b919-552d-a0c1-78f45779ba6d",
             "sourceRange": []
           },
           "from": [
@@ -311,7 +311,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "08cccea8-3549-5ff5-b476-03ebe83e4305",
             "sourceRange": []
           },
           "ccw": false,
@@ -341,7 +341,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2389cf65-3043-54c8-bc8a-453fed78f622",
             "sourceRange": []
           },
           "from": [
@@ -365,7 +365,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3a4c344a-2799-52f9-891b-1f886e99b9bc",
             "sourceRange": []
           },
           "ccw": false,
@@ -395,7 +395,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c721b7a7-25cf-5c31-8129-9f6fd26c894b",
             "sourceRange": []
           },
           "from": [
@@ -419,7 +419,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "02f55524-77c3-5880-ba41-a97ea64cdb30",
             "sourceRange": []
           },
           "ccw": false,
@@ -449,7 +449,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "38fb92b0-5eb8-5471-9947-cb547e56b6f0",
             "sourceRange": []
           },
           "from": [
@@ -473,7 +473,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "979eb736-fcb7-5ccb-9a02-45f35b6c8a65",
             "sourceRange": []
           },
           "ccw": false,
@@ -503,7 +503,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cd485498-0f4e-50f0-bb44-b36581f49ada",
             "sourceRange": []
           },
           "from": [
@@ -527,7 +527,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a56a0bf1-7d32-558b-ba78-92163ac13a4c",
             "sourceRange": []
           },
           "ccw": false,
@@ -557,7 +557,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "722e38b9-cdbd-56d6-a84b-8e36d601b29d",
             "sourceRange": []
           },
           "from": [
@@ -581,7 +581,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89d3edb6-9487-568b-9aee-3494bf763201",
             "sourceRange": []
           },
           "ccw": false,
@@ -611,7 +611,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d4985485-ec05-5bec-8121-6206e767ab43",
             "sourceRange": []
           },
           "from": [
@@ -635,7 +635,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "408e8d37-1c5a-5cd5-aab3-132eb6596294",
             "sourceRange": []
           },
           "ccw": false,
@@ -665,7 +665,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "df336e2a-8f74-55e7-bb97-e84a2c723024",
             "sourceRange": []
           },
           "from": [
@@ -689,7 +689,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "16c764a7-fb1e-540c-ab95-b8e58aed4a35",
             "sourceRange": []
           },
           "ccw": false,
@@ -719,7 +719,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "acc3676a-6432-5544-9644-666f759dc416",
             "sourceRange": []
           },
           "from": [
@@ -743,7 +743,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8d40396b-e30c-53c3-8434-da52fb60d921",
             "sourceRange": []
           },
           "ccw": false,
@@ -773,7 +773,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3f7c9a89-ff78-5f23-a42c-bf7cd094d6de",
             "sourceRange": []
           },
           "from": [
@@ -797,7 +797,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b40ad6b3-a953-51d1-b761-fee7443f21ec",
             "sourceRange": []
           },
           "ccw": false,
@@ -827,7 +827,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9085af0a-595e-5463-8697-1f9c00571b79",
             "sourceRange": []
           },
           "from": [
@@ -851,7 +851,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6a540e51-2ba5-5d8e-abda-78ab194d7cd1",
             "sourceRange": []
           },
           "ccw": false,
@@ -881,7 +881,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "93a69a2a-aea1-50fd-a9e6-0d65311a5556",
             "sourceRange": []
           },
           "from": [
@@ -905,7 +905,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ff2fae0e-43a0-5e84-87a6-eb9809c0510b",
             "sourceRange": []
           },
           "ccw": false,
@@ -935,7 +935,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4fcd3fc5-b939-52a3-802f-574a86e9ebed",
             "sourceRange": []
           },
           "from": [
@@ -959,7 +959,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "498bf43d-bdc0-52fe-8a95-bf71feb942eb",
             "sourceRange": []
           },
           "ccw": false,
@@ -989,7 +989,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c667c8de-60bd-5d8b-948b-d056dde28c12",
             "sourceRange": []
           },
           "from": [
@@ -1013,7 +1013,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "656558bf-3aaa-5c6c-83d8-d090a24405e7",
             "sourceRange": []
           },
           "ccw": false,
@@ -1043,7 +1043,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "03d97341-588c-57a3-9b83-cc28f7b31086",
             "sourceRange": []
           },
           "from": [
@@ -1067,7 +1067,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e5a21e89-0b23-5565-8efc-434e3f9a95d1",
             "sourceRange": []
           },
           "ccw": false,
@@ -1097,8 +1097,8 @@ description: Variables in memory after executing manhole-cover.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -1139,7 +1139,7 @@ description: Variables in memory after executing manhole-cover.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "e02115f0-d853-5684-82c8-298aa25e4541",
           "sourceRange": []
         }
       },
@@ -1293,9 +1293,9 @@ description: Variables in memory after executing manhole-cover.kcl
           "value": "slot9Side2"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "originalId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "originSketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "units": "in"
     }
   },
@@ -1308,7 +1308,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -1382,8 +1382,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1412,7 +1412,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "coverCircle"
@@ -1429,11 +1429,11 @@ description: Variables in memory after executing manhole-cover.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1463,7 +1463,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                     "sourceRange": []
                   },
                   "from": [
@@ -1480,7 +1480,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1504,7 +1504,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1534,7 +1534,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1558,7 +1558,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1588,7 +1588,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ca431487-8e9a-59ce-a472-84fe45652fab",
                     "sourceRange": []
                   },
                   "from": [
@@ -1605,7 +1605,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -1629,7 +1629,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1659,7 +1659,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -1683,7 +1683,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1713,7 +1713,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "93954f29-a246-54bd-ac2a-62572f26d508",
                     "sourceRange": []
                   },
                   "from": [
@@ -1730,7 +1730,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -1754,7 +1754,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1784,7 +1784,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "from": [
@@ -1808,7 +1808,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1838,7 +1838,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
                     "sourceRange": []
                   },
                   "from": [
@@ -1855,7 +1855,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                     "sourceRange": []
                   },
                   "from": [
@@ -1879,7 +1879,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1909,7 +1909,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "from": [
@@ -1933,7 +1933,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b681387-29ea-57f1-8713-d63280827139",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -1963,7 +1963,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bee9909d-abbf-534c-b266-2c2c04133834",
                     "sourceRange": []
                   },
                   "from": [
@@ -1980,7 +1980,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "from": [
@@ -2004,7 +2004,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2034,7 +2034,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "from": [
@@ -2058,7 +2058,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2088,7 +2088,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
                     "sourceRange": []
                   },
                   "from": [
@@ -2105,7 +2105,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2129,7 +2129,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2159,7 +2159,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                     "sourceRange": []
                   },
                   "from": [
@@ -2183,7 +2183,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2213,7 +2213,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2230,7 +2230,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                     "sourceRange": []
                   },
                   "from": [
@@ -2254,7 +2254,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2284,7 +2284,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                     "sourceRange": []
                   },
                   "from": [
@@ -2308,7 +2308,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2338,7 +2338,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
                     "sourceRange": []
                   },
                   "from": [
@@ -2355,7 +2355,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                     "sourceRange": []
                   },
                   "from": [
@@ -2379,7 +2379,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2409,7 +2409,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                     "sourceRange": []
                   },
                   "from": [
@@ -2433,7 +2433,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2463,7 +2463,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
                     "sourceRange": []
                   },
                   "from": [
@@ -2480,7 +2480,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                     "sourceRange": []
                   },
                   "from": [
@@ -2504,7 +2504,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2534,7 +2534,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                     "sourceRange": []
                   },
                   "from": [
@@ -2558,7 +2558,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2588,8 +2588,8 @@ description: Variables in memory after executing manhole-cover.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2630,7 +2630,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e02115f0-d853-5684-82c8-298aa25e4541",
                   "sourceRange": []
                 }
               },
@@ -2784,8 +2784,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   "value": "slot9Side2"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+              "originalId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "units": "in",
               "isClosed": "no"
             }
@@ -2799,7 +2799,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 11,
                 "kind": {
                   "arc": {
@@ -2905,8 +2905,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2935,7 +2935,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot1Cap1"
@@ -2951,7 +2951,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 18,
                 "kind": {
                   "arc": {
@@ -3057,8 +3057,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3087,7 +3087,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot1Cap2"
@@ -3103,7 +3103,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -3177,8 +3177,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3207,7 +3207,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot1Side1"
@@ -3223,7 +3223,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 14,
                 "kind": {
                   "line": {
@@ -3297,8 +3297,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3327,7 +3327,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot1Side2"
@@ -3343,7 +3343,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 25,
                 "kind": {
                   "arc": {
@@ -3449,8 +3449,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3479,7 +3479,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot2Cap1"
@@ -3495,7 +3495,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "41c630c9-9d44-581b-98af-caee575bea48",
                 "objectId": 32,
                 "kind": {
                   "arc": {
@@ -3601,8 +3601,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3631,7 +3631,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot2Cap2"
@@ -3647,7 +3647,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -3721,8 +3721,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3751,7 +3751,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot2Side1"
@@ -3767,7 +3767,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -3841,8 +3841,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3871,7 +3871,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot2Side2"
@@ -3887,7 +3887,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
                 "objectId": 39,
                 "kind": {
                   "arc": {
@@ -3993,8 +3993,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4023,7 +4023,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot3Cap1"
@@ -4039,7 +4039,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "objectId": 46,
                 "kind": {
                   "arc": {
@@ -4145,8 +4145,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4175,7 +4175,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot3Cap2"
@@ -4191,7 +4191,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -4265,8 +4265,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4295,7 +4295,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot3Side1"
@@ -4311,7 +4311,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 42,
                 "kind": {
                   "line": {
@@ -4385,8 +4385,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4415,7 +4415,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot3Side2"
@@ -4431,7 +4431,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "objectId": 53,
                 "kind": {
                   "arc": {
@@ -4537,8 +4537,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4567,7 +4567,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot4Cap1"
@@ -4583,7 +4583,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7b681387-29ea-57f1-8713-d63280827139",
                 "objectId": 60,
                 "kind": {
                   "arc": {
@@ -4689,8 +4689,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4719,7 +4719,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot4Cap2"
@@ -4735,7 +4735,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 49,
                 "kind": {
                   "line": {
@@ -4809,8 +4809,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4839,7 +4839,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot4Side1"
@@ -4855,7 +4855,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 56,
                 "kind": {
                   "line": {
@@ -4929,8 +4929,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4959,7 +4959,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot4Side2"
@@ -4975,7 +4975,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                 "objectId": 67,
                 "kind": {
                   "arc": {
@@ -5081,8 +5081,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5111,7 +5111,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot5Cap1"
@@ -5127,7 +5127,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "objectId": 74,
                 "kind": {
                   "arc": {
@@ -5233,8 +5233,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5263,7 +5263,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot5Cap2"
@@ -5279,7 +5279,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 63,
                 "kind": {
                   "line": {
@@ -5353,8 +5353,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5383,7 +5383,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot5Side1"
@@ -5399,7 +5399,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "objectId": 70,
                 "kind": {
                   "line": {
@@ -5473,8 +5473,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5503,7 +5503,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot5Side2"
@@ -5519,7 +5519,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
                 "objectId": 81,
                 "kind": {
                   "arc": {
@@ -5625,8 +5625,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5655,7 +5655,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot6Cap1"
@@ -5671,7 +5671,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "objectId": 88,
                 "kind": {
                   "arc": {
@@ -5777,8 +5777,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5807,7 +5807,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot6Cap2"
@@ -5823,7 +5823,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 77,
                 "kind": {
                   "line": {
@@ -5897,8 +5897,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5927,7 +5927,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot6Side1"
@@ -5943,7 +5943,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "objectId": 84,
                 "kind": {
                   "line": {
@@ -6017,8 +6017,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6047,7 +6047,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot6Side2"
@@ -6063,7 +6063,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                 "objectId": 95,
                 "kind": {
                   "arc": {
@@ -6169,8 +6169,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6199,7 +6199,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot7Cap1"
@@ -6215,7 +6215,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                 "objectId": 102,
                 "kind": {
                   "arc": {
@@ -6321,8 +6321,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6351,7 +6351,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot7Cap2"
@@ -6367,7 +6367,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "objectId": 91,
                 "kind": {
                   "line": {
@@ -6441,8 +6441,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6471,7 +6471,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot7Side1"
@@ -6487,7 +6487,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 98,
                 "kind": {
                   "line": {
@@ -6561,8 +6561,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6591,7 +6591,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot7Side2"
@@ -6607,7 +6607,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                 "objectId": 109,
                 "kind": {
                   "arc": {
@@ -6713,8 +6713,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6743,7 +6743,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot8Cap1"
@@ -6759,7 +6759,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
                 "objectId": 116,
                 "kind": {
                   "arc": {
@@ -6865,8 +6865,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6895,7 +6895,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot8Cap2"
@@ -6911,7 +6911,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "objectId": 105,
                 "kind": {
                   "line": {
@@ -6985,8 +6985,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7015,7 +7015,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot8Side1"
@@ -7031,7 +7031,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "objectId": 112,
                 "kind": {
                   "line": {
@@ -7105,8 +7105,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7135,7 +7135,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot8Side2"
@@ -7151,7 +7151,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
                 "objectId": 123,
                 "kind": {
                   "arc": {
@@ -7257,8 +7257,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7287,7 +7287,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot9Cap1"
@@ -7303,7 +7303,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
                 "objectId": 130,
                 "kind": {
                   "arc": {
@@ -7409,8 +7409,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7439,7 +7439,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot9Cap2"
@@ -7455,7 +7455,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "objectId": 119,
                 "kind": {
                   "line": {
@@ -7529,8 +7529,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7559,7 +7559,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot9Side1"
@@ -7575,7 +7575,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "objectId": 126,
                 "kind": {
                   "line": {
@@ -7649,8 +7649,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7679,7 +7679,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slot9Side2"
@@ -7710,12 +7710,12 @@ description: Variables in memory after executing manhole-cover.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
+      "artifactId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "31dad6f6-6aaf-583e-9622-39f9d3885765",
+          "id": "485a746b-cb46-544f-aaf3-7b44aeefae5f",
           "sourceRange": [],
           "tag": {
             "commentStart": 505,
@@ -7728,8 +7728,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ad7f4e3-5685-560b-b872-f20ed2924cc5",
+          "id": "ccd61dbc-db94-57c8-b740-d5275cb2c51c",
           "sourceRange": [],
           "tag": {
             "commentStart": 591,
@@ -7742,8 +7742,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d49c681a-aea1-5aa6-bdc5-607956b4e084",
+          "id": "d21635fa-e0af-5200-afa8-653b57ceb206",
           "sourceRange": [],
           "tag": {
             "commentStart": 737,
@@ -7756,8 +7756,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e184b336-e1d8-5ad2-8c5a-08495002811f",
+          "id": "151cb590-43b4-5570-8717-80c41bf0a9f9",
           "sourceRange": [],
           "tag": {
             "commentStart": 989,
@@ -7770,8 +7770,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "db381361-d46e-5fcc-befd-0a5ece4fe295",
+          "id": "db2d2372-10b5-5faa-b0a9-9701227786e2",
           "sourceRange": [],
           "tag": {
             "commentStart": 1166,
@@ -7784,8 +7784,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1a466de9-8529-53b5-b28d-46308e0eacc9",
+          "id": "c7740e5b-b4cb-5209-a1d4-870282a84cb1",
           "sourceRange": [],
           "tag": {
             "commentStart": 1389,
@@ -7798,8 +7798,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1574ca15-192a-502d-bd05-f209e431b595",
+          "id": "983d5d58-78ac-54c2-a881-8c1edf9c6e0f",
           "sourceRange": [],
           "tag": {
             "commentStart": 1535,
@@ -7812,8 +7812,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ba744ad0-24d4-54f8-8b0b-68e76f4878ff",
+          "id": "cdb261fa-b919-552d-a0c1-78f45779ba6d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1787,
@@ -7826,8 +7826,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96084bce-bb87-5c40-adc5-c8e64b707e19",
+          "id": "08cccea8-3549-5ff5-b476-03ebe83e4305",
           "sourceRange": [],
           "tag": {
             "commentStart": 1964,
@@ -7840,8 +7840,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f6b474f3-f336-5e74-945c-85400ad149e9",
+          "id": "2389cf65-3043-54c8-bc8a-453fed78f622",
           "sourceRange": [],
           "tag": {
             "commentStart": 2188,
@@ -7854,8 +7854,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4cda5e59-bd35-5e74-989a-7662b0785163",
+          "id": "3a4c344a-2799-52f9-891b-1f886e99b9bc",
           "sourceRange": [],
           "tag": {
             "commentStart": 2334,
@@ -7868,8 +7868,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d676fbbe-287b-5f36-b144-c0f47616c046",
+          "id": "c721b7a7-25cf-5c31-8129-9f6fd26c894b",
           "sourceRange": [],
           "tag": {
             "commentStart": 2587,
@@ -7882,8 +7882,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "23dfc729-5fb9-5a16-98db-a7264bc0badd",
+          "id": "02f55524-77c3-5880-ba41-a97ea64cdb30",
           "sourceRange": [],
           "tag": {
             "commentStart": 2765,
@@ -7896,8 +7896,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "26bc3359-a353-5f83-8789-9f6aa81e312e",
+          "id": "38fb92b0-5eb8-5471-9947-cb547e56b6f0",
           "sourceRange": [],
           "tag": {
             "commentStart": 2990,
@@ -7910,8 +7910,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ff13281e-1a15-535d-9369-d6508f3e3a9f",
+          "id": "979eb736-fcb7-5ccb-9a02-45f35b6c8a65",
           "sourceRange": [],
           "tag": {
             "commentStart": 3140,
@@ -7924,8 +7924,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d8d47d7a-6a28-545a-b221-24f09f4af9e1",
+          "id": "cd485498-0f4e-50f0-bb44-b36581f49ada",
           "sourceRange": [],
           "tag": {
             "commentStart": 3393,
@@ -7938,8 +7938,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ea96099d-ab9f-5df3-a10c-a4b380a81533",
+          "id": "a56a0bf1-7d32-558b-ba78-92163ac13a4c",
           "sourceRange": [],
           "tag": {
             "commentStart": 3570,
@@ -7952,8 +7952,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "baaa5748-379b-5a2b-bc16-816c340c8977",
+          "id": "722e38b9-cdbd-56d6-a84b-8e36d601b29d",
           "sourceRange": [],
           "tag": {
             "commentStart": 3799,
@@ -7966,8 +7966,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5d5bd30d-9efa-542e-8361-76c6c67bdf86",
+          "id": "89d3edb6-9487-568b-9aee-3494bf763201",
           "sourceRange": [],
           "tag": {
             "commentStart": 3938,
@@ -7980,8 +7980,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bec0f0f3-1885-57ee-889c-ab340053cf14",
+          "id": "d4985485-ec05-5bec-8121-6206e767ab43",
           "sourceRange": [],
           "tag": {
             "commentStart": 4190,
@@ -7994,8 +7994,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eaa373bb-1b70-59b9-93c2-4e19a0750ed0",
+          "id": "408e8d37-1c5a-5cd5-aab3-132eb6596294",
           "sourceRange": [],
           "tag": {
             "commentStart": 4367,
@@ -8008,8 +8008,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1a18c910-9a36-5265-bea7-7e9e0042cafa",
+          "id": "df336e2a-8f74-55e7-bb97-e84a2c723024",
           "sourceRange": [],
           "tag": {
             "commentStart": 4584,
@@ -8022,8 +8022,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b0c8bd73-3b45-51c0-ba91-0c059b92d790",
+          "id": "16c764a7-fb1e-540c-ab95-b8e58aed4a35",
           "sourceRange": [],
           "tag": {
             "commentStart": 4726,
@@ -8036,8 +8036,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d8360bf7-9f9f-5484-abcb-ee4ddf1ae170",
+          "id": "acc3676a-6432-5544-9644-666f759dc416",
           "sourceRange": [],
           "tag": {
             "commentStart": 4980,
@@ -8050,8 +8050,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ff630929-f4ad-5e40-b58b-7eb97c605640",
+          "id": "8d40396b-e30c-53c3-8434-da52fb60d921",
           "sourceRange": [],
           "tag": {
             "commentStart": 5158,
@@ -8064,8 +8064,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ca1cdbd-d4a7-52d9-bdc3-e0413be1b2a2",
+          "id": "3f7c9a89-ff78-5f23-a42c-bf7cd094d6de",
           "sourceRange": [],
           "tag": {
             "commentStart": 5377,
@@ -8078,8 +8078,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5fe2140c-3dd3-50d2-b628-73d4df1e0598",
+          "id": "b40ad6b3-a953-51d1-b761-fee7443f21ec",
           "sourceRange": [],
           "tag": {
             "commentStart": 5519,
@@ -8092,8 +8092,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "533edcf7-c995-57d1-8eeb-f8b2d1edef2b",
+          "id": "9085af0a-595e-5463-8697-1f9c00571b79",
           "sourceRange": [],
           "tag": {
             "commentStart": 5769,
@@ -8106,8 +8106,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "369dd1ff-a502-5dcb-a543-235250be030d",
+          "id": "6a540e51-2ba5-5d8e-abda-78ab194d7cd1",
           "sourceRange": [],
           "tag": {
             "commentStart": 5946,
@@ -8120,8 +8120,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ba334d53-1b55-5efd-9bd1-9490ef3d99cd",
+          "id": "93a69a2a-aea1-50fd-a9e6-0d65311a5556",
           "sourceRange": [],
           "tag": {
             "commentStart": 6168,
@@ -8134,8 +8134,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f30d1b24-3c57-542e-bc8a-d9cf93353929",
+          "id": "ff2fae0e-43a0-5e84-87a6-eb9809c0510b",
           "sourceRange": [],
           "tag": {
             "commentStart": 6318,
@@ -8148,8 +8148,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2e569104-57d7-51e2-b498-2d905ca28084",
+          "id": "4fcd3fc5-b939-52a3-802f-574a86e9ebed",
           "sourceRange": [],
           "tag": {
             "commentStart": 6575,
@@ -8162,8 +8162,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "aab9aeb9-9ce8-5bb9-a711-2346e459e27a",
+          "id": "498bf43d-bdc0-52fe-8a95-bf71feb942eb",
           "sourceRange": [],
           "tag": {
             "commentStart": 6754,
@@ -8176,8 +8176,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d28777b4-217f-507e-b4d5-5243561e35b7",
+          "id": "c667c8de-60bd-5d8b-948b-d056dde28c12",
           "sourceRange": [],
           "tag": {
             "commentStart": 6981,
@@ -8190,8 +8190,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7df90cc2-7133-50d0-8102-ecc46cccea39",
+          "id": "656558bf-3aaa-5c6c-83d8-d090a24405e7",
           "sourceRange": [],
           "tag": {
             "commentStart": 7122,
@@ -8204,8 +8204,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3b0e5067-8521-5922-9953-f6b6873aa60b",
+          "id": "03d97341-588c-57a3-9b83-cc28f7b31086",
           "sourceRange": [],
           "tag": {
             "commentStart": 7372,
@@ -8218,8 +8218,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "aeb36e9f-5d6c-5896-8145-d51922455cef",
+          "id": "e5a21e89-0b23-5565-8efc-434e3f9a95d1",
           "sourceRange": [],
           "tag": {
             "commentStart": 7548,
@@ -8235,11 +8235,11 @@ description: Variables in memory after executing manhole-cover.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "485a746b-cb46-544f-aaf3-7b44aeefae5f",
               "sourceRange": []
             },
             "ccw": true,
@@ -8269,7 +8269,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ccd61dbc-db94-57c8-b740-d5275cb2c51c",
               "sourceRange": []
             },
             "from": [
@@ -8293,7 +8293,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d21635fa-e0af-5200-afa8-653b57ceb206",
               "sourceRange": []
             },
             "ccw": false,
@@ -8323,7 +8323,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "151cb590-43b4-5570-8717-80c41bf0a9f9",
               "sourceRange": []
             },
             "from": [
@@ -8347,7 +8347,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "db2d2372-10b5-5faa-b0a9-9701227786e2",
               "sourceRange": []
             },
             "ccw": false,
@@ -8377,7 +8377,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c7740e5b-b4cb-5209-a1d4-870282a84cb1",
               "sourceRange": []
             },
             "from": [
@@ -8401,7 +8401,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "983d5d58-78ac-54c2-a881-8c1edf9c6e0f",
               "sourceRange": []
             },
             "ccw": false,
@@ -8431,7 +8431,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cdb261fa-b919-552d-a0c1-78f45779ba6d",
               "sourceRange": []
             },
             "from": [
@@ -8455,7 +8455,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "08cccea8-3549-5ff5-b476-03ebe83e4305",
               "sourceRange": []
             },
             "ccw": false,
@@ -8485,7 +8485,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2389cf65-3043-54c8-bc8a-453fed78f622",
               "sourceRange": []
             },
             "from": [
@@ -8509,7 +8509,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3a4c344a-2799-52f9-891b-1f886e99b9bc",
               "sourceRange": []
             },
             "ccw": false,
@@ -8539,7 +8539,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c721b7a7-25cf-5c31-8129-9f6fd26c894b",
               "sourceRange": []
             },
             "from": [
@@ -8563,7 +8563,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "02f55524-77c3-5880-ba41-a97ea64cdb30",
               "sourceRange": []
             },
             "ccw": false,
@@ -8593,7 +8593,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "38fb92b0-5eb8-5471-9947-cb547e56b6f0",
               "sourceRange": []
             },
             "from": [
@@ -8617,7 +8617,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "979eb736-fcb7-5ccb-9a02-45f35b6c8a65",
               "sourceRange": []
             },
             "ccw": false,
@@ -8647,7 +8647,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cd485498-0f4e-50f0-bb44-b36581f49ada",
               "sourceRange": []
             },
             "from": [
@@ -8671,7 +8671,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a56a0bf1-7d32-558b-ba78-92163ac13a4c",
               "sourceRange": []
             },
             "ccw": false,
@@ -8701,7 +8701,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "722e38b9-cdbd-56d6-a84b-8e36d601b29d",
               "sourceRange": []
             },
             "from": [
@@ -8725,7 +8725,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89d3edb6-9487-568b-9aee-3494bf763201",
               "sourceRange": []
             },
             "ccw": false,
@@ -8755,7 +8755,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d4985485-ec05-5bec-8121-6206e767ab43",
               "sourceRange": []
             },
             "from": [
@@ -8779,7 +8779,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "408e8d37-1c5a-5cd5-aab3-132eb6596294",
               "sourceRange": []
             },
             "ccw": false,
@@ -8809,7 +8809,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "df336e2a-8f74-55e7-bb97-e84a2c723024",
               "sourceRange": []
             },
             "from": [
@@ -8833,7 +8833,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "16c764a7-fb1e-540c-ab95-b8e58aed4a35",
               "sourceRange": []
             },
             "ccw": false,
@@ -8863,7 +8863,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "acc3676a-6432-5544-9644-666f759dc416",
               "sourceRange": []
             },
             "from": [
@@ -8887,7 +8887,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8d40396b-e30c-53c3-8434-da52fb60d921",
               "sourceRange": []
             },
             "ccw": false,
@@ -8917,7 +8917,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3f7c9a89-ff78-5f23-a42c-bf7cd094d6de",
               "sourceRange": []
             },
             "from": [
@@ -8941,7 +8941,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b40ad6b3-a953-51d1-b761-fee7443f21ec",
               "sourceRange": []
             },
             "ccw": false,
@@ -8971,7 +8971,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9085af0a-595e-5463-8697-1f9c00571b79",
               "sourceRange": []
             },
             "from": [
@@ -8995,7 +8995,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6a540e51-2ba5-5d8e-abda-78ab194d7cd1",
               "sourceRange": []
             },
             "ccw": false,
@@ -9025,7 +9025,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "93a69a2a-aea1-50fd-a9e6-0d65311a5556",
               "sourceRange": []
             },
             "from": [
@@ -9049,7 +9049,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ff2fae0e-43a0-5e84-87a6-eb9809c0510b",
               "sourceRange": []
             },
             "ccw": false,
@@ -9079,7 +9079,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4fcd3fc5-b939-52a3-802f-574a86e9ebed",
               "sourceRange": []
             },
             "from": [
@@ -9103,7 +9103,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "498bf43d-bdc0-52fe-8a95-bf71feb942eb",
               "sourceRange": []
             },
             "ccw": false,
@@ -9133,7 +9133,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c667c8de-60bd-5d8b-948b-d056dde28c12",
               "sourceRange": []
             },
             "from": [
@@ -9157,7 +9157,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "656558bf-3aaa-5c6c-83d8-d090a24405e7",
               "sourceRange": []
             },
             "ccw": false,
@@ -9187,7 +9187,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "03d97341-588c-57a3-9b83-cc28f7b31086",
               "sourceRange": []
             },
             "from": [
@@ -9211,7 +9211,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e5a21e89-0b23-5565-8efc-434e3f9a95d1",
               "sourceRange": []
             },
             "ccw": false,
@@ -9241,8 +9241,8 @@ description: Variables in memory after executing manhole-cover.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -9283,7 +9283,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e02115f0-d853-5684-82c8-298aa25e4541",
             "sourceRange": []
           }
         },
@@ -9437,13 +9437,13 @@ description: Variables in memory after executing manhole-cover.kcl
             "value": "slot9Side2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+        "originalId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+        "originSketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "ac6289f4-2ea9-5a90-914f-821a937a09c2",
+      "endCapId": "c2bd8b0e-c411-5200-b563-4999c61676b8",
       "units": "in",
       "sectional": false
     }
@@ -9452,12 +9452,12 @@ description: Variables in memory after executing manhole-cover.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+      "artifactId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "aa6d35b4-c4b5-5b6c-a7ad-66a27ab099a4",
+          "id": "6d425194-a9b4-5e68-b816-4e9f121e865f",
           "sourceRange": [],
           "tag": {
             "commentStart": 7980,
@@ -9470,8 +9470,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "742c1a43-ebc8-50ea-bb39-d9fde481f051",
+          "id": "38a5b676-e5b9-5541-bee3-4486c31770c8",
           "sourceRange": [],
           "tag": {
             "commentStart": 8060,
@@ -9484,8 +9484,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a10e2ca6-dccc-54fa-9b87-624b9c068f9c",
+          "id": "79e99c3a-36d5-5ad9-9e7c-c49ab07dc6ed",
           "sourceRange": [],
           "tag": {
             "commentStart": 8141,
@@ -9498,8 +9498,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c34cd8fc-01ad-5947-bf65-be6c4adb561d",
+          "id": "f54de669-6a73-518f-a215-5985083c54f0",
           "sourceRange": [],
           "tag": {
             "commentStart": 8224,
@@ -9515,11 +9515,11 @@ description: Variables in memory after executing manhole-cover.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6d425194-a9b4-5e68-b816-4e9f121e865f",
               "sourceRange": []
             },
             "from": [
@@ -9543,7 +9543,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "38a5b676-e5b9-5541-bee3-4486c31770c8",
               "sourceRange": []
             },
             "from": [
@@ -9567,7 +9567,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "79e99c3a-36d5-5ad9-9e7c-c49ab07dc6ed",
               "sourceRange": []
             },
             "from": [
@@ -9591,7 +9591,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f54de669-6a73-518f-a215-5985083c54f0",
               "sourceRange": []
             },
             "from": [
@@ -9615,8 +9615,8 @@ description: Variables in memory after executing manhole-cover.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+          "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
           "kind": "Custom",
           "objectId": 131,
           "origin": {
@@ -9657,7 +9657,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
             "sourceRange": []
           }
         },
@@ -9679,13 +9679,13 @@ description: Variables in memory after executing manhole-cover.kcl
             "value": "topEdge"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+        "originalId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+        "originSketchId": "c8da3189-2eee-5307-9477-076b12db84a5",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "40541cc4-f28e-50ab-b991-690c0150689b",
+      "endCapId": "3267e74c-caf0-5dfc-ae0f-15a5ff83b8a0",
       "units": "in",
       "sectional": false
     }
@@ -9712,11 +9712,11 @@ description: Variables in memory after executing manhole-cover.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6d425194-a9b4-5e68-b816-4e9f121e865f",
             "sourceRange": []
           },
           "from": [
@@ -9740,7 +9740,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "38a5b676-e5b9-5541-bee3-4486c31770c8",
             "sourceRange": []
           },
           "from": [
@@ -9764,7 +9764,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "79e99c3a-36d5-5ad9-9e7c-c49ab07dc6ed",
             "sourceRange": []
           },
           "from": [
@@ -9788,7 +9788,7 @@ description: Variables in memory after executing manhole-cover.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f54de669-6a73-518f-a215-5985083c54f0",
             "sourceRange": []
           },
           "from": [
@@ -9812,8 +9812,8 @@ description: Variables in memory after executing manhole-cover.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+        "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
         "kind": "Custom",
         "objectId": 131,
         "origin": {
@@ -9854,7 +9854,7 @@ description: Variables in memory after executing manhole-cover.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
           "sourceRange": []
         }
       },
@@ -9876,9 +9876,9 @@ description: Variables in memory after executing manhole-cover.kcl
           "value": "topEdge"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+      "originalId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+      "originSketchId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "units": "in"
     }
   },
@@ -9891,7 +9891,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
                 "objectId": 141,
                 "kind": {
                   "line": {
@@ -9965,8 +9965,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+                  "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                   "kind": "Custom",
                   "objectId": 131,
                   "origin": {
@@ -9995,7 +9995,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c8da3189-2eee-5307-9477-076b12db84a5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomEdge"
@@ -10011,7 +10011,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
                 "objectId": 144,
                 "kind": {
                   "line": {
@@ -10085,8 +10085,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+                  "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                   "kind": "Custom",
                   "objectId": 131,
                   "origin": {
@@ -10115,7 +10115,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c8da3189-2eee-5307-9477-076b12db84a5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftEdge"
@@ -10132,11 +10132,11 @@ description: Variables in memory after executing manhole-cover.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "c8da3189-2eee-5307-9477-076b12db84a5",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                     "sourceRange": []
                   },
                   "from": [
@@ -10160,7 +10160,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
                     "sourceRange": []
                   },
                   "from": [
@@ -10184,7 +10184,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
                     "sourceRange": []
                   },
                   "from": [
@@ -10208,7 +10208,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "41f59362-6fb8-51a4-926e-41d2df55ba70",
                     "sourceRange": []
                   },
                   "from": [
@@ -10232,8 +10232,8 @@ description: Variables in memory after executing manhole-cover.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+                "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                 "kind": "Custom",
                 "objectId": 131,
                 "origin": {
@@ -10274,7 +10274,7 @@ description: Variables in memory after executing manhole-cover.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "6f85cbad-5e6d-549c-850d-909283a25e83",
                   "sourceRange": []
                 }
               },
@@ -10296,8 +10296,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   "value": "topEdge"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "c8da3189-2eee-5307-9477-076b12db84a5",
+              "originalId": "c8da3189-2eee-5307-9477-076b12db84a5",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -10311,7 +10311,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2be53470-95a0-52f3-9baa-988a35cbe7a5",
                 "objectId": 138,
                 "kind": {
                   "line": {
@@ -10385,8 +10385,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+                  "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                   "kind": "Custom",
                   "objectId": 131,
                   "origin": {
@@ -10415,7 +10415,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c8da3189-2eee-5307-9477-076b12db84a5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightEdge"
@@ -10431,7 +10431,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c0c1140b-284f-50ff-b80d-615b8b938475",
                 "objectId": 135,
                 "kind": {
                   "line": {
@@ -10505,8 +10505,8 @@ description: Variables in memory after executing manhole-cover.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
+                  "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                   "kind": "Custom",
                   "objectId": 131,
                   "origin": {
@@ -10535,7 +10535,7 @@ description: Variables in memory after executing manhole-cover.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c8da3189-2eee-5307-9477-076b12db84a5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topEdge"
@@ -10751,12 +10751,12 @@ description: Variables in memory after executing manhole-cover.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "31dad6f6-6aaf-583e-9622-39f9d3885765",
+          "id": "485a746b-cb46-544f-aaf3-7b44aeefae5f",
           "sourceRange": [],
           "tag": {
             "commentStart": 505,
@@ -10769,8 +10769,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ad7f4e3-5685-560b-b872-f20ed2924cc5",
+          "id": "ccd61dbc-db94-57c8-b740-d5275cb2c51c",
           "sourceRange": [],
           "tag": {
             "commentStart": 591,
@@ -10783,8 +10783,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d49c681a-aea1-5aa6-bdc5-607956b4e084",
+          "id": "d21635fa-e0af-5200-afa8-653b57ceb206",
           "sourceRange": [],
           "tag": {
             "commentStart": 737,
@@ -10797,8 +10797,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e184b336-e1d8-5ad2-8c5a-08495002811f",
+          "id": "151cb590-43b4-5570-8717-80c41bf0a9f9",
           "sourceRange": [],
           "tag": {
             "commentStart": 989,
@@ -10811,8 +10811,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "db381361-d46e-5fcc-befd-0a5ece4fe295",
+          "id": "db2d2372-10b5-5faa-b0a9-9701227786e2",
           "sourceRange": [],
           "tag": {
             "commentStart": 1166,
@@ -10825,8 +10825,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1a466de9-8529-53b5-b28d-46308e0eacc9",
+          "id": "c7740e5b-b4cb-5209-a1d4-870282a84cb1",
           "sourceRange": [],
           "tag": {
             "commentStart": 1389,
@@ -10839,8 +10839,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1574ca15-192a-502d-bd05-f209e431b595",
+          "id": "983d5d58-78ac-54c2-a881-8c1edf9c6e0f",
           "sourceRange": [],
           "tag": {
             "commentStart": 1535,
@@ -10853,8 +10853,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ba744ad0-24d4-54f8-8b0b-68e76f4878ff",
+          "id": "cdb261fa-b919-552d-a0c1-78f45779ba6d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1787,
@@ -10867,8 +10867,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96084bce-bb87-5c40-adc5-c8e64b707e19",
+          "id": "08cccea8-3549-5ff5-b476-03ebe83e4305",
           "sourceRange": [],
           "tag": {
             "commentStart": 1964,
@@ -10881,8 +10881,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f6b474f3-f336-5e74-945c-85400ad149e9",
+          "id": "2389cf65-3043-54c8-bc8a-453fed78f622",
           "sourceRange": [],
           "tag": {
             "commentStart": 2188,
@@ -10895,8 +10895,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4cda5e59-bd35-5e74-989a-7662b0785163",
+          "id": "3a4c344a-2799-52f9-891b-1f886e99b9bc",
           "sourceRange": [],
           "tag": {
             "commentStart": 2334,
@@ -10909,8 +10909,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d676fbbe-287b-5f36-b144-c0f47616c046",
+          "id": "c721b7a7-25cf-5c31-8129-9f6fd26c894b",
           "sourceRange": [],
           "tag": {
             "commentStart": 2587,
@@ -10923,8 +10923,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "23dfc729-5fb9-5a16-98db-a7264bc0badd",
+          "id": "02f55524-77c3-5880-ba41-a97ea64cdb30",
           "sourceRange": [],
           "tag": {
             "commentStart": 2765,
@@ -10937,8 +10937,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "26bc3359-a353-5f83-8789-9f6aa81e312e",
+          "id": "38fb92b0-5eb8-5471-9947-cb547e56b6f0",
           "sourceRange": [],
           "tag": {
             "commentStart": 2990,
@@ -10951,8 +10951,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ff13281e-1a15-535d-9369-d6508f3e3a9f",
+          "id": "979eb736-fcb7-5ccb-9a02-45f35b6c8a65",
           "sourceRange": [],
           "tag": {
             "commentStart": 3140,
@@ -10965,8 +10965,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d8d47d7a-6a28-545a-b221-24f09f4af9e1",
+          "id": "cd485498-0f4e-50f0-bb44-b36581f49ada",
           "sourceRange": [],
           "tag": {
             "commentStart": 3393,
@@ -10979,8 +10979,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ea96099d-ab9f-5df3-a10c-a4b380a81533",
+          "id": "a56a0bf1-7d32-558b-ba78-92163ac13a4c",
           "sourceRange": [],
           "tag": {
             "commentStart": 3570,
@@ -10993,8 +10993,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "baaa5748-379b-5a2b-bc16-816c340c8977",
+          "id": "722e38b9-cdbd-56d6-a84b-8e36d601b29d",
           "sourceRange": [],
           "tag": {
             "commentStart": 3799,
@@ -11007,8 +11007,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5d5bd30d-9efa-542e-8361-76c6c67bdf86",
+          "id": "89d3edb6-9487-568b-9aee-3494bf763201",
           "sourceRange": [],
           "tag": {
             "commentStart": 3938,
@@ -11021,8 +11021,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bec0f0f3-1885-57ee-889c-ab340053cf14",
+          "id": "d4985485-ec05-5bec-8121-6206e767ab43",
           "sourceRange": [],
           "tag": {
             "commentStart": 4190,
@@ -11035,8 +11035,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eaa373bb-1b70-59b9-93c2-4e19a0750ed0",
+          "id": "408e8d37-1c5a-5cd5-aab3-132eb6596294",
           "sourceRange": [],
           "tag": {
             "commentStart": 4367,
@@ -11049,8 +11049,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1a18c910-9a36-5265-bea7-7e9e0042cafa",
+          "id": "df336e2a-8f74-55e7-bb97-e84a2c723024",
           "sourceRange": [],
           "tag": {
             "commentStart": 4584,
@@ -11063,8 +11063,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b0c8bd73-3b45-51c0-ba91-0c059b92d790",
+          "id": "16c764a7-fb1e-540c-ab95-b8e58aed4a35",
           "sourceRange": [],
           "tag": {
             "commentStart": 4726,
@@ -11077,8 +11077,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d8360bf7-9f9f-5484-abcb-ee4ddf1ae170",
+          "id": "acc3676a-6432-5544-9644-666f759dc416",
           "sourceRange": [],
           "tag": {
             "commentStart": 4980,
@@ -11091,8 +11091,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ff630929-f4ad-5e40-b58b-7eb97c605640",
+          "id": "8d40396b-e30c-53c3-8434-da52fb60d921",
           "sourceRange": [],
           "tag": {
             "commentStart": 5158,
@@ -11105,8 +11105,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ca1cdbd-d4a7-52d9-bdc3-e0413be1b2a2",
+          "id": "3f7c9a89-ff78-5f23-a42c-bf7cd094d6de",
           "sourceRange": [],
           "tag": {
             "commentStart": 5377,
@@ -11119,8 +11119,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5fe2140c-3dd3-50d2-b628-73d4df1e0598",
+          "id": "b40ad6b3-a953-51d1-b761-fee7443f21ec",
           "sourceRange": [],
           "tag": {
             "commentStart": 5519,
@@ -11133,8 +11133,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "533edcf7-c995-57d1-8eeb-f8b2d1edef2b",
+          "id": "9085af0a-595e-5463-8697-1f9c00571b79",
           "sourceRange": [],
           "tag": {
             "commentStart": 5769,
@@ -11147,8 +11147,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "369dd1ff-a502-5dcb-a543-235250be030d",
+          "id": "6a540e51-2ba5-5d8e-abda-78ab194d7cd1",
           "sourceRange": [],
           "tag": {
             "commentStart": 5946,
@@ -11161,8 +11161,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ba334d53-1b55-5efd-9bd1-9490ef3d99cd",
+          "id": "93a69a2a-aea1-50fd-a9e6-0d65311a5556",
           "sourceRange": [],
           "tag": {
             "commentStart": 6168,
@@ -11175,8 +11175,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f30d1b24-3c57-542e-bc8a-d9cf93353929",
+          "id": "ff2fae0e-43a0-5e84-87a6-eb9809c0510b",
           "sourceRange": [],
           "tag": {
             "commentStart": 6318,
@@ -11189,8 +11189,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2e569104-57d7-51e2-b498-2d905ca28084",
+          "id": "4fcd3fc5-b939-52a3-802f-574a86e9ebed",
           "sourceRange": [],
           "tag": {
             "commentStart": 6575,
@@ -11203,8 +11203,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "aab9aeb9-9ce8-5bb9-a711-2346e459e27a",
+          "id": "498bf43d-bdc0-52fe-8a95-bf71feb942eb",
           "sourceRange": [],
           "tag": {
             "commentStart": 6754,
@@ -11217,8 +11217,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d28777b4-217f-507e-b4d5-5243561e35b7",
+          "id": "c667c8de-60bd-5d8b-948b-d056dde28c12",
           "sourceRange": [],
           "tag": {
             "commentStart": 6981,
@@ -11231,8 +11231,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7df90cc2-7133-50d0-8102-ecc46cccea39",
+          "id": "656558bf-3aaa-5c6c-83d8-d090a24405e7",
           "sourceRange": [],
           "tag": {
             "commentStart": 7122,
@@ -11245,8 +11245,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3b0e5067-8521-5922-9953-f6b6873aa60b",
+          "id": "03d97341-588c-57a3-9b83-cc28f7b31086",
           "sourceRange": [],
           "tag": {
             "commentStart": 7372,
@@ -11259,8 +11259,8 @@ description: Variables in memory after executing manhole-cover.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "aeb36e9f-5d6c-5896-8145-d51922455cef",
+          "id": "e5a21e89-0b23-5565-8efc-434e3f9a95d1",
           "sourceRange": [],
           "tag": {
             "commentStart": 7548,
@@ -11276,11 +11276,11 @@ description: Variables in memory after executing manhole-cover.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "485a746b-cb46-544f-aaf3-7b44aeefae5f",
               "sourceRange": []
             },
             "ccw": true,
@@ -11310,7 +11310,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ccd61dbc-db94-57c8-b740-d5275cb2c51c",
               "sourceRange": []
             },
             "from": [
@@ -11334,7 +11334,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d21635fa-e0af-5200-afa8-653b57ceb206",
               "sourceRange": []
             },
             "ccw": false,
@@ -11364,7 +11364,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "151cb590-43b4-5570-8717-80c41bf0a9f9",
               "sourceRange": []
             },
             "from": [
@@ -11388,7 +11388,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "db2d2372-10b5-5faa-b0a9-9701227786e2",
               "sourceRange": []
             },
             "ccw": false,
@@ -11418,7 +11418,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c7740e5b-b4cb-5209-a1d4-870282a84cb1",
               "sourceRange": []
             },
             "from": [
@@ -11442,7 +11442,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "983d5d58-78ac-54c2-a881-8c1edf9c6e0f",
               "sourceRange": []
             },
             "ccw": false,
@@ -11472,7 +11472,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cdb261fa-b919-552d-a0c1-78f45779ba6d",
               "sourceRange": []
             },
             "from": [
@@ -11496,7 +11496,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "08cccea8-3549-5ff5-b476-03ebe83e4305",
               "sourceRange": []
             },
             "ccw": false,
@@ -11526,7 +11526,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2389cf65-3043-54c8-bc8a-453fed78f622",
               "sourceRange": []
             },
             "from": [
@@ -11550,7 +11550,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3a4c344a-2799-52f9-891b-1f886e99b9bc",
               "sourceRange": []
             },
             "ccw": false,
@@ -11580,7 +11580,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c721b7a7-25cf-5c31-8129-9f6fd26c894b",
               "sourceRange": []
             },
             "from": [
@@ -11604,7 +11604,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "02f55524-77c3-5880-ba41-a97ea64cdb30",
               "sourceRange": []
             },
             "ccw": false,
@@ -11634,7 +11634,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "38fb92b0-5eb8-5471-9947-cb547e56b6f0",
               "sourceRange": []
             },
             "from": [
@@ -11658,7 +11658,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "979eb736-fcb7-5ccb-9a02-45f35b6c8a65",
               "sourceRange": []
             },
             "ccw": false,
@@ -11688,7 +11688,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cd485498-0f4e-50f0-bb44-b36581f49ada",
               "sourceRange": []
             },
             "from": [
@@ -11712,7 +11712,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a56a0bf1-7d32-558b-ba78-92163ac13a4c",
               "sourceRange": []
             },
             "ccw": false,
@@ -11742,7 +11742,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "722e38b9-cdbd-56d6-a84b-8e36d601b29d",
               "sourceRange": []
             },
             "from": [
@@ -11766,7 +11766,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89d3edb6-9487-568b-9aee-3494bf763201",
               "sourceRange": []
             },
             "ccw": false,
@@ -11796,7 +11796,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d4985485-ec05-5bec-8121-6206e767ab43",
               "sourceRange": []
             },
             "from": [
@@ -11820,7 +11820,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "408e8d37-1c5a-5cd5-aab3-132eb6596294",
               "sourceRange": []
             },
             "ccw": false,
@@ -11850,7 +11850,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "df336e2a-8f74-55e7-bb97-e84a2c723024",
               "sourceRange": []
             },
             "from": [
@@ -11874,7 +11874,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "16c764a7-fb1e-540c-ab95-b8e58aed4a35",
               "sourceRange": []
             },
             "ccw": false,
@@ -11904,7 +11904,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "acc3676a-6432-5544-9644-666f759dc416",
               "sourceRange": []
             },
             "from": [
@@ -11928,7 +11928,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8d40396b-e30c-53c3-8434-da52fb60d921",
               "sourceRange": []
             },
             "ccw": false,
@@ -11958,7 +11958,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3f7c9a89-ff78-5f23-a42c-bf7cd094d6de",
               "sourceRange": []
             },
             "from": [
@@ -11982,7 +11982,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b40ad6b3-a953-51d1-b761-fee7443f21ec",
               "sourceRange": []
             },
             "ccw": false,
@@ -12012,7 +12012,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9085af0a-595e-5463-8697-1f9c00571b79",
               "sourceRange": []
             },
             "from": [
@@ -12036,7 +12036,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6a540e51-2ba5-5d8e-abda-78ab194d7cd1",
               "sourceRange": []
             },
             "ccw": false,
@@ -12066,7 +12066,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "93a69a2a-aea1-50fd-a9e6-0d65311a5556",
               "sourceRange": []
             },
             "from": [
@@ -12090,7 +12090,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ff2fae0e-43a0-5e84-87a6-eb9809c0510b",
               "sourceRange": []
             },
             "ccw": false,
@@ -12120,7 +12120,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4fcd3fc5-b939-52a3-802f-574a86e9ebed",
               "sourceRange": []
             },
             "from": [
@@ -12144,7 +12144,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "498bf43d-bdc0-52fe-8a95-bf71feb942eb",
               "sourceRange": []
             },
             "ccw": false,
@@ -12174,7 +12174,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c667c8de-60bd-5d8b-948b-d056dde28c12",
               "sourceRange": []
             },
             "from": [
@@ -12198,7 +12198,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "656558bf-3aaa-5c6c-83d8-d090a24405e7",
               "sourceRange": []
             },
             "ccw": false,
@@ -12228,7 +12228,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "03d97341-588c-57a3-9b83-cc28f7b31086",
               "sourceRange": []
             },
             "from": [
@@ -12252,7 +12252,7 @@ description: Variables in memory after executing manhole-cover.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e5a21e89-0b23-5565-8efc-434e3f9a95d1",
               "sourceRange": []
             },
             "ccw": false,
@@ -12282,8 +12282,8 @@ description: Variables in memory after executing manhole-cover.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -12324,7 +12324,7 @@ description: Variables in memory after executing manhole-cover.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e02115f0-d853-5684-82c8-298aa25e4541",
             "sourceRange": []
           }
         },
@@ -12478,13 +12478,13 @@ description: Variables in memory after executing manhole-cover.kcl
             "value": "slot9Side2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+        "originalId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+        "originSketchId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "ac6289f4-2ea9-5a90-914f-821a937a09c2",
+      "endCapId": "c2bd8b0e-c411-5200-b563-4999c61676b8",
       "units": "in",
       "sectional": false
     }

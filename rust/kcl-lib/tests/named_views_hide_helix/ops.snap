@@ -872,19 +872,19 @@ description: Operations executed named_views_hide_helix.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "efd1e3b2-5268-50fd-858e-26540f8146e5"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
               },
               "meta": {
                 "type": "Object",
@@ -892,7 +892,7 @@ description: Operations executed named_views_hide_helix.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
                     }
                   }
                 }
@@ -928,7 +928,7 @@ description: Operations executed named_views_hide_helix.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d"
           }
         },
         "sourceRange": []
@@ -970,7 +970,7 @@ description: Operations executed named_views_hide_helix.kcl
         "value": {
           "type": "Helix",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55"
           }
         },
         "sourceRange": []

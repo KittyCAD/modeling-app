@@ -5,7 +5,7 @@ description: Artifact commands artificial-heart.kcl
 {
   "public/kcl-samples/artificial-heart/housing.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48fadb5c-d200-5e8e-a88d-262c16919893",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b97d9a8-edae-55ed-a3a4-06ecdb6fa541",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5ab749ff-2c91-5083-9218-aec1c57ee085",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7ef02a22-0bf9-51b9-8e85-d9de8afb33d5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "to": {
           "x": 11.937999999999999,
           "y": -4.826,
@@ -75,18 +75,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8cd0070d-4468-5992-8b78-6f35398566ba",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63822c13-f07f-5b31-907f-4dd6fa311b4a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63baedff-9c3f-5a6b-8a94-11cf90ee8228",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "070325e1-7989-54f2-9ed3-2540604376b8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "arc",
           "center": {
@@ -158,11 +158,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e9d624ea-f34a-57d6-8df3-e1630dccf82c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -175,11 +175,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "caeca1aa-5286-5987-a88d-aa487e18ad92",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -192,11 +192,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8035f8e4-4ea5-51d3-a095-0dce55fa7584",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -209,11 +209,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ccd2d088-d1a2-552b-93dd-5598fbbcb031",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "arc",
           "center": {
@@ -234,11 +234,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "367b0131-ff93-5810-94cf-4d6645cfc79b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -251,11 +251,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d160926-1aee-5802-99f3-2f5145efb260",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "arc",
           "center": {
@@ -276,11 +276,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6855157b-d2a8-5dab-98fa-09614b8d40e8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -293,11 +293,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c504ffe9-f58c-5071-b323-4c40c962c99d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -310,11 +310,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bee34aa8-390c-5dcc-8779-9fa05c1c15e1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -327,11 +327,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "599406fe-8fa8-5dc3-9929-a581de301b08",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "arc",
           "center": {
@@ -352,11 +352,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1c545fe5-5deb-5687-a650-c3dc372dc793",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -369,11 +369,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63a9b8ac-f73c-549b-a7c1-f95f204b52ba",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "segment": {
           "type": "line",
           "end": {
@@ -386,33 +386,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53c3190b-f023-5c4f-be10-10b13db80873",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "5ab749ff-2c91-5083-9218-aec1c57ee085",
+        "segment": "7c4571e0-7b14-576f-a82e-22280b05874d",
+        "intersection_segment": "63822c13-f07f-5b31-907f-4dd6fa311b4a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b0800a5-0cbb-5a02-acfd-3f5315f78d51",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "5ab749ff-2c91-5083-9218-aec1c57ee085",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "472c4710-fd5c-551b-99c6-0e1aae2760e2",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "53c3190b-f023-5c4f-be10-10b13db80873",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -434,37 +434,37 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "220da994-7698-5975-996f-e1f8c9d6a937",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "53c3190b-f023-5c4f-be10-10b13db80873"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "875b4c9b-5651-552d-b36b-edc313a9444a",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "53c3190b-f023-5c4f-be10-10b13db80873",
+        "edge_id": "a630a4f8-fb73-511f-a2ae-521436f26104"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "62979774-3fe0-5b4a-8606-25cb69364c68",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "53c3190b-f023-5c4f-be10-10b13db80873",
+        "edge_id": "a630a4f8-fb73-511f-a2ae-521436f26104"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c53f0311-f8c9-5643-b0f2-995aac7886a1",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "53c3190b-f023-5c4f-be10-10b13db80873",
         "color": {
           "r": 0.92941177,
           "g": 0.92941177,
@@ -477,7 +477,7 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8e978f1-6bcb-5e83-a6c9-c3031e1d8fb8",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -502,20 +502,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "522c8c11-1a49-51b8-a829-a329726e8b7c",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f8e978f1-6bcb-5e83-a6c9-c3031e1d8fb8",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e706096-dfbb-53d6-b007-d10397169672",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f8e978f1-6bcb-5e83-a6c9-c3031e1d8fb8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -527,18 +527,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2e801ba7-a994-5cb8-adbd-21feb4957787",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16873e11-3e0a-5226-baed-06f258dfd628",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "2e801ba7-a994-5cb8-adbd-21feb4957787",
         "to": {
           "x": -30.046876632894747,
           "y": 23.426378392288132,
@@ -547,18 +547,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b80d2a0-c728-5076-9494-32f48d80f7ad",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b60351b-ca82-586d-afaf-9fbbf42bef71",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2e801ba7-a994-5cb8-adbd-21feb4957787",
         "segment": {
           "type": "arc",
           "center": {
@@ -579,33 +579,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "26c2bb19-5996-500c-bee9-134381fd334a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2e801ba7-a994-5cb8-adbd-21feb4957787",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d24149d4-c0e8-5147-add1-f3d482e1e26c",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "2e801ba7-a994-5cb8-adbd-21feb4957787",
+        "segment": "7b60351b-ca82-586d-afaf-9fbbf42bef71",
+        "intersection_segment": "7b60351b-ca82-586d-afaf-9fbbf42bef71",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d082c8fe-97e9-58a1-9066-3abd3c16ed32",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f8e978f1-6bcb-5e83-a6c9-c3031e1d8fb8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -617,11 +617,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7ecb7cc1-b8ea-575f-9a4e-357bdca0ed44",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "d24149d4-c0e8-5147-add1-f3d482e1e26c",
         "distance": 50.8,
         "faces": null,
         "opposite": "Symmetric",
@@ -630,40 +630,40 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e1722f35-b124-513b-a752-83e91e867e12",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "26ac1a06-d1d6-5e27-ba58-cd6c57f3e1ec",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "d24149d4-c0e8-5147-add1-f3d482e1e26c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8d2c40b5-8047-5285-a88c-b5fa63445f82",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d24149d4-c0e8-5147-add1-f3d482e1e26c",
+        "edge_id": "13955525-96d1-593c-aab2-a02ffff26383"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7307656e-c0d2-5d91-a3b8-7a4d431a78ff",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d24149d4-c0e8-5147-add1-f3d482e1e26c",
+        "edge_id": "13955525-96d1-593c-aab2-a02ffff26383"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6bb9d485-6273-569e-8f43-2fed79094a1c",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -688,20 +688,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbb3e70a-beaa-5fa1-aa71-bb770033a0d2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6bb9d485-6273-569e-8f43-2fed79094a1c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0e74db01-d31d-58b9-a45c-92eae8674865",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6bb9d485-6273-569e-8f43-2fed79094a1c",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -713,18 +713,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "39c5e092-3967-50e1-8069-f330b5829328",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
         "to": {
           "x": 13.630358821392,
           "y": -0.452060986719339,
@@ -733,18 +733,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f934a6ff-896b-5059-8753-b046f8d0f2f0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a282b968-e08b-5bb9-9f15-cf41fac8f105",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
         "segment": {
           "type": "arc",
           "center": {
@@ -765,11 +765,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae4092e1-384b-5e9b-8dd2-25d396512f0f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
         "to": {
           "x": -4.5500468451909795,
           "y": -3.567735913474731,
@@ -778,11 +778,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c15a8fb-cc0d-531e-ae0e-d48dfa7af08d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
         "segment": {
           "type": "arc",
           "center": {
@@ -803,11 +803,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c54ae8a0-c198-5336-94ac-422febb0de75",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
         "to": {
           "x": -5.268862695254358,
           "y": -3.2682988699689193,
@@ -816,11 +816,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "42cc3445-4ae3-50c9-844a-a7945e6b8fdf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
         "segment": {
           "type": "arc",
           "center": {
@@ -841,11 +841,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e03112ca-abc3-504a-a53e-875ae2307997",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
         "to": {
           "x": 7.782082066865575,
           "y": -1.4106152786449342,
@@ -854,11 +854,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a6179aa-69e4-5c9a-ba9f-c0ebd4a44a82",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
         "segment": {
           "type": "arc",
           "center": {
@@ -879,46 +879,46 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f13cefc5-6c68-51ea-9b25-6d36310334a5",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
+        "segment": "6c15a8fb-cc0d-531e-ae0e-d48dfa7af08d",
+        "intersection_segment": "6c15a8fb-cc0d-531e-ae0e-d48dfa7af08d",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c20c40fc-0ea8-5640-b267-20ce6af54976",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
+        "segment": "a282b968-e08b-5bb9-9f15-cf41fac8f105",
+        "intersection_segment": "a282b968-e08b-5bb9-9f15-cf41fac8f105",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "646e5cc8-40a4-58a9-96bf-13e41b10cc9b",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6bb9d485-6273-569e-8f43-2fed79094a1c",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -930,11 +930,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3b7ac91-5842-5810-b9f8-261c9c5faca8",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8",
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
@@ -943,44 +943,44 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f943a9a2-24e9-5028-b854-6b27ca002979",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef21e739-5f9b-5741-a5c3-27a32524b947",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b10d80f-e71e-5f4f-8a5f-cd654cf43638",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8",
+        "edge_id": "4b87e121-2182-59d8-b4c1-223257a26812"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7e76b502-0a65-5db3-b125-5afb10033201",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8",
+        "edge_id": "4b87e121-2182-59d8-b4c1-223257a26812"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "639652ec-4ed4-59e5-bbf8-a3cd1ec148f3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6bb9d485-6273-569e-8f43-2fed79094a1c",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -992,11 +992,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30c62370-252d-530f-a4e4-d5fc50f4557e",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "c20c40fc-0ea8-5640-b267-20ce6af54976",
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
@@ -1005,44 +1005,44 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d7e19de-23a0-5ef9-a70a-4d2b6462d6d3",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "435f3566-86d2-5c29-8b90-100e15ebe932",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c20c40fc-0ea8-5640-b267-20ce6af54976"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11abeca3-0957-5077-ac2a-f8dca708b902",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c20c40fc-0ea8-5640-b267-20ce6af54976",
+        "edge_id": "59b4b2bf-bcc3-534b-8016-ce85d7a0bcea"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "15478f32-0303-5fec-a1cb-3190d753b742",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c20c40fc-0ea8-5640-b267-20ce6af54976",
+        "edge_id": "59b4b2bf-bcc3-534b-8016-ce85d7a0bcea"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93e2989a-347f-5164-a923-959bef09b66f",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8",
         "color": {
           "r": 0.92941177,
           "g": 0.92941177,
@@ -1055,11 +1055,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9416544c-1108-54db-ba55-a4e37e514cb1",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "c20c40fc-0ea8-5640-b267-20ce6af54976",
         "color": {
           "r": 0.92941177,
           "g": 0.92941177,
@@ -1072,11 +1072,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "99f639da-4c6d-5758-a745-6cf4d4abb4fd",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8",
         "transforms": [
           {
             "translate": null,
@@ -1098,11 +1098,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27d929b9-f0bc-5579-9ebf-bd456cdeaba3",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "c20c40fc-0ea8-5640-b267-20ce6af54976",
         "transforms": [
           {
             "translate": null,
@@ -1124,23 +1124,23 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6a68e9eb-12e1-50ec-bd3c-99980d27c8a5",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]",
-          "[uuid]"
+          "9b558dd2-4c53-5d6e-8a5e-8257d0f4bda8",
+          "c20c40fc-0ea8-5640-b267-20ce6af54976"
         ],
         "tool_ids": [
-          "[uuid]"
+          "d24149d4-c0e8-5147-add1-f3d482e1e26c"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88d0aa84-59b7-5aef-8bf1-b2f811bf3083",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1165,11 +1165,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c916d65f-ebb6-580f-8f96-c1c555503c58",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "88d0aa84-59b7-5aef-8bf1-b2f811bf3083",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1179,20 +1179,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1157acce-e883-5df4-9d6a-7c60375a78a4",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "88d0aa84-59b7-5aef-8bf1-b2f811bf3083",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "99ec5de8-a889-5f50-a9f9-7e6c7071026e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "88d0aa84-59b7-5aef-8bf1-b2f811bf3083",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1204,18 +1204,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fd717088-1656-59ae-a5f4-67717579432f",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c19f68d-11dd-5079-a5e4-6c542fb43e66",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "to": {
           "x": -3.271340065307273,
           "y": 32.34700106978268,
@@ -1224,18 +1224,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a74978b-6513-5971-ab7a-7977d863e6f2",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4a192b6-d98e-5805-a7a4-f954a40467f1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "segment": {
           "type": "arc",
           "center": {
@@ -1256,11 +1256,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f9c8e0f-f974-5427-9243-9c4cb9eb2b87",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "to": {
           "x": 23.087227462069087,
           "y": -26.37465890170054,
@@ -1269,11 +1269,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7038e96-9c91-5171-bfb1-e3809099216a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "segment": {
           "type": "arc",
           "center": {
@@ -1294,11 +1294,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "863f9e69-55a3-51cc-9775-b91a7067ab9e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "to": {
           "x": 1.2039394610216354,
           "y": 30.469456157890725,
@@ -1307,11 +1307,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77cce78b-f51d-5446-aa48-73062105a8b6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "segment": {
           "type": "arc",
           "center": {
@@ -1332,11 +1332,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fdea1e0d-136c-5d5b-8f2c-f58d5aa8d821",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "to": {
           "x": 32.621135220272414,
           "y": -12.825920666396833,
@@ -1345,11 +1345,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dfb66415-9481-5380-8482-04cbe14c69b2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "segment": {
           "type": "arc",
           "center": {
@@ -1370,11 +1370,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cbc74e70-6a54-530b-989d-cf74f1da82c5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "to": {
           "x": 17.859824969803363,
           "y": -27.270817466543573,
@@ -1383,11 +1383,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "febc60f7-8d8f-52af-a887-fc2eba6bcbcf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "segment": {
           "type": "arc",
           "center": {
@@ -1408,11 +1408,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5c07dd0-a2d1-5d95-8d2c-295e4c2e3659",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "to": {
           "x": -32.18706585902426,
           "y": -4.585077468047026,
@@ -1421,11 +1421,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a61cdea-9e5b-5039-a2c1-94bbace0af72",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "segment": {
           "type": "arc",
           "center": {
@@ -1446,11 +1446,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b5930dd-ec28-587c-8e0e-afcc1247df64",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "to": {
           "x": -29.03704900121456,
           "y": -8.58799394609805,
@@ -1459,11 +1459,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6583c679-b706-5f59-b274-52ade813546c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "segment": {
           "type": "line",
           "end": {
@@ -1476,11 +1476,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a3df0ef1-a5b6-5ef7-a008-fd5c957c3a8b",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "to": {
           "x": 31.85783647069192,
           "y": -7.790722652281108,
@@ -1489,11 +1489,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7bbf5a08-0cdd-57d2-a13e-bbb18b3138e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "segment": {
           "type": "line",
           "end": {
@@ -1506,11 +1506,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4743e0bd-5fc4-5459-83e6-dac1866a65e3",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "to": {
           "x": 15.01629722093537,
           "y": -3.817702682573467,
@@ -1519,11 +1519,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94d67d7d-ff37-5df4-8985-e5929238bd85",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fd717088-1656-59ae-a5f4-67717579432f",
         "segment": {
           "type": "arc",
           "center": {
@@ -1544,33 +1544,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "56097360-43af-5b29-9943-3680a3d3f6cc",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fd717088-1656-59ae-a5f4-67717579432f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "218a8472-acf7-5c93-b30c-244f577f7292",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "fd717088-1656-59ae-a5f4-67717579432f",
+        "segment": "c4a192b6-d98e-5805-a7a4-f954a40467f1",
+        "intersection_segment": "c4a192b6-d98e-5805-a7a4-f954a40467f1",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f5fb36a-2638-5957-8892-28e883cbf8ee",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "88d0aa84-59b7-5aef-8bf1-b2f811bf3083",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1582,11 +1582,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4d39730b-3991-5e1e-9144-46b864ad6974",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "218a8472-acf7-5c93-b30c-244f577f7292",
         "distance": 0.508,
         "faces": null,
         "opposite": "None",
@@ -1595,44 +1595,44 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0816a6c-b4c1-59b7-8528-6fca3fd618a5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c33d267-7a30-5ba4-b2db-c689c066cb1b",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "218a8472-acf7-5c93-b30c-244f577f7292"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72045dd7-9374-5c5f-90aa-1c7966df0460",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "218a8472-acf7-5c93-b30c-244f577f7292",
+        "edge_id": "1697b181-47d1-5b57-aee8-fc296138a94b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6905af4b-45c9-5184-b7b1-5461b63c44ae",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "218a8472-acf7-5c93-b30c-244f577f7292",
+        "edge_id": "1697b181-47d1-5b57-aee8-fc296138a94b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd7a36fc-7044-5167-b51b-4b9178efa994",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "218a8472-acf7-5c93-b30c-244f577f7292",
         "color": {
           "r": 0.92941177,
           "g": 0.92941177,
@@ -1645,7 +1645,7 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a00b2c-7258-5857-b280-d8eb2c0c9322",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1670,20 +1670,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "100fa639-85bf-5f0f-b2d8-1809c21efe75",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b5a00b2c-7258-5857-b280-d8eb2c0c9322",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "286cafcb-2e50-50d4-b8e7-5ab7d7089b80",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b5a00b2c-7258-5857-b280-d8eb2c0c9322",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1695,18 +1695,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f8cd0e7-102a-5367-9f28-1e30351fa2b4",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9dee1ec8-f854-55fa-819d-4b1f45b531a8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3f8cd0e7-102a-5367-9f28-1e30351fa2b4",
         "to": {
           "x": -0.00000000000000002669004540542594,
           "y": -17.779999999999998,
@@ -1715,18 +1715,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28e63450-6f1b-5f37-b233-1823a6560b18",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2df0f631-f596-5651-ae78-caedb2b89b65",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3f8cd0e7-102a-5367-9f28-1e30351fa2b4",
         "segment": {
           "type": "line",
           "end": {
@@ -1739,11 +1739,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7587a7de-1f51-5bf8-ac61-fc1cc54a3eb8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3f8cd0e7-102a-5367-9f28-1e30351fa2b4",
         "segment": {
           "type": "arc",
           "center": {
@@ -1764,11 +1764,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12ad4070-f201-5a47-ad5b-f2a1afd157b9",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3f8cd0e7-102a-5367-9f28-1e30351fa2b4",
         "to": {
           "x": 23.135071381698182,
           "y": -27.99820617861604,
@@ -1777,11 +1777,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ebe9cff7-9df6-5882-a059-b430a1b6f05b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3f8cd0e7-102a-5367-9f28-1e30351fa2b4",
         "segment": {
           "type": "arc",
           "center": {
@@ -1802,7 +1802,7 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b7543e3b-0d6f-506a-95cd-ff02f779b98b",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1827,11 +1827,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d91dd223-aeea-5991-bb88-14c1b9ec2f52",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "b7543e3b-0d6f-506a-95cd-ff02f779b98b",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1841,20 +1841,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6d8c514e-072f-530f-a5ba-8231e175e778",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b7543e3b-0d6f-506a-95cd-ff02f779b98b",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6bc7130-5575-53fd-bc03-3b511f38be10",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b7543e3b-0d6f-506a-95cd-ff02f779b98b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1866,18 +1866,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acb0859c-415e-5fd4-a6fd-c37ec50c024c",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "da9bf04c-c640-5a0b-8d6b-2dd8638c0c60",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "acb0859c-415e-5fd4-a6fd-c37ec50c024c",
         "to": {
           "x": 3.809176294248497,
           "y": 3.3610379322119712,
@@ -1886,18 +1886,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9c0ba71-0086-52de-9120-a20e3cc59cd8",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b3158a9d-c0ed-5e34-b389-b9e31e972da2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "acb0859c-415e-5fd4-a6fd-c37ec50c024c",
         "segment": {
           "type": "arc",
           "center": {
@@ -1918,11 +1918,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "137e79f1-e8f8-57e1-bd1e-dac13cbc32eb",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "acb0859c-415e-5fd4-a6fd-c37ec50c024c",
         "to": {
           "x": 3.454399990159046,
           "y": 2.5908000100153323,
@@ -1931,11 +1931,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "42e95156-d471-58c4-826a-2dc5daaa7450",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "acb0859c-415e-5fd4-a6fd-c37ec50c024c",
         "segment": {
           "type": "arc",
           "center": {
@@ -1956,33 +1956,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7619bce-174c-5f4e-8c5c-db2b86d935d6",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "acb0859c-415e-5fd4-a6fd-c37ec50c024c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f73c80f-dde3-5416-b320-d0284248e38e",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "acb0859c-415e-5fd4-a6fd-c37ec50c024c",
+        "segment": "b3158a9d-c0ed-5e34-b389-b9e31e972da2",
+        "intersection_segment": "b3158a9d-c0ed-5e34-b389-b9e31e972da2",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0e441b0-835a-5d90-98b8-2bce25f27f5c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b7543e3b-0d6f-506a-95cd-ff02f779b98b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1994,12 +1994,12 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bfd0b087-16c6-56c6-aa36-bf952f9e3133",
       "range": [],
       "command": {
         "type": "sweep",
-        "target": "[uuid]",
-        "trajectory": "[uuid]",
+        "target": "5f73c80f-dde3-5416-b320-d0284248e38e",
+        "trajectory": "3f8cd0e7-102a-5367-9f28-1e30351fa2b4",
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
@@ -2007,53 +2007,53 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d1f353bf-c1f8-5676-b0ea-527ea91091d5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8cfdaf8-7b8b-58ba-8f00-2204d5312424",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "5f73c80f-dde3-5416-b320-d0284248e38e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "be127f55-744a-5174-84ad-45bf432ce1b0",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5f73c80f-dde3-5416-b320-d0284248e38e",
+        "edge_id": "b7675efb-6455-5b3c-a83b-8081c5c3bd37"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab0f57b4-2498-584d-a560-8265c2b38cf7",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5f73c80f-dde3-5416-b320-d0284248e38e",
+        "edge_id": "b7675efb-6455-5b3c-a83b-8081c5c3bd37"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa11e005-70ac-5984-ae64-311eefd4765f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "3f8cd0e7-102a-5367-9f28-1e30351fa2b4",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f013c37-b6cd-5ba6-a372-715f3b69d281",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "5f73c80f-dde3-5416-b320-d0284248e38e",
         "color": {
           "r": 0.92941177,
           "g": 0.92941177,
@@ -2066,11 +2066,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0b18f9c-8947-5006-96f8-2b2c35fc0e99",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "5f73c80f-dde3-5416-b320-d0284248e38e",
         "transforms": [
           {
             "translate": null,
@@ -2092,7 +2092,7 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f6f3041d-de27-55ee-98b4-283add6a2ab1",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2117,20 +2117,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b22b6730-6209-5c3f-879c-3a5be9a6aeb3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f6f3041d-de27-55ee-98b4-283add6a2ab1",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "42ffba5a-88cd-50a5-b67a-275f3ae6345e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f6f3041d-de27-55ee-98b4-283add6a2ab1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2142,18 +2142,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "97afdf03-5344-55d3-8a8a-75fd4f9469d8",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e82da3e1-e2be-5509-ae45-bbc1ef91f34a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "97afdf03-5344-55d3-8a8a-75fd4f9469d8",
         "to": {
           "x": -0.000000000000012059673036937999,
           "y": 17.779999999999998,
@@ -2162,18 +2162,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "81f5482f-f49d-5d80-9b61-12bc78a95497",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16921f86-58db-5ac6-9e83-4fc390df1d08",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97afdf03-5344-55d3-8a8a-75fd4f9469d8",
         "segment": {
           "type": "line",
           "end": {
@@ -2186,11 +2186,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "74f9590a-6fb2-5d94-aa3e-c874decdb7c3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97afdf03-5344-55d3-8a8a-75fd4f9469d8",
         "segment": {
           "type": "arc",
           "center": {
@@ -2211,11 +2211,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a856ac4e-e1fa-5ddb-99be-67d30e4bf5da",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "97afdf03-5344-55d3-8a8a-75fd4f9469d8",
         "to": {
           "x": 13.576971763433198,
           "y": 31.273060407731908,
@@ -2224,11 +2224,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2afcb6ec-8c14-5338-ae02-749198439eab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97afdf03-5344-55d3-8a8a-75fd4f9469d8",
         "segment": {
           "type": "arc",
           "center": {
@@ -2249,7 +2249,7 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "543f6eff-8321-5611-843a-97072f2fed93",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2274,11 +2274,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7accf8a-4754-56b9-84d7-3660cc3307c2",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "543f6eff-8321-5611-843a-97072f2fed93",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2288,20 +2288,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "402f9288-8434-5593-a830-e923a13d7569",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "543f6eff-8321-5611-843a-97072f2fed93",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5be383e6-9da2-548a-a734-fdb1753d38f2",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "543f6eff-8321-5611-843a-97072f2fed93",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2313,18 +2313,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9c65f474-4b76-53ec-805c-24f2098517cb",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d9a52af-774e-50d1-890f-1b1607b15984",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "9c65f474-4b76-53ec-805c-24f2098517cb",
         "to": {
           "x": 3.809176294248497,
           "y": 3.3610379322119712,
@@ -2333,18 +2333,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16fa6eaa-d3d9-5a13-95a7-26d3cced81e5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25b71da7-5201-56f2-b165-e6a23679ab42",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9c65f474-4b76-53ec-805c-24f2098517cb",
         "segment": {
           "type": "arc",
           "center": {
@@ -2365,11 +2365,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b27a1f6b-988d-5230-a70b-54521446cbed",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "9c65f474-4b76-53ec-805c-24f2098517cb",
         "to": {
           "x": 3.454399990159046,
           "y": 2.5908000100153323,
@@ -2378,11 +2378,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "98f26143-1c37-5d39-b4b3-2a2e970c59af",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "9c65f474-4b76-53ec-805c-24f2098517cb",
         "segment": {
           "type": "arc",
           "center": {
@@ -2403,33 +2403,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb52f14c-dc93-5925-ba88-44573253c9a2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "9c65f474-4b76-53ec-805c-24f2098517cb",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5816c24d-23a0-5d60-87eb-d2b0e3bd1bd0",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "9c65f474-4b76-53ec-805c-24f2098517cb",
+        "segment": "25b71da7-5201-56f2-b165-e6a23679ab42",
+        "intersection_segment": "25b71da7-5201-56f2-b165-e6a23679ab42",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84c0eab0-79bd-5eb1-8f7d-97ee261942d5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "543f6eff-8321-5611-843a-97072f2fed93",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2441,12 +2441,12 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "563e3922-e782-51ce-a6ca-80f1144b0478",
       "range": [],
       "command": {
         "type": "sweep",
-        "target": "[uuid]",
-        "trajectory": "[uuid]",
+        "target": "5816c24d-23a0-5d60-87eb-d2b0e3bd1bd0",
+        "trajectory": "97afdf03-5344-55d3-8a8a-75fd4f9469d8",
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
@@ -2454,53 +2454,53 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eacb8957-bab8-5cf7-bdff-0f03593900a7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01891073-74d3-5dd3-98ae-7cbf80317f8b",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "5816c24d-23a0-5d60-87eb-d2b0e3bd1bd0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5866935-67a5-5330-a910-63ed4b47a596",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5816c24d-23a0-5d60-87eb-d2b0e3bd1bd0",
+        "edge_id": "56c6c55f-e692-5516-a188-2ab372bd1e58"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "42b55370-75de-5d30-8f79-a1fd4e046d5c",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5816c24d-23a0-5d60-87eb-d2b0e3bd1bd0",
+        "edge_id": "56c6c55f-e692-5516-a188-2ab372bd1e58"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bfed481d-84de-5d93-aaf4-2b9337b69455",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "97afdf03-5344-55d3-8a8a-75fd4f9469d8",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "42c89d32-8967-57a5-9024-dcdfb9a6aee8",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "5816c24d-23a0-5d60-87eb-d2b0e3bd1bd0",
         "color": {
           "r": 0.92941177,
           "g": 0.92941177,
@@ -2513,11 +2513,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0562f743-1e06-529c-8937-dbb8969ea04c",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "5816c24d-23a0-5d60-87eb-d2b0e3bd1bd0",
         "transforms": [
           {
             "translate": null,
@@ -2541,7 +2541,7 @@ description: Artifact commands artificial-heart.kcl
   ],
   "public/kcl-samples/artificial-heart/impeller.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2566,20 +2566,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9fd168f9-37cd-555f-9048-c8566ca41d47",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27a78bd8-f7b0-5037-936e-51a54b4931ff",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2591,18 +2591,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f1b5f5aa-e22c-5336-8f83-223a4e981cbb",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "to": {
           "x": 38.099999999999994,
           "y": 6.350000000000001,
@@ -2611,18 +2611,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34bc3ace-6258-5a7f-ab7c-03504068e99a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "37dccfff-51c8-54b8-ad35-58f377eb2c42",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2635,11 +2635,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "515e71b6-5068-5314-a362-727be5fd92ee",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2652,11 +2652,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "630e2c20-474e-5cd6-8b4f-09f30ec93091",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "arc",
           "center": {
@@ -2677,11 +2677,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "201fdd4d-3085-5128-be8d-a43056e4a2bd",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "to": {
           "x": 8.383823500071156,
           "y": 11.664026283356515,
@@ -2690,11 +2690,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca3286b6-95ff-5556-ac85-a67dc66d9b83",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2707,11 +2707,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf0e612a-1375-5a2f-9673-f21d5f4965a8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2724,11 +2724,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "64396997-3c80-5b7d-86f3-b1ce991d629f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "to": {
           "x": 38.099999999999994,
           "y": -6.350000000000001,
@@ -2737,11 +2737,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "edce6c48-023d-5bab-b0e3-a6e19d17b66d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2754,11 +2754,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "74258cdc-0880-5ede-953e-e4fe95273e55",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2771,11 +2771,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89187ec0-3c95-5d5e-9946-c823c4954b7c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "arc",
           "center": {
@@ -2796,11 +2796,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "839139e6-1c44-5627-ac39-2a2dadc1828a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "to": {
           "x": 8.38382348183707,
           "y": -11.664026330321285,
@@ -2809,11 +2809,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "754e5e64-bf24-52cf-9f8c-962e4cc9e527",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2826,11 +2826,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1aecef1-7f47-5e98-a759-68b4bf046700",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2843,11 +2843,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b0c4876-f634-53c4-94bc-ec8f2d51c6f2",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "to": {
           "x": 10.160000000000002,
           "y": 0.00000000000000012914955125958342,
@@ -2856,11 +2856,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6b47b38f-ef39-55ee-86a3-09330b344cbd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2873,11 +2873,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbce07c6-5d48-59a5-a7ea-998c756458c3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2890,11 +2890,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6a385754-175f-5cc5-9438-33b4872649f9",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "to": {
           "x": 0.000000000000000000000000004325261786583357,
           "y": 17.528191615967348,
@@ -2903,11 +2903,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08f30374-37d7-5a7c-a606-c19ce1a055d5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2920,11 +2920,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "83cc1917-ac4f-5bf8-8d35-dc8f9b22764f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "to": {
           "x": 10.16,
           "y": 0.00000000000000012914955125983076,
@@ -2933,11 +2933,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d3f0a7e-4083-52ce-8054-b816fa6704a8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2950,11 +2950,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "31cc1b97-b3fb-559c-8cc5-a5965da9ba5a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "segment": {
           "type": "line",
           "end": {
@@ -2967,33 +2967,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "500c95a9-6d78-57d7-9ecb-1fe938960d11",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5bd616e6-6e6d-5179-9d56-7b9dee32e864",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "3716c7f7-6f39-5cda-96b9-eafd0b1294e9",
+        "segment": "6b47b38f-ef39-55ee-86a3-09330b344cbd",
+        "intersection_segment": "37dccfff-51c8-54b8-ad35-58f377eb2c42",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "092a9eb8-f612-5cda-82eb-5c3bcc8656b3",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "5bd616e6-6e6d-5179-9d56-7b9dee32e864",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3015,33 +3015,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4747e1d-3ad4-56f0-a72c-1a4b047c8a77",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "5bd616e6-6e6d-5179-9d56-7b9dee32e864"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "684a4296-402b-5515-8c46-d4632bc01509",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5bd616e6-6e6d-5179-9d56-7b9dee32e864",
+        "edge_id": "23cc70c7-a92b-54fb-ac20-f39e8ca4f1a7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "928d476f-dd37-5e84-be43-93b491de2a5b",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5bd616e6-6e6d-5179-9d56-7b9dee32e864",
+        "edge_id": "23cc70c7-a92b-54fb-ac20-f39e8ca4f1a7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fdcea0a1-1c69-52b5-9f1e-308836cad216",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3066,11 +3066,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2942b981-a6d4-54c7-bc69-219508fc601d",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "fdcea0a1-1c69-52b5-9f1e-308836cad216",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -3080,20 +3080,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "46cb14fa-7c0f-5624-a676-2cd05f5b09ab",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fdcea0a1-1c69-52b5-9f1e-308836cad216",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b441cf9-f2d0-56d7-a4d9-ff90473680d3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fdcea0a1-1c69-52b5-9f1e-308836cad216",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3105,18 +3105,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fb046b13-32ee-5ea3-b65e-342ef954c986",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b36ae7f9-7ba3-5c59-bf4b-bd5dea164dc3",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fb046b13-32ee-5ea3-b65e-342ef954c986",
         "to": {
           "x": -0.9182388606345637,
           "y": -18.032537982674324,
@@ -3125,18 +3125,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "47d66957-1da0-5e94-b3ff-155c54f602c2",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5841eb71-6d1d-5d26-b453-cd3c0e44180f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fb046b13-32ee-5ea3-b65e-342ef954c986",
         "segment": {
           "type": "arc",
           "center": {
@@ -3157,11 +3157,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e7a49a3-1809-5301-b5d9-f8de2cf85569",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fb046b13-32ee-5ea3-b65e-342ef954c986",
         "to": {
           "x": 0.918238860634561,
           "y": -14.987462017325685,
@@ -3170,11 +3170,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8420e0e-9816-59be-8c5a-fb7772135f7f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fb046b13-32ee-5ea3-b65e-342ef954c986",
         "segment": {
           "type": "arc",
           "center": {
@@ -3195,11 +3195,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3cf88f1f-c814-51fd-8da7-f2ec8f51625e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fb046b13-32ee-5ea3-b65e-342ef954c986",
         "to": {
           "x": 0.9182388606345607,
           "y": -14.987462017325685,
@@ -3208,11 +3208,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "051659d4-c05b-5e76-a109-3fb3850817ad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fb046b13-32ee-5ea3-b65e-342ef954c986",
         "segment": {
           "type": "arc",
           "center": {
@@ -3233,11 +3233,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "66b08951-0bf0-5ba2-9b00-7aab6134b3a4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fb046b13-32ee-5ea3-b65e-342ef954c986",
         "segment": {
           "type": "arc",
           "center": {
@@ -3258,33 +3258,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7436b250-657c-588d-9101-b2c590d211d9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fb046b13-32ee-5ea3-b65e-342ef954c986",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "fb046b13-32ee-5ea3-b65e-342ef954c986",
+        "segment": "5841eb71-6d1d-5d26-b453-cd3c0e44180f",
+        "intersection_segment": "a8420e0e-9816-59be-8c5a-fb7772135f7f",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b524073-a436-5793-bbf3-f108cf86457d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fdcea0a1-1c69-52b5-9f1e-308836cad216",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3296,11 +3296,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1d40afb6-ee3b-5c59-8b23-d5b3da12b61c",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a",
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
@@ -3309,44 +3309,44 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b1973e3-600c-5c6e-9ef2-a73632d4c942",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f69b7dad-7f0d-5cf1-a6f9-9f0c30cc67c0",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b390133e-1b0d-5da2-b373-556d351f0f43",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a",
+        "edge_id": "d2e30641-f9f4-5b7d-83ab-37a9f429d311"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01a964f6-8889-5413-a7af-b1dd98c414e0",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a",
+        "edge_id": "d2e30641-f9f4-5b7d-83ab-37a9f429d311"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ccd3b180-d87d-5cb9-b321-1d2c5417970d",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a",
         "axis": {
           "x": 0.0,
           "y": 1.0,
@@ -3363,11 +3363,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1c266b7-0b6b-593b-acf0-ae788a1add6f",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "2d98ea52-b4b8-5019-9bbe-11c8a004f31a",
         "transform": [],
         "transforms": [
           [
@@ -3403,11 +3403,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76dfc017-bbc1-5576-831b-f74e501c4d36",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "29f072f8-628b-5bf6-8c7f-bf19914ce292",
         "transform": [],
         "transforms": [
           [
@@ -3443,11 +3443,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "43cb4642-4e31-5086-a7ef-c984d833f704",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "9f7bd332-00b5-5472-828a-65d9bc94f927",
         "transform": [],
         "transforms": [
           [
@@ -3483,11 +3483,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8c0e7f9-2d38-51ea-a2aa-0fd0b969cd72",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "1d4b7ed2-7eb0-5c7e-9847-c5c0f2485b55",
         "transform": [],
         "transforms": [
           [
@@ -3523,11 +3523,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f944e6c3-6f3c-58f7-a146-394b86642d36",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "76bb6256-e1c5-588f-8dba-ccd9214e0a74",
         "transform": [],
         "transforms": [
           [
@@ -3563,11 +3563,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "963e14cb-7ebb-578a-895e-b76e954475ba",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "43292b22-be75-5a74-947b-67c1d6ac7546",
         "transform": [],
         "transforms": [
           [
@@ -3603,11 +3603,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b3fe018-fd85-5f2e-808d-032d66dc10f4",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "e094107d-b6da-5d3b-ae88-e477446e8d5c",
         "transform": [],
         "transforms": [
           [
@@ -3645,7 +3645,7 @@ description: Artifact commands artificial-heart.kcl
   ],
   "public/kcl-samples/artificial-heart/plumbing.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3670,20 +3670,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f20a7800-7fb2-522c-abc3-645eaa4ca76a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0b99353-2b92-5be5-b339-745535fad102",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3695,18 +3695,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "694dfa80-ac26-5d24-beac-f480b73cb763",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "74e073e1-c4c6-5d0b-97a5-f5a13e46abaf",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "to": {
           "x": -29.63484519952827,
           "y": 29.634845199528137,
@@ -3715,18 +3715,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f878ac8-aa13-5c62-9e2e-1c2c5c890ea6",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9aa4f613-d255-5aaa-abf2-88a262722a67",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "segment": {
           "type": "arc",
           "center": {
@@ -3747,11 +3747,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1d93d747-f6bd-5469-856e-9b20f75865d3",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "to": {
           "x": -93.50694616520929,
           "y": -19.526660689834923,
@@ -3760,11 +3760,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbaf38ab-43d1-5434-8f5e-3559688687a0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "segment": {
           "type": "line",
           "end": {
@@ -3777,7 +3777,7 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "22e4847b-51dc-52cb-a592-73121ef9c4ce",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3802,11 +3802,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd5149b7-87d6-578c-adbf-f26cd9999152",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "22e4847b-51dc-52cb-a592-73121ef9c4ce",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -3816,20 +3816,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "79b63c50-3fe8-5221-b451-f7d89a3cef24",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "22e4847b-51dc-52cb-a592-73121ef9c4ce",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0bf2c125-6cbc-5092-b81a-7d39e93646eb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "22e4847b-51dc-52cb-a592-73121ef9c4ce",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3841,18 +3841,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7243497b-9a86-59e9-b243-7867e587b7d4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
         "to": {
           "x": 14.776559305424698,
           "y": -1.0298214048116676,
@@ -3861,18 +3861,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "86f02c1c-9b61-5096-9aa1-fb4393107998",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a6511e8-9390-5980-a26f-d8e5f9296384",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
         "segment": {
           "type": "arc",
           "center": {
@@ -3893,11 +3893,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "09292438-4457-5b75-a730-364dabd84f99",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
         "to": {
           "x": -3.3381395456945038,
           "y": -3.970125071223033,
@@ -3906,11 +3906,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d93278ce-1670-5a7c-90ce-020ed280966a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
         "segment": {
           "type": "arc",
           "center": {
@@ -3931,11 +3931,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff27be58-13f3-5755-81ba-b65b36be64f0",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
         "to": {
           "x": -5.268862698504938,
           "y": -3.26829888894947,
@@ -3944,11 +3944,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aefd1725-8517-5e50-abc5-d600b843d359",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
         "segment": {
           "type": "arc",
           "center": {
@@ -3969,11 +3969,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6c2082a-b914-5016-b5be-06d7439ec3a0",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
         "to": {
           "x": 7.782081135561232,
           "y": -1.4106148677749002,
@@ -3982,11 +3982,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7a374928-6df0-5372-8eff-548025f2d25e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
         "segment": {
           "type": "arc",
           "center": {
@@ -4007,33 +4007,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff40e780-641c-5e25-a37e-1b6837c8a726",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
+        "segment": "d93278ce-1670-5a7c-90ce-020ed280966a",
+        "intersection_segment": "d93278ce-1670-5a7c-90ce-020ed280966a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "46c19b54-65f6-5eaf-839d-88377621da7a",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
         "transforms": [
           {
             "translate": null,
@@ -4055,35 +4055,35 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4241f21-985f-5e97-9922-28390e04d161",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "694dfa80-ac26-5d24-beac-f480b73cb763"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4d76cffc-27f6-5a1c-b6b8-f9017857162b",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "694dfa80-ac26-5d24-beac-f480b73cb763"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "417e263b-aa20-598c-b99e-fbf2b83f3e94",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "a4241f21-985f-5e97-9922-28390e04d161"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1edf3e97-cc0d-5442-8700-7debb1169632",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "22e4847b-51dc-52cb-a592-73121ef9c4ce",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4095,12 +4095,12 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "32e6bda2-a3fd-5f43-acb4-3888bfa6cb27",
       "range": [],
       "command": {
         "type": "sweep",
-        "target": "[uuid]",
-        "trajectory": "[uuid]",
+        "target": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
+        "trajectory": "a4241f21-985f-5e97-9922-28390e04d161",
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
@@ -4108,53 +4108,53 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f9a3121-4dd2-5694-8cff-8e6b564c2683",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7273d520-7f95-55b2-bd41-b0a197ce4522",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c2370124-0563-5133-8dad-7fba43be9dbb",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
+        "edge_id": "03764652-5bd4-5fbf-843d-31fa26dcf517"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0621655e-1474-5a67-8001-b66bdd5f1cf4",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
+        "edge_id": "03764652-5bd4-5fbf-843d-31fa26dcf517"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc8b45c7-182f-52df-892f-5df2dba1a9aa",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a4241f21-985f-5e97-9922-28390e04d161",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "5d39a8d0-96c3-596c-a9e2-cfffe58868c0",
         "color": {
           "r": 0.05490196,
           "g": 0.13725491,
@@ -4167,24 +4167,24 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "39b12400-18c1-58a6-b7a6-660bcd7aaeea",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
+        "segment": "1a6511e8-9390-5980-a26f-d8e5f9296384",
+        "intersection_segment": "1a6511e8-9390-5980-a26f-d8e5f9296384",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7f6a4f6-4336-5f2f-ae77-43c0ac6f87c1",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "39b12400-18c1-58a6-b7a6-660bcd7aaeea",
         "transforms": [
           {
             "translate": null,
@@ -4206,11 +4206,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c92b6b10-80c0-515a-a8c7-92a9f3c0454a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "22e4847b-51dc-52cb-a592-73121ef9c4ce",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4222,12 +4222,12 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "602dfc01-e15e-5e05-af59-b77a397466b1",
       "range": [],
       "command": {
         "type": "sweep",
-        "target": "[uuid]",
-        "trajectory": "[uuid]",
+        "target": "39b12400-18c1-58a6-b7a6-660bcd7aaeea",
+        "trajectory": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
@@ -4235,53 +4235,53 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4f02c872-a65a-5add-bdcb-a8186428c0d7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d9ab2263-7770-54af-a414-a342353f20ff",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "39b12400-18c1-58a6-b7a6-660bcd7aaeea"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4eef85c-7c1f-534b-9d2e-0761c86f2cf7",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "39b12400-18c1-58a6-b7a6-660bcd7aaeea",
+        "edge_id": "ae800eeb-3777-5ad8-88b7-c73403c342ba"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "70881e74-bf20-5457-b2c1-ae0bbd8a336a",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "39b12400-18c1-58a6-b7a6-660bcd7aaeea",
+        "edge_id": "ae800eeb-3777-5ad8-88b7-c73403c342ba"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5701cce1-61c6-5bc1-9e97-0578f2eec19f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "694dfa80-ac26-5d24-beac-f480b73cb763",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fb99c183-0f18-591f-8fca-7e3f01d2ad21",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "39b12400-18c1-58a6-b7a6-660bcd7aaeea",
         "color": {
           "r": 0.6509804,
           "g": 0.047058824,
@@ -4294,7 +4294,7 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33de9b29-1553-50a8-b4df-5e82504f14cc",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4319,20 +4319,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0c345f1a-bcd3-5b8c-8021-8ded4021bd0a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "33de9b29-1553-50a8-b4df-5e82504f14cc",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cacb6a12-82b8-5d87-bc7b-4fb12f0e1351",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "33de9b29-1553-50a8-b4df-5e82504f14cc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4344,18 +4344,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d237f941-2991-5274-92ba-45f6e22d7caa",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c1aafc4-b724-557f-a16a-691bbad112b4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "d237f941-2991-5274-92ba-45f6e22d7caa",
         "to": {
           "x": 20.32,
           "y": -0.000000000000013040593805228561,
@@ -4364,18 +4364,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c2a738b-4bba-5786-bda0-19b66a8743f6",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e149da0e-c33a-571a-9171-8e06294ee871",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d237f941-2991-5274-92ba-45f6e22d7caa",
         "segment": {
           "type": "line",
           "end": {
@@ -4388,11 +4388,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "98a5e477-6016-5118-bf97-b9ff492bbdd5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d237f941-2991-5274-92ba-45f6e22d7caa",
         "segment": {
           "type": "arc",
           "center": {
@@ -4413,11 +4413,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3346ecd7-35f5-589e-8db6-8a45d91db9e1",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "d237f941-2991-5274-92ba-45f6e22d7caa",
         "to": {
           "x": 44.90745530107332,
           "y": -14.489843663709777,
@@ -4426,11 +4426,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "57f976a7-2d3c-550c-b8de-6e744110aa39",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "d237f941-2991-5274-92ba-45f6e22d7caa",
         "segment": {
           "type": "arc",
           "center": {
@@ -4451,7 +4451,7 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f846f28-557b-5c02-8368-03982e99749e",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4476,11 +4476,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91a180b0-f8b3-5957-88e8-4473943e5a78",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "6f846f28-557b-5c02-8368-03982e99749e",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -4490,20 +4490,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ffa04ee0-42fe-599b-8e17-bdc64b974ef9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6f846f28-557b-5c02-8368-03982e99749e",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "831585c7-4df5-5c8a-a8ee-70f362bb4184",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6f846f28-557b-5c02-8368-03982e99749e",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4515,18 +4515,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dcbefe3d-e02a-5a78-b63e-194784a736ad",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d52eb319-2b4b-5758-9b08-ec28217b2280",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "dcbefe3d-e02a-5a78-b63e-194784a736ad",
         "to": {
           "x": -23.314699726712142,
           "y": -2.0556890155300493,
@@ -4535,18 +4535,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f61d88c-eed8-545d-8409-f88123872135",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6de7f7a6-61c5-57ac-90be-05d49fe8644e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dcbefe3d-e02a-5a78-b63e-194784a736ad",
         "segment": {
           "type": "arc",
           "center": {
@@ -4567,11 +4567,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef95a7fa-f8c0-5548-b0fb-69738df52a72",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "dcbefe3d-e02a-5a78-b63e-194784a736ad",
         "to": {
           "x": -22.872928286789744,
           "y": -3.800303804623467,
@@ -4580,11 +4580,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a27f0970-66a5-5750-bf4d-51995b34967c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dcbefe3d-e02a-5a78-b63e-194784a736ad",
         "segment": {
           "type": "arc",
           "center": {
@@ -4605,57 +4605,57 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ac5c52f2-13c1-5a06-9693-a50af4b6c202",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "dcbefe3d-e02a-5a78-b63e-194784a736ad",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30ac11a8-1960-5b8a-9e47-b39668413425",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "dcbefe3d-e02a-5a78-b63e-194784a736ad",
+        "segment": "a27f0970-66a5-5750-bf4d-51995b34967c",
+        "intersection_segment": "a27f0970-66a5-5750-bf4d-51995b34967c",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2551145a-2956-564e-a947-85deb2487596",
       "range": [],
       "command": {
         "type": "entity_clone",
-        "entity_id": "[uuid]"
+        "entity_id": "d237f941-2991-5274-92ba-45f6e22d7caa"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb57f554-d934-5bc0-977f-e735cf05a5e6",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "d237f941-2991-5274-92ba-45f6e22d7caa"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e3576c6-958c-5f7c-8d27-e1408bded89e",
       "range": [],
       "command": {
         "type": "entity_get_all_child_uuids",
-        "entity_id": "[uuid]"
+        "entity_id": "2551145a-2956-564e-a947-85deb2487596"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c148d90f-ba82-5820-b993-f633ad7ab476",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6f846f28-557b-5c02-8368-03982e99749e",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4667,12 +4667,12 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a65786e7-72b2-51f0-8005-b9a979c9c5e5",
       "range": [],
       "command": {
         "type": "sweep",
-        "target": "[uuid]",
-        "trajectory": "[uuid]",
+        "target": "30ac11a8-1960-5b8a-9e47-b39668413425",
+        "trajectory": "2551145a-2956-564e-a947-85deb2487596",
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
@@ -4680,53 +4680,53 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "02069da1-db10-5753-b558-2d380621af72",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbaddb4e-6b3e-5c51-8baf-815f0594503e",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "30ac11a8-1960-5b8a-9e47-b39668413425"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f1f1b407-9c02-5049-b090-f1fa81d2f6b9",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "30ac11a8-1960-5b8a-9e47-b39668413425",
+        "edge_id": "9bddea44-f7c3-5c24-b773-4121d7952f29"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1707566f-f7c3-517b-9814-b11d3c0baa71",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "30ac11a8-1960-5b8a-9e47-b39668413425",
+        "edge_id": "9bddea44-f7c3-5c24-b773-4121d7952f29"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3cb0b525-6571-5d14-b4e1-590e2c14835b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2551145a-2956-564e-a947-85deb2487596",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "79d7ce1d-0e9e-54d1-b80b-9d9f1ce70a9d",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "30ac11a8-1960-5b8a-9e47-b39668413425",
         "transforms": [
           {
             "translate": null,
@@ -4748,11 +4748,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60e4afca-c45a-54b4-8ff9-7c35953c5847",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "30ac11a8-1960-5b8a-9e47-b39668413425",
         "transforms": [
           {
             "translate": null,
@@ -4774,11 +4774,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c52056b3-dc6a-5993-a3b1-5bbfd9c64ece",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "30ac11a8-1960-5b8a-9e47-b39668413425",
         "transforms": [
           {
             "translate": {
@@ -4800,11 +4800,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "10c1df58-8c10-52eb-bd97-2aed977bb220",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "30ac11a8-1960-5b8a-9e47-b39668413425",
         "color": {
           "r": 0.6509804,
           "g": 0.047058824,
@@ -4817,7 +4817,7 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41387271-b7c4-527f-a00c-a2e3586e55d2",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4842,11 +4842,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "32c0d103-d81b-50b8-9063-c797b0b7bc3e",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "41387271-b7c4-527f-a00c-a2e3586e55d2",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -4856,20 +4856,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33c702c1-3aa3-55c7-a488-d037cd6801ca",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "41387271-b7c4-527f-a00c-a2e3586e55d2",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a75dc5f3-6760-527d-a7ff-0105122da09a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "41387271-b7c4-527f-a00c-a2e3586e55d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4881,18 +4881,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "604321df-5675-5a50-8ba3-d3c06b7fa832",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d5a506f-fa8c-5567-a2eb-dd13172784f7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "604321df-5675-5a50-8ba3-d3c06b7fa832",
         "to": {
           "x": 23.314699726712142,
           "y": -2.0556890155300493,
@@ -4901,18 +4901,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "baba4c22-f0d3-52ff-ac41-c2df0f3e6878",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72bea877-60fc-52a3-a7c3-a80e6114db19",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "604321df-5675-5a50-8ba3-d3c06b7fa832",
         "segment": {
           "type": "arc",
           "center": {
@@ -4933,11 +4933,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ad24428-8bc1-5f9d-b180-87ae7bc3e9f9",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "604321df-5675-5a50-8ba3-d3c06b7fa832",
         "to": {
           "x": 22.872928286789744,
           "y": -3.800303804623467,
@@ -4946,11 +4946,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "058775b9-9bb6-5cd7-b458-c825b012f91e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "604321df-5675-5a50-8ba3-d3c06b7fa832",
         "segment": {
           "type": "arc",
           "center": {
@@ -4971,33 +4971,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "244ef8e0-59f6-5548-b454-a9bd19b0264b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "604321df-5675-5a50-8ba3-d3c06b7fa832",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "98eca586-bb75-58ef-89ff-ffc35db52409",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "604321df-5675-5a50-8ba3-d3c06b7fa832",
+        "segment": "058775b9-9bb6-5cd7-b458-c825b012f91e",
+        "intersection_segment": "058775b9-9bb6-5cd7-b458-c825b012f91e",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "743a178f-d494-5f7c-99b0-4af042ce416c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "41387271-b7c4-527f-a00c-a2e3586e55d2",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5009,12 +5009,12 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a06a58e3-42fa-55ff-b2be-7606be6a52a2",
       "range": [],
       "command": {
         "type": "sweep",
-        "target": "[uuid]",
-        "trajectory": "[uuid]",
+        "target": "98eca586-bb75-58ef-89ff-ffc35db52409",
+        "trajectory": "d237f941-2991-5274-92ba-45f6e22d7caa",
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
@@ -5022,53 +5022,53 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a2f3d622-6d99-5ecc-a971-9d99b8850b98",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a85e3826-8286-57b0-97fd-36b12b2aa5ee",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "98eca586-bb75-58ef-89ff-ffc35db52409"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c3bd80e-0780-5794-973f-bad3d8217898",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "98eca586-bb75-58ef-89ff-ffc35db52409",
+        "edge_id": "1f5f7bdf-252b-5296-a530-12a738d8c675"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4a60e2c5-57c5-52f8-beb2-f2e2d04bf384",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "98eca586-bb75-58ef-89ff-ffc35db52409",
+        "edge_id": "1f5f7bdf-252b-5296-a530-12a738d8c675"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "51b92a47-93a7-5663-95d9-b38a40e3ba6c",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d237f941-2991-5274-92ba-45f6e22d7caa",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c58d6c7-ba6f-5dcd-8210-fe29b1040afa",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "98eca586-bb75-58ef-89ff-ffc35db52409",
         "transforms": [
           {
             "translate": null,
@@ -5090,11 +5090,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f90d13d8-a945-52e5-8b53-1a39291beadf",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "98eca586-bb75-58ef-89ff-ffc35db52409",
         "transforms": [
           {
             "translate": null,
@@ -5116,11 +5116,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59032428-782a-520f-ab73-f21ec19111b0",
       "range": [],
       "command": {
         "type": "set_object_transform",
-        "object_id": "[uuid]",
+        "object_id": "98eca586-bb75-58ef-89ff-ffc35db52409",
         "transforms": [
           {
             "translate": {
@@ -5142,11 +5142,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4122d8a6-28a4-5f4c-a643-643fbaeeaae3",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "98eca586-bb75-58ef-89ff-ffc35db52409",
         "color": {
           "r": 0.05490196,
           "g": 0.13725491,
@@ -5161,7 +5161,7 @@ description: Artifact commands artificial-heart.kcl
   ],
   "public/kcl-samples/artificial-heart/stator.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -5186,11 +5186,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e24d3b1-23b0-5737-82c9-f5aee2198f63",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -5200,20 +5200,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30de0822-b074-5a3d-8e56-5ee84848f0aa",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e77cd6-284a-5393-8426-ce794ee2bbeb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5225,18 +5225,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1e313ee-e07d-511b-ad78-cd22c9d834de",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eba47597-5e68-54db-ad83-474786d003ca",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a1e313ee-e07d-511b-ad78-cd22c9d834de",
         "to": {
           "x": 29.717999999999996,
           "y": 20.32,
@@ -5245,18 +5245,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21af3cf8-1df1-59e7-806c-96d9205e4a7f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a1e313ee-e07d-511b-ad78-cd22c9d834de",
         "segment": {
           "type": "arc",
           "center": {
@@ -5277,11 +5277,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b104d16-efec-521a-b275-43ab461a46f7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a1e313ee-e07d-511b-ad78-cd22c9d834de",
         "to": {
           "x": 9.143999999999998,
           "y": 11.176,
@@ -5290,11 +5290,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1bf790e2-f95c-55fb-b54e-5f935605e3c6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a1e313ee-e07d-511b-ad78-cd22c9d834de",
         "segment": {
           "type": "arc",
           "center": {
@@ -5315,7 +5315,7 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "628f15ef-635e-5eac-8d21-2e7ffa497d33",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -5340,20 +5340,20 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb30d890-5b74-5d39-8507-bddb7606dc7b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "628f15ef-635e-5eac-8d21-2e7ffa497d33",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3367b30-b26f-5cca-846b-7481b48e21a4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "628f15ef-635e-5eac-8d21-2e7ffa497d33",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5365,18 +5365,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63e31534-e833-56f5-b5ee-05a960c251da",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": -5.42471466293427,
           "y": 31.09179981792518,
@@ -5385,18 +5385,18 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a416d1e-eaa3-5683-8085-0bc534688e6c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4406885d-65f3-5dd4-808b-a175b3d8319f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "line",
           "end": {
@@ -5409,11 +5409,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "264d7a38-7305-568b-a5ab-f1dd113659a2",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": 3.7233018291014353,
           "y": 24.742040677411307,
@@ -5422,11 +5422,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e03f3e97-c883-51b4-bb9d-ecf1eb14e8e6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "line",
           "end": {
@@ -5439,11 +5439,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7787108b-8918-503a-a896-d7b278327345",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": -3.723301649118055,
           "y": 24.7420400057042,
@@ -5452,11 +5452,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd65474f-77cd-5603-b75c-91f2a94f1ad7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "arc",
           "center": {
@@ -5477,11 +5477,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c95996a-b8a8-5b90-9970-131e28940a97",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": 1.3383562012011663,
           "y": 22.86091994973959,
@@ -5490,11 +5490,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c9c647a-25a7-5d9d-ba1f-dc4a869deed2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "arc",
           "center": {
@@ -5515,11 +5515,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "46a210b4-1d48-57b1-b977-74bd1991370e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": -1.3383557404471127,
           "y": 22.860919937286663,
@@ -5528,11 +5528,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fb6eeade-ef56-5ba6-ab83-b0d91f1aa944",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "arc",
           "center": {
@@ -5553,11 +5553,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "46f34f48-1119-58d1-984b-ddffb71c5234",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": -3.0717225202677185,
           "y": 34.28802109383742,
@@ -5566,11 +5566,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a2fac54-9207-587d-83e8-97a6dbe8470f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "arc",
           "center": {
@@ -5591,11 +5591,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e9bc005-004c-5c35-8b1b-e829fee1ee4d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": 5.424714334747349,
           "y": 31.091798593114945,
@@ -5604,11 +5604,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5059dc05-6a13-54e0-8988-0ce3eda2342e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "arc",
           "center": {
@@ -5629,11 +5629,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3bc0838b-27b3-5e8a-9836-812c96727055",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": 3.071722293091238,
           "y": 34.28802110284638,
@@ -5642,11 +5642,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "470d6eb1-d59e-50f1-bb76-cea2994b353a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "arc",
           "center": {
@@ -5667,11 +5667,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3db1ee21-b59e-58a4-9bea-a6e035acc32c",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": -2.9721989902377604,
           "y": 36.82999999999998,
@@ -5680,11 +5680,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f341dbdc-cc40-5d7e-9fda-9cb4c7d29a1b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "arc",
           "center": {
@@ -5705,11 +5705,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ccb7528-7ebc-5d4b-9694-02ce0cf8370a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": -6.177000950834999,
           "y": 24.085564071111303,
@@ -5718,11 +5718,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba898db1-0ff7-5f44-b164-9f3e8806a39a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "arc",
           "center": {
@@ -5743,11 +5743,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d7ddf68-475c-5d64-9891-dc18660cbb5d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": 1.2699996606118886,
           "y": 20.320000000000014,
@@ -5756,11 +5756,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d1851c6-87dc-5344-ad52-8853d5d0d6ea",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "arc",
           "center": {
@@ -5781,11 +5781,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "68f11096-4c74-5a2b-ac2c-2b785eb4629b",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": 7.8784578224262924,
           "y": 30.435487562777137,
@@ -5794,11 +5794,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9c7d952-28a0-5276-b73f-da6c8076e26f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "arc",
           "center": {
@@ -5819,11 +5819,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2182109f-e377-5e7d-9fee-2be6aebd8148",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": -7.8784455182591415,
           "y": 30.4354416430002,
@@ -5832,11 +5832,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2cab62cd-b9c0-5ce4-857b-6286335fe034",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "line",
           "end": {
@@ -5849,11 +5849,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "010c626f-ca8d-50a2-a39b-61a5de505917",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": 6.176982936248281,
           "y": 24.085496839758317,
@@ -5862,11 +5862,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "70b21199-601d-5967-bd85-000361c2c047",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "line",
           "end": {
@@ -5879,11 +5879,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0497f5f-97c0-5e22-b7a7-160c3442519e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": -1.2700002162818782,
           "y": 20.32,
@@ -5892,11 +5892,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6d9a0373-f7a3-584f-b633-4d473d048170",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "line",
           "end": {
@@ -5909,11 +5909,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0b484d3b-7e6e-5071-9452-bd62d9d084fd",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "to": {
           "x": -2.9721989902377604,
           "y": 36.829999999999984,
@@ -5922,11 +5922,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "465279fe-0001-5c00-9ba9-48be09aae60b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "segment": {
           "type": "line",
           "end": {
@@ -5939,33 +5939,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6eb19f47-ab15-5656-9510-9ccfae4f8472",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2224641f-25ad-5575-b005-e16db99ed65a",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
+        "segment": "4406885d-65f3-5dd4-808b-a175b3d8319f",
+        "intersection_segment": "bd65474f-77cd-5603-b75c-91f2a94f1ad7",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b61f65e5-a014-5031-a1e3-c9e4c1143391",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "628f15ef-635e-5eac-8d21-2e7ffa497d33",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5977,11 +5977,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0879ff89-e411-539f-9702-6d560b756008",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "2224641f-25ad-5575-b005-e16db99ed65a",
         "distance": 8.889999999999999,
         "faces": null,
         "opposite": "Symmetric",
@@ -5990,66 +5990,66 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c03caee-0f80-50e0-ab08-bd6c423be82a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1bf2e390-72e1-5229-b08e-4646da1e5200",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2224641f-25ad-5575-b005-e16db99ed65a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f113b586-b626-55fe-a236-67f5d7ea0964",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2224641f-25ad-5575-b005-e16db99ed65a",
+        "edge_id": "456a2de8-f5f8-53bb-a739-296a8ac64c3f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28bcfee8-f7ec-5d96-a280-b0f790a138f9",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2224641f-25ad-5575-b005-e16db99ed65a",
+        "edge_id": "456a2de8-f5f8-53bb-a739-296a8ac64c3f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ebabe5ee-e91a-5397-957d-8066fe4de498",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2128dde6-7045-5d16-a133-ed6a3d89ad11",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f0f1d026-28af-59c7-beb7-102d4e27bcb4",
+        "segment": "2cab62cd-b9c0-5ce4-857b-6286335fe034",
+        "intersection_segment": "ba898db1-0ff7-5f44-b164-9f3e8806a39a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "332437f3-10c2-5b9f-b424-7a25548ab25f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "628f15ef-635e-5eac-8d21-2e7ffa497d33",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -6061,11 +6061,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8831c06-bd41-560a-a95d-01e1214e160f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "2128dde6-7045-5d16-a133-ed6a3d89ad11",
         "distance": 7.619999999999999,
         "faces": null,
         "opposite": "Symmetric",
@@ -6074,44 +6074,44 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d428ee0a-8164-5cde-9adc-84f005b4f10d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3e42627b-193c-5587-9e8f-6c15a37ecd14",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "2128dde6-7045-5d16-a133-ed6a3d89ad11"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "492b08c1-0dc4-5aaf-aa82-127c34b5335f",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2128dde6-7045-5d16-a133-ed6a3d89ad11",
+        "edge_id": "98d7a3af-50d7-5f4e-b53c-edf4e6622b78"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "977697c4-73c7-5187-9329-09c5c4b57104",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "2128dde6-7045-5d16-a133-ed6a3d89ad11",
+        "edge_id": "98d7a3af-50d7-5f4e-b53c-edf4e6622b78"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "26a04a98-39e7-5ba6-8d46-ef767e485b01",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "2128dde6-7045-5d16-a133-ed6a3d89ad11",
         "color": {
           "r": 0.8352941,
           "g": 0.29411766,
@@ -6124,11 +6124,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7bc3f103-5e33-5d70-bed7-c63fd811baf1",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "2224641f-25ad-5575-b005-e16db99ed65a",
         "axis": {
           "x": 0.0,
           "y": 1.0,
@@ -6145,11 +6145,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc78d291-eec0-5dec-a0c2-d12f3e0cd66b",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "2128dde6-7045-5d16-a133-ed6a3d89ad11",
         "axis": {
           "x": 0.0,
           "y": 1.0,
@@ -6166,33 +6166,33 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ecd6768-121e-5c00-82dc-fbb77268f406",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a1e313ee-e07d-511b-ad78-cd22c9d834de",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e832610b-9ec9-589c-b82a-96911e9e3c4f",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "a1e313ee-e07d-511b-ad78-cd22c9d834de",
+        "segment": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d",
+        "intersection_segment": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fb53f40-c450-5a69-ac09-79858560202f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -6204,11 +6204,11 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "74717312-c14b-561f-b188-7e7b011a7910",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e832610b-9ec9-589c-b82a-96911e9e3c4f",
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
@@ -6217,44 +6217,44 @@ description: Artifact commands artificial-heart.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d1854483-5c47-582f-8737-2a512dcb2512",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf72f6dc-924e-5b92-9545-a728aa10a1c9",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e832610b-9ec9-589c-b82a-96911e9e3c4f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb31c4d5-7e2c-565f-b920-6022f61f3eec",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e832610b-9ec9-589c-b82a-96911e9e3c4f",
+        "edge_id": "1a98fb44-14a3-5e90-9ee7-f7b3f7b90a8e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fcdb8a82-4318-5b1c-9638-97b4bbb273f0",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e832610b-9ec9-589c-b82a-96911e9e3c4f",
+        "edge_id": "1a98fb44-14a3-5e90-9ee7-f7b3f7b90a8e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a8a59ec-ea1c-50ef-9112-3036a0e793a8",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "e832610b-9ec9-589c-b82a-96911e9e3c4f",
         "color": {
           "r": 0.06666667,
           "g": 0.3647059,

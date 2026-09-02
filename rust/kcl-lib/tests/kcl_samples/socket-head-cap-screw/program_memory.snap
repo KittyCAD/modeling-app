@@ -6,8 +6,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
   "__sketch_31_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "688fd424-1de4-51a2-b455-344b29542d3f",
+      "artifactId": "688fd424-1de4-51a2-b455-344b29542d3f",
       "objectId": 30,
       "value": "end",
       "xAxis": {
@@ -55,11 +55,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+        "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
         "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
-          "[uuid]"
+          "e00e9caf-6e9e-5221-8545-b199546c367f"
         ]
       },
       "units": "in"
@@ -68,8 +68,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
   "__sketch_6_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2258db0c-4e41-5818-9856-c9aee535914a",
+      "artifactId": "2258db0c-4e41-5818-9856-c9aee535914a",
       "objectId": 5,
       "value": "start",
       "xAxis": {
@@ -85,11 +85,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+        "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
         "creatorSketchIsClosed": "explicitly",
         "edgeCutIds": [
-          "[uuid]"
+          "e00e9caf-6e9e-5221-8545-b199546c367f"
         ]
       },
       "units": "in"
@@ -99,12 +99,12 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "147f8c39-279b-56b0-ac13-2297be6b4529",
+          "id": "97c5212f-05f3-58f6-964d-46cd33a09d09",
           "sourceRange": [],
           "tag": {
             "commentStart": 2030,
@@ -120,11 +120,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "97c5212f-05f3-58f6-964d-46cd33a09d09",
               "sourceRange": []
             },
             "ccw": true,
@@ -155,8 +155,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "688fd424-1de4-51a2-b455-344b29542d3f",
+          "artifactId": "688fd424-1de4-51a2-b455-344b29542d3f",
           "objectId": 30,
           "value": "end",
           "xAxis": {
@@ -172,11 +172,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
             "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
-              "[uuid]"
+              "e00e9caf-6e9e-5221-8545-b199546c367f"
             ]
           },
           "units": "in"
@@ -193,7 +193,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
             "sourceRange": []
           }
         },
@@ -203,13 +203,13 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+        "originalId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+        "originSketchId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "units": "in"
       },
       "startCapId": null,
-      "endCapId": "[uuid]",
+      "endCapId": "5a976e1b-8095-5de6-a20c-cfda75b1ba60",
       "units": "in",
       "sectional": false
     }
@@ -227,12 +227,12 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "18ab3082-0711-5c03-bd88-cda0bf7f093d",
+          "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
           "sourceRange": [],
           "tag": {
             "commentStart": 719,
@@ -245,8 +245,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2258db0c-4e41-5818-9856-c9aee535914a",
+          "id": "2258db0c-4e41-5818-9856-c9aee535914a",
           "sourceRange": [],
           "tag": {
             "commentStart": 921,
@@ -268,11 +268,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
               "sourceRange": []
             },
             "ccw": true,
@@ -302,8 +302,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -344,7 +344,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           }
         },
@@ -358,17 +358,17 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+        "originalId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+        "originSketchId": "91226189-7e64-5690-9203-67ee33a6eb03",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "2258db0c-4e41-5818-9856-c9aee535914a",
+      "endCapId": "688fd424-1de4-51a2-b455-344b29542d3f",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
           "radius": {
             "n": 0.02,
             "ty": {
@@ -377,7 +377,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "33ae0bc2-00e1-5e02-8c77-f9ad01d6f068",
           "tag": null
         }
       ],
@@ -434,11 +434,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
             "sourceRange": []
           },
           "ccw": true,
@@ -468,8 +468,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -510,7 +510,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": []
         }
       },
@@ -524,9 +524,9 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "originalId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "originSketchId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "units": "in"
     }
   },
@@ -544,7 +544,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -618,8 +618,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -648,7 +648,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -665,11 +665,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "91226189-7e64-5690-9203-67ee33a6eb03",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -699,8 +699,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -741,7 +741,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                   "sourceRange": []
                 }
               },
@@ -751,8 +751,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03",
+              "originalId": "91226189-7e64-5690-9203-67ee33a6eb03",
               "units": "in",
               "isClosed": "no"
             }
@@ -767,12 +767,12 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+      "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d5eca564-8b66-523d-86bf-11e6c823a748",
+          "id": "8320a413-49c7-59bc-8a42-492ed5c5ecf4",
           "sourceRange": [],
           "tag": {
             "commentStart": 1153,
@@ -785,8 +785,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "abd5cb32-5a42-5e53-af50-805a0ef1b3ab",
+          "id": "95ba273f-4284-5785-be78-5c259624a927",
           "sourceRange": [],
           "tag": {
             "commentStart": 1235,
@@ -799,8 +799,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "61b3cd1d-d63d-561a-a483-8f4acdbd84ba",
+          "id": "98e0b289-82ed-52dc-bb85-8d78f27a8d91",
           "sourceRange": [],
           "tag": {
             "commentStart": 1354,
@@ -813,8 +813,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d27f313b-87a3-51db-88c0-ee8d0f1d9d61",
+          "id": "7d58cf52-d2ca-52d3-a49f-32f1b139718f",
           "sourceRange": [],
           "tag": {
             "commentStart": 1474,
@@ -827,8 +827,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "59bb9725-89b7-5757-b143-c11f2d149eb1",
+          "id": "2f4d76ea-8249-56a3-b56f-f8e1c41cc257",
           "sourceRange": [],
           "tag": {
             "commentStart": 1597,
@@ -841,8 +841,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2838f9e9-89bd-5e52-9272-770d5200e10e",
+          "id": "6fe0649f-cdd5-50ea-ad12-53597d9acb63",
           "sourceRange": [],
           "tag": {
             "commentStart": 1715,
@@ -858,11 +858,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8320a413-49c7-59bc-8a42-492ed5c5ecf4",
               "sourceRange": []
             },
             "from": [
@@ -886,7 +886,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "95ba273f-4284-5785-be78-5c259624a927",
               "sourceRange": []
             },
             "from": [
@@ -910,7 +910,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "98e0b289-82ed-52dc-bb85-8d78f27a8d91",
               "sourceRange": []
             },
             "from": [
@@ -934,7 +934,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7d58cf52-d2ca-52d3-a49f-32f1b139718f",
               "sourceRange": []
             },
             "from": [
@@ -958,7 +958,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2f4d76ea-8249-56a3-b56f-f8e1c41cc257",
               "sourceRange": []
             },
             "from": [
@@ -982,7 +982,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6fe0649f-cdd5-50ea-ad12-53597d9acb63",
               "sourceRange": []
             },
             "from": [
@@ -1007,8 +1007,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "2258db0c-4e41-5818-9856-c9aee535914a",
+          "artifactId": "2258db0c-4e41-5818-9856-c9aee535914a",
           "objectId": 5,
           "value": "start",
           "xAxis": {
@@ -1024,11 +1024,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+            "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
             "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
-              "[uuid]"
+              "e00e9caf-6e9e-5221-8545-b199546c367f"
             ]
           },
           "units": "in"
@@ -1045,7 +1045,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
             "sourceRange": []
           }
         },
@@ -1075,12 +1075,12 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+        "originalId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+        "originSketchId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
         "units": "in"
       },
-      "startCapId": "[uuid]",
+      "startCapId": "aeefc36b-6a2e-5d66-86c1-4f48e2de4d5b",
       "endCapId": null,
       "units": "in",
       "sectional": false
@@ -1090,11 +1090,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8320a413-49c7-59bc-8a42-492ed5c5ecf4",
             "sourceRange": []
           },
           "from": [
@@ -1118,7 +1118,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "95ba273f-4284-5785-be78-5c259624a927",
             "sourceRange": []
           },
           "from": [
@@ -1142,7 +1142,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "98e0b289-82ed-52dc-bb85-8d78f27a8d91",
             "sourceRange": []
           },
           "from": [
@@ -1166,7 +1166,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7d58cf52-d2ca-52d3-a49f-32f1b139718f",
             "sourceRange": []
           },
           "from": [
@@ -1190,7 +1190,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f4d76ea-8249-56a3-b56f-f8e1c41cc257",
             "sourceRange": []
           },
           "from": [
@@ -1214,7 +1214,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6fe0649f-cdd5-50ea-ad12-53597d9acb63",
             "sourceRange": []
           },
           "from": [
@@ -1239,8 +1239,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "2258db0c-4e41-5818-9856-c9aee535914a",
+        "artifactId": "2258db0c-4e41-5818-9856-c9aee535914a",
         "objectId": 5,
         "value": "start",
         "xAxis": {
@@ -1256,11 +1256,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+          "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
-            "[uuid]"
+            "e00e9caf-6e9e-5221-8545-b199546c367f"
           ]
         },
         "units": "in"
@@ -1277,7 +1277,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
           "sourceRange": []
         }
       },
@@ -1307,9 +1307,9 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+      "originalId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
+      "originSketchId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "units": "in"
     }
   },
@@ -1322,7 +1322,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "objectId": 9,
                 "kind": {
                   "line": {
@@ -1397,8 +1397,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "2258db0c-4e41-5818-9856-c9aee535914a",
+                  "artifactId": "2258db0c-4e41-5818-9856-c9aee535914a",
                   "objectId": 5,
                   "value": "start",
                   "xAxis": {
@@ -1414,16 +1414,16 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "e00e9caf-6e9e-5221-8545-b199546c367f"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1439,7 +1439,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -1514,8 +1514,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "2258db0c-4e41-5818-9856-c9aee535914a",
+                  "artifactId": "2258db0c-4e41-5818-9856-c9aee535914a",
                   "objectId": 5,
                   "value": "start",
                   "xAxis": {
@@ -1531,16 +1531,16 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "e00e9caf-6e9e-5221-8545-b199546c367f"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1556,7 +1556,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "objectId": 16,
                 "kind": {
                   "line": {
@@ -1631,8 +1631,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "2258db0c-4e41-5818-9856-c9aee535914a",
+                  "artifactId": "2258db0c-4e41-5818-9856-c9aee535914a",
                   "objectId": 5,
                   "value": "start",
                   "xAxis": {
@@ -1648,16 +1648,16 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "e00e9caf-6e9e-5221-8545-b199546c367f"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1673,7 +1673,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "objectId": 20,
                 "kind": {
                   "line": {
@@ -1748,8 +1748,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "2258db0c-4e41-5818-9856-c9aee535914a",
+                  "artifactId": "2258db0c-4e41-5818-9856-c9aee535914a",
                   "objectId": 5,
                   "value": "start",
                   "xAxis": {
@@ -1765,16 +1765,16 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "e00e9caf-6e9e-5221-8545-b199546c367f"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1790,7 +1790,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -1865,8 +1865,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "2258db0c-4e41-5818-9856-c9aee535914a",
+                  "artifactId": "2258db0c-4e41-5818-9856-c9aee535914a",
                   "objectId": 5,
                   "value": "start",
                   "xAxis": {
@@ -1882,16 +1882,16 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "e00e9caf-6e9e-5221-8545-b199546c367f"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1907,7 +1907,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -1982,8 +1982,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "2258db0c-4e41-5818-9856-c9aee535914a",
+                  "artifactId": "2258db0c-4e41-5818-9856-c9aee535914a",
                   "objectId": 5,
                   "value": "start",
                   "xAxis": {
@@ -1999,16 +1999,16 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "e00e9caf-6e9e-5221-8545-b199546c367f"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2025,11 +2025,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                     "sourceRange": []
                   },
                   "from": [
@@ -2053,7 +2053,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2077,7 +2077,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                     "sourceRange": []
                   },
                   "from": [
@@ -2101,7 +2101,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                     "sourceRange": []
                   },
                   "from": [
@@ -2125,7 +2125,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                     "sourceRange": []
                   },
                   "from": [
@@ -2149,7 +2149,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                     "sourceRange": []
                   },
                   "from": [
@@ -2174,8 +2174,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "2258db0c-4e41-5818-9856-c9aee535914a",
+                "artifactId": "2258db0c-4e41-5818-9856-c9aee535914a",
                 "objectId": 5,
                 "value": "start",
                 "xAxis": {
@@ -2191,11 +2191,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                  "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                   "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
-                    "[uuid]"
+                    "e00e9caf-6e9e-5221-8545-b199546c367f"
                   ]
                 },
                 "units": "in"
@@ -2212,7 +2212,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                   "sourceRange": []
                 }
               },
@@ -2242,8 +2242,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+              "originalId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -2258,11 +2258,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "97c5212f-05f3-58f6-964d-46cd33a09d09",
             "sourceRange": []
           },
           "ccw": true,
@@ -2293,8 +2293,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "688fd424-1de4-51a2-b455-344b29542d3f",
+        "artifactId": "688fd424-1de4-51a2-b455-344b29542d3f",
         "objectId": 30,
         "value": "end",
         "xAxis": {
@@ -2310,11 +2310,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+          "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
-            "[uuid]"
+            "e00e9caf-6e9e-5221-8545-b199546c367f"
           ]
         },
         "units": "in"
@@ -2331,7 +2331,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
           "sourceRange": []
         }
       },
@@ -2341,9 +2341,9 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+      "originalId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
+      "originSketchId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
       "units": "in"
     }
   },
@@ -2356,7 +2356,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cc312d38-2fa6-5583-a605-44880f646499",
                 "objectId": 34,
                 "kind": {
                   "circle": {
@@ -2431,8 +2431,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "688fd424-1de4-51a2-b455-344b29542d3f",
+                  "artifactId": "688fd424-1de4-51a2-b455-344b29542d3f",
                   "objectId": 30,
                   "value": "end",
                   "xAxis": {
@@ -2448,16 +2448,16 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                    "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "creatorSketchIsClosed": "explicitly",
                     "edgeCutIds": [
-                      "[uuid]"
+                      "e00e9caf-6e9e-5221-8545-b199546c367f"
                     ]
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -2474,11 +2474,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cc312d38-2fa6-5583-a605-44880f646499",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -2509,8 +2509,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "688fd424-1de4-51a2-b455-344b29542d3f",
+                "artifactId": "688fd424-1de4-51a2-b455-344b29542d3f",
                 "objectId": 30,
                 "value": "end",
                 "xAxis": {
@@ -2526,11 +2526,11 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
+                  "creatorSketchId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                   "creatorSketchIsClosed": "explicitly",
                   "edgeCutIds": [
-                    "[uuid]"
+                    "e00e9caf-6e9e-5221-8545-b199546c367f"
                   ]
                 },
                 "units": "in"
@@ -2547,7 +2547,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                   "sourceRange": []
                 }
               },
@@ -2557,8 +2557,8 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+              "originalId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
               "units": "in",
               "isClosed": "no"
             }

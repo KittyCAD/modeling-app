@@ -4021,11 +4021,11 @@ description: Operations executed bone-plate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -4055,7 +4055,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9"
           }
         },
         "sourceRange": []
@@ -4158,7 +4158,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c"
           }
         },
         "sourceRange": []
@@ -4850,7 +4850,7 @@ description: Operations executed bone-plate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6"
               }
             ]
           },
@@ -4880,7 +4880,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834"
           }
         },
         "sourceRange": []
@@ -4922,7 +4922,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140"
           }
         },
         "sourceRange": []
@@ -4948,7 +4948,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -4981,7 +4981,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fa75438f-b2d0-5142-b452-608454e1806a"
           }
         },
         "sourceRange": []
@@ -5034,7 +5034,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5067,7 +5067,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9"
           }
         },
         "sourceRange": []
@@ -5120,7 +5120,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5153,7 +5153,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
           }
         },
         "sourceRange": []
@@ -5206,7 +5206,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5239,7 +5239,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f2e3fae3-4069-58be-a5a5-17ae327df966"
           }
         },
         "sourceRange": []
@@ -5292,7 +5292,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5325,7 +5325,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
           }
         },
         "sourceRange": []
@@ -5378,7 +5378,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5411,7 +5411,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2b45af9b-6b90-5530-b9b7-b193031152d8"
           }
         },
         "sourceRange": []
@@ -5476,7 +5476,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5509,7 +5509,7 @@ description: Operations executed bone-plate.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ab10cb94-5e01-5790-97d1-ad4ca036a752"
           }
         },
         "sourceRange": []
@@ -5577,7 +5577,7 @@ description: Operations executed bone-plate.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
               }
             }
           ]
@@ -5592,49 +5592,49 @@ description: Operations executed bone-plate.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "fa75438f-b2d0-5142-b452-608454e1806a"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "f2e3fae3-4069-58be-a5a5-17ae327df966"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "d5e2f4d6-228a-502b-94db-3100e57ccc81"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "2b45af9b-6b90-5530-b9b7-b193031152d8"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "ab10cb94-5e01-5790-97d1-ad4ca036a752"
                 }
               }
             ]

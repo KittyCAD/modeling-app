@@ -10,7 +10,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50"
         },
         "sourceRange": []
       },
@@ -38,7 +38,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d"
           }
         },
         "sourceRange": []
@@ -85,7 +85,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50"
         },
         "sourceRange": []
       },
@@ -113,7 +113,7 @@ description: Operations executed assembly_mixed_units_cubes.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b5a82876-56b8-5012-910a-c84983933af0"
           }
         },
         "sourceRange": []

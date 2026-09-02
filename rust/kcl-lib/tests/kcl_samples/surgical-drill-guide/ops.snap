@@ -2575,11 +2575,11 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2609,7 +2609,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f"
           }
         },
         "sourceRange": []
@@ -2635,7 +2635,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -3193,7 +3193,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6c096663-896a-5f49-b4a0-b5621e2f3b74"
               }
             ]
           },
@@ -3223,7 +3223,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899"
           }
         },
         "sourceRange": []
@@ -3249,7 +3249,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
           }
         },
         "sourceRange": []
@@ -3290,7 +3290,7 @@ description: Operations executed surgical-drill-guide.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -3829,7 +3829,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba"
               }
             ]
           },
@@ -3859,7 +3859,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d"
           }
         },
         "sourceRange": []
@@ -3885,7 +3885,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7"
           }
         },
         "sourceRange": []
@@ -3927,7 +3927,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
           }
         },
         "sourceRange": []
@@ -3940,13 +3940,13 @@ description: Operations executed surgical-drill-guide.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "4e2356a5-d19d-5536-bce9-94192c5d96fb"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666"
                 }
               }
             ]
@@ -3976,7 +3976,7 @@ description: Operations executed surgical-drill-guide.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -4515,7 +4515,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13"
               }
             ]
           },
@@ -4545,7 +4545,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa"
           }
         },
         "sourceRange": []
@@ -4571,7 +4571,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d6653835-b8aa-50b7-ae77-6895c7e055ab"
           }
         },
         "sourceRange": []
@@ -5115,7 +5115,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
               }
             ]
           },
@@ -5145,7 +5145,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0a3927a3-4dca-5e67-855f-5c8045a33997"
           }
         },
         "sourceRange": []
@@ -5171,7 +5171,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2be53470-95a0-52f3-9baa-988a35cbe7a5"
           }
         },
         "sourceRange": []
@@ -5224,7 +5224,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70"
           }
         },
         "sourceRange": []
@@ -5248,7 +5248,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "0dac554c-8534-5249-b63d-86ddcc8218bb"
               }
             ]
           },
@@ -5777,7 +5777,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "16e09773-2c0d-5da9-bdec-993f8a9ed856"
               }
             ]
           },
@@ -5807,7 +5807,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7"
           }
         },
         "sourceRange": []
@@ -5833,7 +5833,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83"
           }
         },
         "sourceRange": []
@@ -5874,7 +5874,7 @@ description: Operations executed surgical-drill-guide.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -6980,7 +6980,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5"
               }
             ]
           },
@@ -7010,7 +7010,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e5f7766f-25a6-52cd-9cbf-632be25dd038"
           }
         },
         "sourceRange": []
@@ -7036,7 +7036,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98"
           }
         },
         "sourceRange": []
@@ -7096,7 +7096,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb"
           }
         },
         "sourceRange": []
@@ -7120,11 +7120,11 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "004eb715-ee8c-5f99-b124-30de34181716"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "8e17a879-16a2-5baa-a821-4ecaa4051b7e"
               }
             ]
           },
@@ -7158,7 +7158,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1a7ba310-a1b1-5111-b970-012df26c5aeb"
           }
         },
         "sourceRange": []
@@ -7198,7 +7198,7 @@ description: Operations executed surgical-drill-guide.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -7737,7 +7737,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598"
               }
             ]
           },
@@ -7767,7 +7767,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c47bdefb-e100-5d1c-a209-66adc3d957b5"
           }
         },
         "sourceRange": []
@@ -7793,7 +7793,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0a7732a-2f75-5407-b203-7382d01c3918"
           }
         },
         "sourceRange": []
@@ -8330,7 +8330,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cea75c17-0a18-5ab9-8495-1b1bb278e899"
               }
             ]
           },
@@ -8360,7 +8360,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "33d4ddb8-e281-5429-897a-8b34342e4a06"
           }
         },
         "sourceRange": []
@@ -8386,7 +8386,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "edad1eb5-5562-5615-b23f-ee6623df14ee"
           }
         },
         "sourceRange": []
@@ -8439,7 +8439,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "92ead137-02a3-5a66-a3df-f1b87766c456"
           }
         },
         "sourceRange": []
@@ -8463,7 +8463,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "02d0de8e-cb7a-5326-8135-c85b4635828f"
               }
             ]
           },
@@ -8992,7 +8992,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e"
               }
             ]
           },
@@ -9022,7 +9022,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
           }
         },
         "sourceRange": []
@@ -9048,7 +9048,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
           }
         },
         "sourceRange": []
@@ -9089,7 +9089,7 @@ description: Operations executed surgical-drill-guide.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -10195,7 +10195,7 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1"
               }
             ]
           },
@@ -10225,7 +10225,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a6e62985-97dc-5bc0-bf5d-67848762cf83"
           }
         },
         "sourceRange": []
@@ -10251,7 +10251,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81"
           }
         },
         "sourceRange": []
@@ -10311,7 +10311,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779"
           }
         },
         "sourceRange": []
@@ -10335,11 +10335,11 @@ description: Operations executed surgical-drill-guide.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "8fffa166-55db-5e29-a416-0e6886199142"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "05b39b46-dac1-5cf0-bc8b-9df039b7323c"
               }
             ]
           },
@@ -10373,7 +10373,7 @@ description: Operations executed surgical-drill-guide.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779"
           }
         },
         "sourceRange": []

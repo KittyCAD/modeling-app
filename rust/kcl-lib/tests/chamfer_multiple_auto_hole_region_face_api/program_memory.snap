@@ -6,8 +6,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -39,12 +39,12 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+      "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5c91575a-fdf9-5275-80cc-18e5a96d8cb1",
+          "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
           "sourceRange": [],
           "tag": {
             "commentStart": 113,
@@ -57,8 +57,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6698d369-4bc6-5d98-8d22-acf0a48b3d69",
+          "id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
           "sourceRange": [],
           "tag": {
             "commentStart": 190,
@@ -71,8 +71,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bf31fe83-1449-58c4-9c61-573350bc275d",
+          "id": "4e2075b3-008a-58a5-8d30-a638594f8a38",
           "sourceRange": [],
           "tag": {
             "commentStart": 264,
@@ -85,8 +85,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1f4fb968-1638-5179-b5bf-e4835f86ae4e",
+          "id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
           "sourceRange": [],
           "tag": {
             "commentStart": 336,
@@ -99,8 +99,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2994ff80-43fa-5bcd-81b5-dd3a93081128",
+          "id": "161cfaf1-02b0-5dfd-99a4-725242202b74",
           "sourceRange": [],
           "tag": {
             "commentStart": 412,
@@ -113,8 +113,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "35061bc2-60e0-5fae-8d02-8f7ad45635a2",
+          "id": "1e19ba57-81ec-5a0d-8d8d-1dd6aa0f4e55",
           "sourceRange": [],
           "tag": {
             "commentStart": 492,
@@ -127,8 +127,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "40fae2ca-5dc2-51a1-a209-64ed04b31124",
+          "id": "40fae2ca-5dc2-51a1-a209-64ed04b31124",
           "sourceRange": [],
           "tag": {
             "commentStart": 686,
@@ -150,11 +150,11 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
               "sourceRange": []
             },
             "from": [
@@ -178,7 +178,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
               "sourceRange": []
             },
             "from": [
@@ -202,7 +202,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4e2075b3-008a-58a5-8d30-a638594f8a38",
               "sourceRange": []
             },
             "from": [
@@ -226,7 +226,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
               "sourceRange": []
             },
             "from": [
@@ -250,7 +250,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "161cfaf1-02b0-5dfd-99a4-725242202b74",
               "sourceRange": []
             },
             "ccw": true,
@@ -280,7 +280,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1e19ba57-81ec-5a0d-8d8d-1dd6aa0f4e55",
               "sourceRange": []
             },
             "ccw": true,
@@ -310,8 +310,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -352,7 +352,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
             "sourceRange": []
           }
         },
@@ -386,13 +386,13 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
             "value": "topCap"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+        "originalId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+        "originSketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "7148542b-9287-5c99-8227-c1bcf471f8aa",
+      "endCapId": "40fae2ca-5dc2-51a1-a209-64ed04b31124",
       "units": "mm",
       "sectional": false
     }
@@ -401,11 +401,11 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "609ac3b8-9ccc-5411-afa5-14b018bbc5df",
             "sourceRange": []
           },
           "from": [
@@ -429,7 +429,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2a3cc8ae-d79c-5248-9ec5-6dc06de9ca6b",
             "sourceRange": []
           },
           "from": [
@@ -453,7 +453,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4e2075b3-008a-58a5-8d30-a638594f8a38",
             "sourceRange": []
           },
           "from": [
@@ -477,7 +477,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "78f9fbb1-4644-505b-8150-e6db5ad7ddd8",
             "sourceRange": []
           },
           "from": [
@@ -501,7 +501,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "161cfaf1-02b0-5dfd-99a4-725242202b74",
             "sourceRange": []
           },
           "ccw": true,
@@ -531,7 +531,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1e19ba57-81ec-5a0d-8d8d-1dd6aa0f4e55",
             "sourceRange": []
           },
           "ccw": true,
@@ -561,8 +561,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -603,7 +603,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
           "sourceRange": []
         }
       },
@@ -637,9 +637,9 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "value": "topCap"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+      "originalId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
+      "originSketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "units": "mm"
     }
   },
@@ -652,7 +652,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -726,8 +726,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -756,7 +756,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottom"
@@ -772,7 +772,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -846,8 +846,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -876,7 +876,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "left"
@@ -892,7 +892,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 16,
                 "kind": {
                   "circle": {
@@ -966,8 +966,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -996,7 +996,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftHole"
@@ -1013,11 +1013,11 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1041,7 +1041,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1065,7 +1065,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -1089,7 +1089,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1113,7 +1113,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                     "sourceRange": []
                   },
                   "from": [
@@ -1130,7 +1130,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1160,7 +1160,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
                     "sourceRange": []
                   },
                   "from": [
@@ -1177,7 +1177,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1207,8 +1207,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1249,7 +1249,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                   "sourceRange": []
                 }
               },
@@ -1279,8 +1279,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                   "value": "top"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
+              "originalId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1294,7 +1294,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1368,8 +1368,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1398,7 +1398,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "right"
@@ -1414,7 +1414,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 19,
                 "kind": {
                   "circle": {
@@ -1488,8 +1488,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1518,7 +1518,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightHole"
@@ -1534,7 +1534,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -1608,8 +1608,8 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1638,7 +1638,7 @@ description: Variables in memory after executing chamfer_multiple_auto_hole_regi
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "top"

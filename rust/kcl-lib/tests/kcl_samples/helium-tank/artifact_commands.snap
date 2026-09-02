@@ -5,7 +5,7 @@ description: Artifact commands helium-tank.kcl
 {
   "public/kcl-samples/helium-tank/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94e50507-a449-5f71-8fce-fd2931e7c6c9",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "to": {
           "x": 16.002,
           "y": 762.0,
@@ -75,18 +75,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a54ad82c-be8d-599a-9764-c6498922dd5c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "arc",
           "center": {
@@ -141,11 +141,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "arc",
           "center": {
@@ -166,11 +166,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "arc",
           "center": {
@@ -191,11 +191,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "arc",
           "center": {
@@ -216,11 +216,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "arc",
           "center": {
@@ -241,11 +241,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "line",
           "end": {
@@ -258,11 +258,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "arc",
           "center": {
@@ -283,11 +283,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "line",
           "end": {
@@ -300,11 +300,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "line",
           "end": {
@@ -317,11 +317,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "line",
           "end": {
@@ -334,11 +334,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "arc",
           "center": {
@@ -359,11 +359,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "line",
           "end": {
@@ -376,11 +376,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "arc",
           "center": {
@@ -401,11 +401,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "line",
           "end": {
@@ -418,11 +418,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "line",
           "end": {
@@ -435,11 +435,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "segment": {
           "type": "line",
           "end": {
@@ -452,24 +452,24 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "724b87fd-c709-5232-b7a1-547c15affb9b",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "724b87fd-c709-5232-b7a1-547c15affb9b",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -491,42 +491,42 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "724b87fd-c709-5232-b7a1-547c15affb9b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+        "edge_id": "092dc0d5-8c18-552d-a2c3-f7c3320a6301"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f697a29-88bc-5a95-8fab-2b0aea89d002",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+        "edge_id": "092dc0d5-8c18-552d-a2c3-f7c3320a6301"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae5c05bc-b83d-501f-ba06-b7f12cf8cc2d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -551,11 +551,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -565,20 +565,20 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c2ac0614-6028-5f8f-a889-66b05d4aa1c7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -590,18 +590,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f95e913-96e4-58df-abe6-125bedd61cad",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "5f95e913-96e4-58df-abe6-125bedd61cad",
         "to": {
           "x": 16.764,
           "y": 0.0,
@@ -610,18 +610,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "5f95e913-96e4-58df-abe6-125bedd61cad",
         "segment": {
           "type": "arc",
           "center": {
@@ -642,24 +642,24 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "5f95e913-96e4-58df-abe6-125bedd61cad",
+        "segment": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
+        "intersection_segment": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f65c8713-a1f8-5ea9-a702-cab0411afc85",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2ef0458f-7b67-5182-aea8-2f1df80750ef",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -671,11 +671,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
         "distance": 38.099999999999994,
         "faces": null,
         "opposite": "None",
@@ -684,68 +684,68 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "edge_id": "e48b27fc-13af-5760-8a74-ac642a147c1d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "edge_id": "e48b27fc-13af-5760-8a74-ac642a147c1d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "c2fb0468-b6de-5294-95c2-dfef5d72f64e",
+          "7a2e9ba1-2add-5fe2-8d8c-9d6fc25cb680"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
+        "edge_id": "85f34ae5-e934-5ff7-8913-4ab84baf25f2"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
         "edge_ids": [
-          "[uuid]"
+          "85f34ae5-e934-5ff7-8913-4ab84baf25f2"
         ],
         "cut_type": {
           "fillet": {
@@ -759,11 +759,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5",
         "color": {
           "r": 0.6039216,
           "g": 0.27450982,
@@ -776,16 +776,16 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "5f95e913-96e4-58df-abe6-125bedd61cad",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -810,11 +810,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -824,20 +824,20 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -849,18 +849,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1e31790b-7616-51eb-9bbe-0d46f611d053",
         "to": {
           "x": 11.591192309305452,
           "y": 769.62,
@@ -869,18 +869,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1e31790b-7616-51eb-9bbe-0d46f611d053",
         "segment": {
           "type": "arc",
           "center": {
@@ -901,11 +901,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1e31790b-7616-51eb-9bbe-0d46f611d053",
         "to": {
           "x": 10.777089744496246,
           "y": 769.62,
@@ -914,11 +914,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1e31790b-7616-51eb-9bbe-0d46f611d053",
         "segment": {
           "type": "arc",
           "center": {
@@ -939,24 +939,24 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
+        "segment": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
+        "intersection_segment": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -968,11 +968,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e02115f0-d853-5684-82c8-298aa25e4541",
         "distance": 33.019999999999996,
         "faces": null,
         "opposite": "None",
@@ -981,44 +981,44 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e02115f0-d853-5684-82c8-298aa25e4541"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e02115f0-d853-5684-82c8-298aa25e4541",
+        "edge_id": "9f5ed19b-1e63-53e5-997a-8ae2be365a8a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bee9909d-abbf-534c-b266-2c2c04133834",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e02115f0-d853-5684-82c8-298aa25e4541",
+        "edge_id": "9f5ed19b-1e63-53e5-997a-8ae2be365a8a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "e02115f0-d853-5684-82c8-298aa25e4541",
         "color": {
           "r": 0.6039216,
           "g": 0.27450982,
@@ -1031,16 +1031,16 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1065,11 +1065,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1079,20 +1079,20 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1104,18 +1104,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0a92fa6-be55-5cfb-a650-710b68437549",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 0.0000000000000002530866689606288,
           "y": 114.31093611074118,
@@ -1124,18 +1124,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f296bd37-495b-5038-81a3-eade3812cc2e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a3927a3-4dca-5e67-855f-5c8045a33997",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1148,11 +1148,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1173,11 +1173,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fa75438f-b2d0-5142-b452-608454e1806a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1198,11 +1198,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb4a5516-04df-5d3c-a783-6699c67f971f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1215,11 +1215,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7522563-c424-5aea-962e-3d6a85a0b99d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1240,11 +1240,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1257,11 +1257,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 72.36689330663773,
           "y": 132.0763029310198,
@@ -1270,11 +1270,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d848303b-8f89-5fe5-9391-dbf9dbcbfed9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1287,11 +1287,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 68.04866432686153,
           "y": 93.69264769877049,
@@ -1300,11 +1300,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41f59362-6fb8-51a4-926e-41d2df55ba70",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1325,11 +1325,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ea8409b-834f-5214-b812-e276f2ff01f4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1342,11 +1342,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "af94b4da-da53-5386-a65f-ed75c251c9ff",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": -0.000000000000005334266710128641,
           "y": 117.55349659918048,
@@ -1355,11 +1355,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acb6b8b6-e024-57d9-a856-353e5c4d001f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1372,11 +1372,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a7368ed-12c7-59b9-88f4-186289245e86",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1397,11 +1397,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1422,11 +1422,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1439,11 +1439,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1464,11 +1464,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1481,11 +1481,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 69.088491191906,
           "y": 131.57208186237395,
@@ -1494,11 +1494,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1511,11 +1511,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33d4ddb8-e281-5429-897a-8b34342e4a06",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 69.87120421109884,
           "y": 96.29635917267277,
@@ -1524,11 +1524,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1549,11 +1549,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "line",
           "end": {
@@ -1566,11 +1566,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "df641c7f-27a7-5524-a6c2-93d1677bc829",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 72.36689330663773,
           "y": 132.0763029310198,
@@ -1579,11 +1579,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1604,11 +1604,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6df8ec7f-7a39-55d7-a123-33133fbcbbd6",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 69.088491191906,
           "y": 131.57208186237395,
@@ -1617,11 +1617,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1642,11 +1642,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 68.04866432686153,
           "y": 93.69264769877049,
@@ -1655,11 +1655,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1680,11 +1680,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d6c2537-3784-5667-8614-4423d6c6f752",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "to": {
           "x": 69.87120421109884,
           "y": 96.29635917267277,
@@ -1693,11 +1693,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "segment": {
           "type": "arc",
           "center": {
@@ -1718,24 +1718,24 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "67d03316-0deb-5224-a7ce-b3394ba08db9",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
+        "segment": "c0c1140b-284f-50ff-b80d-615b8b938475",
+        "intersection_segment": "08138142-a558-56a4-a23f-2f334e02b011",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1747,11 +1747,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "67d03316-0deb-5224-a7ce-b3394ba08db9",
         "distance": 25.4,
         "faces": null,
         "opposite": "Symmetric",
@@ -1760,62 +1760,62 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab87837d-7702-50ae-a973-1b474e1e48bf",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "67d03316-0deb-5224-a7ce-b3394ba08db9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "67d03316-0deb-5224-a7ce-b3394ba08db9",
+        "edge_id": "babb4bf8-81d6-5d9a-b461-bc606e088966"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "67d03316-0deb-5224-a7ce-b3394ba08db9",
+        "edge_id": "babb4bf8-81d6-5d9a-b461-bc606e088966"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92ead137-02a3-5a66-a3df-f1b87766c456",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b7074da6-ba4d-5c11-9954-823a94aa7064",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1827,18 +1827,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "75786bd7-c284-566d-b238-3f6b11158ab4",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "75786bd7-c284-566d-b238-3f6b11158ab4",
         "to": {
           "x": 121.92000000317498,
           "y": 1.5875,
@@ -1847,18 +1847,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "887f8b95-6182-5637-a45b-e92f2860796c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "75786bd7-c284-566d-b238-3f6b11158ab4",
         "segment": {
           "type": "arc",
           "center": {
@@ -1879,24 +1879,24 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "75786bd7-c284-566d-b238-3f6b11158ab4",
+        "segment": "887f8b95-6182-5637-a45b-e92f2860796c",
+        "intersection_segment": "887f8b95-6182-5637-a45b-e92f2860796c",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72e4fb1c-adcb-54a7-99b3-2a3ed589227e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1908,11 +1908,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f3e5d974-3ee8-52ce-a294-da34987457f8",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
         "distance": 20.32,
         "faces": null,
         "opposite": "Symmetric",
@@ -1921,62 +1921,62 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9e17bd3-c74a-55cb-86c0-84f065310bc3",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed7cc7fd-91e4-5472-8050-1a6c63179e46",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
+        "edge_id": "52b0c519-60ed-53b0-849f-4e77525e15a8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
+        "edge_id": "52b0c519-60ed-53b0-849f-4e77525e15a8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e54f67fd-5312-580f-b00e-e78b0877011e",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "75786bd7-c284-566d-b238-3f6b11158ab4",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cbd0a735-3417-50fd-a670-41b483234c04",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1988,18 +1988,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
         "to": {
           "x": 119.38000000317498,
           "y": 1.5875,
@@ -2008,18 +2008,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9d8522f-60d2-513b-9c62-a4a3110e5970",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5fd1215-9080-56e3-9845-e939e4245bdb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
         "segment": {
           "type": "arc",
           "center": {
@@ -2040,24 +2040,24 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d2a2786-5258-5364-b1b2-b28334229017",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
+        "segment": "b5fd1215-9080-56e3-9845-e939e4245bdb",
+        "intersection_segment": "b5fd1215-9080-56e3-9845-e939e4245bdb",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e1dab3c-521b-58cf-85c3-1a827d68f2b4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2069,11 +2069,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "5d2a2786-5258-5364-b1b2-b28334229017",
         "distance": 20.827999999999996,
         "faces": null,
         "opposite": "Symmetric",
@@ -2082,79 +2082,79 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0e5111f2-33bb-50f3-812c-3fe7fe747c41",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77202593-ebf9-50c7-b715-41557309d9ab",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "5d2a2786-5258-5364-b1b2-b28334229017"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5d2a2786-5258-5364-b1b2-b28334229017",
+        "edge_id": "7c31d350-c179-523d-9ee8-f18b38e06575"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc243886-5941-5a64-8a15-a0b50bb063cb",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5d2a2786-5258-5364-b1b2-b28334229017",
+        "edge_id": "7c31d350-c179-523d-9ee8-f18b38e06575"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "388597b8-4546-5655-b3a3-c3a0bba239ad",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b"
         ],
         "tool_ids": [
-          "[uuid]"
+          "5d2a2786-5258-5364-b1b2-b28334229017"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5584477d-a466-5baa-9972-325d4b097d17",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "67d03316-0deb-5224-a7ce-b3394ba08db9"
         ],
         "tool_ids": [
-          "[uuid]"
+          "388597b8-4546-5655-b3a3-c3a0bba239ad"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2179,11 +2179,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "5eed984f-8da1-571e-9576-dd247a4c55b3",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2193,20 +2193,20 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d85720f-31f4-5aac-90ae-672aa1715f9d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "5eed984f-8da1-571e-9576-dd247a4c55b3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "5eed984f-8da1-571e-9576-dd247a4c55b3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2218,18 +2218,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f531517-960e-5389-a7ca-a71161457c8a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "to": {
           "x": 54.03850000015875,
           "y": 510.54,
@@ -2238,18 +2238,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14466b86-e358-553e-8c66-6fd171fc4f2f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "806c3d5e-727c-5e29-9a69-c4ca7ed4e15b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "segment": {
           "type": "arc",
           "center": {
@@ -2270,24 +2270,24 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3322387d-5b58-56ea-8103-4d2112d432af",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
+        "segment": "806c3d5e-727c-5e29-9a69-c4ca7ed4e15b",
+        "intersection_segment": "806c3d5e-727c-5e29-9a69-c4ca7ed4e15b",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94cfcc75-120e-5336-b89b-66096a401da3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "5eed984f-8da1-571e-9576-dd247a4c55b3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2299,11 +2299,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "3322387d-5b58-56ea-8103-4d2112d432af",
         "distance": -127.0,
         "faces": null,
         "opposite": "None",
@@ -2312,53 +2312,53 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "97510544-69da-5bcc-ae16-ec102d607510",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "3322387d-5b58-56ea-8103-4d2112d432af"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a04f1a36-b6ca-5465-bbe3-d98a909adffd",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "3322387d-5b58-56ea-8103-4d2112d432af",
+        "edge_id": "c0eb5b6e-41cb-5636-8a55-77a8be28aa7a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa91dc3c-d764-5550-a1d4-5f081872a206",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "3322387d-5b58-56ea-8103-4d2112d432af",
+        "edge_id": "c0eb5b6e-41cb-5636-8a55-77a8be28aa7a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef12f2d7-ce30-5ed5-b5db-a16ab77a6cd9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08c45048-e16b-54e2-9691-c65127dfc3a8",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "3322387d-5b58-56ea-8103-4d2112d432af",
         "transform": [],
         "transforms": [
           [
@@ -2394,27 +2394,27 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8b4e335-6a37-5df4-9658-e96f62cfa1e8",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "5584477d-a466-5baa-9972-325d4b097d17"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]"
+          "3322387d-5b58-56ea-8103-4d2112d432af",
+          "5fcad80b-8312-5e60-a712-8f913a0fd488"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7a8c96c1-87c0-5d35-b412-deb67d5b0712",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "c8b4e335-6a37-5df4-9658-e96f62cfa1e8",
         "color": {
           "r": 0.8039216,
           "g": 0.015686275,
@@ -2427,20 +2427,20 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa0e2533-e8d9-5b33-ac82-b003e1e03207",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1eb67267-23ae-55ad-a211-5f61fb90442f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2452,18 +2452,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dfdda8f5-4f4a-5599-9c74-ba5fdd0a0084",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ce0f2476-67d7-5345-810e-e93bbaf612ef",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "dfdda8f5-4f4a-5599-9c74-ba5fdd0a0084",
         "to": {
           "x": 121.62589474011736,
           "y": 1.9685,
@@ -2472,18 +2472,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e0ef8cd-86d0-539e-b5b7-45c22f6c2ecd",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dfdda8f5-4f4a-5599-9c74-ba5fdd0a0084",
         "segment": {
           "type": "arc",
           "center": {
@@ -2504,24 +2504,24 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3160ffad-2e46-5554-be76-1b632140926c",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "dfdda8f5-4f4a-5599-9c74-ba5fdd0a0084",
+        "segment": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
+        "intersection_segment": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2533,11 +2533,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "3160ffad-2e46-5554-be76-1b632140926c",
         "distance": 19.049999999999997,
         "faces": null,
         "opposite": "Symmetric",
@@ -2546,62 +2546,62 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb96bce2-64b3-5697-9ac4-41978548d779",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "3160ffad-2e46-5554-be76-1b632140926c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "3160ffad-2e46-5554-be76-1b632140926c",
+        "edge_id": "a467f743-9d5c-5e2f-8d36-7d4cf76e33f4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "3160ffad-2e46-5554-be76-1b632140926c",
+        "edge_id": "a467f743-9d5c-5e2f-8d36-7d4cf76e33f4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27284bc1-5676-5b5a-baa2-003a7224d266",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "dfdda8f5-4f4a-5599-9c74-ba5fdd0a0084",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4636f241-62ef-5015-8685-79b861e20d6d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2613,18 +2613,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e3cc8eef-e3a7-5b23-a5f4-a282dde807f0",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1bdb8e2-0355-55d0-817d-37899c725e43",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e3cc8eef-e3a7-5b23-a5f4-a282dde807f0",
         "to": {
           "x": 119.08589459466647,
           "y": 1.9685,
@@ -2633,18 +2633,18 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "421bedf6-b89d-58d8-8a5a-960a4a400a74",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "10afce2b-40ff-5ee3-a44b-bd101e341780",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e3cc8eef-e3a7-5b23-a5f4-a282dde807f0",
         "segment": {
           "type": "arc",
           "center": {
@@ -2665,24 +2665,24 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f86f4e23-13b8-55ee-8316-48b3edea035e",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "e3cc8eef-e3a7-5b23-a5f4-a282dde807f0",
+        "segment": "10afce2b-40ff-5ee3-a44b-bd101e341780",
+        "intersection_segment": "10afce2b-40ff-5ee3-a44b-bd101e341780",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d8d7c083-add8-5a2a-be8b-22654c3bacfc",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "89273a0b-b55b-5457-9b1c-de1d777240e8",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2694,11 +2694,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f1288296-2fab-5d3c-b852-464b1f48007a",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "f86f4e23-13b8-55ee-8316-48b3edea035e",
         "distance": 19.558,
         "faces": null,
         "opposite": "Symmetric",
@@ -2707,68 +2707,68 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29fea619-5b87-50e6-8f7f-c8ae57816964",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "13284012-5aa9-5cfb-8236-12f94ca6550e",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "f86f4e23-13b8-55ee-8316-48b3edea035e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b9cdc28-653e-5139-abe4-4635e2e7f594",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f86f4e23-13b8-55ee-8316-48b3edea035e",
+        "edge_id": "a7a8df7b-49ae-5e2e-8fa2-8edbb94027b2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f86f4e23-13b8-55ee-8316-48b3edea035e",
+        "edge_id": "a7a8df7b-49ae-5e2e-8fa2-8edbb94027b2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4df16988-4705-5de0-a505-c7b16692f0f7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e3cc8eef-e3a7-5b23-a5f4-a282dde807f0",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "65b5ba6d-61ab-533a-8e74-55dff5a195bd",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "3160ffad-2e46-5554-be76-1b632140926c"
         ],
         "tool_ids": [
-          "[uuid]"
+          "f86f4e23-13b8-55ee-8316-48b3edea035e"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33a3347a-139a-596e-82be-07fc52f16a7c",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "65b5ba6d-61ab-533a-8e74-55dff5a195bd",
         "color": {
           "r": 0.12941177,
           "g": 0.050980393,
@@ -2781,11 +2781,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "74c604d2-64d2-5caf-b93b-367875a63c5c",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "c8b4e335-6a37-5df4-9658-e96f62cfa1e8",
         "transform": [],
         "transforms": [
           [
@@ -2821,11 +2821,11 @@ description: Artifact commands helium-tank.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "103770af-266b-591f-94e3-5934f2c750c9",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "65b5ba6d-61ab-533a-8e74-55dff5a195bd",
         "transform": [],
         "transforms": [
           [

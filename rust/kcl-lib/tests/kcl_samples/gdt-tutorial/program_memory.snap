@@ -6,8 +6,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -49,12 +49,12 @@ description: Variables in memory after executing gdt-tutorial.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
+      "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "67c68347-0747-5a3d-b270-da035abddd8c",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 538,
@@ -67,8 +67,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 625,
@@ -81,8 +81,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 713,
@@ -95,8 +95,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "660d6e44-47cd-5ee1-8bee-90267b8cbbc9",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 802,
@@ -109,8 +109,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "00f8003d-3b65-5f10-b911-9092660fca40",
           "sourceRange": [],
           "tag": {
             "commentStart": 1439,
@@ -123,8 +123,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "092755e4-e002-58b9-a194-69b526ae6929",
           "sourceRange": [],
           "tag": {
             "commentStart": 1414,
@@ -150,11 +150,11 @@ description: Variables in memory after executing gdt-tutorial.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -178,7 +178,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -202,7 +202,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -226,7 +226,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -250,8 +250,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -292,7 +292,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
             "sourceRange": []
           }
         },
@@ -322,13 +322,13 @@ description: Variables in memory after executing gdt-tutorial.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "originalId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+        "originSketchId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "00f8003d-3b65-5f10-b911-9092660fca40",
+      "endCapId": "092755e4-e002-58b9-a194-69b526ae6929",
       "units": "mm",
       "sectional": false
     }
@@ -337,11 +337,11 @@ description: Variables in memory after executing gdt-tutorial.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -365,7 +365,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "from": [
@@ -389,7 +389,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           },
           "from": [
@@ -413,7 +413,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -437,8 +437,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -479,7 +479,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
           "sourceRange": []
         }
       },
@@ -501,8 +501,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+      "originalId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -531,11 +531,11 @@ description: Variables in memory after executing gdt-tutorial.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -559,7 +559,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -583,7 +583,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -607,7 +607,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -631,8 +631,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -673,7 +673,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
           "sourceRange": []
         }
       },
@@ -703,9 +703,9 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+      "originalId": "cc141785-f204-5d03-bdf3-aa7163368c30",
+      "originSketchId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "units": "mm"
     }
   },
@@ -718,7 +718,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -792,8 +792,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -822,7 +822,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -838,7 +838,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -912,8 +912,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -942,7 +942,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -958,7 +958,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -1032,8 +1032,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1062,7 +1062,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1078,7 +1078,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1152,8 +1152,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1182,7 +1182,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1199,11 +1199,11 @@ description: Variables in memory after executing gdt-tutorial.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1227,7 +1227,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1251,7 +1251,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -1275,7 +1275,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1299,8 +1299,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1341,7 +1341,7 @@ description: Variables in memory after executing gdt-tutorial.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                   "sourceRange": []
                 }
               },
@@ -1363,8 +1363,8 @@ description: Variables in memory after executing gdt-tutorial.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
+              "originalId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
               "units": "mm",
               "isClosed": "implicitly"
             }

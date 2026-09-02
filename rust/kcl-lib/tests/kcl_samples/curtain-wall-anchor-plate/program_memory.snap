@@ -6,8 +6,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
   "__sketch_140_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
+      "artifactId": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
       "objectId": 139,
       "value": "start",
       "xAxis": {
@@ -23,8 +23,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "creatorSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -33,8 +33,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
   "__sketch_153_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
+      "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
       "kind": "Custom",
       "objectId": 152,
       "origin": {
@@ -66,8 +66,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
   "__sketch_178_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+      "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
       "objectId": 177,
       "value": "start",
       "xAxis": {
@@ -83,8 +83,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+        "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "mm"
@@ -93,8 +93,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "kind": "Custom",
       "objectId": 0,
       "origin": {
@@ -126,8 +126,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
   "__sketch_39_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -158,8 +158,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
   "__sketch_95_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -191,12 +191,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+      "artifactId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 1002,
@@ -209,8 +209,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1074,
@@ -223,8 +223,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1185,
@@ -237,8 +237,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1295,
@@ -251,8 +251,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1406,
@@ -265,8 +265,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1520,
@@ -282,11 +282,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -310,7 +310,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -334,7 +334,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -358,7 +358,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -382,7 +382,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -406,7 +406,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -430,8 +430,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -472,7 +472,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
             "sourceRange": []
           }
         },
@@ -502,17 +502,17 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "originSketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
           "radius": {
             "n": 8.0,
             "ty": {
@@ -521,12 +521,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e8e8a799-080a-5af7-b552-92f258391b5a",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "cc312d38-2fa6-5583-a605-44880f646499",
           "radius": {
             "n": 16.0,
             "ty": {
@@ -535,7 +535,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "375909ca-005f-5bf2-83c9-5f0b348dac37",
           "tag": null
         }
       ],
@@ -547,12 +547,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 1002,
@@ -565,8 +565,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1074,
@@ -579,8 +579,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1185,
@@ -593,8 +593,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1295,
@@ -607,8 +607,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1406,
@@ -621,8 +621,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1520,
@@ -638,11 +638,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -666,7 +666,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -690,7 +690,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -714,7 +714,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -738,7 +738,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -762,7 +762,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -786,8 +786,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -828,7 +828,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
             "sourceRange": []
           }
         },
@@ -858,13 +858,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "originSketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "units": "mm",
       "sectional": false
     }
@@ -873,12 +873,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 1002,
@@ -891,8 +891,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1074,
@@ -905,8 +905,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1185,
@@ -919,8 +919,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1295,
@@ -933,8 +933,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1406,
@@ -947,8 +947,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1520,
@@ -964,11 +964,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -992,7 +992,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -1016,7 +1016,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -1040,7 +1040,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -1064,7 +1064,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -1088,7 +1088,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -1112,8 +1112,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1154,7 +1154,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
             "sourceRange": []
           }
         },
@@ -1184,17 +1184,17 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "originSketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
           "radius": {
             "n": 8.0,
             "ty": {
@@ -1203,12 +1203,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e8e8a799-080a-5af7-b552-92f258391b5a",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "cc312d38-2fa6-5583-a605-44880f646499",
           "radius": {
             "n": 16.0,
             "ty": {
@@ -1217,7 +1217,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "375909ca-005f-5bf2-83c9-5f0b348dac37",
           "tag": null
         }
       ],
@@ -1234,7 +1234,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1308,8 +1308,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1338,7 +1338,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1354,7 +1354,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1428,8 +1428,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1458,7 +1458,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1474,7 +1474,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -1548,8 +1548,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1578,7 +1578,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1594,7 +1594,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -1668,8 +1668,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1698,7 +1698,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1714,7 +1714,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "41c630c9-9d44-581b-98af-caee575bea48",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -1788,8 +1788,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1818,7 +1818,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1834,7 +1834,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -1908,8 +1908,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1938,7 +1938,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1955,11 +1955,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1983,7 +1983,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -2007,7 +2007,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -2031,7 +2031,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "from": [
@@ -2055,7 +2055,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
                     "sourceRange": []
                   },
                   "from": [
@@ -2079,7 +2079,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
                     "sourceRange": []
                   },
                   "from": [
@@ -2103,8 +2103,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2145,7 +2145,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                   "sourceRange": []
                 }
               },
@@ -2175,8 +2175,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+              "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -2191,11 +2191,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
             "sourceRange": []
           },
           "from": [
@@ -2219,7 +2219,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
             "sourceRange": []
           },
           "from": [
@@ -2243,7 +2243,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
             "sourceRange": []
           },
           "from": [
@@ -2267,7 +2267,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
             "sourceRange": []
           },
           "from": [
@@ -2291,7 +2291,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1084cca5-0297-5dc3-92ac-287642feefac",
             "sourceRange": []
           },
           "from": [
@@ -2315,7 +2315,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
             "sourceRange": []
           },
           "from": [
@@ -2339,8 +2339,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -2381,7 +2381,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
           "sourceRange": []
         }
       },
@@ -2411,9 +2411,9 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "originSketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "units": "mm"
     }
   },
@@ -2421,12 +2421,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
+      "artifactId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 1002,
@@ -2439,8 +2439,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1074,
@@ -2453,8 +2453,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1185,
@@ -2467,8 +2467,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1295,
@@ -2481,8 +2481,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1406,
@@ -2495,8 +2495,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1520,
@@ -2512,11 +2512,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -2540,7 +2540,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -2564,7 +2564,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -2588,7 +2588,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -2612,7 +2612,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -2636,7 +2636,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -2660,8 +2660,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2702,7 +2702,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
             "sourceRange": []
           }
         },
@@ -2732,17 +2732,17 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "originSketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
           "radius": {
             "n": 8.0,
             "ty": {
@@ -2751,12 +2751,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e8e8a799-080a-5af7-b552-92f258391b5a",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "cc312d38-2fa6-5583-a605-44880f646499",
           "radius": {
             "n": 16.0,
             "ty": {
@@ -2765,7 +2765,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "375909ca-005f-5bf2-83c9-5f0b348dac37",
           "tag": null
         }
       ],
@@ -2787,12 +2787,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+      "artifactId": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "970bd844-71e2-52f3-9892-6405988b04a1",
+          "id": "af85d4ff-154d-5200-b3f4-c4a444c3bfb5",
           "sourceRange": [],
           "tag": {
             "commentStart": 7835,
@@ -2808,11 +2808,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "af85d4ff-154d-5200-b3f4-c4a444c3bfb5",
               "sourceRange": []
             },
             "ccw": true,
@@ -2843,8 +2843,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
+          "artifactId": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
           "objectId": 139,
           "value": "start",
           "xAxis": {
@@ -2860,8 +2860,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+            "creatorSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -2878,7 +2878,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
             "sourceRange": []
           }
         },
@@ -2888,13 +2888,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "originalId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+        "originSketchId": "08138142-a558-56a4-a23f-2f334e02b011",
         "units": "mm"
       },
       "startCapId": null,
-      "endCapId": "[uuid]",
+      "endCapId": "4bc4a2fc-5e6a-5ec6-baaf-f6da3189881e",
       "units": "mm",
       "sectional": false
     }
@@ -2930,12 +2930,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+      "artifactId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8e1f8fab-e961-5493-ac9e-833e0ccf80f8",
+          "id": "dfac5b28-4b3a-586f-985e-7dd31fa5962d",
           "sourceRange": [],
           "tag": {
             "commentStart": 5993,
@@ -2948,8 +2948,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d49fd944-0494-521f-985c-7d0ac91d852e",
+          "id": "dbbea3fe-8139-5486-a84c-ecee49c229eb",
           "sourceRange": [],
           "tag": {
             "commentStart": 6067,
@@ -2962,8 +2962,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d626163d-46bb-5c46-9bac-adae31a62e71",
+          "id": "adf2ac27-04ec-57d6-90a9-ca6dc1aafe05",
           "sourceRange": [],
           "tag": {
             "commentStart": 6181,
@@ -2976,8 +2976,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "33a3d3ad-e5bd-5da1-bea6-eaeab3518771",
+          "id": "c4a1cafc-58c1-5761-b857-11593339d198",
           "sourceRange": [],
           "tag": {
             "commentStart": 6293,
@@ -2990,8 +2990,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fbbc48fc-91ba-561a-8a07-5280f7df5515",
+          "id": "3b0c5d19-d557-5254-ba0d-94a38888769d",
           "sourceRange": [],
           "tag": {
             "commentStart": 6406,
@@ -3004,8 +3004,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "919ce864-3079-5fdb-a740-c4f4d650a651",
+          "id": "867ba0ac-e32e-50f7-8c7d-817940695eb4",
           "sourceRange": [],
           "tag": {
             "commentStart": 6522,
@@ -3021,11 +3021,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dfac5b28-4b3a-586f-985e-7dd31fa5962d",
               "sourceRange": []
             },
             "from": [
@@ -3049,7 +3049,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dbbea3fe-8139-5486-a84c-ecee49c229eb",
               "sourceRange": []
             },
             "from": [
@@ -3073,7 +3073,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "adf2ac27-04ec-57d6-90a9-ca6dc1aafe05",
               "sourceRange": []
             },
             "from": [
@@ -3097,7 +3097,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c4a1cafc-58c1-5761-b857-11593339d198",
               "sourceRange": []
             },
             "from": [
@@ -3121,7 +3121,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3b0c5d19-d557-5254-ba0d-94a38888769d",
               "sourceRange": []
             },
             "from": [
@@ -3145,7 +3145,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "867ba0ac-e32e-50f7-8c7d-817940695eb4",
               "sourceRange": []
             },
             "from": [
@@ -3169,8 +3169,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+          "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
           "kind": "Custom",
           "objectId": 94,
           "origin": {
@@ -3211,7 +3211,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
             "sourceRange": []
           }
         },
@@ -3241,13 +3241,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "originalId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+        "originSketchId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
+      "endCapId": "144eda7c-4a2d-5fd1-b5ca-0a31c17437e5",
       "units": "mm",
       "sectional": false
     }
@@ -3261,7 +3261,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
                 "objectId": 98,
                 "kind": {
                   "circle": {
@@ -3336,8 +3336,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                  "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
@@ -3366,7 +3366,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boltHeadCircle"
@@ -3382,7 +3382,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
                 "objectId": 133,
                 "kind": {
                   "line": {
@@ -3457,8 +3457,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                  "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
@@ -3487,7 +3487,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "boltHeadRadiusGuide"
@@ -3503,7 +3503,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
                 "objectId": 102,
                 "kind": {
                   "line": {
@@ -3577,8 +3577,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                  "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
@@ -3607,7 +3607,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -3623,7 +3623,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "objectId": 105,
                 "kind": {
                   "line": {
@@ -3697,8 +3697,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                  "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
@@ -3727,7 +3727,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -3743,7 +3743,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                 "objectId": 109,
                 "kind": {
                   "line": {
@@ -3817,8 +3817,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                  "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
@@ -3847,7 +3847,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3863,7 +3863,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                 "objectId": 113,
                 "kind": {
                   "line": {
@@ -3937,8 +3937,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                  "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
@@ -3967,7 +3967,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -3983,7 +3983,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19107e89-bf40-5541-88a5-5106b6de636d",
                 "objectId": 117,
                 "kind": {
                   "line": {
@@ -4057,8 +4057,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                  "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
@@ -4087,7 +4087,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -4103,7 +4103,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
                 "objectId": 121,
                 "kind": {
                   "line": {
@@ -4177,8 +4177,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                  "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                   "kind": "Custom",
                   "objectId": 94,
                   "origin": {
@@ -4207,7 +4207,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -4224,11 +4224,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
                     "sourceRange": []
                   },
                   "from": [
@@ -4252,7 +4252,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                     "sourceRange": []
                   },
                   "from": [
@@ -4276,7 +4276,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                     "sourceRange": []
                   },
                   "from": [
@@ -4300,7 +4300,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                     "sourceRange": []
                   },
                   "from": [
@@ -4324,7 +4324,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19107e89-bf40-5541-88a5-5106b6de636d",
                     "sourceRange": []
                   },
                   "from": [
@@ -4348,7 +4348,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
                     "sourceRange": []
                   },
                   "from": [
@@ -4372,8 +4372,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+                "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
                 "kind": "Custom",
                 "objectId": 94,
                 "origin": {
@@ -4414,7 +4414,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
                   "sourceRange": []
                 }
               },
@@ -4444,8 +4444,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+              "originalId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -4469,11 +4469,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dfac5b28-4b3a-586f-985e-7dd31fa5962d",
             "sourceRange": []
           },
           "from": [
@@ -4497,7 +4497,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbbea3fe-8139-5486-a84c-ecee49c229eb",
             "sourceRange": []
           },
           "from": [
@@ -4521,7 +4521,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "adf2ac27-04ec-57d6-90a9-ca6dc1aafe05",
             "sourceRange": []
           },
           "from": [
@@ -4545,7 +4545,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c4a1cafc-58c1-5761-b857-11593339d198",
             "sourceRange": []
           },
           "from": [
@@ -4569,7 +4569,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3b0c5d19-d557-5254-ba0d-94a38888769d",
             "sourceRange": []
           },
           "from": [
@@ -4593,7 +4593,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "867ba0ac-e32e-50f7-8c7d-817940695eb4",
             "sourceRange": []
           },
           "from": [
@@ -4617,8 +4617,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+        "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
         "kind": "Custom",
         "objectId": 94,
         "origin": {
@@ -4659,7 +4659,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
           "sourceRange": []
         }
       },
@@ -4689,9 +4689,9 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+      "originalId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+      "originSketchId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "units": "mm"
     }
   },
@@ -4722,7 +4722,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
                 "objectId": 143,
                 "kind": {
                   "circle": {
@@ -4797,8 +4797,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
+                  "artifactId": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
                   "objectId": 139,
                   "value": "start",
                   "xAxis": {
@@ -4814,13 +4814,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+                    "creatorSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "08138142-a558-56a4-a23f-2f334e02b011",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -4837,11 +4837,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "08138142-a558-56a4-a23f-2f334e02b011",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4872,8 +4872,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
+                "artifactId": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
                 "objectId": 139,
                 "value": "start",
                 "xAxis": {
@@ -4889,8 +4889,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+                  "creatorSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -4907,7 +4907,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
                   "sourceRange": []
                 }
               },
@@ -4917,8 +4917,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "08138142-a558-56a4-a23f-2f334e02b011",
+              "originalId": "08138142-a558-56a4-a23f-2f334e02b011",
               "units": "mm",
               "isClosed": "no"
             }
@@ -4932,7 +4932,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
                 "objectId": 146,
                 "kind": {
                   "line": {
@@ -5008,8 +5008,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
+                  "artifactId": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
                   "objectId": 139,
                   "value": "start",
                   "xAxis": {
@@ -5025,13 +5025,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+                    "creatorSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "08138142-a558-56a4-a23f-2f334e02b011",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "radiusGuide"
@@ -5048,11 +5048,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "af85d4ff-154d-5200-b3f4-c4a444c3bfb5",
             "sourceRange": []
           },
           "ccw": true,
@@ -5083,8 +5083,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
+        "artifactId": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
         "objectId": 139,
         "value": "start",
         "xAxis": {
@@ -5100,8 +5100,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+          "creatorSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -5118,7 +5118,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
           "sourceRange": []
         }
       },
@@ -5128,9 +5128,9 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+      "originalId": "9fd615c8-7274-5e8b-830b-8b3ce00ff1e5",
+      "originSketchId": "08138142-a558-56a4-a23f-2f334e02b011",
       "units": "mm"
     }
   },
@@ -5143,12 +5143,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+      "artifactId": "2f89f295-7088-5e46-8594-1b84a8601b0a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a9e998dc-adcb-543a-a3d7-cf749f9f7355",
+          "id": "282922d1-af6f-5a57-851b-6ab0b4216939",
           "sourceRange": [],
           "tag": {
             "commentStart": 9822,
@@ -5161,8 +5161,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ee13b9af-0343-5d2b-a63a-3bb9b6ca8323",
+          "id": "fdb2b0f7-d4ba-5e8a-86c9-87b58e977656",
           "sourceRange": [],
           "tag": {
             "commentStart": 9897,
@@ -5175,8 +5175,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cd9d9c61-91eb-585b-ae4b-cda49d432388",
+          "id": "4f73a9b0-2044-5da5-992a-81305c4e4652",
           "sourceRange": [],
           "tag": {
             "commentStart": 10013,
@@ -5189,8 +5189,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83245c5d-176a-5180-9867-e5e86f9448db",
+          "id": "e185cb02-d36e-5428-ba3f-a12e44012465",
           "sourceRange": [],
           "tag": {
             "commentStart": 10126,
@@ -5203,8 +5203,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e7878056-463a-58f5-b069-aedfeee03118",
+          "id": "6b6066ff-298c-5e98-9080-bb77572e2948",
           "sourceRange": [],
           "tag": {
             "commentStart": 10240,
@@ -5217,8 +5217,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2a2d866b-87f2-5b7c-ae35-b70d789a5d3b",
+          "id": "c25f72e1-19a1-5c5b-a91d-be12be4fc8c6",
           "sourceRange": [],
           "tag": {
             "commentStart": 10358,
@@ -5234,11 +5234,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "282922d1-af6f-5a57-851b-6ab0b4216939",
               "sourceRange": []
             },
             "from": [
@@ -5262,7 +5262,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fdb2b0f7-d4ba-5e8a-86c9-87b58e977656",
               "sourceRange": []
             },
             "from": [
@@ -5286,7 +5286,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4f73a9b0-2044-5da5-992a-81305c4e4652",
               "sourceRange": []
             },
             "from": [
@@ -5310,7 +5310,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e185cb02-d36e-5428-ba3f-a12e44012465",
               "sourceRange": []
             },
             "from": [
@@ -5334,7 +5334,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6b6066ff-298c-5e98-9080-bb77572e2948",
               "sourceRange": []
             },
             "from": [
@@ -5358,7 +5358,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c25f72e1-19a1-5c5b-a91d-be12be4fc8c6",
               "sourceRange": []
             },
             "from": [
@@ -5383,8 +5383,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         ],
         "on": {
           "type": "face",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+          "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
           "objectId": 177,
           "value": "start",
           "xAxis": {
@@ -5400,8 +5400,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "units": null
           },
           "parentSolid": {
-            "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]",
+            "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+            "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
             "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
@@ -5418,7 +5418,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
             "sourceRange": []
           }
         },
@@ -5448,13 +5448,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+        "originalId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+        "originSketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
         "units": "mm"
       },
       "startCapId": null,
-      "endCapId": "[uuid]",
+      "endCapId": "d29fdaab-5e26-579b-93b0-5377506e3c6c",
       "units": "mm",
       "sectional": false
     }
@@ -5463,12 +5463,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+      "artifactId": "0601c0a1-df6b-5d1b-be74-e551a56e758a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "495222b1-6fd1-5fee-bd20-f034428a050a",
+          "id": "d7e1353f-fc10-53b3-a9c5-0aa4156c0c8f",
           "sourceRange": [],
           "tag": {
             "commentStart": 8611,
@@ -5481,8 +5481,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2d88f2de-2143-52c9-9501-6f81471f4309",
+          "id": "304a1875-4896-58f2-ade9-08034e4b441d",
           "sourceRange": [],
           "tag": {
             "commentStart": 8687,
@@ -5495,8 +5495,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "791773c5-632b-573e-bf3f-31367ac5677d",
+          "id": "02d2e3a5-f411-5fc6-8bd3-a2eb3e27d672",
           "sourceRange": [],
           "tag": {
             "commentStart": 8801,
@@ -5509,8 +5509,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "afe2869b-7fd1-54f8-bf47-5b878501ef89",
+          "id": "16cb3f10-73cc-58f0-9f94-9c9816155d6c",
           "sourceRange": [],
           "tag": {
             "commentStart": 8915,
@@ -5526,11 +5526,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d7e1353f-fc10-53b3-a9c5-0aa4156c0c8f",
               "sourceRange": []
             },
             "from": [
@@ -5554,7 +5554,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "304a1875-4896-58f2-ade9-08034e4b441d",
               "sourceRange": []
             },
             "from": [
@@ -5578,7 +5578,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "02d2e3a5-f411-5fc6-8bd3-a2eb3e27d672",
               "sourceRange": []
             },
             "from": [
@@ -5602,7 +5602,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "16cb3f10-73cc-58f0-9f94-9c9816155d6c",
               "sourceRange": []
             },
             "from": [
@@ -5626,8 +5626,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
+          "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
           "kind": "Custom",
           "objectId": 152,
           "origin": {
@@ -5668,7 +5668,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
             "sourceRange": []
           }
         },
@@ -5690,13 +5690,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+        "originalId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+        "originSketchId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "cb660a24-3edc-5389-bd54-5de6148435d2",
+      "endCapId": "6ec5d051-0755-5e09-b280-b40cea5301fa",
       "units": "mm",
       "sectional": false
     }
@@ -5710,7 +5710,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
                 "objectId": 156,
                 "kind": {
                   "line": {
@@ -5784,8 +5784,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
+                  "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
                   "kind": "Custom",
                   "objectId": 152,
                   "origin": {
@@ -5814,7 +5814,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -5830,7 +5830,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
                 "objectId": 159,
                 "kind": {
                   "line": {
@@ -5904,8 +5904,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
+                  "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
                   "kind": "Custom",
                   "objectId": 152,
                   "origin": {
@@ -5934,7 +5934,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -5950,7 +5950,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
                 "objectId": 163,
                 "kind": {
                   "line": {
@@ -6024,8 +6024,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
+                  "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
                   "kind": "Custom",
                   "objectId": 152,
                   "origin": {
@@ -6054,7 +6054,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -6070,7 +6070,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "b8cc464b-6248-5cb4-8c70-30f634da184c",
                 "objectId": 167,
                 "kind": {
                   "line": {
@@ -6144,8 +6144,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
+                  "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
                   "kind": "Custom",
                   "objectId": 152,
                   "origin": {
@@ -6174,7 +6174,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -6191,11 +6191,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
                     "sourceRange": []
                   },
                   "from": [
@@ -6219,7 +6219,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
                     "sourceRange": []
                   },
                   "from": [
@@ -6243,7 +6243,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
                     "sourceRange": []
                   },
                   "from": [
@@ -6267,7 +6267,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b8cc464b-6248-5cb4-8c70-30f634da184c",
                     "sourceRange": []
                   },
                   "from": [
@@ -6291,8 +6291,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
+                "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
                 "kind": "Custom",
                 "objectId": 152,
                 "origin": {
@@ -6333,7 +6333,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
                   "sourceRange": []
                 }
               },
@@ -6355,8 +6355,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+              "originalId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -6371,11 +6371,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d7e1353f-fc10-53b3-a9c5-0aa4156c0c8f",
             "sourceRange": []
           },
           "from": [
@@ -6399,7 +6399,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "304a1875-4896-58f2-ade9-08034e4b441d",
             "sourceRange": []
           },
           "from": [
@@ -6423,7 +6423,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "02d2e3a5-f411-5fc6-8bd3-a2eb3e27d672",
             "sourceRange": []
           },
           "from": [
@@ -6447,7 +6447,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "16cb3f10-73cc-58f0-9f94-9c9816155d6c",
             "sourceRange": []
           },
           "from": [
@@ -6471,8 +6471,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
+        "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
         "kind": "Custom",
         "objectId": 152,
         "origin": {
@@ -6513,7 +6513,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
           "sourceRange": []
         }
       },
@@ -6535,9 +6535,9 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+      "originalId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+      "originSketchId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "units": "mm"
     }
   },
@@ -6554,11 +6554,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "from": [
@@ -6582,7 +6582,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           },
           "from": [
@@ -6606,7 +6606,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           },
           "from": [
@@ -6630,7 +6630,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
             "sourceRange": []
           },
           "from": [
@@ -6654,7 +6654,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "41c630c9-9d44-581b-98af-caee575bea48",
             "sourceRange": []
           },
           "from": [
@@ -6678,7 +6678,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
             "sourceRange": []
           },
           "from": [
@@ -6702,8 +6702,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -6744,7 +6744,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
           "sourceRange": []
         }
       },
@@ -6774,8 +6774,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -6784,11 +6784,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
             "sourceRange": []
           },
           "from": [
@@ -6812,7 +6812,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
             "sourceRange": []
           },
           "from": [
@@ -6836,7 +6836,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
             "sourceRange": []
           },
           "from": [
@@ -6860,7 +6860,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
             "sourceRange": []
           },
           "from": [
@@ -6884,7 +6884,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19107e89-bf40-5541-88a5-5106b6de636d",
             "sourceRange": []
           },
           "from": [
@@ -6908,7 +6908,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
             "sourceRange": []
           },
           "from": [
@@ -6932,8 +6932,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
+        "id": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
         "kind": "Custom",
         "objectId": 94,
         "origin": {
@@ -6974,7 +6974,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
           "sourceRange": []
         }
       },
@@ -7004,8 +7004,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
+      "originalId": "29f44732-9f58-5550-8e28-aea348bd8ebb",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -7014,11 +7014,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "08138142-a558-56a4-a23f-2f334e02b011",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "30efa5e2-105e-56b9-85d8-16e0935167b0",
             "sourceRange": []
           },
           "ccw": true,
@@ -7049,8 +7049,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
+        "artifactId": "3362b941-063e-5a7a-b7cd-560f768d8ab7",
         "objectId": 139,
         "value": "start",
         "xAxis": {
@@ -7066,8 +7066,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
+          "creatorSketchId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -7084,7 +7084,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bc2bd889-33e8-5f5e-94c6-3c456f236e9a",
           "sourceRange": []
         }
       },
@@ -7094,8 +7094,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "08138142-a558-56a4-a23f-2f334e02b011",
+      "originalId": "08138142-a558-56a4-a23f-2f334e02b011",
       "units": "mm",
       "isClosed": "no"
     }
@@ -7104,11 +7104,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2d22753f-e63a-506c-bc84-6006343b9a0b",
             "sourceRange": []
           },
           "from": [
@@ -7132,7 +7132,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
             "sourceRange": []
           },
           "from": [
@@ -7156,7 +7156,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94",
             "sourceRange": []
           },
           "from": [
@@ -7180,7 +7180,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b8cc464b-6248-5cb4-8c70-30f634da184c",
             "sourceRange": []
           },
           "from": [
@@ -7204,8 +7204,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
+        "id": "adff1f15-bda5-5ed0-a4e1-c29f7d185797",
         "kind": "Custom",
         "objectId": 152,
         "origin": {
@@ -7246,7 +7246,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "44d94cee-dac7-5b9f-829d-112d277b8975",
           "sourceRange": []
         }
       },
@@ -7268,8 +7268,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
+      "originalId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -7278,11 +7278,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c91b9ebe-ef24-5090-8a15-d377717956bf",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "96b5306d-8365-5f19-adf7-7b3e844826ca",
             "sourceRange": []
           },
           "from": [
@@ -7306,7 +7306,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
             "sourceRange": []
           },
           "from": [
@@ -7330,7 +7330,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "43582f56-4d15-5082-9796-67d8e5ee6e44",
             "sourceRange": []
           },
           "from": [
@@ -7354,7 +7354,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
             "sourceRange": []
           },
           "from": [
@@ -7378,7 +7378,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
             "sourceRange": []
           },
           "from": [
@@ -7402,7 +7402,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
             "sourceRange": []
           },
           "from": [
@@ -7427,8 +7427,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+        "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
         "objectId": 177,
         "value": "start",
         "xAxis": {
@@ -7444,8 +7444,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+          "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -7462,7 +7462,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
           "sourceRange": []
         }
       },
@@ -7492,8 +7492,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
+      "originalId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -7502,11 +7502,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
             "sourceRange": []
           },
           "from": [
@@ -7530,7 +7530,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
             "sourceRange": []
           },
           "ccw": false,
@@ -7560,7 +7560,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
             "sourceRange": []
           },
           "from": [
@@ -7584,7 +7584,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
             "sourceRange": []
           },
           "ccw": false,
@@ -7614,8 +7614,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "kind": "Custom",
         "objectId": 38,
         "origin": {
@@ -7656,7 +7656,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
           "sourceRange": []
         }
       },
@@ -7678,8 +7678,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "line3"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+      "originalId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -7688,12 +7688,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
+      "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 1002,
@@ -7706,8 +7706,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1074,
@@ -7720,8 +7720,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1185,
@@ -7734,8 +7734,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1295,
@@ -7748,8 +7748,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1406,
@@ -7762,8 +7762,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1520,
@@ -7779,11 +7779,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -7807,7 +7807,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -7831,7 +7831,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -7855,7 +7855,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -7879,7 +7879,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -7903,7 +7903,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -7927,8 +7927,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -7969,7 +7969,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
             "sourceRange": []
           }
         },
@@ -7999,17 +7999,17 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "originalId": "eedabccb-e42b-5224-a499-7c2981b239e5",
+        "originSketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
           "radius": {
             "n": 8.0,
             "ty": {
@@ -8018,7 +8018,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e8e8a799-080a-5af7-b552-92f258391b5a",
           "tag": null
         }
       ],
@@ -8074,7 +8074,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "96b5306d-8365-5f19-adf7-7b3e844826ca",
                 "objectId": 185,
                 "kind": {
                   "line": {
@@ -8149,8 +8149,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+                  "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
                   "objectId": 177,
                   "value": "start",
                   "xAxis": {
@@ -8166,13 +8166,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                    "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -8188,7 +8188,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
                 "objectId": 188,
                 "kind": {
                   "line": {
@@ -8263,8 +8263,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+                  "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
                   "objectId": 177,
                   "value": "start",
                   "xAxis": {
@@ -8280,13 +8280,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                    "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -8302,7 +8302,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "43582f56-4d15-5082-9796-67d8e5ee6e44",
                 "objectId": 192,
                 "kind": {
                   "line": {
@@ -8377,8 +8377,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+                  "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
                   "objectId": 177,
                   "value": "start",
                   "xAxis": {
@@ -8394,13 +8394,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                    "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -8416,7 +8416,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
                 "objectId": 196,
                 "kind": {
                   "line": {
@@ -8491,8 +8491,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+                  "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
                   "objectId": 177,
                   "value": "start",
                   "xAxis": {
@@ -8508,13 +8508,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                    "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -8530,7 +8530,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
                 "objectId": 200,
                 "kind": {
                   "line": {
@@ -8605,8 +8605,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+                  "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
                   "objectId": 177,
                   "value": "start",
                   "xAxis": {
@@ -8622,13 +8622,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                    "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -8644,7 +8644,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
                 "objectId": 204,
                 "kind": {
                   "line": {
@@ -8719,8 +8719,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+                  "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
                   "objectId": 177,
                   "value": "start",
                   "xAxis": {
@@ -8736,13 +8736,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                    "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -8759,11 +8759,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "c91b9ebe-ef24-5090-8a15-d377717956bf",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "96b5306d-8365-5f19-adf7-7b3e844826ca",
                     "sourceRange": []
                   },
                   "from": [
@@ -8787,7 +8787,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
                     "sourceRange": []
                   },
                   "from": [
@@ -8811,7 +8811,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "43582f56-4d15-5082-9796-67d8e5ee6e44",
                     "sourceRange": []
                   },
                   "from": [
@@ -8835,7 +8835,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
                     "sourceRange": []
                   },
                   "from": [
@@ -8859,7 +8859,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6f0d489a-c010-523a-b796-8b9fcc04c74d",
                     "sourceRange": []
                   },
                   "from": [
@@ -8883,7 +8883,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
                     "sourceRange": []
                   },
                   "from": [
@@ -8908,8 +8908,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+                "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
                 "objectId": 177,
                 "value": "start",
                 "xAxis": {
@@ -8925,8 +8925,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                  "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "mm"
@@ -8943,7 +8943,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
                   "sourceRange": []
                 }
               },
@@ -8973,8 +8973,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
+              "originalId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -8988,7 +8988,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "05ce46e4-9f5d-5320-8c0f-7d8e93e6940e",
                 "objectId": 181,
                 "kind": {
                   "circle": {
@@ -9064,8 +9064,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+                  "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
                   "objectId": 177,
                   "value": "start",
                   "xAxis": {
@@ -9081,13 +9081,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                    "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "nutCircle"
@@ -9103,7 +9103,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f0a7732a-2f75-5407-b203-7382d01c3918",
                 "objectId": 216,
                 "kind": {
                   "line": {
@@ -9179,8 +9179,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+                  "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
                   "objectId": 177,
                   "value": "start",
                   "xAxis": {
@@ -9196,13 +9196,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                    "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "mm"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "nutRadiusGuide"
@@ -9228,11 +9228,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "6ae8c147-090c-5277-8840-6daa34bb4685",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "282922d1-af6f-5a57-851b-6ab0b4216939",
             "sourceRange": []
           },
           "from": [
@@ -9256,7 +9256,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fdb2b0f7-d4ba-5e8a-86c9-87b58e977656",
             "sourceRange": []
           },
           "from": [
@@ -9280,7 +9280,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4f73a9b0-2044-5da5-992a-81305c4e4652",
             "sourceRange": []
           },
           "from": [
@@ -9304,7 +9304,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e185cb02-d36e-5428-ba3f-a12e44012465",
             "sourceRange": []
           },
           "from": [
@@ -9328,7 +9328,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6b6066ff-298c-5e98-9080-bb77572e2948",
             "sourceRange": []
           },
           "from": [
@@ -9352,7 +9352,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c25f72e1-19a1-5c5b-a91d-be12be4fc8c6",
             "sourceRange": []
           },
           "from": [
@@ -9377,8 +9377,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       ],
       "on": {
         "type": "face",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
+        "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+        "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
         "objectId": 177,
         "value": "start",
         "xAxis": {
@@ -9394,8 +9394,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": null
         },
         "parentSolid": {
-          "solidId": "[uuid]",
-          "creatorSketchId": "[uuid]",
+          "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+          "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
           "creatorSketchIsClosed": "explicitly"
         },
         "units": "mm"
@@ -9412,7 +9412,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
           "sourceRange": []
         }
       },
@@ -9442,9 +9442,9 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+      "originalId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+      "originSketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
       "units": "mm"
     }
   },
@@ -9482,12 +9482,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "f3e5d974-3ee8-52ce-a294-da34987457f8",
+          "artifactId": "f3e5d974-3ee8-52ce-a294-da34987457f8",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a9e998dc-adcb-543a-a3d7-cf749f9f7355",
+              "id": "282922d1-af6f-5a57-851b-6ab0b4216939",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9822,
@@ -9500,8 +9500,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ee13b9af-0343-5d2b-a63a-3bb9b6ca8323",
+              "id": "fdb2b0f7-d4ba-5e8a-86c9-87b58e977656",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9897,
@@ -9514,8 +9514,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "cd9d9c61-91eb-585b-ae4b-cda49d432388",
+              "id": "4f73a9b0-2044-5da5-992a-81305c4e4652",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10013,
@@ -9528,8 +9528,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "83245c5d-176a-5180-9867-e5e86f9448db",
+              "id": "e185cb02-d36e-5428-ba3f-a12e44012465",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10126,
@@ -9542,8 +9542,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "e7878056-463a-58f5-b069-aedfeee03118",
+              "id": "6b6066ff-298c-5e98-9080-bb77572e2948",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10240,
@@ -9556,8 +9556,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "2a2d866b-87f2-5b7c-ae35-b70d789a5d3b",
+              "id": "c25f72e1-19a1-5c5b-a91d-be12be4fc8c6",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10358,
@@ -9573,11 +9573,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "f3e5d974-3ee8-52ce-a294-da34987457f8",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "282922d1-af6f-5a57-851b-6ab0b4216939",
                   "sourceRange": []
                 },
                 "from": [
@@ -9601,7 +9601,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "fdb2b0f7-d4ba-5e8a-86c9-87b58e977656",
                   "sourceRange": []
                 },
                 "from": [
@@ -9625,7 +9625,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4f73a9b0-2044-5da5-992a-81305c4e4652",
                   "sourceRange": []
                 },
                 "from": [
@@ -9649,7 +9649,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e185cb02-d36e-5428-ba3f-a12e44012465",
                   "sourceRange": []
                 },
                 "from": [
@@ -9673,7 +9673,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "6b6066ff-298c-5e98-9080-bb77572e2948",
                   "sourceRange": []
                 },
                 "from": [
@@ -9697,7 +9697,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c25f72e1-19a1-5c5b-a91d-be12be4fc8c6",
                   "sourceRange": []
                 },
                 "from": [
@@ -9722,8 +9722,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+              "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
               "objectId": 177,
               "value": "start",
               "xAxis": {
@@ -9739,8 +9739,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -9757,7 +9757,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
                 "sourceRange": []
               }
             },
@@ -9787,13 +9787,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "value": "line6"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+            "originalId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+            "originSketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
             "units": "mm"
           },
           "startCapId": null,
-          "endCapId": "[uuid]",
+          "endCapId": "d29fdaab-5e26-579b-93b0-5377506e3c6c",
           "units": "mm",
           "sectional": false
         }
@@ -9802,12 +9802,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "6947ea4f-1e6c-5343-bc46-1b274c445e35",
+          "artifactId": "6947ea4f-1e6c-5343-bc46-1b274c445e35",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a9e998dc-adcb-543a-a3d7-cf749f9f7355",
+              "id": "282922d1-af6f-5a57-851b-6ab0b4216939",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9822,
@@ -9820,8 +9820,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "ee13b9af-0343-5d2b-a63a-3bb9b6ca8323",
+              "id": "fdb2b0f7-d4ba-5e8a-86c9-87b58e977656",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9897,
@@ -9834,8 +9834,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "cd9d9c61-91eb-585b-ae4b-cda49d432388",
+              "id": "4f73a9b0-2044-5da5-992a-81305c4e4652",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10013,
@@ -9848,8 +9848,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "83245c5d-176a-5180-9867-e5e86f9448db",
+              "id": "e185cb02-d36e-5428-ba3f-a12e44012465",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10126,
@@ -9862,8 +9862,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "e7878056-463a-58f5-b069-aedfeee03118",
+              "id": "6b6066ff-298c-5e98-9080-bb77572e2948",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10240,
@@ -9876,8 +9876,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "2a2d866b-87f2-5b7c-ae35-b70d789a5d3b",
+              "id": "c25f72e1-19a1-5c5b-a91d-be12be4fc8c6",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10358,
@@ -9893,11 +9893,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "6947ea4f-1e6c-5343-bc46-1b274c445e35",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "282922d1-af6f-5a57-851b-6ab0b4216939",
                   "sourceRange": []
                 },
                 "from": [
@@ -9921,7 +9921,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "fdb2b0f7-d4ba-5e8a-86c9-87b58e977656",
                   "sourceRange": []
                 },
                 "from": [
@@ -9945,7 +9945,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4f73a9b0-2044-5da5-992a-81305c4e4652",
                   "sourceRange": []
                 },
                 "from": [
@@ -9969,7 +9969,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e185cb02-d36e-5428-ba3f-a12e44012465",
                   "sourceRange": []
                 },
                 "from": [
@@ -9993,7 +9993,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "6b6066ff-298c-5e98-9080-bb77572e2948",
                   "sourceRange": []
                 },
                 "from": [
@@ -10017,7 +10017,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "c25f72e1-19a1-5c5b-a91d-be12be4fc8c6",
                   "sourceRange": []
                 },
                 "from": [
@@ -10042,8 +10042,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "cb660a24-3edc-5389-bd54-5de6148435d2",
+              "artifactId": "cb660a24-3edc-5389-bd54-5de6148435d2",
               "objectId": 177,
               "value": "start",
               "xAxis": {
@@ -10059,8 +10059,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
+                "creatorSketchId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -10077,7 +10077,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "63efd058-90a7-5449-bf0f-6d87ead9e7b4",
                 "sourceRange": []
               }
             },
@@ -10107,13 +10107,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "value": "line6"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+            "originalId": "6ae8c147-090c-5277-8840-6daa34bb4685",
+            "originSketchId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
             "units": "mm"
           },
           "startCapId": null,
-          "endCapId": "[uuid]",
+          "endCapId": "d29fdaab-5e26-579b-93b0-5377506e3c6c",
           "units": "mm",
           "sectional": false
         }
@@ -10151,12 +10151,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "artifactId": "9805aa95-ef4b-534e-9b73-76cd3f91a6fc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a543b400-5fdf-5c5e-a3d9-a447d0e7ef43",
+          "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
           "sourceRange": [],
           "tag": {
             "commentStart": 3062,
@@ -10169,8 +10169,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9884b800-7f75-50f3-bd67-4cbfc5791721",
+          "id": "19b80591-b217-553e-b524-394df234e28a",
           "sourceRange": [],
           "tag": {
             "commentStart": 3140,
@@ -10183,8 +10183,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ec10affa-7fb2-5a0f-9ce3-138f6dc9c1b1",
+          "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
           "sourceRange": [],
           "tag": {
             "commentStart": 3285,
@@ -10197,8 +10197,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "63b12073-df74-5244-901a-02948f2f33fc",
+          "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
           "sourceRange": [],
           "tag": {
             "commentStart": 3403,
@@ -10214,11 +10214,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
               "sourceRange": []
             },
             "from": [
@@ -10242,7 +10242,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19b80591-b217-553e-b524-394df234e28a",
               "sourceRange": []
             },
             "ccw": false,
@@ -10272,7 +10272,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
               "sourceRange": []
             },
             "from": [
@@ -10296,7 +10296,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
               "sourceRange": []
             },
             "ccw": false,
@@ -10326,8 +10326,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+          "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
           "kind": "Custom",
           "objectId": 38,
           "origin": {
@@ -10368,7 +10368,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
             "sourceRange": []
           }
         },
@@ -10390,13 +10390,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "line3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+        "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "0a5064e6-d062-5ad3-84eb-13773215aaa8",
+      "endCapId": "10d545a9-9035-5a93-8e30-359511c487c6",
       "units": "mm",
       "sectional": false
     }
@@ -10405,12 +10405,12 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+      "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f47bcacf-1753-5276-997f-c0c1ffd4d33c",
+          "id": "b91ee84e-147c-5beb-aaa2-57e1a2b698f4",
           "sourceRange": [],
           "tag": {
             "commentStart": 3062,
@@ -10423,8 +10423,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "533e17e7-79f2-5bc0-b665-2ee470395921",
+          "id": "bdf864f7-90a1-5830-bc98-ecf1c8f50ab8",
           "sourceRange": [],
           "tag": {
             "commentStart": 3140,
@@ -10437,8 +10437,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7250d660-7df4-5fbf-b1e5-7a55ff71e3e0",
+          "id": "151f577d-89c9-57d2-9e80-70d3947c8bbf",
           "sourceRange": [],
           "tag": {
             "commentStart": 3285,
@@ -10451,8 +10451,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cfa59c6c-63ae-562e-9e17-7889254a83f8",
+          "id": "d64e8039-e34e-51e6-9868-425aa1c434f2",
           "sourceRange": [],
           "tag": {
             "commentStart": 3403,
@@ -10468,11 +10468,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b91ee84e-147c-5beb-aaa2-57e1a2b698f4",
               "sourceRange": []
             },
             "from": [
@@ -10496,7 +10496,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bdf864f7-90a1-5830-bc98-ecf1c8f50ab8",
               "sourceRange": []
             },
             "ccw": false,
@@ -10526,7 +10526,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "151f577d-89c9-57d2-9e80-70d3947c8bbf",
               "sourceRange": []
             },
             "from": [
@@ -10550,7 +10550,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d64e8039-e34e-51e6-9868-425aa1c434f2",
               "sourceRange": []
             },
             "ccw": false,
@@ -10580,8 +10580,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+          "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
           "kind": "Custom",
           "objectId": 38,
           "origin": {
@@ -10622,7 +10622,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
             "sourceRange": []
           }
         },
@@ -10644,13 +10644,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "value": "line3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+        "originalId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
+        "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "9b0fee7c-931c-58c2-9bc8-33f62acd78e0",
+      "endCapId": "308d50c0-5c84-5b65-a461-16fc28e5b775",
       "units": "mm",
       "sectional": false
     }
@@ -10664,7 +10664,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
                 "objectId": 46,
                 "kind": {
                   "arc": {
@@ -10770,8 +10770,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+                  "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -10800,7 +10800,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -10816,7 +10816,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
                 "objectId": 55,
                 "kind": {
                   "arc": {
@@ -10922,8 +10922,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+                  "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -10952,7 +10952,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -10968,7 +10968,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
                 "objectId": 74,
                 "kind": {
                   "line": {
@@ -11043,8 +11043,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+                  "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -11073,7 +11073,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftBottomGuide"
@@ -11089,7 +11089,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
                 "objectId": 68,
                 "kind": {
                   "line": {
@@ -11164,8 +11164,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+                  "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -11194,7 +11194,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "leftTopGuide"
@@ -11210,7 +11210,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                 "objectId": 42,
                 "kind": {
                   "line": {
@@ -11284,8 +11284,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+                  "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -11314,7 +11314,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -11330,7 +11330,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                 "objectId": 50,
                 "kind": {
                   "line": {
@@ -11404,8 +11404,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+                  "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -11434,7 +11434,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -11451,11 +11451,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bf36bb46-40a6-5ff3-9663-2020512db63c",
                     "sourceRange": []
                   },
                   "from": [
@@ -11479,7 +11479,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -11509,7 +11509,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                     "sourceRange": []
                   },
                   "from": [
@@ -11533,7 +11533,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2f87eb95-71f2-5911-bdbf-6255b335334d",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -11563,8 +11563,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+                "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                 "kind": "Custom",
                 "objectId": 38,
                 "origin": {
@@ -11605,7 +11605,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
                   "sourceRange": []
                 }
               },
@@ -11627,8 +11627,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   "value": "line3"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+              "originalId": "d005938d-7477-557a-bef2-28dfc45d0fce",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -11642,7 +11642,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
                 "objectId": 86,
                 "kind": {
                   "line": {
@@ -11717,8 +11717,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+                  "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -11747,7 +11747,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightBottomGuide"
@@ -11763,7 +11763,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
                 "objectId": 80,
                 "kind": {
                   "line": {
@@ -11838,8 +11838,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+                  "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -11868,7 +11868,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "rightTopGuide"
@@ -11884,7 +11884,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "objectId": 62,
                 "kind": {
                   "line": {
@@ -11959,8 +11959,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+                  "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
                   "kind": "Custom",
                   "objectId": 38,
                   "origin": {
@@ -11989,7 +11989,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "slotCenterline"
@@ -12006,11 +12006,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f895e225-9bb5-57f6-901c-f8cdc25b6a2c",
             "sourceRange": []
           },
           "from": [
@@ -12034,7 +12034,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19b80591-b217-553e-b524-394df234e28a",
             "sourceRange": []
           },
           "ccw": false,
@@ -12064,7 +12064,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "975296b2-086b-5a76-86ec-c84703e9f49a",
             "sourceRange": []
           },
           "from": [
@@ -12088,7 +12088,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5700ef7a-6cee-5df4-b6ce-6274d59cfded",
             "sourceRange": []
           },
           "ccw": false,
@@ -12118,8 +12118,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "c1954abb-c80b-5092-851b-2b15c2dcba25",
+        "id": "c1954abb-c80b-5092-851b-2b15c2dcba25",
         "kind": "Custom",
         "objectId": 38,
         "origin": {
@@ -12160,7 +12160,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
           "sourceRange": []
         }
       },
@@ -12182,9 +12182,9 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "value": "line3"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "originalId": "1c78fa6a-a102-5dd7-82bb-60d7ccea8fa1",
+      "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "units": "mm"
     }
   },

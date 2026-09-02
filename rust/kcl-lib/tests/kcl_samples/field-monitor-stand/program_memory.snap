@@ -6,8 +6,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
   "__sketch_38_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
   "__sketch_58_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
+      "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -103,12 +103,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 983,
@@ -121,8 +121,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1054,
@@ -135,8 +135,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1171,
@@ -149,8 +149,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1297,
@@ -163,8 +163,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1418,
@@ -177,8 +177,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1532,
@@ -191,8 +191,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 2325,
@@ -205,8 +205,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 2350,
@@ -232,11 +232,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -260,7 +260,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -284,7 +284,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -308,7 +308,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -332,7 +332,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -356,7 +356,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -380,8 +380,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -422,7 +422,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -460,13 +460,13 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "units": "mm",
       "sectional": false
     }
@@ -475,12 +475,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+      "artifactId": "724b87fd-c709-5232-b7a1-547c15affb9b",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 983,
@@ -493,8 +493,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1054,
@@ -507,8 +507,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1171,
@@ -521,8 +521,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1297,
@@ -535,8 +535,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1418,
@@ -549,8 +549,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1532,
@@ -563,8 +563,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 2325,
@@ -577,8 +577,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 2350,
@@ -604,11 +604,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -632,7 +632,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -656,7 +656,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -680,7 +680,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -704,7 +704,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -728,7 +728,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -752,8 +752,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -794,7 +794,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -832,13 +832,13 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "units": "mm",
       "sectional": false
     }
@@ -847,12 +847,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
+      "artifactId": "724b87fd-c709-5232-b7a1-547c15affb9b",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0bcc35a7-9852-5856-882a-1b89c7df4b6a",
+          "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
           "sourceRange": [],
           "tag": {
             "commentStart": 983,
@@ -865,8 +865,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09c354a2-d6d5-5d42-9fdf-bf50650f057c",
+          "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1054,
@@ -879,8 +879,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "70234578-22da-5570-b77f-9ab44bbf8710",
+          "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1171,
@@ -893,8 +893,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "96c71cb9-3d0a-5ae9-af8e-0674c606a31d",
+          "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 1297,
@@ -907,8 +907,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "638fc546-4103-5d59-9bf1-24031278ff97",
+          "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
           "sourceRange": [],
           "tag": {
             "commentStart": 1418,
@@ -921,8 +921,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e6d910f3-f438-5bd9-91a4-357f3e469646",
+          "id": "1084cca5-0297-5dc3-92ac-287642feefac",
           "sourceRange": [],
           "tag": {
             "commentStart": 1532,
@@ -935,8 +935,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+          "id": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
           "sourceRange": [],
           "tag": {
             "commentStart": 2325,
@@ -949,8 +949,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
+          "id": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
           "sourceRange": [],
           "tag": {
             "commentStart": 2350,
@@ -976,11 +976,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "724b87fd-c709-5232-b7a1-547c15affb9b",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
               "sourceRange": []
             },
             "from": [
@@ -1004,7 +1004,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
               "sourceRange": []
             },
             "from": [
@@ -1028,7 +1028,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
               "sourceRange": []
             },
             "from": [
@@ -1052,7 +1052,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
               "sourceRange": []
             },
             "from": [
@@ -1076,7 +1076,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
               "sourceRange": []
             },
             "from": [
@@ -1100,7 +1100,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1084cca5-0297-5dc3-92ac-287642feefac",
               "sourceRange": []
             },
             "from": [
@@ -1124,8 +1124,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1166,7 +1166,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
             "sourceRange": []
           }
         },
@@ -1204,17 +1204,17 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+        "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "20b30aa4-67cc-51f8-a59d-6551fddaae57",
+      "endCapId": "131ea8b4-4d46-572c-ad48-0a9242fe3cfa",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -1223,12 +1223,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -1237,12 +1237,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -1251,12 +1251,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "2181764b-b5ce-5e14-b499-f36d24b7b28a",
           "radius": {
             "n": 5.0,
             "ty": {
@@ -1265,7 +1265,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "a27d4eec-2dc4-54e7-b284-d63c1bb0c515",
           "tag": null
         }
       ],
@@ -1282,7 +1282,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1356,8 +1356,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1386,7 +1386,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1402,7 +1402,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1476,8 +1476,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1506,7 +1506,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1522,7 +1522,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -1596,8 +1596,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1626,7 +1626,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1642,7 +1642,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -1716,8 +1716,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1746,7 +1746,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1762,7 +1762,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -1836,8 +1836,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1866,7 +1866,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1882,7 +1882,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -1956,8 +1956,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1986,7 +1986,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2003,11 +2003,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2031,7 +2031,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -2055,7 +2055,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -2079,7 +2079,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -2103,7 +2103,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -2127,7 +2127,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -2151,8 +2151,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2193,7 +2193,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
                   "sourceRange": []
                 }
               },
@@ -2223,8 +2223,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
+              "originalId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -2239,11 +2239,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5b5a27ed-100b-5b1f-8bb6-7235b969ff88",
             "sourceRange": []
           },
           "from": [
@@ -2267,7 +2267,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e4d97f2c-dab4-5c05-b8f9-901bfb9447ac",
             "sourceRange": []
           },
           "from": [
@@ -2291,7 +2291,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "25d85146-207e-50e0-aa94-a6fb2beccf0a",
             "sourceRange": []
           },
           "from": [
@@ -2315,7 +2315,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b3ec5401-4f52-555e-a4ef-6fb6144d5f7a",
             "sourceRange": []
           },
           "from": [
@@ -2339,7 +2339,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "341d6dc8-6ba8-5053-91e8-84ef38668bf6",
             "sourceRange": []
           },
           "from": [
@@ -2363,7 +2363,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1084cca5-0297-5dc3-92ac-287642feefac",
             "sourceRange": []
           },
           "from": [
@@ -2387,8 +2387,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -2429,7 +2429,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "2f481fd4-203e-57d7-b5d6-b16289577621",
           "sourceRange": []
         }
       },
@@ -2467,9 +2467,9 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "originalId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
+      "originSketchId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
       "units": "mm"
     }
   },
@@ -2496,12 +2496,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ce33a4a3-4eb4-5816-bde4-2e7ff3b1958c",
+          "id": "265dfb1c-91bb-5028-be4d-e5cd56f0d4b2",
           "sourceRange": [],
           "tag": {
             "commentStart": 2466,
@@ -2514,8 +2514,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "27f0372f-da7e-5704-bdd0-d02e8a20eaa9",
+          "id": "f6cc5a4a-b9b7-50d5-91f3-aa10d57ffecf",
           "sourceRange": [],
           "tag": {
             "commentStart": 2544,
@@ -2528,8 +2528,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "73f7bfd3-6044-5270-8b81-b1e589f2c3de",
+          "id": "08ac0227-0e34-5937-9e5d-16670fc36a55",
           "sourceRange": [],
           "tag": {
             "commentStart": 2666,
@@ -2545,11 +2545,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "265dfb1c-91bb-5028-be4d-e5cd56f0d4b2",
               "sourceRange": []
             },
             "from": [
@@ -2573,7 +2573,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f6cc5a4a-b9b7-50d5-91f3-aa10d57ffecf",
               "sourceRange": []
             },
             "from": [
@@ -2597,7 +2597,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "08ac0227-0e34-5937-9e5d-16670fc36a55",
               "sourceRange": []
             },
             "from": [
@@ -2621,8 +2621,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+          "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
           "kind": "Custom",
           "objectId": 37,
           "origin": {
@@ -2663,7 +2663,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
             "sourceRange": []
           }
         },
@@ -2681,13 +2681,13 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "value": "line3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+        "originSketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "62c09121-3f9a-570d-9a6b-99c7985eaebb",
+      "endCapId": "9c48c2c0-9242-52e0-abf7-92f07408aa37",
       "units": "mm",
       "sectional": false
     }
@@ -2710,7 +2710,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "objectId": 41,
                 "kind": {
                   "line": {
@@ -2784,8 +2784,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "kind": "Custom",
                   "objectId": 37,
                   "origin": {
@@ -2814,7 +2814,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2830,7 +2830,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                 "objectId": 44,
                 "kind": {
                   "line": {
@@ -2904,8 +2904,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "kind": "Custom",
                   "objectId": 37,
                   "origin": {
@@ -2934,7 +2934,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2950,7 +2950,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "objectId": 48,
                 "kind": {
                   "line": {
@@ -3024,8 +3024,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                  "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                   "kind": "Custom",
                   "objectId": 37,
                   "origin": {
@@ -3054,7 +3054,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3071,11 +3071,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                     "sourceRange": []
                   },
                   "from": [
@@ -3099,7 +3099,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7d4c814d-f292-503d-a012-68ab58c77524",
                     "sourceRange": []
                   },
                   "from": [
@@ -3123,7 +3123,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                     "sourceRange": []
                   },
                   "from": [
@@ -3147,8 +3147,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+                "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                 "kind": "Custom",
                 "objectId": 37,
                 "origin": {
@@ -3189,7 +3189,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
                   "sourceRange": []
                 }
               },
@@ -3207,8 +3207,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   "value": "line3"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+              "originalId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -3223,11 +3223,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "265dfb1c-91bb-5028-be4d-e5cd56f0d4b2",
             "sourceRange": []
           },
           "from": [
@@ -3251,7 +3251,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f6cc5a4a-b9b7-50d5-91f3-aa10d57ffecf",
             "sourceRange": []
           },
           "from": [
@@ -3275,7 +3275,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "08ac0227-0e34-5937-9e5d-16670fc36a55",
             "sourceRange": []
           },
           "from": [
@@ -3299,8 +3299,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
+        "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
         "kind": "Custom",
         "objectId": 37,
         "origin": {
@@ -3341,7 +3341,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
           "sourceRange": []
         }
       },
@@ -3359,9 +3359,9 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "value": "line3"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "originalId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
+      "originSketchId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "units": "mm"
     }
   },
@@ -3410,12 +3410,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+      "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3bc62709-c35f-5376-9c7e-02f0c2c1aa1e",
+          "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
           "sourceRange": [],
           "tag": {
             "commentStart": 3539,
@@ -3431,11 +3431,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
               "sourceRange": []
             },
             "ccw": true,
@@ -3465,8 +3465,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+          "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
           "kind": "Custom",
           "objectId": 57,
           "origin": {
@@ -3507,7 +3507,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
             "sourceRange": []
           }
         },
@@ -3517,13 +3517,13 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "value": "hole"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+        "originalId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+        "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "c029cdea-4d5a-5a6f-aa6c-70bec25d092a",
+      "endCapId": "700e86f4-c245-570a-8ddf-e94d94672b3c",
       "units": "mm",
       "sectional": false
     }
@@ -3535,12 +3535,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+          "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "3bc62709-c35f-5376-9c7e-02f0c2c1aa1e",
+              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3539,
@@ -3556,11 +3556,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3590,8 +3590,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+              "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
               "kind": "Custom",
               "objectId": 57,
               "origin": {
@@ -3632,7 +3632,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
                 "sourceRange": []
               }
             },
@@ -3642,13 +3642,13 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 "value": "hole"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originalId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "c029cdea-4d5a-5a6f-aa6c-70bec25d092a",
+          "endCapId": "700e86f4-c245-570a-8ddf-e94d94672b3c",
           "units": "mm",
           "sectional": false
         }
@@ -3657,12 +3657,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "bc41d237-68b1-51dc-80cd-3b50086848a0",
+          "artifactId": "bc41d237-68b1-51dc-80cd-3b50086848a0",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "3bc62709-c35f-5376-9c7e-02f0c2c1aa1e",
+              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3539,
@@ -3678,11 +3678,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "bc41d237-68b1-51dc-80cd-3b50086848a0",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3712,8 +3712,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+              "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
               "kind": "Custom",
               "objectId": 57,
               "origin": {
@@ -3754,7 +3754,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
                 "sourceRange": []
               }
             },
@@ -3764,13 +3764,13 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 "value": "hole"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originalId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "c029cdea-4d5a-5a6f-aa6c-70bec25d092a",
+          "endCapId": "700e86f4-c245-570a-8ddf-e94d94672b3c",
           "units": "mm",
           "sectional": false
         }
@@ -3784,12 +3784,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+          "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "3bc62709-c35f-5376-9c7e-02f0c2c1aa1e",
+              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3539,
@@ -3805,11 +3805,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3839,8 +3839,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+              "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
               "kind": "Custom",
               "objectId": 57,
               "origin": {
@@ -3881,7 +3881,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
                 "sourceRange": []
               }
             },
@@ -3891,13 +3891,13 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 "value": "hole"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originalId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "c029cdea-4d5a-5a6f-aa6c-70bec25d092a",
+          "endCapId": "700e86f4-c245-570a-8ddf-e94d94672b3c",
           "units": "mm",
           "sectional": false
         }
@@ -3906,12 +3906,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "57e4d63c-996c-52fb-8ff8-a79554d72e21",
+          "artifactId": "57e4d63c-996c-52fb-8ff8-a79554d72e21",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "3bc62709-c35f-5376-9c7e-02f0c2c1aa1e",
+              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3539,
@@ -3927,11 +3927,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "57e4d63c-996c-52fb-8ff8-a79554d72e21",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3961,8 +3961,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+              "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
               "kind": "Custom",
               "objectId": 57,
               "origin": {
@@ -4003,7 +4003,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
                 "sourceRange": []
               }
             },
@@ -4013,13 +4013,13 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 "value": "hole"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originalId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "c029cdea-4d5a-5a6f-aa6c-70bec25d092a",
+          "endCapId": "700e86f4-c245-570a-8ddf-e94d94672b3c",
           "units": "mm",
           "sectional": false
         }
@@ -4028,12 +4028,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "bc41d237-68b1-51dc-80cd-3b50086848a0",
+          "artifactId": "bc41d237-68b1-51dc-80cd-3b50086848a0",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "3bc62709-c35f-5376-9c7e-02f0c2c1aa1e",
+              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3539,
@@ -4049,11 +4049,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "bc41d237-68b1-51dc-80cd-3b50086848a0",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4083,8 +4083,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+              "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
               "kind": "Custom",
               "objectId": 57,
               "origin": {
@@ -4125,7 +4125,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
                 "sourceRange": []
               }
             },
@@ -4135,13 +4135,13 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 "value": "hole"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originalId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "c029cdea-4d5a-5a6f-aa6c-70bec25d092a",
+          "endCapId": "700e86f4-c245-570a-8ddf-e94d94672b3c",
           "units": "mm",
           "sectional": false
         }
@@ -4150,12 +4150,12 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "b13562c9-405a-52be-97f0-e4595e4e1546",
+          "artifactId": "b13562c9-405a-52be-97f0-e4595e4e1546",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "3bc62709-c35f-5376-9c7e-02f0c2c1aa1e",
+              "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3539,
@@ -4171,11 +4171,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "b13562c9-405a-52be-97f0-e4595e4e1546",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -4205,8 +4205,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+              "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
               "kind": "Custom",
               "objectId": 57,
               "origin": {
@@ -4247,7 +4247,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
                 "sourceRange": []
               }
             },
@@ -4257,13 +4257,13 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 "value": "hole"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originalId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+            "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
             "units": "mm"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "c029cdea-4d5a-5a6f-aa6c-70bec25d092a",
+          "endCapId": "700e86f4-c245-570a-8ddf-e94d94672b3c",
           "units": "mm",
           "sectional": false
         }
@@ -4297,7 +4297,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1a0ade6f-d355-5121-9adb-351976a78284",
                 "objectId": 61,
                 "kind": {
                   "circle": {
@@ -4371,8 +4371,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                  "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
                   "kind": "Custom",
                   "objectId": 57,
                   "origin": {
@@ -4401,7 +4401,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "hole"
@@ -4418,11 +4418,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "d005938d-7477-557a-bef2-28dfc45d0fce",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1a0ade6f-d355-5121-9adb-351976a78284",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -4452,8 +4452,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
                 "kind": "Custom",
                 "objectId": 57,
                 "origin": {
@@ -4494,7 +4494,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
                   "sourceRange": []
                 }
               },
@@ -4504,8 +4504,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   "value": "hole"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce",
+              "originalId": "d005938d-7477-557a-bef2-28dfc45d0fce",
               "units": "mm",
               "isClosed": "no"
             }
@@ -4529,11 +4529,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "340c82c9-f48c-5c79-8871-11a62a63614f",
             "sourceRange": []
           },
           "ccw": true,
@@ -4563,8 +4563,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
+        "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
         "kind": "Custom",
         "objectId": 57,
         "origin": {
@@ -4605,7 +4605,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
           "sourceRange": []
         }
       },
@@ -4615,9 +4615,9 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "value": "hole"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+      "originalId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
+      "originSketchId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "units": "mm"
     }
   },

@@ -1589,7 +1589,7 @@ description: Operations executed golf-tee.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -1619,7 +1619,7 @@ description: Operations executed golf-tee.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec"
           }
         },
         "sourceRange": []
@@ -1645,7 +1645,7 @@ description: Operations executed golf-tee.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674"
           }
         },
         "sourceRange": []

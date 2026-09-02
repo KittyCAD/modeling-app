@@ -46,7 +46,7 @@ description: Operations executed pattern_linear_in_module.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "9e24d3b1-23b0-5737-82c9-f5aee2198f63"
         },
         "sourceRange": []
       },
@@ -91,43 +91,43 @@ description: Operations executed pattern_linear_in_module.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d95437cb-28e6-5150-9042-6ffed5f18350"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b4e7673f-ca57-5ff5-ade3-3bad8f62201c"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c8fd3fce-f7ce-5063-a2e0-681af6ad93ae"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f9950a89-06f3-552c-92f9-7e5a5a21672c"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e66b3fa4-5018-5354-8273-60f2574779cb"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b310682a-0fff-517f-aba0-d685332987e8"
               }
             }
           ]
@@ -211,7 +211,7 @@ description: Operations executed pattern_linear_in_module.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "9e24d3b1-23b0-5737-82c9-f5aee2198f63"
         },
         "sourceRange": []
       },
@@ -256,43 +256,43 @@ description: Operations executed pattern_linear_in_module.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "78381d13-7a14-5ace-94e1-c47514f4e59d"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "33ae0bc2-00e1-5e02-8c77-f9ad01d6f068"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3b0aa862-de7b-5bd0-9cdb-f6213be518b5"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0b77af05-b15c-5d76-8041-c54efb758dd8"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3646813c-9c6a-5163-aa9d-b7cc6e22b15f"
               }
             }
           ]

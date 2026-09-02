@@ -1349,11 +1349,11 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -1383,7 +1383,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab"
           }
         },
         "sourceRange": []
@@ -1432,7 +1432,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4"
           }
         },
         "sourceRange": []
@@ -1456,19 +1456,19 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "361f733b-edc1-51f8-b746-9ebbb45cc862"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "3a6ce3d7-4036-5d3a-867e-1feec0a610b6"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "3ada940a-3c51-57fe-9367-77fb64618817"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "01b5817a-95ba-559a-a207-ea6e6693a367"
               }
             ]
           },
@@ -1497,7 +1497,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -2185,11 +2185,11 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0"
               }
             ]
           },
@@ -2219,7 +2219,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
           }
         },
         "sourceRange": []
@@ -2261,7 +2261,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -2285,11 +2285,11 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "fd194ffd-0c4a-5196-ae27-26bf60486885"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "f771073c-62aa-5393-a2a8-69d0a3e9691d"
               }
             ]
           },
@@ -2323,7 +2323,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d005938d-7477-557a-bef2-28dfc45d0fce"
           }
         },
         "sourceRange": []
@@ -3062,11 +3062,11 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3"
               }
             ]
           },
@@ -3096,7 +3096,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9"
           }
         },
         "sourceRange": []
@@ -3138,7 +3138,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
           }
         },
         "sourceRange": []
@@ -3162,11 +3162,11 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "97b06be9-9563-5012-90a3-1827e9d7d4a7"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "f927cac4-287d-5638-8615-2ac7ced25ddd"
               }
             ]
           },
@@ -3200,7 +3200,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
           }
         },
         "sourceRange": []
@@ -3714,11 +3714,11 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01"
               }
             ]
           },
@@ -3751,7 +3751,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0a18ec1a-aedf-58b1-9e55-29a2b2e3ecf6"
           }
         },
         "sourceRange": []
@@ -4346,11 +4346,11 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f58fd62a-578c-542c-94f8-dd627caab5d0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c0c1140b-284f-50ff-b80d-615b8b938475"
               }
             ]
           },
@@ -4383,7 +4383,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9"
           }
         },
         "sourceRange": []
@@ -4425,7 +4425,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -4451,7 +4451,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
           }
         },
         "sourceRange": []
@@ -4477,7 +4477,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002"
           }
         },
         "sourceRange": []
@@ -4503,7 +4503,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "020035cf-ab88-50f3-91b0-886b7f399647"
           }
         },
         "sourceRange": []
@@ -4529,7 +4529,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a0df0eb6-009b-594d-815d-31646979be80"
           }
         },
         "sourceRange": []

@@ -10,7 +10,7 @@ description: Operations executed named_views_hide_plane.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -50,7 +50,7 @@ description: Operations executed named_views_hide_plane.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -670,19 +670,19 @@ description: Operations executed named_views_hide_plane.kcl
             "value": {
               "line1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "89316223-2ea1-5731-9c72-0492bc30fbe2"
               },
               "line3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b"
               },
               "line4": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "523b9fc1-d681-5ef3-b407-128525533bfe"
               },
               "meta": {
                 "type": "Object",
@@ -690,7 +690,7 @@ description: Operations executed named_views_hide_plane.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7"
                     }
                   }
                 }
@@ -726,7 +726,7 @@ description: Operations executed named_views_hide_plane.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
           }
         },
         "sourceRange": []
@@ -767,7 +767,7 @@ description: Operations executed named_views_hide_plane.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
         },
         "sourceRange": []
       },

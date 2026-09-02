@@ -7,12 +7,12 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "41c630c9-9d44-581b-98af-caee575bea48",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "33aa9496-5ecf-5157-ab0b-51ae219ee4df",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": {
             "commentStart": 90,
@@ -25,15 +25,15 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb9d56c1-169a-5445-ae15-f24345ec7c75",
+          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "4b38ed2e-2ab0-52cc-891e-107ea704e9c3",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": {
             "commentStart": 155,
@@ -46,8 +46,8 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cbbb4f65-6ab2-564b-ab3f-1e225724a282",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": {
             "commentStart": 181,
@@ -63,11 +63,11 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "from": [
@@ -91,7 +91,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "sourceRange": []
             },
             "from": [
@@ -108,7 +108,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "from": [
@@ -132,7 +132,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "from": [
@@ -156,8 +156,8 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "kind": "XY",
           "objectId": 0,
           "origin": {
@@ -198,7 +198,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
@@ -216,16 +216,16 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             "value": "thing3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "db676f42-098b-5f8a-b4c7-abb41d3ee6dc",
+      "endCapId": "087239f0-3707-5efe-b7cf-6dc7c2f1a6b9",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
           "radius": {
             "n": 2.0,
             "ty": {
@@ -234,12 +234,12 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
           "radius": {
             "n": 2.0,
             "ty": {
@@ -248,7 +248,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "76e97e85-e537-578b-ac43-e32d1b685418",
           "tag": null
         }
       ],

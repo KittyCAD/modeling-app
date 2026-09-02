@@ -288,7 +288,7 @@ description: Operations executed cylinder.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -318,7 +318,7 @@ description: Operations executed cylinder.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5"
           }
         },
         "sourceRange": []
@@ -344,7 +344,7 @@ description: Operations executed cylinder.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93"
           }
         },
         "sourceRange": []

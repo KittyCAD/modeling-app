@@ -5,7 +5,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
 {
   "public/kcl-samples/end-effector-gripper-fingers/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,11 +30,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c085bb9-a401-55d5-8042-5a9095193d55",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -44,20 +44,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f87eb95-71f2-5911-bdbf-6255b335334d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -69,18 +69,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "to": {
           "x": 40.0,
           "y": -4.0,
@@ -89,18 +89,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b3604da-cb7d-56b0-8f93-648a91817ee2",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -113,11 +113,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "arc",
           "center": {
@@ -138,11 +138,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -155,11 +155,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "arc",
           "center": {
@@ -180,11 +180,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "41c630c9-9d44-581b-98af-caee575bea48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -197,11 +197,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "arc",
           "center": {
@@ -222,11 +222,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -239,11 +239,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "arc",
           "center": {
@@ -264,11 +264,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b681387-29ea-57f1-8713-d63280827139",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -281,11 +281,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "arc",
           "center": {
@@ -306,11 +306,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f084ad07-5777-5607-a544-c69f455c2aab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "line",
           "end": {
@@ -323,11 +323,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "segment": {
           "type": "arc",
           "center": {
@@ -348,7 +348,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -373,11 +373,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -387,20 +387,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "bc4183c3-53a3-5213-a2cc-6fc8ca38dc19",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -412,18 +412,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50fc9cbf-14b4-5cbe-9167-a6636695394d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "to": {
           "x": 50.0,
           "y": -5.0,
@@ -432,18 +432,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "line",
           "end": {
@@ -456,11 +456,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "arc",
           "center": {
@@ -481,11 +481,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "line",
           "end": {
@@ -498,11 +498,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "arc",
           "center": {
@@ -523,11 +523,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "line",
           "end": {
@@ -540,11 +540,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2269b169-b2b2-5ec2-a665-24cb3822e91f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "arc",
           "center": {
@@ -565,11 +565,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "line",
           "end": {
@@ -582,11 +582,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "arc",
           "center": {
@@ -607,11 +607,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4593843c-7d41-5ede-b7fa-ab9201f55957",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "line",
           "end": {
@@ -624,11 +624,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "arc",
           "center": {
@@ -649,11 +649,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "line",
           "end": {
@@ -666,11 +666,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "segment": {
           "type": "arc",
           "center": {
@@ -691,7 +691,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -716,11 +716,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "379ff142-2e45-5f2a-b984-2aa6871ea1bd",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -730,20 +730,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -755,18 +755,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "to": {
           "x": 90.0,
           "y": -9.0,
@@ -775,18 +775,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "line",
           "end": {
@@ -799,11 +799,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44621ebd-5856-5dfd-9426-dda5d969f375",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "arc",
           "center": {
@@ -824,11 +824,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "line",
           "end": {
@@ -841,11 +841,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "arc",
           "center": {
@@ -866,11 +866,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "line",
           "end": {
@@ -883,11 +883,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "arc",
           "center": {
@@ -908,11 +908,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "line",
           "end": {
@@ -925,11 +925,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "arc",
           "center": {
@@ -950,11 +950,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "line",
           "end": {
@@ -967,11 +967,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "arc",
           "center": {
@@ -992,11 +992,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "line",
           "end": {
@@ -1009,11 +1009,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8c56779b-80ab-5d86-a257-cec4629e2413",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "93954f29-a246-54bd-ac2a-62572f26d508",
         "segment": {
           "type": "arc",
           "center": {
@@ -1034,7 +1034,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1059,11 +1059,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1073,20 +1073,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f4a2fd0-fa42-52f3-9036-f434f97207a7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee9b0d5-39f2-5f42-ae00-6377cef02bc7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1098,18 +1098,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34ea98a5-fab3-5283-9445-5a3b25071d26",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "43582f56-4d15-5082-9796-67d8e5ee6e44",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "to": {
           "x": 105.0,
           "y": -10.5,
@@ -1118,18 +1118,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "line",
           "end": {
@@ -1142,11 +1142,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "arc",
           "center": {
@@ -1167,11 +1167,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "line",
           "end": {
@@ -1184,11 +1184,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44b2dfb0-0721-57cd-a796-4401a664e194",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "arc",
           "center": {
@@ -1209,11 +1209,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "line",
           "end": {
@@ -1226,11 +1226,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "arc",
           "center": {
@@ -1251,11 +1251,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "line",
           "end": {
@@ -1268,11 +1268,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0807f469-38fd-5e01-a326-82a66aa0f1d0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "arc",
           "center": {
@@ -1293,11 +1293,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "line",
           "end": {
@@ -1310,11 +1310,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae192af4-cbf2-5f1b-a2e5-767390f86588",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "arc",
           "center": {
@@ -1335,11 +1335,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "969d96c2-dff1-582e-8974-a3f5fef9c547",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "line",
           "end": {
@@ -1352,11 +1352,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "segment": {
           "type": "arc",
           "center": {
@@ -1377,7 +1377,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e9531b65-3013-5f8b-bebc-accdbd43919c",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1402,11 +1402,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1416,20 +1416,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cbd0a735-3417-50fd-a670-41b483234c04",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1441,18 +1441,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "to": {
           "x": 100.0,
           "y": -10.0,
@@ -1461,18 +1461,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9d8522f-60d2-513b-9c62-a4a3110e5970",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "line",
           "end": {
@@ -1485,11 +1485,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "arc",
           "center": {
@@ -1510,11 +1510,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7faa0516-2581-52ca-b80e-97150bf2f040",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "line",
           "end": {
@@ -1527,11 +1527,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "005d3ccb-fea1-55b7-af9e-3afef7d1f7ad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "arc",
           "center": {
@@ -1552,11 +1552,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4dc144d3-9f54-5d45-b06a-a8410f6a5222",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "line",
           "end": {
@@ -1569,11 +1569,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f6528d6a-e531-5b37-a104-5e45fe757c9f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "arc",
           "center": {
@@ -1594,11 +1594,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0a7732a-2f75-5407-b203-7382d01c3918",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "line",
           "end": {
@@ -1611,11 +1611,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "arc",
           "center": {
@@ -1636,11 +1636,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "line",
           "end": {
@@ -1653,11 +1653,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "arc",
           "center": {
@@ -1678,11 +1678,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94906884-1803-5336-93e6-0aca938f73f1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "line",
           "end": {
@@ -1695,11 +1695,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "segment": {
           "type": "arc",
           "center": {
@@ -1720,7 +1720,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d2a2786-5258-5364-b1b2-b28334229017",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1745,11 +1745,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "5d2a2786-5258-5364-b1b2-b28334229017",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1759,20 +1759,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9a7c20e4-9c0a-5dc1-8d8d-3ba13c7be126",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "5d2a2786-5258-5364-b1b2-b28334229017",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4df16988-4705-5de0-a505-c7b16692f0f7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "5d2a2786-5258-5364-b1b2-b28334229017",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1784,18 +1784,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "97510544-69da-5bcc-ae16-ec102d607510",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "65b5ba6d-61ab-533a-8e74-55dff5a195bd",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "to": {
           "x": 50.0,
           "y": -5.0,
@@ -1804,18 +1804,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33a3347a-139a-596e-82be-07fc52f16a7c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0e5111f2-33bb-50f3-812c-3fe7fe747c41",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "line",
           "end": {
@@ -1828,11 +1828,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77202593-ebf9-50c7-b715-41557309d9ab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "arc",
           "center": {
@@ -1853,11 +1853,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc243886-5941-5a64-8a15-a0b50bb063cb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "line",
           "end": {
@@ -1870,11 +1870,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "388597b8-4546-5655-b3a3-c3a0bba239ad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "arc",
           "center": {
@@ -1895,11 +1895,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5eed984f-8da1-571e-9576-dd247a4c55b3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "line",
           "end": {
@@ -1912,11 +1912,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f129c320-ce75-58e1-b5e8-ff4a5bae64dc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "arc",
           "center": {
@@ -1937,11 +1937,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cdb4d69-ec09-5ed8-9866-b9b01a5bad3e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "line",
           "end": {
@@ -1954,11 +1954,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d569b1e-3e41-5603-8816-9c625622a434",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "arc",
           "center": {
@@ -1979,11 +1979,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb172247-c469-54b8-920f-ca9ddc4fdbb3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "line",
           "end": {
@@ -1996,11 +1996,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "arc",
           "center": {
@@ -2021,11 +2021,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14466b86-e358-553e-8c66-6fd171fc4f2f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "line",
           "end": {
@@ -2038,11 +2038,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "97510544-69da-5bcc-ae16-ec102d607510",
         "segment": {
           "type": "arc",
           "center": {
@@ -2063,7 +2063,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "74c604d2-64d2-5caf-b93b-367875a63c5c",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2088,11 +2088,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "103770af-266b-591f-94e3-5934f2c750c9",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "74c604d2-64d2-5caf-b93b-367875a63c5c",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2102,20 +2102,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "57441093-dfdf-5e5c-b0eb-9525e256fd63",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "74c604d2-64d2-5caf-b93b-367875a63c5c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9a45a79-666c-55bc-a066-80e3fc2ca11c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "74c604d2-64d2-5caf-b93b-367875a63c5c",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2127,18 +2127,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eab0138f-4d34-5ad1-be64-4c06e431cd98",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "to": {
           "x": 105.0,
           "y": -10.5,
@@ -2147,18 +2147,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a191b91a-b1f1-5715-bc25-25a1f106866e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95ab2f69-02d1-5308-9a43-67a2ec05bd0f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "line",
           "end": {
@@ -2171,11 +2171,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db1a26b9-a657-5b85-9427-e6bdab5ddc51",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "arc",
           "center": {
@@ -2196,11 +2196,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "line",
           "end": {
@@ -2213,11 +2213,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d1e38581-6d4a-5346-9b30-84adae73d10c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "arc",
           "center": {
@@ -2238,11 +2238,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0b959a9c-ff6d-5ea4-9bd6-d41bfb0c0525",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "line",
           "end": {
@@ -2255,11 +2255,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae9b8e6a-e42c-5886-830e-517108f76e7f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "arc",
           "center": {
@@ -2280,11 +2280,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "line",
           "end": {
@@ -2297,11 +2297,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9deb8b6d-7844-5e18-8757-8a0874e53b4d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "arc",
           "center": {
@@ -2322,11 +2322,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0cae07ff-9f05-55d7-aa3b-48e0f7956432",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "line",
           "end": {
@@ -2339,11 +2339,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f492218-88c4-58fb-b433-2edbfe64d7db",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "arc",
           "center": {
@@ -2364,11 +2364,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f955175a-2142-57a5-a066-84dd5c24cf81",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "line",
           "end": {
@@ -2381,11 +2381,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4f747c0-a435-5157-a365-493dbb747de6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "segment": {
           "type": "arc",
           "center": {
@@ -2406,104 +2406,104 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6fec3912-fa52-5513-b3f5-b608fd2bcfc1",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "segment": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "intersection_segment": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "42bc78b9-4b08-5bc9-bc7d-76e8c6158b42",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
+        "segment": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71",
+        "intersection_segment": "0917d07d-5996-5994-8a06-602d43e2b6f3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7ae875a8-ae57-5b6a-ae5d-65f2501893ad",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "93954f29-a246-54bd-ac2a-62572f26d508",
+        "segment": "4b789d9f-4de7-52cb-ab04-7565c5456f13",
+        "intersection_segment": "44621ebd-5856-5dfd-9426-dda5d969f375",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a3fed421-ce33-5a4f-b048-d3a68dfce32d",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
+        "segment": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
+        "intersection_segment": "2b45af9b-6b90-5530-b9b7-b193031152d8",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "296133c8-94a5-5fd9-851a-d484fa3dc66a",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
+        "segment": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
+        "intersection_segment": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "09bc7d66-414a-560e-9855-7a04ab7b5e7e",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "97510544-69da-5bcc-ae16-ec102d607510",
+        "segment": "0e5111f2-33bb-50f3-812c-3fe7fe747c41",
+        "intersection_segment": "77202593-ebf9-50c7-b715-41557309d9ab",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9419ead-8fe3-58ae-821f-b6a562bd113d",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
+        "segment": "95ab2f69-02d1-5308-9a43-67a2ec05bd0f",
+        "intersection_segment": "db1a26b9-a657-5b85-9427-e6bdab5ddc51",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9091619d-ebc5-5e38-b770-c9cad323ebc4",
       "range": [],
       "command": {
         "type": "loft",
         "section_ids": [
-          "[uuid]",
-          "[uuid]"
+          "6fec3912-fa52-5513-b3f5-b608fd2bcfc1",
+          "42bc78b9-4b08-5bc9-bc7d-76e8c6158b42"
         ],
         "v_degree": 2,
         "bez_approximate_rational": false,
@@ -2513,37 +2513,37 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "edc11da7-15c9-5591-8b3f-a69aaa9e333e",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9091619d-ebc5-5e38-b770-c9cad323ebc4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acde053d-9775-5aa2-bfd7-aa8500b243f0",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9091619d-ebc5-5e38-b770-c9cad323ebc4",
+        "edge_id": "75cf6543-df8e-576c-a8de-52befe16afe0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c8e12fd-b358-532d-9e84-35bc530fa110",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9091619d-ebc5-5e38-b770-c9cad323ebc4",
+        "edge_id": "75cf6543-df8e-576c-a8de-52befe16afe0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d46dcf7a-3c8b-5383-b783-931fc579f81e",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9091619d-ebc5-5e38-b770-c9cad323ebc4",
         "color": {
           "r": 0.96862745,
           "g": 0.96862745,
@@ -2556,14 +2556,14 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a2f791f-f281-5e91-bf75-72e9409b6587",
       "range": [],
       "command": {
         "type": "loft",
         "section_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+          "09bc7d66-414a-560e-9855-7a04ab7b5e7e",
+          "7ae875a8-ae57-5b6a-ae5d-65f2501893ad",
+          "a3fed421-ce33-5a4f-b048-d3a68dfce32d"
         ],
         "v_degree": 2,
         "bez_approximate_rational": false,
@@ -2573,37 +2573,37 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8238d09-49b4-5a16-b778-a2635b129032",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8a2f791f-f281-5e91-bf75-72e9409b6587"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b21c7da8-b024-547d-a50c-bcfbf2cac9b5",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8a2f791f-f281-5e91-bf75-72e9409b6587",
+        "edge_id": "dcae1f3a-6b3a-5204-beb1-c7ae1b0a9863"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc1e5164-57c8-5b3a-8eb6-d5bc84ae6119",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8a2f791f-f281-5e91-bf75-72e9409b6587",
+        "edge_id": "dcae1f3a-6b3a-5204-beb1-c7ae1b0a9863"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad7afad4-9685-5510-8e06-7d59bba4c6d5",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "8a2f791f-f281-5e91-bf75-72e9409b6587",
         "color": {
           "r": 0.05882353,
           "g": 0.05882353,
@@ -2616,13 +2616,13 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3f57863-47a5-53b5-9e66-0894898f9785",
       "range": [],
       "command": {
         "type": "loft",
         "section_ids": [
-          "[uuid]",
-          "[uuid]"
+          "c9419ead-8fe3-58ae-821f-b6a562bd113d",
+          "296133c8-94a5-5fd9-851a-d484fa3dc66a"
         ],
         "v_degree": 2,
         "bez_approximate_rational": false,
@@ -2632,37 +2632,37 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b05ba4c9-ccf7-5d0a-a9a2-950f363725c8",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c3f57863-47a5-53b5-9e66-0894898f9785"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9453dadc-997d-5a44-9639-7ecfa4e3e619",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c3f57863-47a5-53b5-9e66-0894898f9785",
+        "edge_id": "52866cb8-0ed7-5f1a-bda4-d65273c2bf26"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8bd7ef2-9e72-50a4-9e42-47d31a159f59",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c3f57863-47a5-53b5-9e66-0894898f9785",
+        "edge_id": "52866cb8-0ed7-5f1a-bda4-d65273c2bf26"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a3f15780-d390-5be5-a97b-8bd501347807",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "c3f57863-47a5-53b5-9e66-0894898f9785",
         "color": {
           "r": 0.96862745,
           "g": 0.96862745,
@@ -2675,7 +2675,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9b5fabe-fd78-5319-89f2-15b20b9cfc57",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2700,11 +2700,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3dbf9b85-7f37-54be-8a8c-03134dd06774",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "f9b5fabe-fd78-5319-89f2-15b20b9cfc57",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2714,20 +2714,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "597d471d-1af6-5533-9f78-2ac54ac6c0f1",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f9b5fabe-fd78-5319-89f2-15b20b9cfc57",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f9b5fabe-fd78-5319-89f2-15b20b9cfc57",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2739,18 +2739,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "85c1de4b-c94f-5542-b722-a1ace11221a5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
         "to": {
           "x": 97.0,
           "y": 5.0,
@@ -2759,18 +2759,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b044af39-cbc3-54fa-9f39-031d1c56ae7d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f20f97db-6c6e-5597-acd6-63874dd9452b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
         "segment": {
           "type": "line",
           "end": {
@@ -2783,11 +2783,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c399e30-11b0-54b4-ab2e-01904812cfa4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
         "segment": {
           "type": "arc",
           "center": {
@@ -2808,11 +2808,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "67150385-7d6d-5558-9b12-a25e9c433b14",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
         "segment": {
           "type": "line",
           "end": {
@@ -2825,11 +2825,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "35c5db46-d8f1-5ab0-a220-51057c9b6cac",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
         "segment": {
           "type": "line",
           "end": {
@@ -2842,11 +2842,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f7f5047-af98-5f62-a2f5-70fb6b5d1787",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
         "segment": {
           "type": "line",
           "end": {
@@ -2859,11 +2859,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4a58bb1-6e9a-567c-9a22-4e8a1d8a3d75",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
         "segment": {
           "type": "arc",
           "center": {
@@ -2884,11 +2884,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f3bb49a2-9c39-5528-8f44-a3337b76b362",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
         "segment": {
           "type": "line",
           "end": {
@@ -2901,11 +2901,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ba624ec-0a0b-564c-90e4-cfa74956d06b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
         "segment": {
           "type": "line",
           "end": {
@@ -2918,24 +2918,24 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e6c6007-f848-596e-a16a-ec9a3e919448",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
+        "segment": "f20f97db-6c6e-5597-acd6-63874dd9452b",
+        "intersection_segment": "6c399e30-11b0-54b4-ab2e-01904812cfa4",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ded96391-9097-560e-913f-0484d96394a3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f9b5fabe-fd78-5319-89f2-15b20b9cfc57",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2947,11 +2947,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d18cac33-8289-57fc-b158-acc5374b53ba",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9e6c6007-f848-596e-a16a-ec9a3e919448",
         "distance": 40.0,
         "faces": null,
         "opposite": "None",
@@ -2960,55 +2960,55 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "173e557f-e6b5-56e4-b0c9-29b84af91406",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f923424-cf19-52ea-89fc-c05221fc17da",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "553e5255-1b16-5068-ae34-c728d5290538",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
+        "edge_id": "03b47a7b-5d8f-5a11-b2f7-863958ec0cfc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "75b833e5-f0e5-5611-a824-7cb0f52be847",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
+        "edge_id": "03b47a7b-5d8f-5a11-b2f7-863958ec0cfc"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a284338f-93ca-5bd0-93ec-db71e311620e",
       "range": [],
       "command": {
         "type": "solid3d_cut_edge_references",
-        "object_id": "[uuid]",
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
         "edges_references": [
           {
             "side_faces": [
-              "[uuid]",
-              "[uuid]"
+              "ec4d420e-99b6-5143-82a5-2174a88ae7c4",
+              "04a01765-c212-5ea8-ab37-e68d46b70b3d"
             ]
           },
           {
             "side_faces": [
-              "[uuid]",
-              "[uuid]"
+              "11f6f4ef-5303-5f87-9c78-78d552903252",
+              "04a01765-c212-5ea8-ab37-e68d46b70b3d"
             ]
           }
         ],
@@ -3021,16 +3021,16 @@ description: Artifact commands end-effector-gripper-fingers.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "[uuid]"
+          "190fcd82-dbf5-5b4c-8c91-69fd729ed3e6"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3fa61102-cd56-5477-94bb-ce5e89d9e222",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7d75e85f-8b16-575d-b0aa-20342ab61d3b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3038,18 +3038,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "22ba7afc-f279-51e5-b5e8-7cf66be455e6",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb7fe19d-d3c9-5d32-9874-193084f5a579",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "22ba7afc-f279-51e5-b5e8-7cf66be455e6",
         "to": {
           "x": -65.5,
           "y": 140.0,
@@ -3058,18 +3058,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "83cd7212-1ada-558a-a1fa-c007b98d2d6d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a033dab5-0390-57db-8839-ba1e2994485a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "22ba7afc-f279-51e5-b5e8-7cf66be455e6",
         "segment": {
           "type": "arc",
           "center": {
@@ -3090,11 +3090,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd375147-3e72-51bd-b4ae-e1898cd8385a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7d75e85f-8b16-575d-b0aa-20342ab61d3b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3102,18 +3102,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "75a71087-3ea4-59f8-8b21-e05a9ebd7b03",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "35e57bb8-6aa7-5307-a4bb-9c4b6e3dceb9",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "75a71087-3ea4-59f8-8b21-e05a9ebd7b03",
         "to": {
           "x": -25.5,
           "y": 140.0,
@@ -3122,18 +3122,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca9f7fb6-5abb-5987-897e-dbbe2429ca8c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21f4265c-f137-5d70-bd15-fef61fa118ad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "75a71087-3ea4-59f8-8b21-e05a9ebd7b03",
         "segment": {
           "type": "arc",
           "center": {
@@ -3154,11 +3154,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f9244d17-299c-533f-be70-72f81dd1f0fe",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2e486c24-6557-5ea2-bca7-3f3424dcd42b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3166,18 +3166,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fba10312-ccc1-5900-b701-a62fd578246e",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91e47b12-6391-56e0-a281-210c257c29b3",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "fba10312-ccc1-5900-b701-a62fd578246e",
         "to": {
           "x": 74.5,
           "y": 140.0,
@@ -3186,18 +3186,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8b43c1c-2a14-5df4-ab4c-53f2a7c15ec6",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1632f8b6-ad43-564a-88e5-8f866fc32fa5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "fba10312-ccc1-5900-b701-a62fd578246e",
         "segment": {
           "type": "arc",
           "center": {
@@ -3218,11 +3218,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3d6536a3-63e7-546c-a23a-d78980c1cfd7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2e486c24-6557-5ea2-bca7-3f3424dcd42b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3230,18 +3230,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cbdb6f93-9e20-5934-a422-d908ce101fef",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a706f382-ce77-5f6b-92e7-d20061320f8b",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "cbdb6f93-9e20-5934-a422-d908ce101fef",
         "to": {
           "x": 34.5,
           "y": 140.0,
@@ -3250,18 +3250,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "afc114f9-3ebc-5fc3-b946-5bed82a97d39",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b38bdf32-0c5b-50a1-a245-8525c060479a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "cbdb6f93-9e20-5934-a422-d908ce101fef",
         "segment": {
           "type": "arc",
           "center": {
@@ -3282,63 +3282,63 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48948c29-adc8-5bb6-8e6e-ca30d9e99f42",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "22ba7afc-f279-51e5-b5e8-7cf66be455e6",
+        "segment": "a033dab5-0390-57db-8839-ba1e2994485a",
+        "intersection_segment": "a033dab5-0390-57db-8839-ba1e2994485a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "42399397-a35f-595e-a4d2-7fd000b9757b",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "75a71087-3ea4-59f8-8b21-e05a9ebd7b03",
+        "segment": "21f4265c-f137-5d70-bd15-fef61fa118ad",
+        "intersection_segment": "21f4265c-f137-5d70-bd15-fef61fa118ad",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ac0a3a0-6a92-5839-8105-1fee8d446f12",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "fba10312-ccc1-5900-b701-a62fd578246e",
+        "segment": "1632f8b6-ad43-564a-88e5-8f866fc32fa5",
+        "intersection_segment": "1632f8b6-ad43-564a-88e5-8f866fc32fa5",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d96504e-8b78-5712-bcdb-96503aa71631",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "cbdb6f93-9e20-5934-a422-d908ce101fef",
+        "segment": "b38bdf32-0c5b-50a1-a245-8525c060479a",
+        "intersection_segment": "b38bdf32-0c5b-50a1-a245-8525c060479a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ead99871-a63f-59a8-8dbb-05ad005032ae",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7d75e85f-8b16-575d-b0aa-20342ab61d3b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3346,11 +3346,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "136f5e0e-221f-5235-9148-cfe68c5ca291",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "48948c29-adc8-5bb6-8e6e-ca30d9e99f42",
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
@@ -3359,44 +3359,44 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ecc3b38b-6a2d-558e-b786-f4e0d2cea27a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f91f5f0c-8a71-5eac-ae68-a41a8a0aa6d4",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "48948c29-adc8-5bb6-8e6e-ca30d9e99f42"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "98da9eee-8a69-58b9-84c3-e2b355052ed0",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
+        "edge_id": "ea9be1c3-def8-545c-8737-a1b5f2589f5e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4528a4c9-e794-5107-862d-5d3ecf67c610",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
+        "edge_id": "ea9be1c3-def8-545c-8737-a1b5f2589f5e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4fa3036-d755-50a5-915c-169bc8f06373",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7d75e85f-8b16-575d-b0aa-20342ab61d3b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3404,11 +3404,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "887c0877-1b4f-5fea-a0d9-50772562bc0a",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "42399397-a35f-595e-a4d2-7fd000b9757b",
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
@@ -3417,44 +3417,44 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "968ffe0e-1237-542c-b1fa-8e9983980aec",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef75b5ec-d05f-5fb2-91d8-3df8cdba5ea9",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "42399397-a35f-595e-a4d2-7fd000b9757b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f6c12cae-a6a5-5787-9cee-d878f6a857bd",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
+        "edge_id": "e433affa-6ab0-5f0c-a4e7-9fc75775b2f6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1139a380-6d14-50a7-8aca-3ff3d423d607",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
+        "edge_id": "e433affa-6ab0-5f0c-a4e7-9fc75775b2f6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8282317b-7b33-5b29-a0b3-e7bdb56738b2",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2e486c24-6557-5ea2-bca7-3f3424dcd42b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3462,11 +3462,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "589feeab-5bd5-57b3-8210-34189549c7ae",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "3ac0a3a0-6a92-5839-8105-1fee8d446f12",
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
@@ -3475,44 +3475,44 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88dacb09-a1b7-5b29-9f59-88a39804e9c6",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "545a676d-b0ca-51cf-8692-352f22a96abb",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "3ac0a3a0-6a92-5839-8105-1fee8d446f12"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6510dba2-d853-5488-8213-228f71d4dde9",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
+        "edge_id": "30e01a29-3d72-5fec-b0d5-5728786f5bdf"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bba69a31-6872-538b-ae52-5fb777fa3c22",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
+        "edge_id": "30e01a29-3d72-5fec-b0d5-5728786f5bdf"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f21dbbae-f507-5df7-8f8f-978af9cff31c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2e486c24-6557-5ea2-bca7-3f3424dcd42b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3520,11 +3520,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff4c146e-5f80-5a26-becd-54747f974af4",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9d96504e-8b78-5712-bcdb-96503aa71631",
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
@@ -3533,44 +3533,44 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7ed6343e-768b-5c81-9d55-a41043ae489a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ce8f78b2-4c45-5797-862d-9295c6733b0d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9d96504e-8b78-5712-bcdb-96503aa71631"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0919a55b-e67e-50b7-997a-87265757cea8",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
+        "edge_id": "329670c8-48ac-526c-8c83-8fa28a6c3af5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55aabc96-c8e2-5702-8efd-9e29535e01ea",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
+        "edge_id": "329670c8-48ac-526c-8c83-8fa28a6c3af5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ab5b77d-0eb4-51a0-8d79-c530f0d55a1c",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
         "color": {
           "r": 0.05882353,
           "g": 0.05882353,
@@ -3583,11 +3583,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d256da65-d829-58fc-a58f-e41cfc617df4",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
         "color": {
           "r": 0.05882353,
           "g": 0.05882353,
@@ -3600,11 +3600,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "23478a44-c960-5f95-a91e-8c2f04fea32a",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
         "color": {
           "r": 0.05882353,
           "g": 0.05882353,
@@ -3617,11 +3617,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6ec37800-942c-5a52-8aea-8eaa4f17da79",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
         "color": {
           "r": 0.05882353,
           "g": 0.05882353,
@@ -3634,7 +3634,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dc64c29b-ccfc-5c85-a67e-ffda938ee997",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3659,20 +3659,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "921052ae-e609-5306-88ca-87ccbdbeca5a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "dc64c29b-ccfc-5c85-a67e-ffda938ee997",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16b2ca6a-5dc4-5837-8211-a4f09bf4476a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "dc64c29b-ccfc-5c85-a67e-ffda938ee997",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3684,18 +3684,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6788db81-f481-5fd7-8a75-497b7aaf3285",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "68a707b9-b144-5a80-840c-e8fb17e28fbb",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "6788db81-f481-5fd7-8a75-497b7aaf3285",
         "to": {
           "x": 37.250462296,
           "y": 136.619053906,
@@ -3704,18 +3704,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "348d6486-d6e2-5249-9bed-72165da137b7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8e185de-540f-54a8-bf4b-f9522f7b8b8a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6788db81-f481-5fd7-8a75-497b7aaf3285",
         "segment": {
           "type": "line",
           "end": {
@@ -3728,11 +3728,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "812ce946-faf1-5d69-8f37-46a5d6e95361",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6788db81-f481-5fd7-8a75-497b7aaf3285",
         "segment": {
           "type": "arc",
           "center": {
@@ -3753,11 +3753,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff90bd8c-e451-5655-b0bd-0066f1788d4e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6788db81-f481-5fd7-8a75-497b7aaf3285",
         "segment": {
           "type": "line",
           "end": {
@@ -3770,11 +3770,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "afeefad8-ce15-5f45-a58a-57038df650ee",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6788db81-f481-5fd7-8a75-497b7aaf3285",
         "segment": {
           "type": "arc",
           "center": {
@@ -3795,7 +3795,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a53d2782-8625-5706-a921-23b8bf01a0bd",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3820,20 +3820,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9cbed381-7b5d-5a2a-8f23-c3a48258a61b",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a53d2782-8625-5706-a921-23b8bf01a0bd",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03ea2fde-e62d-50db-91e9-0e50829dd0e7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a53d2782-8625-5706-a921-23b8bf01a0bd",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3845,18 +3845,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "54fd6cb3-e401-5a20-9ff7-b257f2946f22",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
         "to": {
           "x": 34.5,
           "y": 140.0,
@@ -3865,18 +3865,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b373dedf-b9c8-52fe-b67e-54e4fd4952f2",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6b809edf-d342-5e88-8a11-67808067d72a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
         "segment": {
           "type": "arc",
           "center": {
@@ -3897,11 +3897,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "050a8452-684d-58f2-83a6-d4fd7d4e52b4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
         "to": {
           "x": 64.083278937,
           "y": 203.441545092,
@@ -3910,11 +3910,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c6e35f00-4ad9-5601-9c9a-9274c22d495d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
         "segment": {
           "type": "arc",
           "center": {
@@ -3935,24 +3935,24 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c15a3baf-83dc-58d1-ab0c-20d9082b0471",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "6788db81-f481-5fd7-8a75-497b7aaf3285",
+        "segment": "b8e185de-540f-54a8-bf4b-f9522f7b8b8a",
+        "intersection_segment": "812ce946-faf1-5d69-8f37-46a5d6e95361",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4afe779-525f-5f23-8758-c291de6d5c4a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "dc64c29b-ccfc-5c85-a67e-ffda938ee997",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3964,11 +3964,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f002859b-a914-5327-8934-6d752f24d128",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "c15a3baf-83dc-58d1-ab0c-20d9082b0471",
         "distance": 8.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -3977,70 +3977,70 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e9ef62a-e833-57fd-b916-7ab81f305859",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "390e839a-94f9-51f0-93af-9cce7dc4a3c0",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c15a3baf-83dc-58d1-ab0c-20d9082b0471"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6c91f96e-cc3d-557f-9195-2359634c3647",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c15a3baf-83dc-58d1-ab0c-20d9082b0471",
+        "edge_id": "529507cd-1f89-5a8e-bab4-03f46b80e522"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed323b11-cd6a-513b-a3a8-a059949857d4",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c15a3baf-83dc-58d1-ab0c-20d9082b0471",
+        "edge_id": "529507cd-1f89-5a8e-bab4-03f46b80e522"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f45ac561-4d3d-5a97-ab27-2b7a119dd09a",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
+        "segment": "6b809edf-d342-5e88-8a11-67808067d72a",
+        "intersection_segment": "6b809edf-d342-5e88-8a11-67808067d72a",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "54d84b22-fe3c-56c9-a6af-d549f2b130a2",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
+        "segment": "c6e35f00-4ad9-5601-9c9a-9274c22d495d",
+        "intersection_segment": "c6e35f00-4ad9-5601-9c9a-9274c22d495d",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5485f160-678d-5bc3-b411-c672b2f36657",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a53d2782-8625-5706-a921-23b8bf01a0bd",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4052,11 +4052,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20cceef8-ea05-5566-afde-a69614ea95cc",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "f45ac561-4d3d-5a97-ab27-2b7a119dd09a",
         "distance": 8.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -4065,44 +4065,44 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e92837c8-bdc6-5939-9479-dd7de656d367",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5232c238-c0cc-5d0f-914e-11ca8e5b84a9",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "f45ac561-4d3d-5a97-ab27-2b7a119dd09a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "184e73c5-f065-5ae7-b1bb-d89dce0a8288",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f45ac561-4d3d-5a97-ab27-2b7a119dd09a",
+        "edge_id": "57bc8d48-88c0-53b0-b0ee-92ea57322371"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8ecefb25-f472-5e13-bd76-2c8b1482a344",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f45ac561-4d3d-5a97-ab27-2b7a119dd09a",
+        "edge_id": "57bc8d48-88c0-53b0-b0ee-92ea57322371"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63738382-558b-51ba-b78a-b57b47440d84",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a53d2782-8625-5706-a921-23b8bf01a0bd",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4114,11 +4114,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d742777-6020-5b95-b225-89e9e69a3e2f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "54d84b22-fe3c-56c9-a6af-d549f2b130a2",
         "distance": 8.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -4127,60 +4127,60 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "47d496aa-cd2a-520a-b423-5d5fe710aaae",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "868154d9-14bb-55f3-bb8f-70e69ded6703",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "54d84b22-fe3c-56c9-a6af-d549f2b130a2"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ede1fbbf-5a26-5b3e-862c-80224a6ed768",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "54d84b22-fe3c-56c9-a6af-d549f2b130a2",
+        "edge_id": "4266abf0-816d-55f9-bc39-0789be6bf791"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95771970-23cf-5c2b-9951-c3bddfe6748b",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "54d84b22-fe3c-56c9-a6af-d549f2b130a2",
+        "edge_id": "4266abf0-816d-55f9-bc39-0789be6bf791"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21e98f42-035b-5b63-b972-ceb0d08632da",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "c15a3baf-83dc-58d1-ab0c-20d9082b0471"
         ],
         "tool_ids": [
-          "[uuid]",
-          "[uuid]"
+          "f45ac561-4d3d-5a97-ab27-2b7a119dd09a",
+          "54d84b22-fe3c-56c9-a6af-d549f2b130a2"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8778006a-4c2e-5dff-948a-88e7dd7fb1ba",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "21e98f42-035b-5b63-b972-ceb0d08632da",
         "color": {
           "r": 0.96862745,
           "g": 0.96862745,
@@ -4193,11 +4193,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c13020b2-82e1-5bce-b3ba-221a37cba4b3",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "21e98f42-035b-5b63-b972-ceb0d08632da",
         "transform": [],
         "transforms": [
           [
@@ -4233,7 +4233,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "97e486ce-f7f6-5c3f-9e57-1eed4a100479",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4258,11 +4258,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "86dc1fd9-1035-52be-9f8c-af706af138bb",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "97e486ce-f7f6-5c3f-9e57-1eed4a100479",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -4272,20 +4272,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "704cbd0e-2bc5-59c5-8f03-01a71362d321",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "97e486ce-f7f6-5c3f-9e57-1eed4a100479",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e62787a-9f09-5201-9b43-43d7c8439f3d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "97e486ce-f7f6-5c3f-9e57-1eed4a100479",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4297,18 +4297,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f38c716-74cb-571b-84c0-0796ad8525e3",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "to": {
           "x": 111.583278322,
           "y": 12.0,
@@ -4317,18 +4317,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "664ab16b-0e66-5eb0-a73a-55a188ea5c69",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6828a8f-1a31-5a20-8904-8c941bcdc652",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "line",
           "end": {
@@ -4341,11 +4341,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c24c2f08-b312-540d-8c14-0e56b5df29a3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "arc",
           "center": {
@@ -4366,11 +4366,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "69243bf8-0518-5797-ae42-2d19ea213b0c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "line",
           "end": {
@@ -4383,11 +4383,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8bb417a2-cd24-5d01-aa12-bbe041d6dedb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "arc",
           "center": {
@@ -4408,11 +4408,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6fe05ee4-94cc-54aa-b759-4fa601bbf3be",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "line",
           "end": {
@@ -4425,11 +4425,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4df46633-c5e8-576d-ae02-2f81135657df",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "arc",
           "center": {
@@ -4450,11 +4450,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbd2a2ed-a3f8-5b5d-b45c-0c8de9606fa5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "line",
           "end": {
@@ -4467,11 +4467,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8869f3fa-1217-5a3e-b363-3f81fd6766b9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "line",
           "end": {
@@ -4484,11 +4484,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "24a126b1-e705-5e67-a207-c74cc4a1f293",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "line",
           "end": {
@@ -4501,11 +4501,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8c3fbb5-91c4-5ef0-82b6-e98f16cdc401",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "arc",
           "center": {
@@ -4526,11 +4526,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd06fa91-239f-59e6-a155-9bb7ddb4c372",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "line",
           "end": {
@@ -4543,11 +4543,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a62e50da-cc5a-5bda-bda2-55426cbe0857",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "arc",
           "center": {
@@ -4568,11 +4568,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88532322-497e-5bfc-9fe0-c58baa3d1dec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "line",
           "end": {
@@ -4585,11 +4585,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f231d0e5-6852-54e5-938d-2523da9f44d7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "arc",
           "center": {
@@ -4610,11 +4610,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a57d9fa7-0c78-53b5-9866-14367c7a4620",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "line",
           "end": {
@@ -4627,11 +4627,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2540884b-f81f-5ecb-ba48-960ebcffcbdb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "segment": {
           "type": "line",
           "end": {
@@ -4644,24 +4644,24 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc8f0db3-1e07-5c6f-b896-ec1ed303927b",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
+        "segment": "d6828a8f-1a31-5a20-8904-8c941bcdc652",
+        "intersection_segment": "c24c2f08-b312-540d-8c14-0e56b5df29a3",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9207416d-c3fb-5f50-9a74-ca817bb6272e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "97e486ce-f7f6-5c3f-9e57-1eed4a100479",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4673,11 +4673,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7807f37-e1a4-5d2a-9c3a-c08f01bc4d86",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "fc8f0db3-1e07-5c6f-b896-ec1ed303927b",
         "distance": 80.0,
         "faces": null,
         "opposite": "None",
@@ -4686,40 +4686,40 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dffe07ca-4067-5be7-b16b-9aa389c11cc7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0f78dc7-1bd2-5b86-8e16-ef825f7cb492",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "fc8f0db3-1e07-5c6f-b896-ec1ed303927b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27933fba-01d2-5b7c-aa89-4c472ddc51e9",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fc8f0db3-1e07-5c6f-b896-ec1ed303927b",
+        "edge_id": "39c39136-69de-551a-bf71-b4dee9a66409"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b00f773-bb8b-5261-aa36-57792c76d3bb",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "fc8f0db3-1e07-5c6f-b896-ec1ed303927b",
+        "edge_id": "39c39136-69de-551a-bf71-b4dee9a66409"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b71c9cb-6de6-5fd0-be55-a3ac2938a448",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4744,20 +4744,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "732f5c89-036d-508f-97b1-77f5a239c165",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2b71c9cb-6de6-5fd0-be55-a3ac2938a448",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "75e4c4c3-88df-58ec-8e80-dd193c427d02",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2b71c9cb-6de6-5fd0-be55-a3ac2938a448",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4769,18 +4769,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "be3d12d5-8f96-5787-9c72-38ae9d305319",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8072d990-504f-5f13-8458-3b89a07b6071",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "be3d12d5-8f96-5787-9c72-38ae9d305319",
         "to": {
           "x": 319.583278322,
           "y": 353.441545093,
@@ -4789,18 +4789,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fcaa7865-777c-5db4-87ab-d533f3078f35",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ce979aa8-bc44-5b2a-b8ad-9f86631821b0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "be3d12d5-8f96-5787-9c72-38ae9d305319",
         "segment": {
           "type": "arc",
           "center": {
@@ -4821,24 +4821,24 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e9b5b4a5-9e2c-52d0-9670-589c6aeac8d7",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "be3d12d5-8f96-5787-9c72-38ae9d305319",
+        "segment": "ce979aa8-bc44-5b2a-b8ad-9f86631821b0",
+        "intersection_segment": "ce979aa8-bc44-5b2a-b8ad-9f86631821b0",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "87ce9ea6-9652-5b37-9f76-5bb8fa48d9e8",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2b71c9cb-6de6-5fd0-be55-a3ac2938a448",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4850,11 +4850,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d1093ba-3f39-522b-a08b-2e4798f74f4f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e9b5b4a5-9e2c-52d0-9670-589c6aeac8d7",
         "distance": 40.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -4863,40 +4863,40 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "918f4614-ed9d-533a-856f-059b51c831d5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "968aeaa0-ace1-5894-9f9e-88f0c11dca73",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e9b5b4a5-9e2c-52d0-9670-589c6aeac8d7"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bff04ef8-07b3-5420-9ff5-690a9cf6b9d2",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e9b5b4a5-9e2c-52d0-9670-589c6aeac8d7",
+        "edge_id": "3c782bde-f722-5ec4-a1e7-9532e13d4f94"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b9dd5be8-e95f-52fc-875f-994e4f373ea6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e9b5b4a5-9e2c-52d0-9670-589c6aeac8d7",
+        "edge_id": "3c782bde-f722-5ec4-a1e7-9532e13d4f94"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40058bfc-4b8c-5301-891c-53b1aabb78e3",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4921,20 +4921,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "126cfaee-9bf9-592a-9174-b90392cced1e",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "40058bfc-4b8c-5301-891c-53b1aabb78e3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0e3ece6-e6fe-55cf-b809-02f70e7c0f22",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "40058bfc-4b8c-5301-891c-53b1aabb78e3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4946,18 +4946,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "58a9782f-2947-5530-984c-971c8f28df73",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "11e9e597-0c9e-5627-b3b8-6f60f6a56d63",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "58a9782f-2947-5530-984c-971c8f28df73",
         "to": {
           "x": 50.583278322,
           "y": 183.441545093,
@@ -4966,18 +4966,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "caa09ed8-8559-5a8c-8926-0286420229f6",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f49760ee-6262-5eb6-a263-c1ce858994fb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "58a9782f-2947-5530-984c-971c8f28df73",
         "segment": {
           "type": "arc",
           "center": {
@@ -4998,24 +4998,24 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "edb8fe4b-e78c-5e91-bf14-77f419569505",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "58a9782f-2947-5530-984c-971c8f28df73",
+        "segment": "f49760ee-6262-5eb6-a263-c1ce858994fb",
+        "intersection_segment": "f49760ee-6262-5eb6-a263-c1ce858994fb",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7ce5e733-a0f6-5ea4-a5b4-a31e00e222c8",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "40058bfc-4b8c-5301-891c-53b1aabb78e3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5027,11 +5027,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fba553ba-7032-5e50-9960-8abf3ac45705",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "edb8fe4b-e78c-5e91-bf14-77f419569505",
         "distance": 40.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -5040,40 +5040,40 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ea00adda-e90e-5ed3-85b2-557cea7f29fe",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0858a602-bd64-50b8-8399-a96cf71ab280",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "edb8fe4b-e78c-5e91-bf14-77f419569505"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e733a33-e67c-5bfb-b8c4-07c1c8070943",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "edb8fe4b-e78c-5e91-bf14-77f419569505",
+        "edge_id": "44a0eab9-281b-528b-a250-aa662166e716"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db63a452-f476-5d29-bd2a-6dacd920e343",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "edb8fe4b-e78c-5e91-bf14-77f419569505",
+        "edge_id": "44a0eab9-281b-528b-a250-aa662166e716"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "17205e6b-a54a-5088-a37d-20c294c8ad8b",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -5098,20 +5098,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12a0daa3-b8e6-5aa8-8f65-05a151ede4e7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "17205e6b-a54a-5088-a37d-20c294c8ad8b",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "df47957b-6b46-5d6a-9d8b-a59eb4951e98",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "17205e6b-a54a-5088-a37d-20c294c8ad8b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5123,18 +5123,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0575921-ab6f-5505-a805-5f9cfc8fa9c9",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "540113e1-d602-5952-ac8a-181a65fa2df8",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e0575921-ab6f-5505-a805-5f9cfc8fa9c9",
         "to": {
           "x": 64.083278322,
           "y": 203.441545093,
@@ -5143,18 +5143,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "83375bdf-9587-5b09-8818-0393e84c51a7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d9779ddb-867b-5e29-b375-a577f4869b89",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e0575921-ab6f-5505-a805-5f9cfc8fa9c9",
         "segment": {
           "type": "arc",
           "center": {
@@ -5175,24 +5175,24 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b14a4e56-cab7-50ae-bd9c-76b9d7a943af",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "e0575921-ab6f-5505-a805-5f9cfc8fa9c9",
+        "segment": "d9779ddb-867b-5e29-b375-a577f4869b89",
+        "intersection_segment": "d9779ddb-867b-5e29-b375-a577f4869b89",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d0d5bb6c-c979-5019-affd-885cbb844e29",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "17205e6b-a54a-5088-a37d-20c294c8ad8b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5204,11 +5204,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c672a57-a1f6-5865-b9f5-1656324bc70c",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b14a4e56-cab7-50ae-bd9c-76b9d7a943af",
         "distance": 40.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -5217,40 +5217,40 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6258f306-722e-5fc4-94ce-1303d213eb37",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d6db274-b9d0-5a22-9a04-d3e876ed35e9",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b14a4e56-cab7-50ae-bd9c-76b9d7a943af"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3b69a85a-263f-578d-aed6-d41984e28f08",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b14a4e56-cab7-50ae-bd9c-76b9d7a943af",
+        "edge_id": "7a7b8079-1fc9-5e3c-9d6e-ce4c9e864b49"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0563b387-3ba7-506d-95ec-e3c672ae8737",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b14a4e56-cab7-50ae-bd9c-76b9d7a943af",
+        "edge_id": "7a7b8079-1fc9-5e3c-9d6e-ce4c9e864b49"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55c17c19-e24d-54a2-98bb-8943553478e5",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -5275,20 +5275,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "975487c4-f76d-5523-8cce-9425b03e379a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "55c17c19-e24d-54a2-98bb-8943553478e5",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b605260d-c100-5c20-8370-5cf640c9e8b7",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "55c17c19-e24d-54a2-98bb-8943553478e5",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5300,18 +5300,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e2feb7e4-705f-5adf-ad43-5cf7a2d1ae6d",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7982ee11-71aa-57c6-8495-a8e6b7cc6f7c",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e2feb7e4-705f-5adf-ad43-5cf7a2d1ae6d",
         "to": {
           "x": 104.083278322,
           "y": 203.441545093,
@@ -5320,18 +5320,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0de9ea2b-9f38-5f2b-8540-58d1137d060c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "80a89d3a-76e3-5e83-b69a-12df5d33293f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e2feb7e4-705f-5adf-ad43-5cf7a2d1ae6d",
         "segment": {
           "type": "arc",
           "center": {
@@ -5352,24 +5352,24 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "001a84e2-9659-5f72-8f74-6581f709b63f",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "e2feb7e4-705f-5adf-ad43-5cf7a2d1ae6d",
+        "segment": "80a89d3a-76e3-5e83-b69a-12df5d33293f",
+        "intersection_segment": "80a89d3a-76e3-5e83-b69a-12df5d33293f",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4aac940c-a612-5595-805e-2067dc380b91",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "55c17c19-e24d-54a2-98bb-8943553478e5",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5381,11 +5381,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28dbff08-8bd2-56e1-a5eb-77bcedc4ce26",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "001a84e2-9659-5f72-8f74-6581f709b63f",
         "distance": 40.0,
         "faces": null,
         "opposite": "Symmetric",
@@ -5394,98 +5394,98 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bafe463f-179b-5af2-b6bf-b1c3a9b52863",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6744e4b-8ee3-5af6-8f58-5e6f72e67cb9",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "001a84e2-9659-5f72-8f74-6581f709b63f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4cb3dcaa-1018-5228-95ea-1d2a846e59c5",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "001a84e2-9659-5f72-8f74-6581f709b63f",
+        "edge_id": "3b353236-bdba-59dd-964c-fe38e3ced804"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e77b727-aace-5f98-8900-bdd4ef915c29",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "001a84e2-9659-5f72-8f74-6581f709b63f",
+        "edge_id": "3b353236-bdba-59dd-964c-fe38e3ced804"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "239c31b0-218e-5845-9593-0fdf899053a7",
       "range": [],
       "command": {
         "type": "boolean_union",
         "solid_ids": [
-          "[uuid]",
-          "[uuid]"
+          "b14a4e56-cab7-50ae-bd9c-76b9d7a943af",
+          "001a84e2-9659-5f72-8f74-6581f709b63f"
         ],
         "separate_bodies": false,
         "tolerance": 0.001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6047020-81f7-5abc-8462-2bb06d43a2c1",
       "range": [],
       "command": {
         "type": "boolean_union",
         "solid_ids": [
-          "[uuid]",
-          "[uuid]"
+          "e9b5b4a5-9e2c-52d0-9670-589c6aeac8d7",
+          "edb8fe4b-e78c-5e91-bf14-77f419569505"
         ],
         "separate_bodies": false,
         "tolerance": 0.001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e1d52290-2e9c-50ce-8a87-e455736e4180",
       "range": [],
       "command": {
         "type": "boolean_union",
         "solid_ids": [
-          "[uuid]",
-          "[uuid]"
+          "239c31b0-218e-5845-9593-0fdf899053a7",
+          "d6047020-81f7-5abc-8462-2bb06d43a2c1"
         ],
         "separate_bodies": false,
         "tolerance": 0.001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "79ae8d62-90e5-571e-b998-e60ee90789ab",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "fc8f0db3-1e07-5c6f-b896-ec1ed303927b"
         ],
         "tool_ids": [
-          "[uuid]"
+          "e1d52290-2e9c-50ce-8a87-e455736e4180"
         ],
         "separate_bodies": false,
         "tolerance": 0.001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f6a1396a-8011-5601-975a-43173a34a768",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "79ae8d62-90e5-571e-b998-e60ee90789ab",
         "color": {
           "r": 0.05882353,
           "g": 0.05882353,
@@ -5498,7 +5498,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e6181ff3-8073-5b30-bb2b-4134e87c6d67",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -5523,11 +5523,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "016c3661-d0b6-5da6-8cf4-47d2103769b3",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "e6181ff3-8073-5b30-bb2b-4134e87c6d67",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -5537,20 +5537,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aaa1d624-a51a-5115-bc75-52da83a4e03f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e6181ff3-8073-5b30-bb2b-4134e87c6d67",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5a865866-e621-5f81-b9f8-4b53171a4dcf",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e6181ff3-8073-5b30-bb2b-4134e87c6d67",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5562,18 +5562,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "adcb8acc-dd54-5ecb-a5f5-f22458a1a69e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
         "to": {
           "x": -9.5,
           "y": 140.5,
@@ -5582,18 +5582,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba5dcf87-265c-54e7-a8ec-90d110ee07e1",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7645163c-dd2f-51e8-89d9-81a71c2e60ef",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
         "segment": {
           "type": "line",
           "end": {
@@ -5606,11 +5606,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "085078d7-3455-5550-a0a9-8e9153df0942",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
         "segment": {
           "type": "line",
           "end": {
@@ -5623,11 +5623,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "15151076-3ec7-58bd-a9d8-08d2c1ef0a26",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
         "segment": {
           "type": "line",
           "end": {
@@ -5640,11 +5640,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63da4ed2-5a15-51de-8bcf-21579a9edb34",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
         "segment": {
           "type": "line",
           "end": {
@@ -5657,11 +5657,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "207a014f-7119-581c-948e-4917554f641c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
         "segment": {
           "type": "line",
           "end": {
@@ -5674,11 +5674,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60a62e40-1671-5459-bf17-97cc4e6e6c67",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
         "segment": {
           "type": "line",
           "end": {
@@ -5691,11 +5691,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d19a7a8-e6c0-5e7c-96bc-50381154f8ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
         "segment": {
           "type": "line",
           "end": {
@@ -5708,11 +5708,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27857c17-4bf5-5e37-8e7f-c6861805d590",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
         "segment": {
           "type": "line",
           "end": {
@@ -5725,24 +5725,24 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5dd2b690-759c-55dc-93bb-c18f00c890a9",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
+        "segment": "7645163c-dd2f-51e8-89d9-81a71c2e60ef",
+        "intersection_segment": "085078d7-3455-5550-a0a9-8e9153df0942",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6cbf4a37-4a2f-5472-89ce-c7a24aa2931a",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "5dd2b690-759c-55dc-93bb-c18f00c890a9",
         "origin": {
           "x": 0.0,
           "y": 140.0,
@@ -5764,37 +5764,37 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a483d69-41e1-5c5c-9a49-75dcc1d596d9",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "5dd2b690-759c-55dc-93bb-c18f00c890a9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3d30606c-dd6b-58c3-be6b-0f4a4dce8c2e",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5dd2b690-759c-55dc-93bb-c18f00c890a9",
+        "edge_id": "fe14e8b5-5afb-5d44-a743-66d47cef66ae"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "213217cc-9e59-5d44-8979-19a7cd7ef980",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5dd2b690-759c-55dc-93bb-c18f00c890a9",
+        "edge_id": "fe14e8b5-5afb-5d44-a743-66d47cef66ae"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba415a15-14b4-589b-a353-a9ca1d87460c",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "5dd2b690-759c-55dc-93bb-c18f00c890a9",
         "transform": [],
         "transforms": [
           [
@@ -5830,11 +5830,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20da301d-cc31-5dda-892d-d3637731e957",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "5dd2b690-759c-55dc-93bb-c18f00c890a9",
         "color": {
           "r": 0.6509804,
           "g": 0.6509804,
@@ -5847,11 +5847,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d43206e-eb2b-5ed7-bf40-529a46db6e0f",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "bb9dec3f-7a76-5431-be9a-f1ecc5c73395",
         "color": {
           "r": 0.6509804,
           "g": 0.6509804,
@@ -5864,7 +5864,7 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bddd50e4-9885-52c4-9863-6fd97142e8c3",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -5889,11 +5889,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a082d64f-4286-59cd-b37b-838b2031632a",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "bddd50e4-9885-52c4-9863-6fd97142e8c3",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -5903,20 +5903,20 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8e74b5d7-b953-52c3-b7b3-ed9bb1da6876",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "bddd50e4-9885-52c4-9863-6fd97142e8c3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb02fdaa-09df-52b4-a00b-2eefaaf8ee04",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "bddd50e4-9885-52c4-9863-6fd97142e8c3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -5928,18 +5928,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59250d0a-0017-59bd-bdad-836329f10077",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "to": {
           "x": 0.0,
           "y": 207.941545093,
@@ -5948,18 +5948,18 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8be4dc9-6ce3-5255-b642-f364d2786645",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5777c136-6b93-5c4a-98c8-2ea2547a0fea",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -5972,11 +5972,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7779e220-1426-55dd-969d-9e5689eb6015",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -5989,11 +5989,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94cf0292-6c80-5b57-9501-b20d21904ae9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6006,11 +6006,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cce45821-b6bb-572b-aec9-9cf8843b218a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6023,11 +6023,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5cbdee8d-ebc5-5b57-b7cb-4be147d35074",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6040,11 +6040,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21dc7701-5b42-5cb2-852b-907e449b1ca4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6057,11 +6057,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d0d4e61d-69b5-5700-a1c8-344ecce64f13",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6074,11 +6074,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "acf11b5b-0fb8-59c7-9742-5e3da67624e1",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6091,11 +6091,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9997c8da-b656-5f91-b976-623a7b12929b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6108,11 +6108,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bad31d98-42aa-5f1c-b037-f165fc479f48",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6125,11 +6125,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "281c416a-0e3e-565e-9f7e-18ef4df2f53d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6142,11 +6142,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0327a056-2cfe-58a7-91b7-7f6b82f6f6cd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6159,11 +6159,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33a78ec7-7b71-5c73-9f75-446247cc5a19",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6176,11 +6176,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ddd3a31f-57c0-5ede-ab48-2071e99610a6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6193,11 +6193,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fef028f6-d1d0-53a6-8015-93d891514365",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6210,11 +6210,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "720756a6-8463-5f65-9096-42dbf1d0d201",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6227,11 +6227,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "39bdf1db-4e00-5f06-8cff-34458eeba09f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6244,11 +6244,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d86f8b9-5a62-546c-9243-e6736c960017",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "segment": {
           "type": "line",
           "end": {
@@ -6261,24 +6261,24 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed7341e1-fe44-5e92-b711-2b91fcf31081",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
+        "segment": "5777c136-6b93-5c4a-98c8-2ea2547a0fea",
+        "intersection_segment": "7779e220-1426-55dd-969d-9e5689eb6015",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba10c382-f783-5646-a8a8-a0c8707ded16",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "ed7341e1-fe44-5e92-b711-2b91fcf31081",
         "origin": {
           "x": 0.0,
           "y": 203.4415450925655,
@@ -6300,37 +6300,37 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9a2ef3d2-9572-57cc-9e45-961f68ecce62",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ed7341e1-fe44-5e92-b711-2b91fcf31081"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "917318aa-1919-51a2-bc93-7925d8480ce4",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ed7341e1-fe44-5e92-b711-2b91fcf31081",
+        "edge_id": "1f8783cd-d0b0-52c8-a00d-f389f2d9a324"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "346a1875-6ffa-5127-9914-7f9a0d73ba63",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ed7341e1-fe44-5e92-b711-2b91fcf31081",
+        "edge_id": "1f8783cd-d0b0-52c8-a00d-f389f2d9a324"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "daf2943e-d2ea-5be5-9175-07489b92eadf",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "ed7341e1-fe44-5e92-b711-2b91fcf31081",
         "transform": [],
         "transforms": [
           [
@@ -6366,11 +6366,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f30e1676-f5c1-539e-9b76-e61b15f59c06",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "ed7341e1-fe44-5e92-b711-2b91fcf31081",
         "color": {
           "r": 0.6509804,
           "g": 0.6509804,
@@ -6383,11 +6383,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6ab65c27-9336-58c7-8721-3791cf2b92f7",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "e6e5ee9e-0b2a-5185-b934-22a44a5f4ee2",
         "color": {
           "r": 0.6509804,
           "g": 0.6509804,
@@ -6400,200 +6400,200 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0137d8e-bcc0-5d81-b5ab-ac17c0532df3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed527848-fd48-5dd9-884d-d8797130c5bf",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0227e98-fe9b-58ed-bb82-88ea0cfff1bc",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "93954f29-a246-54bd-ac2a-62572f26d508",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e2caeb07-b7cb-5423-bb22-1dbf303d9028",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "34ea98a5-fab3-5283-9445-5a3b25071d26",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "afdf0e45-8c46-5bd4-84bb-9d1194ce058f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5939d8e9-7e4c-5c45-9f2d-90ff8ae63369",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "97510544-69da-5bcc-ae16-ec102d607510",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91fe6656-3cbc-5db1-9c54-edebf4f86d67",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c083b831-cf4e-512f-835e-00e5dcea0d16",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "29b7cff7-3a5d-51e7-a725-3facbc50929a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "22ba7afc-f279-51e5-b5e8-7cf66be455e6",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbfe546b-f9f2-5997-9248-0286bba6e0fc",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "75a71087-3ea4-59f8-8b21-e05a9ebd7b03",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9efc903f-f0ff-51c2-8216-c77c9ceb1bfb",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fba10312-ccc1-5900-b701-a62fd578246e",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "318a18ec-0576-5509-ac81-cab07e7149f5",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "cbdb6f93-9e20-5934-a422-d908ce101fef",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe802334-83c7-504d-9c5d-0c644902f385",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6788db81-f481-5fd7-8a75-497b7aaf3285",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "80542edc-19a6-5a05-ad64-61854d8ab177",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f17c8934-4320-5a24-875c-b39db5e1686f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6627944-56d9-5909-b705-a1b459b23b62",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "be3d12d5-8f96-5787-9c72-38ae9d305319",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1b65874-ea2d-5d42-b960-da4362aa6c26",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "58a9782f-2947-5530-984c-971c8f28df73",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9856d2e-4fa4-5e55-95cb-8b4d0dca499f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e0575921-ab6f-5505-a805-5f9cfc8fa9c9",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aecc2d2e-4b29-5e51-a3a2-f66f078c22d4",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "e2feb7e4-705f-5adf-ad43-5cf7a2d1ae6d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "916d6ab9-dc8c-52a0-8f36-87d59233add9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "08d6ed22-aafd-5d77-b03c-4fcdc00ad606",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "947db5e0-f608-5376-81d8-455b4e0b7d79",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "b46b8591-2c0e-5d2d-a89c-6e7e587a4bff",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3784d5cb-4e98-5c1c-a76a-9c7917a8be68",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -6610,11 +6610,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aa339e08-0789-5dae-9d64-371a586a5454",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -6631,11 +6631,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b38191af-fcba-53c0-b9df-db6c94cd36b1",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -6652,11 +6652,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "00035d1d-cd02-5b15-98a0-72b8a542ca44",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "9e6c6007-f848-596e-a16a-ec9a3e919448",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -6673,11 +6673,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dacb850a-1a37-5499-a667-562e01321644",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "21e98f42-035b-5b63-b972-ceb0d08632da",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -6694,11 +6694,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fcfb4702-8f9e-568a-a30c-e314907a1712",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "ed210439-c49e-51fe-9253-e8bc177aabef",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -6715,11 +6715,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cacc1926-e8cc-594f-98d5-01da1511b7ed",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "79ae8d62-90e5-571e-b998-e60ee90789ab",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -6736,11 +6736,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3dc2efdf-a749-5594-8531-c03d343316f1",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "5dd2b690-759c-55dc-93bb-c18f00c890a9",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -6757,11 +6757,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1f94c450-37df-5187-a3cd-c5ebc7d29a7b",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "bb9dec3f-7a76-5431-be9a-f1ecc5c73395",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -6778,11 +6778,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "847da75e-8437-5147-900d-32847ce73f63",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "ed7341e1-fe44-5e92-b711-2b91fcf31081",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -6799,11 +6799,11 @@ description: Artifact commands end-effector-gripper-fingers.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abd52cf6-4a36-5162-bd66-2638c2e33ced",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "e6e5ee9e-0b2a-5185-b934-22a44a5f4ee2",
         "axis": {
           "x": 0.0,
           "y": 0.0,

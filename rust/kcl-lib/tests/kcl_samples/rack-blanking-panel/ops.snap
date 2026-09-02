@@ -3760,11 +3760,11 @@ description: Operations executed rack-blanking-panel.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -3794,7 +3794,7 @@ description: Operations executed rack-blanking-panel.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
           }
         },
         "sourceRange": []
@@ -5088,7 +5088,7 @@ description: Operations executed rack-blanking-panel.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b111fba8-8876-56ff-b0a2-c225f35bfbdc"
               }
             ]
           },
@@ -5122,7 +5122,7 @@ description: Operations executed rack-blanking-panel.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
               }
             ]
           },
@@ -5155,13 +5155,13 @@ description: Operations executed rack-blanking-panel.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "20f09319-bab0-5dd8-8c40-ce90cd688483"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bee9909d-abbf-534c-b266-2c2c04133834"
               }
             }
           ]
@@ -5219,13 +5219,13 @@ description: Operations executed rack-blanking-panel.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b"
               }
             }
           ]
@@ -5379,7 +5379,7 @@ description: Operations executed rack-blanking-panel.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9f697a29-88bc-5a95-8fab-2b0aea89d002"
           }
         },
         "sourceRange": []
@@ -5392,25 +5392,25 @@ description: Operations executed rack-blanking-panel.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "91fbdbb6-014c-5a64-8899-25510779398f"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "e9845133-2572-5f28-a028-247d6186663f"
                 }
               }
             ]

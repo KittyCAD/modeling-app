@@ -6,8 +6,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -39,12 +39,12 @@ description: Variables in memory after executing hide_offset_plane.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+      "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 127,
@@ -57,8 +57,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "67c68347-0747-5a3d-b270-da035abddd8c",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 203,
@@ -71,8 +71,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "660d6e44-47cd-5ee1-8bee-90267b8cbbc9",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 277,
@@ -85,8 +85,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 351,
@@ -102,11 +102,11 @@ description: Variables in memory after executing hide_offset_plane.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -130,7 +130,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -154,7 +154,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -178,7 +178,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -202,8 +202,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -244,7 +244,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "72dddee3-1330-5c4f-b767-659f762ad674",
             "sourceRange": []
           }
         },
@@ -266,13 +266,13 @@ description: Variables in memory after executing hide_offset_plane.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+        "originalId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+        "originSketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "00f8003d-3b65-5f10-b911-9092660fca40",
+      "endCapId": "092755e4-e002-58b9-a194-69b526ae6929",
       "units": "mm",
       "sectional": false
     }
@@ -281,11 +281,11 @@ description: Variables in memory after executing hide_offset_plane.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "from": [
@@ -309,7 +309,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           },
           "from": [
@@ -333,7 +333,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -357,7 +357,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           },
           "from": [
@@ -381,8 +381,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -423,7 +423,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
           "sourceRange": []
         }
       },
@@ -445,8 +445,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -474,8 +474,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
   "plane001": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7d4c814d-f292-503d-a012-68ab58c77524",
+      "id": "7d4c814d-f292-503d-a012-68ab58c77524",
       "kind": "Custom",
       "objectId": 39,
       "origin": {
@@ -508,11 +508,11 @@ description: Variables in memory after executing hide_offset_plane.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -536,7 +536,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -560,7 +560,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -584,7 +584,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -608,8 +608,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -650,7 +650,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
           "sourceRange": []
         }
       },
@@ -672,9 +672,9 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+      "originalId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
+      "originSketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
       "units": "mm"
     }
   },
@@ -687,7 +687,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 5,
                 "kind": {
                   "line": {
@@ -761,8 +761,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -791,7 +791,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -807,7 +807,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 8,
                 "kind": {
                   "line": {
@@ -881,8 +881,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -911,7 +911,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -927,7 +927,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -1001,8 +1001,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1031,7 +1031,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1047,7 +1047,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 14,
                 "kind": {
                   "line": {
@@ -1121,8 +1121,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1151,7 +1151,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1167,7 +1167,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 25,
                 "kind": {
                   "line": {
@@ -1242,8 +1242,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1272,7 +1272,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -1288,7 +1288,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "objectId": 28,
                 "kind": {
                   "line": {
@@ -1363,8 +1363,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1393,7 +1393,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -1410,11 +1410,11 @@ description: Variables in memory after executing hide_offset_plane.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1438,7 +1438,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -1462,7 +1462,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1486,7 +1486,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -1510,8 +1510,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1552,7 +1552,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                   "sourceRange": []
                 }
               },
@@ -1574,8 +1574,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+              "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1589,7 +1589,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 2,
                 "kind": {
                   "point": {
@@ -1629,8 +1629,8 @@ description: Variables in memory after executing hide_offset_plane.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1659,7 +1659,7 @@ description: Variables in memory after executing hide_offset_plane.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "point1"

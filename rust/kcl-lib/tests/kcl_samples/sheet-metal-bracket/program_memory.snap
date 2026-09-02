@@ -6,8 +6,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
   "__sketch_131_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -120,12 +120,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "19107e89-bf40-5541-88a5-5106b6de636d",
+      "artifactId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6fecf37c-5c59-56ae-b68c-5788b5bdcf05",
+          "id": "70652630-d52b-5d3e-986f-7e8b22a3025d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1327,
@@ -138,8 +138,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "35452ba8-dde6-597b-9731-67c8114e84f3",
+          "id": "a4dd9c86-029b-5670-a54b-0ce4677e5a8d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1404,
@@ -152,8 +152,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83a05bf5-ccea-506b-997b-5c853907495a",
+          "id": "0e8dffaa-5759-51c1-87d7-1a80fd92f96d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1556,
@@ -166,8 +166,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1f33651e-140a-5e93-a02e-f50c04da42de",
+          "id": "eb5eebf7-920a-541b-85e5-7030b532b96c",
           "sourceRange": [],
           "tag": {
             "commentStart": 1677,
@@ -180,8 +180,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "957c8040-353c-5a66-9040-b91d64b56102",
+          "id": "e98bfd87-12ff-506c-ab4a-6f239e99ef83",
           "sourceRange": [],
           "tag": {
             "commentStart": 1828,
@@ -194,8 +194,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2394410d-29ad-5a99-a65c-bf6680589ef6",
+          "id": "0871a565-f1d2-5728-8ed6-99794e7a86e3",
           "sourceRange": [],
           "tag": {
             "commentStart": 1948,
@@ -208,8 +208,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "95385469-ae20-5288-b1fc-047285d95116",
+          "id": "fe60de9e-0e73-525d-94b2-de3ca8daf9b2",
           "sourceRange": [],
           "tag": {
             "commentStart": 2096,
@@ -222,8 +222,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "58f955ca-efd4-5ca0-98ac-3350baec03db",
+          "id": "74c7bbda-2ef8-5370-b621-6299107d6cda",
           "sourceRange": [],
           "tag": {
             "commentStart": 2217,
@@ -236,8 +236,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b3cc9984-323e-59f3-8fef-4d0cfe858772",
+          "id": "3a7d62b7-bb03-5abc-818f-d9dc7a41b01b",
           "sourceRange": [],
           "tag": {
             "commentStart": 2366,
@@ -250,8 +250,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d30c89ba-43d5-571f-995c-889ff2e090f0",
+          "id": "43daf8e9-5359-55a6-89fd-03cc0dcff7af",
           "sourceRange": [],
           "tag": {
             "commentStart": 2479,
@@ -264,8 +264,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "859e3f87-4031-5c80-b618-2714d1f8e1be",
+          "id": "aa0b39ac-e5f9-5b59-9008-8e0d2997d1b5",
           "sourceRange": [],
           "tag": {
             "commentStart": 2598,
@@ -278,8 +278,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3fb40954-28e6-50db-b8d0-0fe19c096a83",
+          "id": "e9ee0385-92ab-558f-9eba-6ac62f2c854c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2721,
@@ -292,8 +292,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f3f268a0-527c-5b6d-8951-6831cc778f58",
+          "id": "7dd40a55-3686-5be0-a2e2-b957bd99021a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2874,
@@ -306,8 +306,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c1bf4551-4f04-523c-8042-e12a6c038840",
+          "id": "30c33035-4592-57b0-b19f-0028e0b2c596",
           "sourceRange": [],
           "tag": {
             "commentStart": 2998,
@@ -320,8 +320,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "24c59c87-a19f-5057-8a20-ae3b510a09b9",
+          "id": "19eb4443-f869-5276-9099-c6de22fd5fb6",
           "sourceRange": [],
           "tag": {
             "commentStart": 3151,
@@ -334,8 +334,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83498f48-b1d1-53dd-b42f-0b37a7827a88",
+          "id": "577e0010-8284-5e0c-80ff-c80d4897c69b",
           "sourceRange": [],
           "tag": {
             "commentStart": 3272,
@@ -348,8 +348,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bcce2f00-e149-5cc6-b6f2-a633df22fe41",
+          "id": "ad44b815-6aaf-5d2e-9ebf-4f92a6334ce4",
           "sourceRange": [],
           "tag": {
             "commentStart": 3427,
@@ -362,8 +362,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fd8c4cc9-f4de-541b-a7a2-dae041f1abb1",
+          "id": "e94d9619-31d6-5caa-a8c7-1f6729a502e4",
           "sourceRange": [],
           "tag": {
             "commentStart": 3550,
@@ -376,8 +376,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e718a66a-489e-53e4-bf62-3982e8c0e867",
+          "id": "8e18c538-bda8-57bf-a98a-5380e98fd508",
           "sourceRange": [],
           "tag": {
             "commentStart": 3706,
@@ -390,8 +390,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "571c6c0b-864c-56df-a18a-e593748a9398",
+          "id": "ba9e062d-7e8f-547f-8a8c-42d4a7b636b0",
           "sourceRange": [],
           "tag": {
             "commentStart": 3832,
@@ -404,8 +404,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c17ba074-f046-5c29-b293-60d813402c69",
+          "id": "c17ba074-f046-5c29-b293-60d813402c69",
           "sourceRange": [],
           "tag": {
             "commentStart": 5336,
@@ -418,8 +418,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "dc316b86-b1f2-5a5d-b152-ebd92b1f82c4",
+          "id": "dc316b86-b1f2-5a5d-b152-ebd92b1f82c4",
           "sourceRange": [],
           "tag": {
             "commentStart": 5311,
@@ -445,11 +445,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "19107e89-bf40-5541-88a5-5106b6de636d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "70652630-d52b-5d3e-986f-7e8b22a3025d",
               "sourceRange": []
             },
             "from": [
@@ -473,7 +473,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a4dd9c86-029b-5670-a54b-0ce4677e5a8d",
               "sourceRange": []
             },
             "ccw": true,
@@ -503,7 +503,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0e8dffaa-5759-51c1-87d7-1a80fd92f96d",
               "sourceRange": []
             },
             "from": [
@@ -527,7 +527,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb5eebf7-920a-541b-85e5-7030b532b96c",
               "sourceRange": []
             },
             "ccw": false,
@@ -557,7 +557,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e98bfd87-12ff-506c-ab4a-6f239e99ef83",
               "sourceRange": []
             },
             "from": [
@@ -581,7 +581,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0871a565-f1d2-5728-8ed6-99794e7a86e3",
               "sourceRange": []
             },
             "ccw": false,
@@ -611,7 +611,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fe60de9e-0e73-525d-94b2-de3ca8daf9b2",
               "sourceRange": []
             },
             "from": [
@@ -635,7 +635,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "74c7bbda-2ef8-5370-b621-6299107d6cda",
               "sourceRange": []
             },
             "ccw": true,
@@ -665,7 +665,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3a7d62b7-bb03-5abc-818f-d9dc7a41b01b",
               "sourceRange": []
             },
             "from": [
@@ -689,7 +689,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "43daf8e9-5359-55a6-89fd-03cc0dcff7af",
               "sourceRange": []
             },
             "from": [
@@ -713,7 +713,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "aa0b39ac-e5f9-5b59-9008-8e0d2997d1b5",
               "sourceRange": []
             },
             "from": [
@@ -737,7 +737,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e9ee0385-92ab-558f-9eba-6ac62f2c854c",
               "sourceRange": []
             },
             "ccw": false,
@@ -767,7 +767,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7dd40a55-3686-5be0-a2e2-b957bd99021a",
               "sourceRange": []
             },
             "from": [
@@ -791,7 +791,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "30c33035-4592-57b0-b19f-0028e0b2c596",
               "sourceRange": []
             },
             "ccw": true,
@@ -821,7 +821,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19eb4443-f869-5276-9099-c6de22fd5fb6",
               "sourceRange": []
             },
             "from": [
@@ -845,7 +845,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "577e0010-8284-5e0c-80ff-c80d4897c69b",
               "sourceRange": []
             },
             "ccw": true,
@@ -875,7 +875,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ad44b815-6aaf-5d2e-9ebf-4f92a6334ce4",
               "sourceRange": []
             },
             "from": [
@@ -899,7 +899,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e94d9619-31d6-5caa-a8c7-1f6729a502e4",
               "sourceRange": []
             },
             "ccw": false,
@@ -929,7 +929,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8e18c538-bda8-57bf-a98a-5380e98fd508",
               "sourceRange": []
             },
             "from": [
@@ -953,7 +953,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ba9e062d-7e8f-547f-8a8c-42d4a7b636b0",
               "sourceRange": []
             },
             "from": [
@@ -977,8 +977,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1019,7 +1019,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
             "sourceRange": []
           }
         },
@@ -1117,13 +1117,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line9"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d",
+        "originalId": "19107e89-bf40-5541-88a5-5106b6de636d",
+        "originSketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "c17ba074-f046-5c29-b293-60d813402c69",
+      "endCapId": "dc316b86-b1f2-5a5d-b152-ebd92b1f82c4",
       "units": "in",
       "sectional": false
     }
@@ -1235,12 +1235,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
+          "artifactId": "92ead137-02a3-5a66-a3df-f1b87766c456",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "86c49d4b-9cab-501a-8f66-247e7ca333af",
+              "id": "76ccb609-c5a7-5e1f-b35f-054d62d83bbd",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7984,
@@ -1256,11 +1256,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "76ccb609-c5a7-5e1f-b35f-054d62d83bbd",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1290,8 +1290,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+              "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
               "kind": "Custom",
               "objectId": 130,
               "origin": {
@@ -1332,7 +1332,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
                 "sourceRange": []
               }
             },
@@ -1374,13 +1374,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "value": "circle9"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
+            "originalId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
+            "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "09e77291-03b8-5037-a5cf-67f583e8cbee",
+          "endCapId": "5061d093-30ab-5e41-bf90-4fa3d0ff0fc9",
           "units": "in",
           "sectional": false
         }
@@ -1389,12 +1389,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "2d6c2537-3784-5667-8614-4423d6c6f752",
+          "artifactId": "28f6e85f-5537-5013-ac4d-1b88aa312db5",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "31490fbb-34e6-5a77-8102-5e91f0af959b",
+              "id": "d2772d53-82ec-5fb6-b319-8fc3c09e97b3",
               "sourceRange": [],
               "tag": {
                 "commentStart": 7811,
@@ -1410,11 +1410,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "2d6c2537-3784-5667-8614-4423d6c6f752",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "d2772d53-82ec-5fb6-b319-8fc3c09e97b3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1444,8 +1444,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+              "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
               "kind": "Custom",
               "objectId": 130,
               "origin": {
@@ -1486,7 +1486,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
                 "sourceRange": []
               }
             },
@@ -1528,13 +1528,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "value": "circle9"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "2d6c2537-3784-5667-8614-4423d6c6f752",
+            "originalId": "2d6c2537-3784-5667-8614-4423d6c6f752",
+            "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "6b5033d6-6547-593f-9f40-8841fc5828ab",
+          "endCapId": "e0d84779-9c3d-5f95-b90b-a22b5dbef45a",
           "units": "in",
           "sectional": false
         }
@@ -1543,12 +1543,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "67d03316-0deb-5224-a7ce-b3394ba08db9",
+          "artifactId": "c93c1163-3f23-5d1e-bca1-1a555fc8ee8b",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c7f2ac73-6d83-53ff-a69e-3affccbef3f6",
+              "id": "78d1f25a-917e-5448-9e96-8e93219744c7",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8676,
@@ -1564,11 +1564,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "67d03316-0deb-5224-a7ce-b3394ba08db9",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "78d1f25a-917e-5448-9e96-8e93219744c7",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1598,8 +1598,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+              "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
               "kind": "Custom",
               "objectId": 130,
               "origin": {
@@ -1640,7 +1640,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
                 "sourceRange": []
               }
             },
@@ -1682,13 +1682,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "value": "circle9"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "67d03316-0deb-5224-a7ce-b3394ba08db9",
+            "originalId": "67d03316-0deb-5224-a7ce-b3394ba08db9",
+            "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "5bd90255-7a74-5e4b-9df9-a51252c0cc57",
+          "endCapId": "daab2ae7-e31c-58d3-98e0-0ab100c24fc7",
           "units": "in",
           "sectional": false
         }
@@ -1697,12 +1697,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
+          "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "10ece6ab-bd20-5365-9068-eb010e05e699",
+              "id": "8396a897-c2e3-57ad-9a8a-dfcaefa1d9ce",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8853,
@@ -1718,11 +1718,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "8396a897-c2e3-57ad-9a8a-dfcaefa1d9ce",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1752,8 +1752,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+              "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
               "kind": "Custom",
               "objectId": 130,
               "origin": {
@@ -1794,7 +1794,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
                 "sourceRange": []
               }
             },
@@ -1836,13 +1836,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "value": "circle9"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
+            "originalId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
+            "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "6edd41e4-5aae-5d5b-9b6d-8832e84b1903",
+          "endCapId": "9d830c98-36b5-52ea-9b61-2b61886cdd26",
           "units": "in",
           "sectional": false
         }
@@ -1851,12 +1851,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+          "artifactId": "349ba77a-8183-57f6-8580-b06227eac5bd",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "58489706-cc1f-5671-82a9-e077451b69dc",
+              "id": "8dd7a5f2-4b35-59cb-b8c4-53ddc93418b7",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9031,
@@ -1872,11 +1872,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "8dd7a5f2-4b35-59cb-b8c4-53ddc93418b7",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1906,8 +1906,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+              "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
               "kind": "Custom",
               "objectId": 130,
               "origin": {
@@ -1948,7 +1948,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
                 "sourceRange": []
               }
             },
@@ -1990,13 +1990,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "value": "circle9"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+            "originalId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+            "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "62583219-c95d-5f70-b6fb-a527c89a018c",
+          "endCapId": "41c8d44c-4d3f-533a-b59f-3b78312b7b77",
           "units": "in",
           "sectional": false
         }
@@ -2005,12 +2005,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "ab87837d-7702-50ae-a973-1b474e1e48bf",
+          "artifactId": "c9d8522f-60d2-513b-9c62-a4a3110e5970",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a74555cf-2520-59c2-abe4-60d2a1ab9be1",
+              "id": "396df3bd-bb73-5f12-8c68-6b21bd7d5257",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8500,
@@ -2026,11 +2026,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "ab87837d-7702-50ae-a973-1b474e1e48bf",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "396df3bd-bb73-5f12-8c68-6b21bd7d5257",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2060,8 +2060,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+              "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
               "kind": "Custom",
               "objectId": 130,
               "origin": {
@@ -2102,7 +2102,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
                 "sourceRange": []
               }
             },
@@ -2144,13 +2144,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "value": "circle9"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ab87837d-7702-50ae-a973-1b474e1e48bf",
+            "originalId": "ab87837d-7702-50ae-a973-1b474e1e48bf",
+            "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "0b09025c-dd64-560b-bd42-9e465365ac73",
+          "endCapId": "b4888bd1-cc1c-5cbe-8eeb-5f9a22477ae4",
           "units": "in",
           "sectional": false
         }
@@ -2159,12 +2159,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
+          "artifactId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "09dcb8d9-98c3-5a08-a4f6-56d1525cca8f",
+              "id": "0aaa8e99-1272-50a4-b06e-c5fcf77b7e91",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8329,
@@ -2180,11 +2180,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0aaa8e99-1272-50a4-b06e-c5fcf77b7e91",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2214,8 +2214,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+              "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
               "kind": "Custom",
               "objectId": 130,
               "origin": {
@@ -2256,7 +2256,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
                 "sourceRange": []
               }
             },
@@ -2298,13 +2298,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "value": "circle9"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
+            "originalId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
+            "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "a03dc92d-3945-5190-9de7-7dea63246da7",
+          "endCapId": "4f3fe5e3-ded5-58a3-8125-3ebd41d538d6",
           "units": "in",
           "sectional": false
         }
@@ -2313,12 +2313,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+          "artifactId": "45dcafc5-d8d1-5e4a-95d8-e1fc36d780f1",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "7802a163-b2c3-5b81-a080-5f1c02edb57d",
+              "id": "dc7e3455-4309-580a-b2c2-34cc614725d0",
               "sourceRange": [],
               "tag": {
                 "commentStart": 8157,
@@ -2334,11 +2334,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "edad1eb5-5562-5615-b23f-ee6623df14ee",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dc7e3455-4309-580a-b2c2-34cc614725d0",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2368,8 +2368,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+              "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
               "kind": "Custom",
               "objectId": 130,
               "origin": {
@@ -2410,7 +2410,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
                 "sourceRange": []
               }
             },
@@ -2452,13 +2452,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "value": "circle9"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+            "originalId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+            "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "0f792b93-5fe0-5431-aa60-cbbb4ee19c8c",
+          "endCapId": "49d45a31-7d14-503f-b2bf-a53a2fef8941",
           "units": "in",
           "sectional": false
         }
@@ -2467,12 +2467,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
+          "artifactId": "12a33a9d-38b6-56fb-af56-29ce1e09b1cb",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "f8617a40-bf5a-5f97-8f59-3458d435a890",
+              "id": "98c466ae-977e-53d3-a53e-05caa2218f34",
               "sourceRange": [],
               "tag": {
                 "commentStart": 9548,
@@ -2488,11 +2488,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "98c466ae-977e-53d3-a53e-05caa2218f34",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2522,8 +2522,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+              "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
               "kind": "Custom",
               "objectId": 130,
               "origin": {
@@ -2564,7 +2564,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
                 "sourceRange": []
               }
             },
@@ -2606,13 +2606,13 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "value": "circle9"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
+            "originalId": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
+            "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "c96a0e77-3f0d-53c9-9aa7-a0fa54ede934",
+          "endCapId": "da3876f7-9c7a-5201-84fe-aa3470fedcec",
           "units": "in",
           "sectional": false
         }
@@ -2650,11 +2650,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -2678,7 +2678,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "ccw": true,
@@ -2708,7 +2708,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -2732,7 +2732,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "ccw": false,
@@ -2762,7 +2762,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
             "sourceRange": []
           },
           "from": [
@@ -2779,7 +2779,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           },
           "from": [
@@ -2803,7 +2803,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
             "sourceRange": []
           },
           "ccw": false,
@@ -2833,7 +2833,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
             "sourceRange": []
           },
           "from": [
@@ -2850,7 +2850,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
             "sourceRange": []
           },
           "from": [
@@ -2874,7 +2874,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
             "sourceRange": []
           },
           "ccw": true,
@@ -2904,7 +2904,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           },
           "from": [
@@ -2928,7 +2928,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "sourceRange": []
           },
           "from": [
@@ -2952,7 +2952,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "sourceRange": []
           },
           "from": [
@@ -2976,7 +2976,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
             "sourceRange": []
           },
           "ccw": false,
@@ -3006,7 +3006,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
             "sourceRange": []
           },
           "from": [
@@ -3023,7 +3023,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
             "sourceRange": []
           },
           "from": [
@@ -3047,7 +3047,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
             "sourceRange": []
           },
           "ccw": true,
@@ -3077,7 +3077,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
             "sourceRange": []
           },
           "from": [
@@ -3094,7 +3094,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
             "sourceRange": []
           },
           "from": [
@@ -3118,7 +3118,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
             "sourceRange": []
           },
           "ccw": true,
@@ -3148,7 +3148,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
             "sourceRange": []
           },
           "from": [
@@ -3165,7 +3165,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           },
           "from": [
@@ -3189,7 +3189,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
             "sourceRange": []
           },
           "ccw": false,
@@ -3219,7 +3219,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
             "sourceRange": []
           },
           "from": [
@@ -3236,7 +3236,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
             "sourceRange": []
           },
           "from": [
@@ -3260,7 +3260,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
             "sourceRange": []
           },
           "from": [
@@ -3284,7 +3284,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
             "sourceRange": []
           },
           "from": [
@@ -3301,7 +3301,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
             "sourceRange": []
           },
           "from": [
@@ -3325,8 +3325,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -3367,7 +3367,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
           "sourceRange": []
         }
       },
@@ -3457,8 +3457,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "line9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+      "originalId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "units": "in",
       "isClosed": "implicitly"
     }
@@ -3467,11 +3467,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
             "sourceRange": []
           },
           "ccw": true,
@@ -3501,7 +3501,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f296bd37-495b-5038-81a3-eade3812cc2e",
             "sourceRange": []
           },
           "from": [
@@ -3518,7 +3518,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
             "sourceRange": []
           },
           "ccw": true,
@@ -3548,7 +3548,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
             "sourceRange": []
           },
           "from": [
@@ -3565,7 +3565,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
             "sourceRange": []
           },
           "ccw": true,
@@ -3595,7 +3595,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
             "sourceRange": []
           },
           "from": [
@@ -3612,7 +3612,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "08138142-a558-56a4-a23f-2f334e02b011",
             "sourceRange": []
           },
           "ccw": true,
@@ -3642,7 +3642,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "af94b4da-da53-5386-a65f-ed75c251c9ff",
             "sourceRange": []
           },
           "from": [
@@ -3659,7 +3659,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
             "sourceRange": []
           },
           "ccw": true,
@@ -3689,7 +3689,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
             "sourceRange": []
           },
           "from": [
@@ -3706,7 +3706,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
             "sourceRange": []
           },
           "ccw": true,
@@ -3736,7 +3736,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "33d4ddb8-e281-5429-897a-8b34342e4a06",
             "sourceRange": []
           },
           "from": [
@@ -3753,7 +3753,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
             "sourceRange": []
           },
           "ccw": true,
@@ -3783,7 +3783,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "df641c7f-27a7-5524-a6c2-93d1677bc829",
             "sourceRange": []
           },
           "from": [
@@ -3800,7 +3800,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
             "sourceRange": []
           },
           "ccw": true,
@@ -3830,7 +3830,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6df8ec7f-7a39-55d7-a123-33133fbcbbd6",
             "sourceRange": []
           },
           "from": [
@@ -3847,7 +3847,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2ab8a671-6218-5516-901a-d1a83480ded7",
             "sourceRange": []
           },
           "ccw": true,
@@ -3877,8 +3877,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "kind": "Custom",
         "objectId": 130,
         "origin": {
@@ -3919,7 +3919,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
           "sourceRange": []
         }
       },
@@ -3961,8 +3961,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "circle9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
+      "originalId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "units": "in",
       "isClosed": "no"
     }
@@ -4081,11 +4081,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "76ccb609-c5a7-5e1f-b35f-054d62d83bbd",
             "sourceRange": []
           },
           "ccw": true,
@@ -4115,8 +4115,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "kind": "Custom",
         "objectId": 130,
         "origin": {
@@ -4157,7 +4157,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
           "sourceRange": []
         }
       },
@@ -4199,9 +4199,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "circle9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
+      "originalId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
+      "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "units": "in"
     }
   },
@@ -4209,11 +4209,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "19107e89-bf40-5541-88a5-5106b6de636d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "70652630-d52b-5d3e-986f-7e8b22a3025d",
             "sourceRange": []
           },
           "from": [
@@ -4237,7 +4237,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a4dd9c86-029b-5670-a54b-0ce4677e5a8d",
             "sourceRange": []
           },
           "ccw": true,
@@ -4267,7 +4267,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0e8dffaa-5759-51c1-87d7-1a80fd92f96d",
             "sourceRange": []
           },
           "from": [
@@ -4291,7 +4291,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb5eebf7-920a-541b-85e5-7030b532b96c",
             "sourceRange": []
           },
           "ccw": false,
@@ -4321,7 +4321,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e98bfd87-12ff-506c-ab4a-6f239e99ef83",
             "sourceRange": []
           },
           "from": [
@@ -4345,7 +4345,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0871a565-f1d2-5728-8ed6-99794e7a86e3",
             "sourceRange": []
           },
           "ccw": false,
@@ -4375,7 +4375,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fe60de9e-0e73-525d-94b2-de3ca8daf9b2",
             "sourceRange": []
           },
           "from": [
@@ -4399,7 +4399,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "74c7bbda-2ef8-5370-b621-6299107d6cda",
             "sourceRange": []
           },
           "ccw": true,
@@ -4429,7 +4429,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3a7d62b7-bb03-5abc-818f-d9dc7a41b01b",
             "sourceRange": []
           },
           "from": [
@@ -4453,7 +4453,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "43daf8e9-5359-55a6-89fd-03cc0dcff7af",
             "sourceRange": []
           },
           "from": [
@@ -4477,7 +4477,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "aa0b39ac-e5f9-5b59-9008-8e0d2997d1b5",
             "sourceRange": []
           },
           "from": [
@@ -4501,7 +4501,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e9ee0385-92ab-558f-9eba-6ac62f2c854c",
             "sourceRange": []
           },
           "ccw": false,
@@ -4531,7 +4531,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7dd40a55-3686-5be0-a2e2-b957bd99021a",
             "sourceRange": []
           },
           "from": [
@@ -4555,7 +4555,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "30c33035-4592-57b0-b19f-0028e0b2c596",
             "sourceRange": []
           },
           "ccw": true,
@@ -4585,7 +4585,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19eb4443-f869-5276-9099-c6de22fd5fb6",
             "sourceRange": []
           },
           "from": [
@@ -4609,7 +4609,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "577e0010-8284-5e0c-80ff-c80d4897c69b",
             "sourceRange": []
           },
           "ccw": true,
@@ -4639,7 +4639,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad44b815-6aaf-5d2e-9ebf-4f92a6334ce4",
             "sourceRange": []
           },
           "from": [
@@ -4663,7 +4663,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e94d9619-31d6-5caa-a8c7-1f6729a502e4",
             "sourceRange": []
           },
           "ccw": false,
@@ -4693,7 +4693,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8e18c538-bda8-57bf-a98a-5380e98fd508",
             "sourceRange": []
           },
           "from": [
@@ -4717,7 +4717,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ba9e062d-7e8f-547f-8a8c-42d4a7b636b0",
             "sourceRange": []
           },
           "from": [
@@ -4741,8 +4741,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -4783,7 +4783,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
           "sourceRange": []
         }
       },
@@ -4881,9 +4881,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "line9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d",
+      "originalId": "19107e89-bf40-5541-88a5-5106b6de636d",
+      "originSketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "units": "in"
     }
   },
@@ -4891,11 +4891,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2d6c2537-3784-5667-8614-4423d6c6f752",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d2772d53-82ec-5fb6-b319-8fc3c09e97b3",
             "sourceRange": []
           },
           "ccw": true,
@@ -4925,8 +4925,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "kind": "Custom",
         "objectId": 130,
         "origin": {
@@ -4967,7 +4967,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
           "sourceRange": []
         }
       },
@@ -5009,9 +5009,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "circle9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "2d6c2537-3784-5667-8614-4423d6c6f752",
+      "originalId": "2d6c2537-3784-5667-8614-4423d6c6f752",
+      "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "units": "in"
     }
   },
@@ -5019,11 +5019,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "67d03316-0deb-5224-a7ce-b3394ba08db9",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "78d1f25a-917e-5448-9e96-8e93219744c7",
             "sourceRange": []
           },
           "ccw": true,
@@ -5053,8 +5053,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "kind": "Custom",
         "objectId": 130,
         "origin": {
@@ -5095,7 +5095,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
           "sourceRange": []
         }
       },
@@ -5137,9 +5137,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "circle9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "67d03316-0deb-5224-a7ce-b3394ba08db9",
+      "originalId": "67d03316-0deb-5224-a7ce-b3394ba08db9",
+      "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "units": "in"
     }
   },
@@ -5147,11 +5147,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8396a897-c2e3-57ad-9a8a-dfcaefa1d9ce",
             "sourceRange": []
           },
           "ccw": true,
@@ -5181,8 +5181,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "kind": "Custom",
         "objectId": 130,
         "origin": {
@@ -5223,7 +5223,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
           "sourceRange": []
         }
       },
@@ -5265,9 +5265,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "circle9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
+      "originalId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
+      "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "units": "in"
     }
   },
@@ -5275,11 +5275,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8dd7a5f2-4b35-59cb-b8c4-53ddc93418b7",
             "sourceRange": []
           },
           "ccw": true,
@@ -5309,8 +5309,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "kind": "Custom",
         "objectId": 130,
         "origin": {
@@ -5351,7 +5351,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
           "sourceRange": []
         }
       },
@@ -5393,9 +5393,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "circle9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+      "originalId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
+      "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "units": "in"
     }
   },
@@ -5403,11 +5403,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "ab87837d-7702-50ae-a973-1b474e1e48bf",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "396df3bd-bb73-5f12-8c68-6b21bd7d5257",
             "sourceRange": []
           },
           "ccw": true,
@@ -5437,8 +5437,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "kind": "Custom",
         "objectId": 130,
         "origin": {
@@ -5479,7 +5479,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
           "sourceRange": []
         }
       },
@@ -5521,9 +5521,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "circle9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "ab87837d-7702-50ae-a973-1b474e1e48bf",
+      "originalId": "ab87837d-7702-50ae-a973-1b474e1e48bf",
+      "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "units": "in"
     }
   },
@@ -5531,11 +5531,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0aaa8e99-1272-50a4-b06e-c5fcf77b7e91",
             "sourceRange": []
           },
           "ccw": true,
@@ -5565,8 +5565,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "kind": "Custom",
         "objectId": 130,
         "origin": {
@@ -5607,7 +5607,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
           "sourceRange": []
         }
       },
@@ -5649,9 +5649,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "circle9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
+      "originalId": "aaa2a6cb-5f04-5c7c-b55f-4a6996b316dd",
+      "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "units": "in"
     }
   },
@@ -5659,11 +5659,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "edad1eb5-5562-5615-b23f-ee6623df14ee",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dc7e3455-4309-580a-b2c2-34cc614725d0",
             "sourceRange": []
           },
           "ccw": true,
@@ -5693,8 +5693,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "kind": "Custom",
         "objectId": 130,
         "origin": {
@@ -5735,7 +5735,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
           "sourceRange": []
         }
       },
@@ -5777,9 +5777,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "circle9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+      "originalId": "edad1eb5-5562-5615-b23f-ee6623df14ee",
+      "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "units": "in"
     }
   },
@@ -5787,11 +5787,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "98c466ae-977e-53d3-a53e-05caa2218f34",
             "sourceRange": []
           },
           "ccw": true,
@@ -5821,8 +5821,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+        "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
         "kind": "Custom",
         "objectId": 130,
         "origin": {
@@ -5863,7 +5863,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
           "sourceRange": []
         }
       },
@@ -5905,9 +5905,9 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "value": "circle9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
+      "originalId": "9e7bf977-5ef0-5034-a49f-a9e7744d4434",
+      "originSketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
       "units": "in"
     }
   },
@@ -5920,7 +5920,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                 "objectId": 52,
                 "kind": {
                   "arc": {
@@ -6026,8 +6026,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6056,7 +6056,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc12"
@@ -6072,7 +6072,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                 "objectId": 61,
                 "kind": {
                   "arc": {
@@ -6178,8 +6178,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6208,7 +6208,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc14"
@@ -6224,7 +6224,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                 "objectId": 70,
                 "kind": {
                   "arc": {
@@ -6330,8 +6330,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6360,7 +6360,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc16"
@@ -6376,7 +6376,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                 "objectId": 79,
                 "kind": {
                   "arc": {
@@ -6482,8 +6482,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6512,7 +6512,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc18"
@@ -6528,7 +6528,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 8,
                 "kind": {
                   "arc": {
@@ -6634,8 +6634,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6664,7 +6664,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc2"
@@ -6680,7 +6680,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 17,
                 "kind": {
                   "arc": {
@@ -6786,8 +6786,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6816,7 +6816,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc4"
@@ -6832,7 +6832,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 26,
                 "kind": {
                   "arc": {
@@ -6938,8 +6938,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -6968,7 +6968,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc6"
@@ -6984,7 +6984,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 35,
                 "kind": {
                   "arc": {
@@ -7090,8 +7090,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7120,7 +7120,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc8"
@@ -7136,7 +7136,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -7210,8 +7210,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7240,7 +7240,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -7256,7 +7256,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 43,
                 "kind": {
                   "line": {
@@ -7330,8 +7330,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7360,7 +7360,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -7376,7 +7376,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "objectId": 47,
                 "kind": {
                   "line": {
@@ -7450,8 +7450,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7480,7 +7480,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -7496,7 +7496,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                 "objectId": 56,
                 "kind": {
                   "line": {
@@ -7570,8 +7570,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7600,7 +7600,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line13"
@@ -7616,7 +7616,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "objectId": 65,
                 "kind": {
                   "line": {
@@ -7690,8 +7690,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7720,7 +7720,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line15"
@@ -7736,7 +7736,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                 "objectId": 74,
                 "kind": {
                   "line": {
@@ -7810,8 +7810,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7840,7 +7840,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line17"
@@ -7856,7 +7856,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                 "objectId": 83,
                 "kind": {
                   "line": {
@@ -7930,8 +7930,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -7960,7 +7960,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line19"
@@ -7976,7 +7976,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
                 "objectId": 122,
                 "kind": {
                   "line": {
@@ -8051,8 +8051,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8081,7 +8081,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -8097,7 +8097,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "objectId": 87,
                 "kind": {
                   "line": {
@@ -8171,8 +8171,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8201,7 +8201,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line20"
@@ -8217,7 +8217,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                 "objectId": 91,
                 "kind": {
                   "line": {
@@ -8291,8 +8291,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8321,7 +8321,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line21"
@@ -8337,7 +8337,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 12,
                 "kind": {
                   "line": {
@@ -8411,8 +8411,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8441,7 +8441,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -8457,7 +8457,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -8531,8 +8531,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8561,7 +8561,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -8577,7 +8577,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 30,
                 "kind": {
                   "line": {
@@ -8651,8 +8651,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8681,7 +8681,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -8697,7 +8697,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 39,
                 "kind": {
                   "line": {
@@ -8771,8 +8771,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -8801,7 +8801,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -8818,11 +8818,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -8846,7 +8846,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -8876,7 +8876,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -8900,7 +8900,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -8930,7 +8930,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
                     "sourceRange": []
                   },
                   "from": [
@@ -8947,7 +8947,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -8971,7 +8971,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -9001,7 +9001,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                     "sourceRange": []
                   },
                   "from": [
@@ -9018,7 +9018,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "from": [
@@ -9042,7 +9042,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -9072,7 +9072,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "from": [
@@ -9096,7 +9096,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "from": [
@@ -9120,7 +9120,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "from": [
@@ -9144,7 +9144,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -9174,7 +9174,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1e31790b-7616-51eb-9bbe-0d46f611d053",
                     "sourceRange": []
                   },
                   "from": [
@@ -9191,7 +9191,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c6c38d17-92b3-5556-b0a7-5be52ccdd1ec",
                     "sourceRange": []
                   },
                   "from": [
@@ -9215,7 +9215,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -9245,7 +9245,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
                     "sourceRange": []
                   },
                   "from": [
@@ -9262,7 +9262,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                     "sourceRange": []
                   },
                   "from": [
@@ -9286,7 +9286,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -9316,7 +9316,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
                     "sourceRange": []
                   },
                   "from": [
@@ -9333,7 +9333,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                     "sourceRange": []
                   },
                   "from": [
@@ -9357,7 +9357,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -9387,7 +9387,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
                     "sourceRange": []
                   },
                   "from": [
@@ -9404,7 +9404,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                     "sourceRange": []
                   },
                   "from": [
@@ -9428,7 +9428,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                     "sourceRange": []
                   },
                   "from": [
@@ -9452,7 +9452,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
                     "sourceRange": []
                   },
                   "from": [
@@ -9469,7 +9469,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                     "sourceRange": []
                   },
                   "from": [
@@ -9493,8 +9493,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -9535,7 +9535,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
                   "sourceRange": []
                 }
               },
@@ -9625,8 +9625,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+              "originalId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
               "units": "in",
               "isClosed": "implicitly"
             }
@@ -9646,7 +9646,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
                 "objectId": 202,
                 "kind": {
                   "circle": {
@@ -9720,8 +9720,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -9750,7 +9750,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -9766,7 +9766,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
                 "objectId": 207,
                 "kind": {
                   "circle": {
@@ -9840,8 +9840,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -9870,7 +9870,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -9886,7 +9886,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
                 "objectId": 212,
                 "kind": {
                   "circle": {
@@ -9960,8 +9960,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -9990,7 +9990,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle3"
@@ -10006,7 +10006,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "08138142-a558-56a4-a23f-2f334e02b011",
                 "objectId": 217,
                 "kind": {
                   "circle": {
@@ -10080,8 +10080,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -10110,7 +10110,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle4"
@@ -10126,7 +10126,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
                 "objectId": 222,
                 "kind": {
                   "circle": {
@@ -10200,8 +10200,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -10230,7 +10230,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle5"
@@ -10246,7 +10246,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
                 "objectId": 227,
                 "kind": {
                   "circle": {
@@ -10320,8 +10320,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -10350,7 +10350,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle6"
@@ -10366,7 +10366,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
                 "objectId": 232,
                 "kind": {
                   "circle": {
@@ -10440,8 +10440,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -10470,7 +10470,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle7"
@@ -10486,7 +10486,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
                 "objectId": 237,
                 "kind": {
                   "circle": {
@@ -10560,8 +10560,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -10590,7 +10590,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle8"
@@ -10606,7 +10606,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ab8a671-6218-5516-901a-d1a83480ded7",
                 "objectId": 250,
                 "kind": {
                   "circle": {
@@ -10680,8 +10680,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -10710,7 +10710,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle9"
@@ -10726,7 +10726,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ca431487-8e9a-59ce-a472-84fe45652fab",
                 "objectId": 134,
                 "kind": {
                   "line": {
@@ -10801,8 +10801,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -10831,7 +10831,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -10847,7 +10847,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "594993e6-1056-5d16-9f2e-5770c7b5e4e7",
                 "objectId": 179,
                 "kind": {
                   "line": {
@@ -10922,8 +10922,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -10952,7 +10952,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -10968,7 +10968,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
                 "objectId": 184,
                 "kind": {
                   "line": {
@@ -11043,8 +11043,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -11073,7 +11073,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -11089,7 +11089,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1f5ca073-184d-543b-9da6-2db6719123a8",
                 "objectId": 189,
                 "kind": {
                   "line": {
@@ -11164,8 +11164,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -11194,7 +11194,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -11210,7 +11210,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "93954f29-a246-54bd-ac2a-62572f26d508",
                 "objectId": 137,
                 "kind": {
                   "line": {
@@ -11285,8 +11285,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -11315,7 +11315,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -11331,7 +11331,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
                 "objectId": 140,
                 "kind": {
                   "line": {
@@ -11406,8 +11406,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -11436,7 +11436,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -11452,7 +11452,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bee9909d-abbf-534c-b266-2c2c04133834",
                 "objectId": 143,
                 "kind": {
                   "line": {
@@ -11527,8 +11527,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -11557,7 +11557,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -11573,7 +11573,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fa75438f-b2d0-5142-b452-608454e1806a",
                 "objectId": 154,
                 "kind": {
                   "line": {
@@ -11648,8 +11648,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -11678,7 +11678,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -11694,7 +11694,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
                 "objectId": 157,
                 "kind": {
                   "line": {
@@ -11769,8 +11769,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -11799,7 +11799,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -11815,7 +11815,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eb4a5516-04df-5d3c-a783-6699c67f971f",
                 "objectId": 160,
                 "kind": {
                   "line": {
@@ -11890,8 +11890,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -11920,7 +11920,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -11936,7 +11936,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                 "objectId": 163,
                 "kind": {
                   "line": {
@@ -12011,8 +12011,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -12041,7 +12041,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -12057,7 +12057,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
                 "objectId": 174,
                 "kind": {
                   "line": {
@@ -12132,8 +12132,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                  "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                   "kind": "Custom",
                   "objectId": 130,
                   "origin": {
@@ -12162,7 +12162,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -12179,11 +12179,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12213,7 +12213,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f296bd37-495b-5038-81a3-eade3812cc2e",
                     "sourceRange": []
                   },
                   "from": [
@@ -12230,7 +12230,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12260,7 +12260,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
                     "sourceRange": []
                   },
                   "from": [
@@ -12277,7 +12277,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12307,7 +12307,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
                     "sourceRange": []
                   },
                   "from": [
@@ -12324,7 +12324,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "08138142-a558-56a4-a23f-2f334e02b011",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12354,7 +12354,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "af94b4da-da53-5386-a65f-ed75c251c9ff",
                     "sourceRange": []
                   },
                   "from": [
@@ -12371,7 +12371,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "44b2dfb0-0721-57cd-a796-4401a664e194",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12401,7 +12401,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
                     "sourceRange": []
                   },
                   "from": [
@@ -12418,7 +12418,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ba769d4c-3a67-5309-824d-fd59f263bb46",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12448,7 +12448,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "33d4ddb8-e281-5429-897a-8b34342e4a06",
                     "sourceRange": []
                   },
                   "from": [
@@ -12465,7 +12465,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8b2b0b37-868e-50d3-badd-0213fb4b5d6a",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12495,7 +12495,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "df641c7f-27a7-5524-a6c2-93d1677bc829",
                     "sourceRange": []
                   },
                   "from": [
@@ -12512,7 +12512,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0616b09c-75f9-545b-bd98-b7fbaf5b3587",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12542,7 +12542,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6df8ec7f-7a39-55d7-a123-33133fbcbbd6",
                     "sourceRange": []
                   },
                   "from": [
@@ -12559,7 +12559,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ab8a671-6218-5516-901a-d1a83480ded7",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12589,8 +12589,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413",
+                "id": "8c56779b-80ab-5d86-a257-cec4629e2413",
                 "kind": "Custom",
                 "objectId": 130,
                 "origin": {
@@ -12631,7 +12631,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "12610836-7dea-569b-a3df-ec2ff8b2c295",
                   "sourceRange": []
                 }
               },
@@ -12673,8 +12673,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
                   "value": "circle9"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
+              "originalId": "6c14e37a-ccab-5c55-98a0-a4f5e1bd6620",
               "units": "in",
               "isClosed": "no"
             }
@@ -12689,12 +12689,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d",
+      "artifactId": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6fecf37c-5c59-56ae-b68c-5788b5bdcf05",
+          "id": "70652630-d52b-5d3e-986f-7e8b22a3025d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1327,
@@ -12707,8 +12707,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "35452ba8-dde6-597b-9731-67c8114e84f3",
+          "id": "a4dd9c86-029b-5670-a54b-0ce4677e5a8d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1404,
@@ -12721,8 +12721,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83a05bf5-ccea-506b-997b-5c853907495a",
+          "id": "0e8dffaa-5759-51c1-87d7-1a80fd92f96d",
           "sourceRange": [],
           "tag": {
             "commentStart": 1556,
@@ -12735,8 +12735,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1f33651e-140a-5e93-a02e-f50c04da42de",
+          "id": "eb5eebf7-920a-541b-85e5-7030b532b96c",
           "sourceRange": [],
           "tag": {
             "commentStart": 1677,
@@ -12749,8 +12749,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "957c8040-353c-5a66-9040-b91d64b56102",
+          "id": "e98bfd87-12ff-506c-ab4a-6f239e99ef83",
           "sourceRange": [],
           "tag": {
             "commentStart": 1828,
@@ -12763,8 +12763,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2394410d-29ad-5a99-a65c-bf6680589ef6",
+          "id": "0871a565-f1d2-5728-8ed6-99794e7a86e3",
           "sourceRange": [],
           "tag": {
             "commentStart": 1948,
@@ -12777,8 +12777,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "95385469-ae20-5288-b1fc-047285d95116",
+          "id": "fe60de9e-0e73-525d-94b2-de3ca8daf9b2",
           "sourceRange": [],
           "tag": {
             "commentStart": 2096,
@@ -12791,8 +12791,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "58f955ca-efd4-5ca0-98ac-3350baec03db",
+          "id": "74c7bbda-2ef8-5370-b621-6299107d6cda",
           "sourceRange": [],
           "tag": {
             "commentStart": 2217,
@@ -12805,8 +12805,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b3cc9984-323e-59f3-8fef-4d0cfe858772",
+          "id": "3a7d62b7-bb03-5abc-818f-d9dc7a41b01b",
           "sourceRange": [],
           "tag": {
             "commentStart": 2366,
@@ -12819,8 +12819,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d30c89ba-43d5-571f-995c-889ff2e090f0",
+          "id": "43daf8e9-5359-55a6-89fd-03cc0dcff7af",
           "sourceRange": [],
           "tag": {
             "commentStart": 2479,
@@ -12833,8 +12833,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "859e3f87-4031-5c80-b618-2714d1f8e1be",
+          "id": "aa0b39ac-e5f9-5b59-9008-8e0d2997d1b5",
           "sourceRange": [],
           "tag": {
             "commentStart": 2598,
@@ -12847,8 +12847,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3fb40954-28e6-50db-b8d0-0fe19c096a83",
+          "id": "e9ee0385-92ab-558f-9eba-6ac62f2c854c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2721,
@@ -12861,8 +12861,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f3f268a0-527c-5b6d-8951-6831cc778f58",
+          "id": "7dd40a55-3686-5be0-a2e2-b957bd99021a",
           "sourceRange": [],
           "tag": {
             "commentStart": 2874,
@@ -12875,8 +12875,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c1bf4551-4f04-523c-8042-e12a6c038840",
+          "id": "30c33035-4592-57b0-b19f-0028e0b2c596",
           "sourceRange": [],
           "tag": {
             "commentStart": 2998,
@@ -12889,8 +12889,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "24c59c87-a19f-5057-8a20-ae3b510a09b9",
+          "id": "19eb4443-f869-5276-9099-c6de22fd5fb6",
           "sourceRange": [],
           "tag": {
             "commentStart": 3151,
@@ -12903,8 +12903,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83498f48-b1d1-53dd-b42f-0b37a7827a88",
+          "id": "577e0010-8284-5e0c-80ff-c80d4897c69b",
           "sourceRange": [],
           "tag": {
             "commentStart": 3272,
@@ -12917,8 +12917,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bcce2f00-e149-5cc6-b6f2-a633df22fe41",
+          "id": "ad44b815-6aaf-5d2e-9ebf-4f92a6334ce4",
           "sourceRange": [],
           "tag": {
             "commentStart": 3427,
@@ -12931,8 +12931,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fd8c4cc9-f4de-541b-a7a2-dae041f1abb1",
+          "id": "e94d9619-31d6-5caa-a8c7-1f6729a502e4",
           "sourceRange": [],
           "tag": {
             "commentStart": 3550,
@@ -12945,8 +12945,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e718a66a-489e-53e4-bf62-3982e8c0e867",
+          "id": "8e18c538-bda8-57bf-a98a-5380e98fd508",
           "sourceRange": [],
           "tag": {
             "commentStart": 3706,
@@ -12959,8 +12959,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "571c6c0b-864c-56df-a18a-e593748a9398",
+          "id": "ba9e062d-7e8f-547f-8a8c-42d4a7b636b0",
           "sourceRange": [],
           "tag": {
             "commentStart": 3832,
@@ -12973,8 +12973,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c17ba074-f046-5c29-b293-60d813402c69",
+          "id": "c17ba074-f046-5c29-b293-60d813402c69",
           "sourceRange": [],
           "tag": {
             "commentStart": 5336,
@@ -12987,8 +12987,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "dc316b86-b1f2-5a5d-b152-ebd92b1f82c4",
+          "id": "dc316b86-b1f2-5a5d-b152-ebd92b1f82c4",
           "sourceRange": [],
           "tag": {
             "commentStart": 5311,
@@ -13014,11 +13014,11 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "12b93b5e-f5fc-5dc1-b2d9-7321b6a5279d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "70652630-d52b-5d3e-986f-7e8b22a3025d",
               "sourceRange": []
             },
             "from": [
@@ -13042,7 +13042,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a4dd9c86-029b-5670-a54b-0ce4677e5a8d",
               "sourceRange": []
             },
             "ccw": true,
@@ -13072,7 +13072,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0e8dffaa-5759-51c1-87d7-1a80fd92f96d",
               "sourceRange": []
             },
             "from": [
@@ -13096,7 +13096,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb5eebf7-920a-541b-85e5-7030b532b96c",
               "sourceRange": []
             },
             "ccw": false,
@@ -13126,7 +13126,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e98bfd87-12ff-506c-ab4a-6f239e99ef83",
               "sourceRange": []
             },
             "from": [
@@ -13150,7 +13150,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0871a565-f1d2-5728-8ed6-99794e7a86e3",
               "sourceRange": []
             },
             "ccw": false,
@@ -13180,7 +13180,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fe60de9e-0e73-525d-94b2-de3ca8daf9b2",
               "sourceRange": []
             },
             "from": [
@@ -13204,7 +13204,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "74c7bbda-2ef8-5370-b621-6299107d6cda",
               "sourceRange": []
             },
             "ccw": true,
@@ -13234,7 +13234,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3a7d62b7-bb03-5abc-818f-d9dc7a41b01b",
               "sourceRange": []
             },
             "from": [
@@ -13258,7 +13258,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "43daf8e9-5359-55a6-89fd-03cc0dcff7af",
               "sourceRange": []
             },
             "from": [
@@ -13282,7 +13282,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "aa0b39ac-e5f9-5b59-9008-8e0d2997d1b5",
               "sourceRange": []
             },
             "from": [
@@ -13306,7 +13306,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e9ee0385-92ab-558f-9eba-6ac62f2c854c",
               "sourceRange": []
             },
             "ccw": false,
@@ -13336,7 +13336,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7dd40a55-3686-5be0-a2e2-b957bd99021a",
               "sourceRange": []
             },
             "from": [
@@ -13360,7 +13360,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "30c33035-4592-57b0-b19f-0028e0b2c596",
               "sourceRange": []
             },
             "ccw": true,
@@ -13390,7 +13390,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19eb4443-f869-5276-9099-c6de22fd5fb6",
               "sourceRange": []
             },
             "from": [
@@ -13414,7 +13414,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "577e0010-8284-5e0c-80ff-c80d4897c69b",
               "sourceRange": []
             },
             "ccw": true,
@@ -13444,7 +13444,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ad44b815-6aaf-5d2e-9ebf-4f92a6334ce4",
               "sourceRange": []
             },
             "from": [
@@ -13468,7 +13468,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e94d9619-31d6-5caa-a8c7-1f6729a502e4",
               "sourceRange": []
             },
             "ccw": false,
@@ -13498,7 +13498,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8e18c538-bda8-57bf-a98a-5380e98fd508",
               "sourceRange": []
             },
             "from": [
@@ -13522,7 +13522,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ba9e062d-7e8f-547f-8a8c-42d4a7b636b0",
               "sourceRange": []
             },
             "from": [
@@ -13546,8 +13546,8 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -13588,7 +13588,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
             "sourceRange": []
           }
         },
@@ -13686,17 +13686,17 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
             "value": "line9"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d",
+        "originalId": "19107e89-bf40-5541-88a5-5106b6de636d",
+        "originSketchId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "c17ba074-f046-5c29-b293-60d813402c69",
+      "endCapId": "dc316b86-b1f2-5a5d-b152-ebd92b1f82c4",
       "edgeCuts": [
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "7a8c96c1-87c0-5d35-b412-deb67d5b0712",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -13705,12 +13705,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "8583fc63-fdea-56c5-a2f4-d09328163f25",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "7a8c96c1-87c0-5d35-b412-deb67d5b0712",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -13719,12 +13719,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "3052eaca-e4f2-52f2-92f3-87303d16406d",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "7a8c96c1-87c0-5d35-b412-deb67d5b0712",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -13733,12 +13733,12 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "aa0b39ac-e5f9-5b59-9008-8e0d2997d1b5",
           "tag": null
         },
         {
           "type": "fillet",
-          "id": "[uuid]",
+          "id": "7a8c96c1-87c0-5d35-b412-deb67d5b0712",
           "radius": {
             "n": 0.5,
             "ty": {
@@ -13747,7 +13747,7 @@ description: Variables in memory after executing sheet-metal-bracket.kcl
               "angle": "degrees"
             }
           },
-          "edgeId": "[uuid]",
+          "edgeId": "a4dd9c86-029b-5670-a54b-0ce4677e5a8d",
           "tag": null
         }
       ],

@@ -3497,7 +3497,7 @@ description: Operations executed flange.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -3527,7 +3527,7 @@ description: Operations executed flange.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead"
           }
         },
         "sourceRange": []
@@ -3556,7 +3556,7 @@ description: Operations executed flange.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5288de96-84bb-518a-848b-5092b5d33e48"
           }
         },
         "sourceRange": []
@@ -4043,7 +4043,7 @@ description: Operations executed flange.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596"
               }
             ]
           },
@@ -4073,7 +4073,7 @@ description: Operations executed flange.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba"
           }
         },
         "sourceRange": []
@@ -4102,7 +4102,7 @@ description: Operations executed flange.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
           }
         },
         "sourceRange": []
@@ -4589,7 +4589,7 @@ description: Operations executed flange.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a8570d66-ad9e-5a33-ad3b-ebb30322f5b5"
               }
             ]
           },
@@ -4619,7 +4619,7 @@ description: Operations executed flange.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "50fc9cbf-14b4-5cbe-9167-a6636695394d"
           }
         },
         "sourceRange": []
@@ -4648,7 +4648,7 @@ description: Operations executed flange.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce"
           }
         },
         "sourceRange": []
@@ -5135,7 +5135,7 @@ description: Operations executed flange.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9ee924c8-9a14-5ca4-9014-20f9b1039bef"
               }
             ]
           },
@@ -5165,7 +5165,7 @@ description: Operations executed flange.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8c56779b-80ab-5d86-a257-cec4629e2413"
           }
         },
         "sourceRange": []
@@ -5194,7 +5194,7 @@ description: Operations executed flange.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "29f44732-9f58-5550-8e28-aea348bd8ebb"
           }
         },
         "sourceRange": []
@@ -5246,7 +5246,7 @@ description: Operations executed flange.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
               }
             }
           ]
@@ -5261,7 +5261,7 @@ description: Operations executed flange.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "f0956ec2-5f00-5b46-a52c-5d05d56e9a3b"
                 }
               }
             ]

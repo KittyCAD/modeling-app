@@ -6,8 +6,8 @@ description: Variables in memory after executing v-block.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+      "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "kind": "Custom",
       "objectId": 0,
       "origin": {
@@ -39,8 +39,8 @@ description: Variables in memory after executing v-block.kcl
   "__sketch_74_on": {
     "type": "Face",
     "value": {
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
+      "artifactId": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
       "objectId": 73,
       "value": "end",
       "xAxis": {
@@ -56,8 +56,8 @@ description: Variables in memory after executing v-block.kcl
         "units": null
       },
       "parentSolid": {
-        "solidId": "[uuid]",
-        "creatorSketchId": "[uuid]",
+        "solidId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+        "creatorSketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
         "creatorSketchIsClosed": "explicitly"
       },
       "units": "in"
@@ -67,11 +67,11 @@ description: Variables in memory after executing v-block.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bfabcde7-4b6c-5902-b579-40448162861c",
             "sourceRange": []
           },
           "from": [
@@ -95,7 +95,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3f6e5522-ac29-507e-80fd-e2b627c16f29",
             "sourceRange": []
           },
           "from": [
@@ -119,7 +119,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6a859edc-0d1f-5a1b-81f9-ccef4f8e8497",
             "sourceRange": []
           },
           "from": [
@@ -143,7 +143,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3105452f-7db3-57c1-9953-0b13163d0db4",
             "sourceRange": []
           },
           "from": [
@@ -167,7 +167,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d0ecd543-b198-55be-b0f5-354ae8570862",
             "sourceRange": []
           },
           "from": [
@@ -191,7 +191,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "042ccecc-7d9e-5a3d-8faa-3370a84a052b",
             "sourceRange": []
           },
           "from": [
@@ -215,7 +215,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4d264bfd-c58a-511d-8ca4-e57e798d09f1",
             "sourceRange": []
           },
           "from": [
@@ -239,7 +239,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e1cbc07f-08f6-5f5d-a8f3-a143c62abea3",
             "sourceRange": []
           },
           "from": [
@@ -263,7 +263,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "674023da-3bb2-5d9d-8ca3-aa80fd7536ea",
             "sourceRange": []
           },
           "from": [
@@ -287,7 +287,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e62ecb43-b000-5282-8cca-000ae4075704",
             "sourceRange": []
           },
           "from": [
@@ -311,7 +311,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "56e56c7e-078e-5986-ac4b-b81f6e4cd116",
             "sourceRange": []
           },
           "from": [
@@ -335,7 +335,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c3fa3d1e-337b-5eac-806d-ac4ce96adc98",
             "sourceRange": []
           },
           "from": [
@@ -359,7 +359,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0cdae669-bb91-58e2-975a-4b3ad97823e2",
             "sourceRange": []
           },
           "from": [
@@ -383,7 +383,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a7e016ed-a7e2-5ae4-a6f6-e3d62ffe03a7",
             "sourceRange": []
           },
           "from": [
@@ -407,7 +407,7 @@ description: Variables in memory after executing v-block.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a478b08d-c483-5591-b4ce-af1d535a213c",
             "sourceRange": []
           },
           "from": [
@@ -431,8 +431,8 @@ description: Variables in memory after executing v-block.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -473,7 +473,7 @@ description: Variables in memory after executing v-block.kcl
         "units": "in",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
           "sourceRange": []
         }
       },
@@ -539,9 +539,9 @@ description: Variables in memory after executing v-block.kcl
           "value": "line9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+      "originalId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+      "originSketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
       "units": "in"
     }
   },
@@ -570,11 +570,11 @@ description: Variables in memory after executing v-block.kcl
         "type": "Sketch",
         "value": {
           "type": "Sketch",
-          "id": "[uuid]",
+          "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
           "paths": [
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "9537cb3e-2b79-50e5-ac57-b0a6390a72ce",
                 "sourceRange": []
               },
               "ccw": true,
@@ -605,8 +605,8 @@ description: Variables in memory after executing v-block.kcl
           ],
           "on": {
             "type": "face",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
+            "id": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
+            "artifactId": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
             "objectId": 73,
             "value": "end",
             "xAxis": {
@@ -622,8 +622,8 @@ description: Variables in memory after executing v-block.kcl
               "units": null
             },
             "parentSolid": {
-              "solidId": "[uuid]",
-              "creatorSketchId": "[uuid]",
+              "solidId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+              "creatorSketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
               "creatorSketchIsClosed": "explicitly"
             },
             "units": "in"
@@ -640,7 +640,7 @@ description: Variables in memory after executing v-block.kcl
             "units": "in",
             "tag": null,
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
               "sourceRange": []
             }
           },
@@ -650,9 +650,9 @@ description: Variables in memory after executing v-block.kcl
               "value": "circle1"
             }
           },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
+          "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+          "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+          "originSketchId": "1da187cf-4f25-596d-a170-2007a75f41c6",
           "units": "in"
         }
       },
@@ -660,11 +660,11 @@ description: Variables in memory after executing v-block.kcl
         "type": "Sketch",
         "value": {
           "type": "Sketch",
-          "id": "[uuid]",
+          "id": "d88e6ffa-3627-55b0-a88f-7cabc211677b",
           "paths": [
             {
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "9537cb3e-2b79-50e5-ac57-b0a6390a72ce",
                 "sourceRange": []
               },
               "ccw": true,
@@ -695,8 +695,8 @@ description: Variables in memory after executing v-block.kcl
           ],
           "on": {
             "type": "face",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
+            "id": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
+            "artifactId": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
             "objectId": 73,
             "value": "end",
             "xAxis": {
@@ -712,8 +712,8 @@ description: Variables in memory after executing v-block.kcl
               "units": null
             },
             "parentSolid": {
-              "solidId": "[uuid]",
-              "creatorSketchId": "[uuid]",
+              "solidId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+              "creatorSketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
               "creatorSketchIsClosed": "explicitly"
             },
             "units": "in"
@@ -730,7 +730,7 @@ description: Variables in memory after executing v-block.kcl
             "units": "in",
             "tag": null,
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
               "sourceRange": []
             }
           },
@@ -740,9 +740,9 @@ description: Variables in memory after executing v-block.kcl
               "value": "circle1"
             }
           },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
-          "originSketchId": "[uuid]",
+          "artifactId": "d88e6ffa-3627-55b0-a88f-7cabc211677b",
+          "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+          "originSketchId": "1da187cf-4f25-596d-a170-2007a75f41c6",
           "units": "in"
         }
       }
@@ -766,7 +766,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
                 "objectId": 77,
                 "kind": {
                   "circle": {
@@ -841,8 +841,8 @@ description: Variables in memory after executing v-block.kcl
                 },
                 "surface": {
                   "type": "face",
-                  "id": "[uuid]",
-                  "artifactId": "[uuid]",
+                  "id": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
+                  "artifactId": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
                   "objectId": 73,
                   "value": "end",
                   "xAxis": {
@@ -858,13 +858,13 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   },
                   "parentSolid": {
-                    "solidId": "[uuid]",
-                    "creatorSketchId": "[uuid]",
+                    "solidId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+                    "creatorSketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
                     "creatorSketchIsClosed": "explicitly"
                   },
                   "units": "in"
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "1da187cf-4f25-596d-a170-2007a75f41c6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -881,11 +881,11 @@ description: Variables in memory after executing v-block.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "1da187cf-4f25-596d-a170-2007a75f41c6",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -916,8 +916,8 @@ description: Variables in memory after executing v-block.kcl
               ],
               "on": {
                 "type": "face",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
+                "id": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
+                "artifactId": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
                 "objectId": 73,
                 "value": "end",
                 "xAxis": {
@@ -933,8 +933,8 @@ description: Variables in memory after executing v-block.kcl
                   "units": null
                 },
                 "parentSolid": {
-                  "solidId": "[uuid]",
-                  "creatorSketchId": "[uuid]",
+                  "solidId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+                  "creatorSketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
                   "creatorSketchIsClosed": "explicitly"
                 },
                 "units": "in"
@@ -951,7 +951,7 @@ description: Variables in memory after executing v-block.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
                   "sourceRange": []
                 }
               },
@@ -961,8 +961,8 @@ description: Variables in memory after executing v-block.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6",
+              "originalId": "1da187cf-4f25-596d-a170-2007a75f41c6",
               "units": "in",
               "isClosed": "no"
             }
@@ -980,12 +980,12 @@ description: Variables in memory after executing v-block.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+          "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "65134ac4-ef89-57e7-af82-6e3aa7929268",
+              "id": "9537cb3e-2b79-50e5-ac57-b0a6390a72ce",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2802,
@@ -1001,11 +1001,11 @@ description: Variables in memory after executing v-block.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9537cb3e-2b79-50e5-ac57-b0a6390a72ce",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1036,8 +1036,8 @@ description: Variables in memory after executing v-block.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
+              "artifactId": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
               "objectId": 73,
               "value": "end",
               "xAxis": {
@@ -1053,8 +1053,8 @@ description: Variables in memory after executing v-block.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+                "creatorSketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -1071,7 +1071,7 @@ description: Variables in memory after executing v-block.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
                 "sourceRange": []
               }
             },
@@ -1081,9 +1081,9 @@ description: Variables in memory after executing v-block.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+            "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+            "originSketchId": "1da187cf-4f25-596d-a170-2007a75f41c6",
             "units": "in"
           },
           "startCapId": null,
@@ -1096,12 +1096,12 @@ description: Variables in memory after executing v-block.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+          "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "65134ac4-ef89-57e7-af82-6e3aa7929268",
+              "id": "9537cb3e-2b79-50e5-ac57-b0a6390a72ce",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2802,
@@ -1117,11 +1117,11 @@ description: Variables in memory after executing v-block.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "9537cb3e-2b79-50e5-ac57-b0a6390a72ce",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1152,8 +1152,8 @@ description: Variables in memory after executing v-block.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
+              "artifactId": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
               "objectId": 73,
               "value": "end",
               "xAxis": {
@@ -1169,8 +1169,8 @@ description: Variables in memory after executing v-block.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+                "creatorSketchId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "in"
@@ -1187,7 +1187,7 @@ description: Variables in memory after executing v-block.kcl
               "units": "in",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
                 "sourceRange": []
               }
             },
@@ -1197,9 +1197,9 @@ description: Variables in memory after executing v-block.kcl
                 "value": "circle1"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "d88e6ffa-3627-55b0-a88f-7cabc211677b",
+            "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+            "originSketchId": "1da187cf-4f25-596d-a170-2007a75f41c6",
             "units": "in"
           },
           "startCapId": null,
@@ -1241,12 +1241,12 @@ description: Variables in memory after executing v-block.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+      "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f27c9aaf-8bb5-55b4-abeb-2356fece8c59",
+          "id": "bfabcde7-4b6c-5902-b579-40448162861c",
           "sourceRange": [],
           "tag": {
             "commentStart": 489,
@@ -1259,8 +1259,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "09955da4-cdab-556c-84d5-9e794e7cd4d0",
+          "id": "3f6e5522-ac29-507e-80fd-e2b627c16f29",
           "sourceRange": [],
           "tag": {
             "commentStart": 564,
@@ -1273,8 +1273,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1f1759f5-45a9-5050-b50a-80826c5eb35c",
+          "id": "6a859edc-0d1f-5a1b-81f9-ccef4f8e8497",
           "sourceRange": [],
           "tag": {
             "commentStart": 679,
@@ -1287,8 +1287,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8619c51c-f015-5822-a472-4feb5df29a21",
+          "id": "3105452f-7db3-57c1-9953-0b13163d0db4",
           "sourceRange": [],
           "tag": {
             "commentStart": 798,
@@ -1301,8 +1301,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9c8e899c-1417-5a34-ba70-bfd1a993f14f",
+          "id": "d0ecd543-b198-55be-b0f5-354ae8570862",
           "sourceRange": [],
           "tag": {
             "commentStart": 919,
@@ -1315,8 +1315,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "15a82929-bfb5-5c32-9ce2-fb61b33d0366",
+          "id": "042ccecc-7d9e-5a3d-8faa-3370a84a052b",
           "sourceRange": [],
           "tag": {
             "commentStart": 1039,
@@ -1329,8 +1329,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "804693c7-0c3e-54f3-8196-76f1f75bedf1",
+          "id": "4d264bfd-c58a-511d-8ca4-e57e798d09f1",
           "sourceRange": [],
           "tag": {
             "commentStart": 1160,
@@ -1343,8 +1343,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "2189d721-954e-5385-9d28-3ab7da256fcf",
+          "id": "e1cbc07f-08f6-5f5d-a8f3-a143c62abea3",
           "sourceRange": [],
           "tag": {
             "commentStart": 1278,
@@ -1357,8 +1357,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "50b4dce8-8e11-561f-a854-999288204e7c",
+          "id": "674023da-3bb2-5d9d-8ca3-aa80fd7536ea",
           "sourceRange": [],
           "tag": {
             "commentStart": 1395,
@@ -1371,8 +1371,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9912e66c-96e0-523c-b215-1ae3fee8d068",
+          "id": "e62ecb43-b000-5282-8cca-000ae4075704",
           "sourceRange": [],
           "tag": {
             "commentStart": 1514,
@@ -1385,8 +1385,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "64a459ca-f607-5e14-a1d5-32aeddc5d10b",
+          "id": "56e56c7e-078e-5986-ac4b-b81f6e4cd116",
           "sourceRange": [],
           "tag": {
             "commentStart": 1634,
@@ -1399,8 +1399,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5ca54e47-c1a5-5b40-bef3-1ae80c267882",
+          "id": "c3fa3d1e-337b-5eac-806d-ac4ce96adc98",
           "sourceRange": [],
           "tag": {
             "commentStart": 1756,
@@ -1413,8 +1413,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "85159568-488d-5c76-90dd-a9fd24e17037",
+          "id": "0cdae669-bb91-58e2-975a-4b3ad97823e2",
           "sourceRange": [],
           "tag": {
             "commentStart": 1876,
@@ -1427,8 +1427,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a76cdaf0-c4ee-5c21-b9d1-5e45680f261c",
+          "id": "a7e016ed-a7e2-5ae4-a6f6-e3d62ffe03a7",
           "sourceRange": [],
           "tag": {
             "commentStart": 1992,
@@ -1441,8 +1441,8 @@ description: Variables in memory after executing v-block.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b2b87bb4-145e-5449-8a69-37e06418035b",
+          "id": "a478b08d-c483-5591-b4ce-af1d535a213c",
           "sourceRange": [],
           "tag": {
             "commentStart": 2107,
@@ -1458,11 +1458,11 @@ description: Variables in memory after executing v-block.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bfabcde7-4b6c-5902-b579-40448162861c",
               "sourceRange": []
             },
             "from": [
@@ -1486,7 +1486,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3f6e5522-ac29-507e-80fd-e2b627c16f29",
               "sourceRange": []
             },
             "from": [
@@ -1510,7 +1510,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6a859edc-0d1f-5a1b-81f9-ccef4f8e8497",
               "sourceRange": []
             },
             "from": [
@@ -1534,7 +1534,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3105452f-7db3-57c1-9953-0b13163d0db4",
               "sourceRange": []
             },
             "from": [
@@ -1558,7 +1558,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d0ecd543-b198-55be-b0f5-354ae8570862",
               "sourceRange": []
             },
             "from": [
@@ -1582,7 +1582,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "042ccecc-7d9e-5a3d-8faa-3370a84a052b",
               "sourceRange": []
             },
             "from": [
@@ -1606,7 +1606,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4d264bfd-c58a-511d-8ca4-e57e798d09f1",
               "sourceRange": []
             },
             "from": [
@@ -1630,7 +1630,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e1cbc07f-08f6-5f5d-a8f3-a143c62abea3",
               "sourceRange": []
             },
             "from": [
@@ -1654,7 +1654,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "674023da-3bb2-5d9d-8ca3-aa80fd7536ea",
               "sourceRange": []
             },
             "from": [
@@ -1678,7 +1678,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e62ecb43-b000-5282-8cca-000ae4075704",
               "sourceRange": []
             },
             "from": [
@@ -1702,7 +1702,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "56e56c7e-078e-5986-ac4b-b81f6e4cd116",
               "sourceRange": []
             },
             "from": [
@@ -1726,7 +1726,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c3fa3d1e-337b-5eac-806d-ac4ce96adc98",
               "sourceRange": []
             },
             "from": [
@@ -1750,7 +1750,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0cdae669-bb91-58e2-975a-4b3ad97823e2",
               "sourceRange": []
             },
             "from": [
@@ -1774,7 +1774,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a7e016ed-a7e2-5ae4-a6f6-e3d62ffe03a7",
               "sourceRange": []
             },
             "from": [
@@ -1798,7 +1798,7 @@ description: Variables in memory after executing v-block.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a478b08d-c483-5591-b4ce-af1d535a213c",
               "sourceRange": []
             },
             "from": [
@@ -1822,8 +1822,8 @@ description: Variables in memory after executing v-block.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1864,7 +1864,7 @@ description: Variables in memory after executing v-block.kcl
           "units": "in",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
             "sourceRange": []
           }
         },
@@ -1930,13 +1930,13 @@ description: Variables in memory after executing v-block.kcl
             "value": "line9"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+        "originalId": "5f65350e-7a7d-5c6d-8c8c-58382da58899",
+        "originSketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
         "units": "in"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "66e3ae85-e552-5737-b5b3-e96c485cc2e2",
+      "endCapId": "29a663bb-814f-52bd-92d6-fb45ca0f9edd",
       "units": "in",
       "sectional": false
     }
@@ -1968,7 +1968,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -2042,8 +2042,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2072,7 +2072,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2088,7 +2088,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                 "objectId": 39,
                 "kind": {
                   "line": {
@@ -2162,8 +2162,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2192,7 +2192,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -2208,7 +2208,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                 "objectId": 43,
                 "kind": {
                   "line": {
@@ -2282,8 +2282,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2312,7 +2312,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -2328,7 +2328,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
                 "objectId": 47,
                 "kind": {
                   "line": {
@@ -2402,8 +2402,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2432,7 +2432,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line12"
@@ -2448,7 +2448,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                 "objectId": 51,
                 "kind": {
                   "line": {
@@ -2522,8 +2522,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2552,7 +2552,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line13"
@@ -2568,7 +2568,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                 "objectId": 55,
                 "kind": {
                   "line": {
@@ -2642,8 +2642,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2672,7 +2672,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line14"
@@ -2688,7 +2688,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                 "objectId": 59,
                 "kind": {
                   "line": {
@@ -2762,8 +2762,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2792,7 +2792,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line15"
@@ -2808,7 +2808,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -2882,8 +2882,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2912,7 +2912,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2928,7 +2928,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -3002,8 +3002,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3032,7 +3032,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3048,7 +3048,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -3122,8 +3122,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3152,7 +3152,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -3168,7 +3168,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "41c630c9-9d44-581b-98af-caee575bea48",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -3242,8 +3242,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3272,7 +3272,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -3288,7 +3288,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -3362,8 +3362,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3392,7 +3392,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -3408,7 +3408,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "objectId": 27,
                 "kind": {
                   "line": {
@@ -3482,8 +3482,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3512,7 +3512,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -3528,7 +3528,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                 "objectId": 31,
                 "kind": {
                   "line": {
@@ -3602,8 +3602,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3632,7 +3632,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -3648,7 +3648,7 @@ description: Variables in memory after executing v-block.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7b681387-29ea-57f1-8713-d63280827139",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -3722,8 +3722,8 @@ description: Variables in memory after executing v-block.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -3752,7 +3752,7 @@ description: Variables in memory after executing v-block.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "e342814e-d7c1-537b-959c-f7fd92c90294",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -3769,11 +3769,11 @@ description: Variables in memory after executing v-block.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "e342814e-d7c1-537b-959c-f7fd92c90294",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -3797,7 +3797,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -3821,7 +3821,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                     "sourceRange": []
                   },
                   "from": [
@@ -3845,7 +3845,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                     "sourceRange": []
                   },
                   "from": [
@@ -3869,7 +3869,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "41c630c9-9d44-581b-98af-caee575bea48",
                     "sourceRange": []
                   },
                   "from": [
@@ -3893,7 +3893,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
                     "sourceRange": []
                   },
                   "from": [
@@ -3917,7 +3917,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                     "sourceRange": []
                   },
                   "from": [
@@ -3941,7 +3941,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
                     "sourceRange": []
                   },
                   "from": [
@@ -3965,7 +3965,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b681387-29ea-57f1-8713-d63280827139",
                     "sourceRange": []
                   },
                   "from": [
@@ -3989,7 +3989,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e00e9caf-6e9e-5221-8545-b199546c367f",
                     "sourceRange": []
                   },
                   "from": [
@@ -4013,7 +4013,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f084ad07-5777-5607-a544-c69f455c2aab",
                     "sourceRange": []
                   },
                   "from": [
@@ -4037,7 +4037,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "9370af21-6a1d-5f9a-b1d3-83351b2043e6",
                     "sourceRange": []
                   },
                   "from": [
@@ -4061,7 +4061,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
                     "sourceRange": []
                   },
                   "from": [
@@ -4085,7 +4085,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527",
                     "sourceRange": []
                   },
                   "from": [
@@ -4109,7 +4109,7 @@ description: Variables in memory after executing v-block.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "59bc8baf-257f-5783-ad91-95db236aa6b0",
                     "sourceRange": []
                   },
                   "from": [
@@ -4133,8 +4133,8 @@ description: Variables in memory after executing v-block.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -4175,7 +4175,7 @@ description: Variables in memory after executing v-block.kcl
                 "units": "in",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "4593843c-7d41-5ede-b7fa-ab9201f55957",
                   "sourceRange": []
                 }
               },
@@ -4241,8 +4241,8 @@ description: Variables in memory after executing v-block.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
+              "originalId": "e342814e-d7c1-537b-959c-f7fd92c90294",
               "units": "in",
               "isClosed": "implicitly"
             }

@@ -7,40 +7,40 @@ description: Variables in memory after executing ssi_pattern.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cdf96d91-ce3a-5a36-a87d-0b102b6a946a",
+          "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d5187f6e-f4ca-53c7-bdee-80c0ba5cbb59",
+          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "db427524-76a6-553d-bb6b-6ac873083b95",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "1ea630fe-9406-5262-a2d2-c618a59c9710",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+          "id": "41c630c9-9d44-581b-98af-caee575bea48",
           "sourceRange": [],
           "tag": {
             "commentStart": 271,
@@ -56,11 +56,11 @@ description: Variables in memory after executing ssi_pattern.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
               "sourceRange": []
             },
             "from": [
@@ -77,7 +77,7 @@ description: Variables in memory after executing ssi_pattern.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "sourceRange": []
             },
             "from": [
@@ -94,7 +94,7 @@ description: Variables in memory after executing ssi_pattern.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "ccw": true,
@@ -116,7 +116,7 @@ description: Variables in memory after executing ssi_pattern.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "from": [
@@ -133,7 +133,7 @@ description: Variables in memory after executing ssi_pattern.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "sourceRange": []
             },
             "from": [
@@ -157,8 +157,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+          "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
           "kind": "XZ",
           "objectId": 0,
           "origin": {
@@ -199,7 +199,7 @@ description: Variables in memory after executing ssi_pattern.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           }
         },
@@ -209,12 +209,12 @@ description: Variables in memory after executing ssi_pattern.kcl
             "value": "seg01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "9a9a7954-ae26-56b1-85b4-6225fb5141be",
+      "endCapId": "226f9fb2-663d-510a-ae0f-db497ae43fdd",
       "units": "mm",
       "sectional": false
     }
@@ -228,11 +228,11 @@ description: Variables in memory after executing ssi_pattern.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
             "sourceRange": []
           },
           "from": [
@@ -249,7 +249,7 @@ description: Variables in memory after executing ssi_pattern.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "from": [
@@ -266,7 +266,7 @@ description: Variables in memory after executing ssi_pattern.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
             "sourceRange": []
           },
           "ccw": true,
@@ -288,7 +288,7 @@ description: Variables in memory after executing ssi_pattern.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           },
           "from": [
@@ -305,7 +305,7 @@ description: Variables in memory after executing ssi_pattern.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "41c630c9-9d44-581b-98af-caee575bea48",
             "sourceRange": []
           },
           "from": [
@@ -329,8 +329,8 @@ description: Variables in memory after executing ssi_pattern.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "3c085bb9-a401-55d5-8042-5a9095193d55",
+        "id": "3c085bb9-a401-55d5-8042-5a9095193d55",
         "kind": "XZ",
         "objectId": 0,
         "origin": {
@@ -371,7 +371,7 @@ description: Variables in memory after executing ssi_pattern.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
           "sourceRange": []
         }
       },
@@ -381,8 +381,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "value": "seg01"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+      "originalId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "units": "mm"
     }
   },
@@ -393,12 +393,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -407,11 +407,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -435,8 +435,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -452,8 +452,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -470,12 +470,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -488,12 +488,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -502,11 +502,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -530,8 +530,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -547,8 +547,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -565,12 +565,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "0d096139-0eb1-527f-9185-26f880a097b5",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -583,12 +583,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -597,11 +597,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -625,8 +625,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -642,8 +642,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -660,12 +660,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "a0db11d9-0fde-594a-b905-3da436eef237",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -678,12 +678,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -692,11 +692,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -720,8 +720,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -737,8 +737,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -755,12 +755,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "a313d6e0-980f-5019-9385-54d91456a312",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -773,12 +773,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -787,11 +787,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -815,8 +815,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -832,8 +832,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -850,12 +850,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "997407b6-c34d-53a9-b417-758aff870eb4",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -868,12 +868,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -882,11 +882,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -910,8 +910,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -927,8 +927,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -945,12 +945,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "333112bb-4a0c-5c5e-90f4-f1bd428c0211",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -963,12 +963,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -977,11 +977,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1005,8 +1005,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1022,8 +1022,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1040,12 +1040,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "87e48d27-2273-5b60-aacc-6fd19758c6bb",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -1058,12 +1058,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "01e801cc-22ef-5071-814b-847d3fcf22d5",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1072,11 +1072,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1100,8 +1100,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1117,8 +1117,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1135,12 +1135,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "3e98618f-a001-5dc6-b941-71f5b7eef024",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -1153,12 +1153,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1167,11 +1167,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1195,8 +1195,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1212,8 +1212,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1230,12 +1230,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "5229a18e-d275-52c2-97d1-81e9b176217a",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -1248,12 +1248,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1262,11 +1262,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1290,8 +1290,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1307,8 +1307,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1325,12 +1325,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "3ca84a29-cc00-5d4c-a526-f041ddf9ab89",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -1343,12 +1343,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "6c096663-896a-5f49-b4a0-b5621e2f3b74",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1357,11 +1357,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1385,8 +1385,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1402,8 +1402,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1420,12 +1420,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "64d7ee6a-7bae-53bb-b23b-18e5ebc64855",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -1438,12 +1438,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1452,11 +1452,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1480,8 +1480,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1497,8 +1497,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1515,12 +1515,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "ef746fbb-809a-585e-aae3-33596f02f034",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -1533,12 +1533,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1547,11 +1547,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1575,8 +1575,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1592,8 +1592,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1610,12 +1610,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "f10c331a-4b27-5b97-a0ea-19a91c7930d1",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -1628,12 +1628,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1642,11 +1642,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1670,8 +1670,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1687,8 +1687,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1705,12 +1705,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "d5296c0e-f8f2-5da2-9982-75eb1ff8fe2a",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -1723,12 +1723,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1737,11 +1737,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1765,8 +1765,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1782,8 +1782,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1800,12 +1800,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "113b0178-1c9a-55b0-b338-d2e7d5055ce9",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -1818,12 +1818,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1832,11 +1832,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1860,8 +1860,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1877,8 +1877,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1895,12 +1895,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "cbe90f4a-c759-5545-8204-b412439e7041",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -1913,12 +1913,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "129583cc-c953-5cdf-8ea4-5e7d50b41896",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -1927,11 +1927,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -1955,8 +1955,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -1972,8 +1972,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -1990,12 +1990,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "c5fc57f8-c6e9-503e-95f8-e736caeb7710",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2008,12 +2008,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "3bcd28fd-2b1b-5bfe-a9ba-ee907292b41f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2022,11 +2022,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2050,8 +2050,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -2067,8 +2067,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -2085,12 +2085,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "5e3a4301-f9f1-5831-9b8e-8d290292b81d",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2103,12 +2103,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2117,11 +2117,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2145,8 +2145,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -2162,8 +2162,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -2180,12 +2180,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "03e0304d-28d5-5776-a25c-d35ffc1c9609",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2198,12 +2198,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2212,11 +2212,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2240,8 +2240,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -2257,8 +2257,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -2275,12 +2275,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "ee68bdb4-ed2d-58bc-b386-975eb389fd1b",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2293,12 +2293,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "ab037e81-c147-56cd-af6f-0e6bab7fa4e6",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2307,11 +2307,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2335,8 +2335,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -2352,8 +2352,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -2370,12 +2370,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "9537cb3e-2b79-50e5-ac57-b0a6390a72ce",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2388,12 +2388,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2402,11 +2402,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2430,8 +2430,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -2447,8 +2447,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -2465,12 +2465,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "93f68c64-7576-51c4-8b06-4ea4727f7815",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2483,12 +2483,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2497,11 +2497,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2525,8 +2525,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -2542,8 +2542,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -2560,12 +2560,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "0ef283cd-ca1e-59ff-b253-7396de2e39b3",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2578,12 +2578,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2592,11 +2592,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2620,8 +2620,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -2637,8 +2637,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -2655,12 +2655,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "cd184e52-3904-5159-a0a2-5cf565d9f783",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2673,12 +2673,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "ca431487-8e9a-59ce-a472-84fe45652fab",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2687,11 +2687,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2715,8 +2715,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -2732,8 +2732,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -2750,12 +2750,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "e399799a-9d34-57d8-aaf4-123081b7efda",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2768,12 +2768,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "89273a0b-b55b-5457-9b1c-de1d777240e8",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2782,11 +2782,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2810,8 +2810,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -2827,8 +2827,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -2845,12 +2845,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "9dabc57a-01b4-5905-9d53-a90ea1b9ff74",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2863,12 +2863,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "fa75438f-b2d0-5142-b452-608454e1806a",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2877,11 +2877,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -2905,8 +2905,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -2922,8 +2922,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -2940,12 +2940,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "7831e5ab-0bf8-59f9-9402-95f460f33600",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -2958,12 +2958,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "c0c1140b-284f-50ff-b80d-615b8b938475",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -2972,11 +2972,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3000,8 +3000,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -3017,8 +3017,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -3035,12 +3035,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "9c34a194-5bd3-503f-9705-d06e1c9db66c",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -3053,12 +3053,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "e80fd4da-2562-5d4d-be7f-42b434d6e397",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -3067,11 +3067,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3095,8 +3095,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -3112,8 +3112,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -3130,12 +3130,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "78d19375-4a6f-5ed0-8d37-592375e0a0cd",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,
@@ -3148,12 +3148,12 @@ description: Variables in memory after executing ssi_pattern.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "artifactId": "88600ae1-c4f2-5277-8c4e-117866e83f6e",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b86f4b7b-bc0b-5299-a5f3-b2672a94a4e6",
+              "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
@@ -3162,11 +3162,11 @@ description: Variables in memory after executing ssi_pattern.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "186e6756-e0a9-5df7-a3d1-f5f025d153e3",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -3190,8 +3190,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             ],
             "on": {
               "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
+              "id": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
+              "artifactId": "6bd30ad2-4507-5200-a9e0-eedafc2e95d0",
               "objectId": 1,
               "value": "seg01",
               "xAxis": {
@@ -3207,8 +3207,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "units": null
               },
               "parentSolid": {
-                "solidId": "[uuid]",
-                "creatorSketchId": "[uuid]",
+                "solidId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+                "creatorSketchId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "creatorSketchIsClosed": "explicitly"
               },
               "units": "mm"
@@ -3225,12 +3225,12 @@ description: Variables in memory after executing ssi_pattern.kcl
               "units": "mm",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "sourceRange": []
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
+            "artifactId": "94d3ba3a-357d-573d-b676-504d26a4f43f",
+            "originalId": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "units": "mm"
           },
           "startCapId": null,

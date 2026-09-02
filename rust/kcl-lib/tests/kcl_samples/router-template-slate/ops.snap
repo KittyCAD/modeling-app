@@ -2228,11 +2228,11 @@ description: Operations executed router-template-slate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2262,7 +2262,7 @@ description: Operations executed router-template-slate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c5b43f3a-de89-5e69-93ff-c926dbe3c139"
           }
         },
         "sourceRange": []
@@ -2951,11 +2951,11 @@ description: Operations executed router-template-slate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4da16780-5d2e-5aa7-9a9e-c4891160dc60"
               }
             ]
           },
@@ -2985,7 +2985,7 @@ description: Operations executed router-template-slate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e8637a6d-00c2-5b87-831e-2db8c2223948"
           }
         },
         "sourceRange": []
@@ -3674,11 +3674,11 @@ description: Operations executed router-template-slate.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "94e50507-a449-5f71-8fce-fd2931e7c6c9"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a54ad82c-be8d-599a-9764-c6498922dd5c"
               }
             ]
           },
@@ -3708,7 +3708,7 @@ description: Operations executed router-template-slate.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab"
           }
         },
         "sourceRange": []

@@ -5,7 +5,7 @@ description: Artifact commands axial-fan.kcl
 {
   "public/kcl-samples/axial-fan/fan-housing.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f343393-cae6-5d60-9535-851def31d898",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f60ccf94-45b7-533c-a7e3-f7b263036fcf",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1261aabb-691e-5c4e-a553-418b2f3586e3",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ec51f83-616b-535d-884e-c80aeae7d4c0",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": -51.23809167339775,
           "y": 50.637182946410604,
@@ -75,18 +75,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc74d3b9-3119-5a07-be47-51fc9700085d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6ff82033-85ee-5c70-9a01-963600e38d16",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -107,11 +107,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "43e78dc3-01b6-5751-8bae-0769a264580f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": 50.88912471891798,
           "y": 50.9291464648946,
@@ -120,11 +120,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a975c2b7-7f3d-517e-a535-11d01af26c97",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -145,11 +145,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33bfe733-0348-5745-8fa2-a0b6fdab630c",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": 54.32138567962274,
           "y": -51.17899500152685,
@@ -158,11 +158,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27cdb3c6-57f2-5436-b5a0-ea56d854b0ea",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -183,11 +183,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef81f5e0-0835-59bd-8ae9-52c6731f1e4e",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": -50.331370355156366,
           "y": -53.099621099907786,
@@ -196,11 +196,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "35ba111a-187f-564e-955a-1c04d83dd0c3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -221,11 +221,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f53b0689-a0f0-5ff2-a83f-dc8f3555b2aa",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": 16.550617441428884,
           "y": 57.672151531793936,
@@ -234,11 +234,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c365a323-de4a-5a38-890b-e8602360a7e9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -259,11 +259,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "751b5f03-08eb-57aa-823c-eff5dc9490bd",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": -62.50000000000281,
           "y": -56.5,
@@ -272,11 +272,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92dcbb39-86da-5d0f-94d8-831d63e2fdb9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "line",
           "end": {
@@ -289,11 +289,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3d676305-1bce-5f91-8224-4c96a82e7430",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": -56.5,
           "y": 62.499999999999126,
@@ -302,11 +302,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1dbf2c11-0540-50fe-8243-58ffa27a5471",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "line",
           "end": {
@@ -319,11 +319,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ddec5d0a-2e18-50c0-8677-af87377a453d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": 62.49999999999719,
           "y": 56.5,
@@ -332,11 +332,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4ee09ad8-3595-53fa-9431-87c1ccd410a4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "line",
           "end": {
@@ -349,11 +349,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "804a9fd5-9d99-5e92-896a-9fc86883c319",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": 56.5,
           "y": -62.500000000000874,
@@ -362,11 +362,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "915c226b-6220-58f1-a18b-ad408905f6af",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "line",
           "end": {
@@ -379,11 +379,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a5815c77-b9d6-5ede-9e3a-675edad9a571",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -404,11 +404,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e4f05479-6900-50cb-b463-8ff55ecc991f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": -56.5,
           "y": 62.499999999999126,
@@ -417,11 +417,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "07e1fb2e-446a-5dd2-8511-498086a311be",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -442,11 +442,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0903eda-c1b0-57c1-902d-97b306630826",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": 62.49999999999719,
           "y": 56.5,
@@ -455,11 +455,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d09d825b-0219-5bc0-b181-18ddb49f3ffe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -480,11 +480,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "374c0bd6-2d94-5211-977c-e8748783b3ad",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "to": {
           "x": 56.5,
           "y": -62.500000000000874,
@@ -493,11 +493,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0daf60f-365d-5cec-91f4-ad17841b694d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "segment": {
           "type": "arc",
           "center": {
@@ -518,33 +518,33 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c06ffe93-85d7-5099-9b42-804a1349a567",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1261aabb-691e-5c4e-a553-418b2f3586e3",
+        "segment": "92dcbb39-86da-5d0f-94d8-831d63e2fdb9",
+        "intersection_segment": "07e1fb2e-446a-5dd2-8511-498086a311be",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d7514b2-f5c5-52ae-8a31-efdfc359c31a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1261aabb-691e-5c4e-a553-418b2f3586e3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "66053f92-0acc-5c7b-b6de-86f9a38600a2",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -556,11 +556,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e497b8e4-aad4-5eb7-81e8-b8ee40d446a4",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "c06ffe93-85d7-5099-9b42-804a1349a567",
         "distance": 25.0,
         "faces": null,
         "opposite": "None",
@@ -569,40 +569,40 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21dc2e2b-5111-50b2-9e69-1cc365fd7f61",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a6d79b3d-458a-5e4a-8a39-76b65328620f",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c06ffe93-85d7-5099-9b42-804a1349a567"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbb3e70a-beaa-5fa1-aa71-bb770033a0d2",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c06ffe93-85d7-5099-9b42-804a1349a567",
+        "edge_id": "bfb2ba8c-1e31-5d76-b002-f12035248942"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0e74db01-d31d-58b9-a45c-92eae8674865",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c06ffe93-85d7-5099-9b42-804a1349a567",
+        "edge_id": "bfb2ba8c-1e31-5d76-b002-f12035248942"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "39c5e092-3967-50e1-8069-f330b5829328",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -627,20 +627,20 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3c19f68d-11dd-5079-a5e4-6c542fb43e66",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "39c5e092-3967-50e1-8069-f330b5829328",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a74978b-6513-5971-ab7a-7977d863e6f2",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "39c5e092-3967-50e1-8069-f330b5829328",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -652,18 +652,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f9c8e0f-f974-5427-9243-9c4cb9eb2b87",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "to": {
           "x": 117.16,
           "y": 22.54945114653277,
@@ -672,18 +672,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "863f9e69-55a3-51cc-9775-b91a7067ab9e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c20c40fc-0ea8-5640-b267-20ce6af54976",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "segment": {
           "type": "line",
           "end": {
@@ -696,11 +696,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fdea1e0d-136c-5d5b-8f2c-f58d5aa8d821",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "to": {
           "x": 66.00072257121991,
           "y": 22.54945114653271,
@@ -709,11 +709,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3a777457-612d-5fec-8678-20aba2e4a2ef",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "segment": {
           "type": "arc",
           "center": {
@@ -734,11 +734,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cbc74e70-6a54-530b-989d-cf74f1da82c5",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "to": {
           "x": 64.99940101787156,
           "y": 3.549999810295046,
@@ -747,11 +747,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb3222fb-d531-5246-8de8-2846422b9c70",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "segment": {
           "type": "arc",
           "center": {
@@ -772,11 +772,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5eb3658-5164-5ba7-8d79-4e8399f16898",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "segment": {
           "type": "line",
           "end": {
@@ -789,11 +789,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5c07dd0-a2d1-5d95-8d2c-295e4c2e3659",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "to": {
           "x": 66.00072257121991,
           "y": 22.54945114653271,
@@ -802,11 +802,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dc48b4fe-99db-57cb-9a86-7afbb004baa0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "segment": {
           "type": "line",
           "end": {
@@ -819,11 +819,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b5930dd-ec28-587c-8e0e-afcc1247df64",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "to": {
           "x": 65.00083279147816,
           "y": 21.55000020405802,
@@ -832,11 +832,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7bbf5a08-0cdd-57d2-a13e-bbb18b3138e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "segment": {
           "type": "line",
           "end": {
@@ -849,33 +849,33 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a3df0ef1-a5b6-5ef7-a008-fd5c957c3a8b",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
+        "segment": "b5eb3658-5164-5ba7-8d79-4e8399f16898",
+        "intersection_segment": "c20c40fc-0ea8-5640-b267-20ce6af54976",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4743e0bd-5fc4-5459-83e6-dac1866a65e3",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f96fa62d-5f43-5ea5-ba97-75264171a92c",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "56097360-43af-5b29-9943-3680a3d3f6cc",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "a3df0ef1-a5b6-5ef7-a008-fd5c957c3a8b",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -897,48 +897,48 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "218a8472-acf7-5c93-b30c-244f577f7292",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "a3df0ef1-a5b6-5ef7-a008-fd5c957c3a8b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4d39730b-3991-5e1e-9144-46b864ad6974",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a3df0ef1-a5b6-5ef7-a008-fd5c957c3a8b",
+        "edge_id": "72e2a06e-d195-5852-ac03-188c12b5f500"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5f5fb36a-2638-5957-8892-28e883cbf8ee",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "a3df0ef1-a5b6-5ef7-a008-fd5c957c3a8b",
+        "edge_id": "72e2a06e-d195-5852-ac03-188c12b5f500"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0816a6c-b4c1-59b7-8528-6fca3fd618a5",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "c06ffe93-85d7-5099-9b42-804a1349a567"
         ],
         "tool_ids": [
-          "[uuid]"
+          "a3df0ef1-a5b6-5ef7-a008-fd5c957c3a8b"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c33d267-7a30-5ba4-b2db-c689c066cb1b",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -963,20 +963,20 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21ff247d-2186-5189-89b9-af3565ded4e9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7c33d267-7a30-5ba4-b2db-c689c066cb1b",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7bb1188-c86c-5988-8890-b8a99394c8d5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7c33d267-7a30-5ba4-b2db-c689c066cb1b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -988,18 +988,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "064b953a-989d-582d-9ebd-e402cf819589",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76b37d27-38fa-58f5-b210-2d5a1edb918d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "064b953a-989d-582d-9ebd-e402cf819589",
         "to": {
           "x": -0.02,
           "y": 5.999966666574074,
@@ -1008,18 +1008,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a900d123-5538-58ab-9240-d845ce460681",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6905af4b-45c9-5184-b7b1-5461b63c44ae",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "064b953a-989d-582d-9ebd-e402cf819589",
         "segment": {
           "type": "arc",
           "center": {
@@ -1040,11 +1040,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "09f2913c-791e-556e-9e6b-9ef5dbee67e4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "064b953a-989d-582d-9ebd-e402cf819589",
         "to": {
           "x": -0.02,
           "y": 5.999966666574074,
@@ -1053,11 +1053,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5a00b2c-7258-5857-b280-d8eb2c0c9322",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "064b953a-989d-582d-9ebd-e402cf819589",
         "segment": {
           "type": "line",
           "end": {
@@ -1070,11 +1070,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2df0f631-f596-5651-ae78-caedb2b89b65",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "064b953a-989d-582d-9ebd-e402cf819589",
         "segment": {
           "type": "arc",
           "center": {
@@ -1095,11 +1095,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48f1f94a-63a2-5cba-8090-d3dc68d78243",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "064b953a-989d-582d-9ebd-e402cf819589",
         "segment": {
           "type": "line",
           "end": {
@@ -1112,11 +1112,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7587a7de-1f51-5bf8-ac61-fc1cc54a3eb8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "064b953a-989d-582d-9ebd-e402cf819589",
         "segment": {
           "type": "arc",
           "center": {
@@ -1137,11 +1137,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ebe9cff7-9df6-5882-a059-b430a1b6f05b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "064b953a-989d-582d-9ebd-e402cf819589",
         "segment": {
           "type": "line",
           "end": {
@@ -1154,11 +1154,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f8cd0e7-102a-5367-9f28-1e30351fa2b4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "064b953a-989d-582d-9ebd-e402cf819589",
         "segment": {
           "type": "arc",
           "center": {
@@ -1179,11 +1179,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f26d285f-ad5d-57c8-a766-853d5602956f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "064b953a-989d-582d-9ebd-e402cf819589",
         "segment": {
           "type": "line",
           "end": {
@@ -1196,33 +1196,33 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9c19afea-1d1b-5084-8f98-4499174ac009",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "064b953a-989d-582d-9ebd-e402cf819589",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d24164b0-5331-53ba-acbe-e521e155452d",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "064b953a-989d-582d-9ebd-e402cf819589",
+        "segment": "6905af4b-45c9-5184-b7b1-5461b63c44ae",
+        "intersection_segment": "b5a00b2c-7258-5857-b280-d8eb2c0c9322",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "00691bf1-8d9f-59e5-947a-5e3dee57124b",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7c33d267-7a30-5ba4-b2db-c689c066cb1b",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1234,11 +1234,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "97afdf03-5344-55d3-8a8a-75fd4f9469d8",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "d24164b0-5331-53ba-acbe-e521e155452d",
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
@@ -1247,44 +1247,44 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "826dbc66-b90e-5f0c-965a-819767fe30d9",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6edb8585-9ea2-5b05-b207-1b327a325bbd",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "d24164b0-5331-53ba-acbe-e521e155452d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40799fb1-ed3f-5733-b154-2d5a18bd999a",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d24164b0-5331-53ba-acbe-e521e155452d",
+        "edge_id": "6c6d0a4b-611c-5357-bf3b-9a8b63c039ff"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7ae1c81d-29e0-543d-a5d3-87b90ba7f8b4",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d24164b0-5331-53ba-acbe-e521e155452d",
+        "edge_id": "6c6d0a4b-611c-5357-bf3b-9a8b63c039ff"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e77dc3e2-bd12-5897-a683-02895b514e2a",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "d24164b0-5331-53ba-acbe-e521e155452d",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -1301,11 +1301,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7accf8a-4754-56b9-84d7-3660cc3307c2",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2da4554b-d28a-5870-8849-4d210c1cdeaa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1313,18 +1313,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1ac8d29-73a9-5b5b-9d70-8ab181538c60",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8720216e-14eb-5cd1-b35d-553c73824556",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c1ac8d29-73a9-5b5b-9d70-8ab181538c60",
         "to": {
           "x": -2.2792479722679357,
           "y": 9.736787390160137,
@@ -1333,18 +1333,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25b71da7-5201-56f2-b165-e6a23679ab42",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a2893e4-8cc6-5591-adf1-ff1978c8153e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c1ac8d29-73a9-5b5b-9d70-8ab181538c60",
         "segment": {
           "type": "arc",
           "center": {
@@ -1365,11 +1365,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e7d05f-96e6-527c-a973-68a791edb35f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c1ac8d29-73a9-5b5b-9d70-8ab181538c60",
         "to": {
           "x": 7.509747071809267,
           "y": 9.359684765928256,
@@ -1378,11 +1378,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c007bebb-71e1-53ff-b337-ee30630d9883",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c1ac8d29-73a9-5b5b-9d70-8ab181538c60",
         "segment": {
           "type": "arc",
           "center": {
@@ -1403,33 +1403,33 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "98f26143-1c37-5d39-b4b3-2a2e970c59af",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c1ac8d29-73a9-5b5b-9d70-8ab181538c60",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0ec295c9-4e35-5e13-92ee-0b183fdc0d6b",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "c1ac8d29-73a9-5b5b-9d70-8ab181538c60",
+        "segment": "c007bebb-71e1-53ff-b337-ee30630d9883",
+        "intersection_segment": "c007bebb-71e1-53ff-b337-ee30630d9883",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "56809f50-0e1f-5335-9f00-85df3a30e8f3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2da4554b-d28a-5870-8849-4d210c1cdeaa",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1437,11 +1437,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ff0857c-c743-5933-a243-738d32d0537e",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "0ec295c9-4e35-5e13-92ee-0b183fdc0d6b",
         "distance": 12.0,
         "faces": null,
         "opposite": "None",
@@ -1450,44 +1450,44 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9c65f474-4b76-53ec-805c-24f2098517cb",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3419ea6c-fc90-5383-ada3-f79082a2c94f",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "0ec295c9-4e35-5e13-92ee-0b183fdc0d6b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fd0f889-8ed8-5ad9-b0d6-afc9dda0d3e2",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d24164b0-5331-53ba-acbe-e521e155452d",
+        "edge_id": "df7c79f2-3d71-55e2-a8ba-64e42d61ceee"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0a29fccd-4ad8-530d-bdff-2fa8ee25fa87",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d24164b0-5331-53ba-acbe-e521e155452d",
+        "edge_id": "df7c79f2-3d71-55e2-a8ba-64e42d61ceee"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3e40da86-3ab3-58c1-b85d-0da8fae466b8",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "e0816a6c-b4c1-59b7-8528-6fca3fd618a5",
         "color": {
           "r": 0.64705884,
           "g": 0.36862746,
@@ -1500,11 +1500,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "23b9f976-6fd9-508b-a83b-68dc292d47ba",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "d24164b0-5331-53ba-acbe-e521e155452d",
         "color": {
           "r": 0.64705884,
           "g": 0.36862746,
@@ -1519,7 +1519,7 @@ description: Artifact commands axial-fan.kcl
   ],
   "public/kcl-samples/axial-fan/fan.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1544,20 +1544,20 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48f42b10-0610-54f6-a9df-84b24f1742f2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a945d4c-de3f-5e36-b8ea-b1e30bb080b2",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "4848a2f1-41f9-509c-a9a7-9afbd9a4dfd3",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1569,18 +1569,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "23dddded-c8f3-544d-a89d-8f71e26428b1",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "to": {
           "x": 0.0,
           "y": 25.0,
@@ -1589,18 +1589,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08d3b429-5ffc-57db-8f9a-be455c2f7f2f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9adef1b0-205f-5ea6-85ea-a530a6abee69",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "line",
           "end": {
@@ -1613,11 +1613,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f1634645-3502-580b-a84b-0466ff4d66c4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "arc",
           "center": {
@@ -1638,11 +1638,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "69a93f34-75f3-5bbc-8a39-52f8f460dcd9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "line",
           "end": {
@@ -1655,11 +1655,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbaf38ab-43d1-5434-8f5e-3559688687a0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "line",
           "end": {
@@ -1672,11 +1672,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "edccd9f4-f441-5e37-8c81-63f16ccfa985",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "line",
           "end": {
@@ -1689,11 +1689,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef36dac0-1abc-5f2c-ab57-b0a08d1d2e31",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "arc",
           "center": {
@@ -1714,11 +1714,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "512cb0fe-d462-58ef-9ab7-7be4b99b6fcf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "line",
           "end": {
@@ -1731,11 +1731,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "83059d15-faca-58da-abd9-f0f9a9b70698",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "line",
           "end": {
@@ -1748,11 +1748,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3dc38ff5-6a47-5349-819e-85fd4987b2dc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "line",
           "end": {
@@ -1765,11 +1765,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f78200b-ebff-5c2d-a334-f9594a609666",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "line",
           "end": {
@@ -1782,11 +1782,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60de322d-bf9a-5235-a2a1-64013dd61264",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "line",
           "end": {
@@ -1799,11 +1799,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "90ac5173-a190-5221-9b4f-6adfbe21958b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "segment": {
           "type": "line",
           "end": {
@@ -1816,33 +1816,33 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e9f4b468-6510-5f17-b19b-14497d76aafa",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
+        "segment": "9adef1b0-205f-5ea6-85ea-a530a6abee69",
+        "intersection_segment": "f1634645-3502-580b-a84b-0466ff4d66c4",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9aef2c2-59c7-5333-a603-04fa391de4b2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2fff6f5e-9bd2-546b-8e3d-319de235951e",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3bfa4865-2b7e-55bf-b05d-7a62017cb9b1",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "e9f4b468-6510-5f17-b19b-14497d76aafa",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1864,37 +1864,37 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd6813be-177b-527a-9ab0-8d89d28fb464",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e9f4b468-6510-5f17-b19b-14497d76aafa"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d31286f9-7f3a-5ad4-b186-f93b01f1788d",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e9f4b468-6510-5f17-b19b-14497d76aafa",
+        "edge_id": "d9cb3607-9984-57eb-bea9-d124703bf72f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1ef572a-1fff-506a-8f23-83584e171161",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e9f4b468-6510-5f17-b19b-14497d76aafa",
+        "edge_id": "d9cb3607-9984-57eb-bea9-d124703bf72f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c0883bc-2917-569a-85d0-79764868e9e0",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "e9f4b468-6510-5f17-b19b-14497d76aafa",
         "color": {
           "r": 0.9529412,
           "g": 0.8862745,
@@ -1907,7 +1907,7 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fd581ef1-a14a-50c1-a51b-40c0cefc7e3f",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1932,11 +1932,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1116a59-2e00-5448-ba5b-c509e6395cbf",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "fd581ef1-a14a-50c1-a51b-40c0cefc7e3f",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1946,20 +1946,20 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f643dd0-c70e-545e-b9bc-98ab1948bef7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "fd581ef1-a14a-50c1-a51b-40c0cefc7e3f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "13e82063-8f49-5d81-83d6-0100fb68952a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fd581ef1-a14a-50c1-a51b-40c0cefc7e3f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1971,18 +1971,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a540ac98-8e67-599e-961b-aa042c82319c",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
         "to": {
           "x": 52.12554818192406,
           "y": 27.639233468638615,
@@ -1991,18 +1991,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "275fbb2a-4f06-54ce-a6b3-cc3c8ace5584",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "781c48e5-9a88-580f-a953-0c524fe7ad05",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
         "segment": {
           "type": "arc",
           "center": {
@@ -2023,11 +2023,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0b1ea51-d732-5e1c-82f1-47be0bf06de1",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
         "to": {
           "x": 52.89238434682324,
           "y": 26.14183769569247,
@@ -2036,11 +2036,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b85218a-560d-50ab-9b5e-02ced5877ec0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
         "segment": {
           "type": "arc",
           "center": {
@@ -2061,11 +2061,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6cb1a561-aecd-55fd-a219-32309532978d",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
         "to": {
           "x": 52.89238434682324,
           "y": 26.14183769569247,
@@ -2074,11 +2074,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "614f6ed4-a48a-5909-b569-6a72b73c919b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
         "segment": {
           "type": "arc",
           "center": {
@@ -2099,11 +2099,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0bf2c125-6cbc-5092-b81a-7d39e93646eb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
         "segment": {
           "type": "arc",
           "center": {
@@ -2124,33 +2124,33 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "17aab31b-c253-5483-99fc-f73d3a2b475a",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
+        "segment": "0bf2c125-6cbc-5092-b81a-7d39e93646eb",
+        "intersection_segment": "781c48e5-9a88-580f-a953-0c524fe7ad05",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abd4744c-6774-5cd5-8c0d-4f028c243082",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6f611c28-5882-5389-96e6-dbce36b6e7a4",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d249b615-5ec8-512f-9c54-160c0e440117",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "fd581ef1-a14a-50c1-a51b-40c0cefc7e3f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2162,11 +2162,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3412529c-1465-5f50-8a6a-7d4885b1302f",
       "range": [],
       "command": {
         "type": "twist_extrude",
-        "target": "[uuid]",
+        "target": "17aab31b-c253-5483-99fc-f73d3a2b475a",
         "distance": 18.5,
         "faces": null,
         "center_2d": {
@@ -2186,44 +2186,44 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0c345f1a-bcd3-5b8c-8021-8ded4021bd0a",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cacb6a12-82b8-5d87-bc7b-4fb12f0e1351",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "17aab31b-c253-5483-99fc-f73d3a2b475a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7c1aafc4-b724-557f-a16a-691bbad112b4",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "17aab31b-c253-5483-99fc-f73d3a2b475a",
+        "edge_id": "84d1d1e4-062b-5d1a-beaf-3b774950934b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4c2a738b-4bba-5786-bda0-19b66a8743f6",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "17aab31b-c253-5483-99fc-f73d3a2b475a",
+        "edge_id": "84d1d1e4-062b-5d1a-beaf-3b774950934b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3346ecd7-35f5-589e-8db6-8a45d91db9e1",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "17aab31b-c253-5483-99fc-f73d3a2b475a",
         "color": {
           "r": 0.9529412,
           "g": 0.8862745,
@@ -2236,11 +2236,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f846f28-557b-5c02-8368-03982e99749e",
       "range": [],
       "command": {
         "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
+        "entity_id": "17aab31b-c253-5483-99fc-f73d3a2b475a",
         "axis": {
           "x": 0.0,
           "y": 0.0,
@@ -2259,7 +2259,7 @@ description: Artifact commands axial-fan.kcl
   ],
   "public/kcl-samples/axial-fan/motor.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2284,11 +2284,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fb1b9d2c-879e-5437-a1c1-c974deb8143f",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2298,20 +2298,20 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf0e612a-1375-5a2f-9673-f21d5f4965a8",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "36deb4c2-bf06-589f-87ba-77c52fd113d8",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2323,18 +2323,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "630e2c20-474e-5cd6-8b4f-09f30ec93091",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8d5831f8-cfb6-55d6-8689-9eba26b90a80",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "630e2c20-474e-5cd6-8b4f-09f30ec93091",
         "to": {
           "x": 10.0,
           "y": 0.0,
@@ -2343,18 +2343,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9e16ca69-67dd-5294-8693-34fbdb7b414e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "515e71b6-5068-5314-a362-727be5fd92ee",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "630e2c20-474e-5cd6-8b4f-09f30ec93091",
         "segment": {
           "type": "arc",
           "center": {
@@ -2375,24 +2375,24 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "630e2c20-474e-5cd6-8b4f-09f30ec93091",
+        "segment": "515e71b6-5068-5314-a362-727be5fd92ee",
+        "intersection_segment": "515e71b6-5068-5314-a362-727be5fd92ee",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9aaf1824-b21b-5333-a9d1-b1fa8b5d27b8",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "0006e0b8-6ca9-5d1c-a72d-d5ce37705a50",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2404,11 +2404,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "389ea878-9075-54e8-9f0d-f5855f0295fb",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
         "distance": 17.0,
         "faces": null,
         "opposite": "None",
@@ -2417,44 +2417,44 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "edce6c48-023d-5bab-b0e3-a6e19d17b66d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "74258cdc-0880-5ede-953e-e4fe95273e55",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "05ab2fc4-1852-5eb6-bd69-96c1c032130e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ed413f80-b210-565c-be1b-f95f0fa5de80",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
+        "edge_id": "17d5946e-cd6b-5da9-ac3f-afcc3e4522fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89187ec0-3c95-5d5e-9946-c823c4954b7c",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
+        "edge_id": "17d5946e-cd6b-5da9-ac3f-afcc3e4522fb"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ae52fc86-6a50-5b42-a4b0-660ab1894329",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
         "color": {
           "r": 0.007843138,
           "g": 0.105882354,
@@ -2467,58 +2467,58 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0d8ed11b-f875-58d6-bf67-ff3a20a8f5f0",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "4c285a6a-a535-5564-b95d-00c811d6445d",
+          "8fd8b3c1-bcfc-5967-81c5-fb8200715c05"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "754e5e64-bf24-52cf-9f8c-962e4cc9e527",
       "range": [],
       "command": {
         "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
+        "object_id": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
         "face_ids": [
-          "[uuid]",
-          "[uuid]"
+          "4c285a6a-a535-5564-b95d-00c811d6445d",
+          "4e018979-cbf4-5160-977a-f583be8631fa"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a58fb782-b253-5b3f-99b2-36f8fe81cfef",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
+        "edge_id": "17d5946e-cd6b-5da9-ac3f-afcc3e4522fb"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1aecef1-7f47-5e98-a759-68b4bf046700",
       "range": [],
       "command": {
         "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
+        "edge_id": "5b59f557-18c5-57a6-9174-87d825fc7955"
       },
       "omitFromGraph": true
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0522b012-e030-5688-a335-da7c2506e314",
       "range": [],
       "command": {
         "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
+        "object_id": "05ab2fc4-1852-5eb6-bd69-96c1c032130e",
         "edge_ids": [
-          "[uuid]",
-          "[uuid]"
+          "17d5946e-cd6b-5da9-ac3f-afcc3e4522fb",
+          "5b59f557-18c5-57a6-9174-87d825fc7955"
         ],
         "cut_type": {
           "fillet": {
@@ -2529,12 +2529,12 @@ description: Artifact commands axial-fan.kcl
         "tolerance": 0.0000001,
         "strategy": "automatic",
         "extra_face_ids": [
-          "[uuid]"
+          "f9a89775-cfba-5031-8e02-ff7b852c56d9"
         ]
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dae2d208-7706-5747-b592-90417506cbf1",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2559,11 +2559,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21294103-205a-51c9-9939-ab6cf5fa2f07",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "dae2d208-7706-5747-b592-90417506cbf1",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2573,20 +2573,20 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2539e202-3451-5d40-8c6f-50b822800d7a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "dae2d208-7706-5747-b592-90417506cbf1",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbce07c6-5d48-59a5-a7ea-998c756458c3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "dae2d208-7706-5747-b592-90417506cbf1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2598,18 +2598,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "85871638-7fe9-5686-b80c-00d76d5a95c4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
         "to": {
           "x": 1.0,
           "y": 0.0,
@@ -2618,18 +2618,18 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c891370e-d9d1-56ca-9db7-c6dbc0b67bf8",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0208f2f8-c61e-57fc-96d1-c8e9e64f25d8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
         "segment": {
           "type": "arc",
           "center": {
@@ -2650,24 +2650,24 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08f30374-37d7-5a7c-a606-c19ce1a055d5",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "e59d71a1-61af-585c-bfd1-c3c90d0039de",
+        "segment": "0208f2f8-c61e-57fc-96d1-c8e9e64f25d8",
+        "intersection_segment": "0208f2f8-c61e-57fc-96d1-c8e9e64f25d8",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149842c9-793f-5b13-bf13-041f386982f2",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "dae2d208-7706-5747-b592-90417506cbf1",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2679,11 +2679,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0e403565-ae76-5417-9231-63bff71f63cc",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "08f30374-37d7-5a7c-a606-c19ce1a055d5",
         "distance": 3.8,
         "faces": null,
         "opposite": "None",
@@ -2692,44 +2692,44 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2d3f0a7e-4083-52ce-8054-b816fa6704a8",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76025370-77a9-5076-9f04-fc0a175b85b0",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "08f30374-37d7-5a7c-a606-c19ce1a055d5"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "31cc1b97-b3fb-559c-8cc5-a5965da9ba5a",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "08f30374-37d7-5a7c-a606-c19ce1a055d5",
+        "edge_id": "e7b4bd82-9ffb-5395-bea2-6b12b6941132"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "691a7178-7ad0-5445-ad53-53d08dd46282",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "08f30374-37d7-5a7c-a606-c19ce1a055d5",
+        "edge_id": "e7b4bd82-9ffb-5395-bea2-6b12b6941132"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a9416edc-ddb4-56c7-9309-3efb23608c50",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "08f30374-37d7-5a7c-a606-c19ce1a055d5",
         "color": {
           "r": 0.85882354,
           "g": 0.78431374,
@@ -2742,11 +2742,11 @@ description: Artifact commands axial-fan.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db2ad7c6-e062-5c1e-a086-01b201ca4910",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "630e2c20-474e-5cd6-8b4f-09f30ec93091",
         "hidden": true
       }
     }

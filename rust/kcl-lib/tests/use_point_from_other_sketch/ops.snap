@@ -249,7 +249,7 @@ description: Operations executed use_point_from_other_sketch.kcl
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
             }
           ]
         },
@@ -355,7 +355,7 @@ description: Operations executed use_point_from_other_sketch.kcl
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
             }
           ]
         },
@@ -397,7 +397,7 @@ description: Operations executed use_point_from_other_sketch.kcl
           "value": [
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
             },
             {
               "type": "KclNone"
@@ -506,7 +506,7 @@ description: Operations executed use_point_from_other_sketch.kcl
           "value": [
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
             },
             {
               "type": "KclNone"
@@ -551,7 +551,7 @@ description: Operations executed use_point_from_other_sketch.kcl
           "value": [
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
             },
             {
               "type": "KclNone"
@@ -663,7 +663,7 @@ description: Operations executed use_point_from_other_sketch.kcl
             },
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
             }
           ]
         },
@@ -705,7 +705,7 @@ description: Operations executed use_point_from_other_sketch.kcl
           "value": [
             {
               "type": "Segment",
-              "artifact_id": "[uuid]"
+              "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
             },
             {
               "type": "KclNone"
@@ -844,7 +844,7 @@ description: Operations executed use_point_from_other_sketch.kcl
         "point": {
           "value": {
             "type": "Segment",
-            "artifact_id": "[uuid]"
+            "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
           },
           "sourceRange": []
         }

@@ -6,8 +6,8 @@ description: Variables in memory after executing c-shape-solid.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -62,11 +62,11 @@ description: Variables in memory after executing c-shape-solid.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2f2daa61-e474-5451-99da-01d3b4e6896c",
             "sourceRange": []
           },
           "ccw": true,
@@ -96,7 +96,7 @@ description: Variables in memory after executing c-shape-solid.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3b3c8a78-7302-5dcc-99f1-967e94c16511",
             "sourceRange": []
           },
           "from": [
@@ -120,7 +120,7 @@ description: Variables in memory after executing c-shape-solid.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "de241bb8-7e52-5408-94c8-f70c7ddd1c3a",
             "sourceRange": []
           },
           "ccw": true,
@@ -150,7 +150,7 @@ description: Variables in memory after executing c-shape-solid.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e9732a7f-13dd-57b9-ac68-6205d9543084",
             "sourceRange": []
           },
           "from": [
@@ -174,8 +174,8 @@ description: Variables in memory after executing c-shape-solid.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -216,7 +216,7 @@ description: Variables in memory after executing c-shape-solid.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
           "sourceRange": []
         }
       },
@@ -238,9 +238,9 @@ description: Variables in memory after executing c-shape-solid.kcl
           "value": "topBridge"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "originalId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "originSketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
       "units": "mm"
     }
   },
@@ -253,7 +253,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -327,8 +327,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -357,7 +357,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "bottomBridge"
@@ -373,7 +373,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8a662fcd-9569-5482-8c42-aafff7b3f8d4",
                 "objectId": 18,
                 "kind": {
                   "line": {
@@ -448,8 +448,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -478,7 +478,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "centerline"
@@ -494,7 +494,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 5,
                 "kind": {
                   "arc": {
@@ -600,8 +600,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -630,7 +630,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "innerArc"
@@ -646,7 +646,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 21,
                 "kind": {
                   "line": {
@@ -721,8 +721,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -751,7 +751,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "lowerRadialRef"
@@ -768,11 +768,11 @@ description: Variables in memory after executing c-shape-solid.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -802,7 +802,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
                     "sourceRange": []
                   },
                   "from": [
@@ -819,7 +819,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -843,7 +843,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -873,7 +873,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -897,8 +897,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -939,7 +939,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
                   "sourceRange": []
                 }
               },
@@ -961,8 +961,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                   "value": "topBridge"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
+              "originalId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
               "units": "mm",
               "isClosed": "no"
             }
@@ -976,7 +976,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 12,
                 "kind": {
                   "arc": {
@@ -1082,8 +1082,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1112,7 +1112,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "outerArc"
@@ -1128,7 +1128,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 8,
                 "kind": {
                   "line": {
@@ -1202,8 +1202,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1232,7 +1232,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "topBridge"
@@ -1248,7 +1248,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -1323,8 +1323,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1353,7 +1353,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "upperRadialRef"
@@ -1370,12 +1370,12 @@ description: Variables in memory after executing c-shape-solid.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "artifactId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "af4bd2f6-9858-52f4-bc47-f02ef6bed44b",
+          "id": "2f2daa61-e474-5451-99da-01d3b4e6896c",
           "sourceRange": [],
           "tag": {
             "commentStart": 533,
@@ -1388,8 +1388,8 @@ description: Variables in memory after executing c-shape-solid.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e2ca6ecd-9d7a-5faf-b88f-3babf10b2238",
+          "id": "3b3c8a78-7302-5dcc-99f1-967e94c16511",
           "sourceRange": [],
           "tag": {
             "commentStart": 645,
@@ -1402,8 +1402,8 @@ description: Variables in memory after executing c-shape-solid.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8137b0af-17a3-570f-907a-7da80b56d36d",
+          "id": "de241bb8-7e52-5408-94c8-f70c7ddd1c3a",
           "sourceRange": [],
           "tag": {
             "commentStart": 731,
@@ -1416,8 +1416,8 @@ description: Variables in memory after executing c-shape-solid.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "462dd653-b1ce-54cf-9ba8-7ddc88b2560c",
+          "id": "e9732a7f-13dd-57b9-ac68-6205d9543084",
           "sourceRange": [],
           "tag": {
             "commentStart": 845,
@@ -1433,11 +1433,11 @@ description: Variables in memory after executing c-shape-solid.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2f2daa61-e474-5451-99da-01d3b4e6896c",
               "sourceRange": []
             },
             "ccw": true,
@@ -1467,7 +1467,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3b3c8a78-7302-5dcc-99f1-967e94c16511",
               "sourceRange": []
             },
             "from": [
@@ -1491,7 +1491,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "de241bb8-7e52-5408-94c8-f70c7ddd1c3a",
               "sourceRange": []
             },
             "ccw": true,
@@ -1521,7 +1521,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e9732a7f-13dd-57b9-ac68-6205d9543084",
               "sourceRange": []
             },
             "from": [
@@ -1545,8 +1545,8 @@ description: Variables in memory after executing c-shape-solid.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -1587,7 +1587,7 @@ description: Variables in memory after executing c-shape-solid.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "25999981-b7b8-57e2-8ac5-655907dfffdc",
             "sourceRange": []
           }
         },
@@ -1609,13 +1609,13 @@ description: Variables in memory after executing c-shape-solid.kcl
             "value": "topBridge"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+        "originalId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+        "originSketchId": "5173c024-ac32-59f6-acbe-69ddbf68893d",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "747ead14-4b3c-582f-bd9b-60a361193164",
+      "endCapId": "c5d18838-435b-51c6-bdc5-10a9ff2bc999",
       "units": "mm",
       "sectional": false
     }

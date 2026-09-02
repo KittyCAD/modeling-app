@@ -6,8 +6,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
   "__sketch_119_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d",
+      "id": "7c4571e0-7b14-576f-a82e-22280b05874d",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
   "__sketch_146_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
   "__sketch_167_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+      "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
       "kind": "Custom",
       "objectId": 166,
       "origin": {
@@ -103,8 +103,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
   "__sketch_193_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+      "id": "cb96bce2-64b3-5697-9ac4-41978548d779",
       "kind": "Custom",
       "objectId": 192,
       "origin": {
@@ -136,8 +136,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -168,8 +168,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
   "__sketch_27_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -200,8 +200,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
   "__sketch_72_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -232,8 +232,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
   "__sketch_98_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -265,12 +265,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
+      "artifactId": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "71ac24ed-a53b-5ed0-b454-8540ad437f8b",
+          "id": "f57fd219-fad3-5071-a6f6-5f8b1853fb8e",
           "sourceRange": [],
           "tag": {
             "commentStart": 7590,
@@ -283,8 +283,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8e97b9ad-dff5-5579-8f67-9b9fb28cbc72",
+          "id": "5643f887-4274-5ffb-bfbe-a21a0b985906",
           "sourceRange": [],
           "tag": {
             "commentStart": 7669,
@@ -297,8 +297,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3511c26c-0894-515a-9fb5-0f374aaf51f1",
+          "id": "8a7334fb-fd6e-59c0-8f21-1b993418e1bf",
           "sourceRange": [],
           "tag": {
             "commentStart": 7747,
@@ -314,11 +314,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f57fd219-fad3-5071-a6f6-5f8b1853fb8e",
               "sourceRange": []
             },
             "from": [
@@ -342,7 +342,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5643f887-4274-5ffb-bfbe-a21a0b985906",
               "sourceRange": []
             },
             "from": [
@@ -366,7 +366,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a7334fb-fd6e-59c0-8f21-1b993418e1bf",
               "sourceRange": []
             },
             "from": [
@@ -390,8 +390,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
           "kind": "Custom",
           "objectId": 97,
           "origin": {
@@ -432,7 +432,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
             "sourceRange": []
           }
         },
@@ -450,13 +450,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "originalId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "originSketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b832e3af-5ddb-5e9f-bde3-dbd9ecb65956",
+      "endCapId": "d44dcca9-4dc8-5298-bc30-155b49a1dad9",
       "units": "m",
       "sectional": false
     }
@@ -474,12 +474,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7239bb75-ea9c-5e04-812d-426e933ce851",
+      "artifactId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "663319d0-30b1-5ff8-9092-9aac6bc31e77",
+          "id": "b3dbbf41-249a-50ff-8553-77cdfe224bff",
           "sourceRange": [],
           "tag": {
             "commentStart": 8605,
@@ -492,8 +492,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fd8d02ed-0052-5ac3-b09b-9702b4e145dc",
+          "id": "18d89f7f-f887-5c97-a41f-6daf9f466fab",
           "sourceRange": [],
           "tag": {
             "commentStart": 8683,
@@ -506,8 +506,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "11f4332d-c3d3-5f31-9c51-a6a94b0e35e4",
+          "id": "5fc4f4a0-2ead-5460-b20d-0182fdbaa659",
           "sourceRange": [],
           "tag": {
             "commentStart": 8761,
@@ -520,8 +520,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "185f3ba8-85b0-5b9e-b7ca-b975161d0d32",
+          "id": "45e8dc9b-a37e-5ed5-95fb-46f924aaa967",
           "sourceRange": [],
           "tag": {
             "commentStart": 8837,
@@ -537,11 +537,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7239bb75-ea9c-5e04-812d-426e933ce851",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b3dbbf41-249a-50ff-8553-77cdfe224bff",
               "sourceRange": []
             },
             "from": [
@@ -565,7 +565,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "18d89f7f-f887-5c97-a41f-6daf9f466fab",
               "sourceRange": []
             },
             "from": [
@@ -589,7 +589,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5fc4f4a0-2ead-5460-b20d-0182fdbaa659",
               "sourceRange": []
             },
             "from": [
@@ -613,7 +613,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "45e8dc9b-a37e-5ed5-95fb-46f924aaa967",
               "sourceRange": []
             },
             "from": [
@@ -637,8 +637,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a",
+          "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
           "kind": "Custom",
           "objectId": 118,
           "origin": {
@@ -679,7 +679,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "61b354b3-059b-5095-a0b8-2636217c6cee",
             "sourceRange": []
           }
         },
@@ -701,13 +701,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7239bb75-ea9c-5e04-812d-426e933ce851",
+        "originalId": "7239bb75-ea9c-5e04-812d-426e933ce851",
+        "originSketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "d9dcc4eb-d843-5d74-b896-e63c3743bca0",
+      "endCapId": "e81f00bf-b02e-531b-8f0e-417f4fb87933",
       "units": "m",
       "sectional": false
     }
@@ -721,7 +721,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
                 "objectId": 122,
                 "kind": {
                   "line": {
@@ -795,8 +795,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a",
+                  "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
                   "kind": "Custom",
                   "objectId": 118,
                   "origin": {
@@ -825,7 +825,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -841,7 +841,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "08138142-a558-56a4-a23f-2f334e02b011",
                 "objectId": 125,
                 "kind": {
                   "line": {
@@ -915,8 +915,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a",
+                  "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
                   "kind": "Custom",
                   "objectId": 118,
                   "origin": {
@@ -945,7 +945,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -961,7 +961,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
                 "objectId": 128,
                 "kind": {
                   "line": {
@@ -1035,8 +1035,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a",
+                  "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
                   "kind": "Custom",
                   "objectId": 118,
                   "origin": {
@@ -1065,7 +1065,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1081,7 +1081,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
                 "objectId": 131,
                 "kind": {
                   "line": {
@@ -1155,8 +1155,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a",
+                  "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
                   "kind": "Custom",
                   "objectId": 118,
                   "origin": {
@@ -1185,7 +1185,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1202,11 +1202,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2b45af9b-6b90-5530-b9b7-b193031152d8",
                     "sourceRange": []
                   },
                   "from": [
@@ -1230,7 +1230,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "08138142-a558-56a4-a23f-2f334e02b011",
                     "sourceRange": []
                   },
                   "from": [
@@ -1254,7 +1254,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
                     "sourceRange": []
                   },
                   "from": [
@@ -1278,7 +1278,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
                     "sourceRange": []
                   },
                   "from": [
@@ -1302,8 +1302,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a",
+                "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
                 "kind": "Custom",
                 "objectId": 118,
                 "origin": {
@@ -1344,7 +1344,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "61b354b3-059b-5095-a0b8-2636217c6cee",
                   "sourceRange": []
                 }
               },
@@ -1366,8 +1366,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
+              "originalId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
               "units": "m",
               "isClosed": "implicitly"
             }
@@ -1382,11 +1382,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "7239bb75-ea9c-5e04-812d-426e933ce851",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b3dbbf41-249a-50ff-8553-77cdfe224bff",
             "sourceRange": []
           },
           "from": [
@@ -1410,7 +1410,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "18d89f7f-f887-5c97-a41f-6daf9f466fab",
             "sourceRange": []
           },
           "from": [
@@ -1434,7 +1434,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5fc4f4a0-2ead-5460-b20d-0182fdbaa659",
             "sourceRange": []
           },
           "from": [
@@ -1458,7 +1458,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "45e8dc9b-a37e-5ed5-95fb-46f924aaa967",
             "sourceRange": []
           },
           "from": [
@@ -1482,8 +1482,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a",
+        "id": "035728b5-01db-5e9b-b285-181bc5693d5a",
         "kind": "Custom",
         "objectId": 118,
         "origin": {
@@ -1524,7 +1524,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "61b354b3-059b-5095-a0b8-2636217c6cee",
           "sourceRange": []
         }
       },
@@ -1546,9 +1546,9 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "7239bb75-ea9c-5e04-812d-426e933ce851",
+      "originalId": "7239bb75-ea9c-5e04-812d-426e933ce851",
+      "originSketchId": "95b7331f-664e-5be5-b9c0-fdd7570bf701",
       "units": "m"
     }
   },
@@ -1565,12 +1565,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "artifactId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "71ac24ed-a53b-5ed0-b454-8540ad437f8b",
+          "id": "f57fd219-fad3-5071-a6f6-5f8b1853fb8e",
           "sourceRange": [],
           "tag": {
             "commentStart": 7590,
@@ -1583,8 +1583,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8e97b9ad-dff5-5579-8f67-9b9fb28cbc72",
+          "id": "5643f887-4274-5ffb-bfbe-a21a0b985906",
           "sourceRange": [],
           "tag": {
             "commentStart": 7669,
@@ -1597,8 +1597,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3511c26c-0894-515a-9fb5-0f374aaf51f1",
+          "id": "8a7334fb-fd6e-59c0-8f21-1b993418e1bf",
           "sourceRange": [],
           "tag": {
             "commentStart": 7747,
@@ -1614,11 +1614,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f57fd219-fad3-5071-a6f6-5f8b1853fb8e",
               "sourceRange": []
             },
             "from": [
@@ -1642,7 +1642,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5643f887-4274-5ffb-bfbe-a21a0b985906",
               "sourceRange": []
             },
             "from": [
@@ -1666,7 +1666,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8a7334fb-fd6e-59c0-8f21-1b993418e1bf",
               "sourceRange": []
             },
             "from": [
@@ -1690,8 +1690,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+          "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
           "kind": "Custom",
           "objectId": 97,
           "origin": {
@@ -1732,7 +1732,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
             "sourceRange": []
           }
         },
@@ -1750,13 +1750,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line3"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "originalId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+        "originSketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "b832e3af-5ddb-5e9f-bde3-dbd9ecb65956",
+      "endCapId": "d44dcca9-4dc8-5298-bc30-155b49a1dad9",
       "units": "m",
       "sectional": false
     }
@@ -1770,7 +1770,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                 "objectId": 101,
                 "kind": {
                   "line": {
@@ -1844,8 +1844,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                  "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
@@ -1874,7 +1874,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1890,7 +1890,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
                 "objectId": 104,
                 "kind": {
                   "line": {
@@ -1964,8 +1964,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                  "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
@@ -1994,7 +1994,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2010,7 +2010,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
                 "objectId": 107,
                 "kind": {
                   "line": {
@@ -2084,8 +2084,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                  "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
                   "kind": "Custom",
                   "objectId": 97,
                   "origin": {
@@ -2114,7 +2114,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -2131,11 +2131,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6",
                     "sourceRange": []
                   },
                   "from": [
@@ -2159,7 +2159,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d7522563-c424-5aea-962e-3d6a85a0b99d",
                     "sourceRange": []
                   },
                   "from": [
@@ -2183,7 +2183,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f58fd62a-578c-542c-94f8-dd627caab5d0",
                     "sourceRange": []
                   },
                   "from": [
@@ -2207,8 +2207,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+                "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
                 "kind": "Custom",
                 "objectId": 97,
                 "origin": {
@@ -2249,7 +2249,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
                   "sourceRange": []
                 }
               },
@@ -2267,8 +2267,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "value": "line3"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
+              "originalId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
               "units": "m",
               "isClosed": "implicitly"
             }
@@ -2283,11 +2283,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f57fd219-fad3-5071-a6f6-5f8b1853fb8e",
             "sourceRange": []
           },
           "from": [
@@ -2311,7 +2311,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5643f887-4274-5ffb-bfbe-a21a0b985906",
             "sourceRange": []
           },
           "from": [
@@ -2335,7 +2335,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8a7334fb-fd6e-59c0-8f21-1b993418e1bf",
             "sourceRange": []
           },
           "from": [
@@ -2359,8 +2359,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "2e4398f0-3503-52f1-9fb1-caadee14f488",
+        "id": "2e4398f0-3503-52f1-9fb1-caadee14f488",
         "kind": "Custom",
         "objectId": 97,
         "origin": {
@@ -2401,7 +2401,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "b6048962-8de8-56e0-bd4c-204ee5451b34",
           "sourceRange": []
         }
       },
@@ -2419,9 +2419,9 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "value": "line3"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "originalId": "76d81d0d-ef16-5794-bc58-3132468566e9",
+      "originSketchId": "41b24a95-09ce-5f5c-a1cb-748e4f7a41b6",
       "units": "m"
     }
   },
@@ -2429,12 +2429,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+      "artifactId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "48830e45-6c5e-5f0a-bd1c-097fbd692890",
+          "id": "28910ab1-cd76-59cd-b175-c21b301f5150",
           "sourceRange": [],
           "tag": {
             "commentStart": 6436,
@@ -2447,8 +2447,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "15ceed31-cb37-538c-beef-adf741bdbabd",
+          "id": "0e465ae9-fdc3-5a3a-b3ad-633fa2dda1b8",
           "sourceRange": [],
           "tag": {
             "commentStart": 6501,
@@ -2461,8 +2461,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6363ade6-5875-5985-9ba4-894891f7d66f",
+          "id": "6ce591a4-109c-5953-ae3f-65444960b935",
           "sourceRange": [],
           "tag": {
             "commentStart": 6566,
@@ -2475,8 +2475,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "83a32a88-a7ca-5b06-a253-37e274d87b01",
+          "id": "cc42be54-e999-5faf-8310-b89d15bdab88",
           "sourceRange": [],
           "tag": {
             "commentStart": 6631,
@@ -2492,11 +2492,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "28910ab1-cd76-59cd-b175-c21b301f5150",
               "sourceRange": []
             },
             "from": [
@@ -2520,7 +2520,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0e465ae9-fdc3-5a3a-b3ad-633fa2dda1b8",
               "sourceRange": []
             },
             "from": [
@@ -2544,7 +2544,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6ce591a4-109c-5953-ae3f-65444960b935",
               "sourceRange": []
             },
             "from": [
@@ -2568,7 +2568,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cc42be54-e999-5faf-8310-b89d15bdab88",
               "sourceRange": []
             },
             "from": [
@@ -2592,8 +2592,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+          "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
           "kind": "Custom",
           "objectId": 71,
           "origin": {
@@ -2634,7 +2634,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
             "sourceRange": []
           }
         },
@@ -2656,13 +2656,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "originalId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+        "originSketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "63a7e966-804e-5d40-8b49-eaaaa4656e7b",
+      "endCapId": "2d830285-70fa-564d-8862-4d0001d9b746",
       "units": "m",
       "sectional": false
     }
@@ -2703,7 +2703,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
                 "objectId": 75,
                 "kind": {
                   "line": {
@@ -2777,8 +2777,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
@@ -2807,7 +2807,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -2823,7 +2823,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
                 "objectId": 78,
                 "kind": {
                   "line": {
@@ -2897,8 +2897,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
@@ -2927,7 +2927,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -2943,7 +2943,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                 "objectId": 81,
                 "kind": {
                   "line": {
@@ -3017,8 +3017,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
@@ -3047,7 +3047,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -3063,7 +3063,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
                 "objectId": 84,
                 "kind": {
                   "line": {
@@ -3137,8 +3137,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                  "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                   "kind": "Custom",
                   "objectId": 71,
                   "origin": {
@@ -3167,7 +3167,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -3184,11 +3184,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "0030d44a-e936-52d0-b5b6-efd80f2f6770",
                     "sourceRange": []
                   },
                   "from": [
@@ -3212,7 +3212,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "93954f29-a246-54bd-ac2a-62572f26d508",
                     "sourceRange": []
                   },
                   "from": [
@@ -3229,7 +3229,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bb0f6270-9c1c-51e3-923b-b25b8a1a44ab",
                     "sourceRange": []
                   },
                   "from": [
@@ -3253,7 +3253,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "20f09319-bab0-5dd8-8c40-ce90cd688483",
                     "sourceRange": []
                   },
                   "from": [
@@ -3270,7 +3270,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f9290fd4-5c3f-5c2e-8173-812972a413d9",
                     "sourceRange": []
                   },
                   "from": [
@@ -3294,7 +3294,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bee9909d-abbf-534c-b266-2c2c04133834",
                     "sourceRange": []
                   },
                   "from": [
@@ -3311,7 +3311,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3",
                     "sourceRange": []
                   },
                   "from": [
@@ -3335,8 +3335,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+                "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
                 "kind": "Custom",
                 "objectId": 71,
                 "origin": {
@@ -3377,7 +3377,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
                   "sourceRange": []
                 }
               },
@@ -3399,8 +3399,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
+              "originalId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
               "units": "m",
               "isClosed": "no"
             }
@@ -3415,11 +3415,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "28910ab1-cd76-59cd-b175-c21b301f5150",
             "sourceRange": []
           },
           "from": [
@@ -3443,7 +3443,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0e465ae9-fdc3-5a3a-b3ad-633fa2dda1b8",
             "sourceRange": []
           },
           "from": [
@@ -3467,7 +3467,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6ce591a4-109c-5953-ae3f-65444960b935",
             "sourceRange": []
           },
           "from": [
@@ -3491,7 +3491,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc42be54-e999-5faf-8310-b89d15bdab88",
             "sourceRange": []
           },
           "from": [
@@ -3515,8 +3515,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
+        "id": "11dbfa4f-00f1-575c-a710-d8f3f81fc976",
         "kind": "Custom",
         "objectId": 71,
         "origin": {
@@ -3557,7 +3557,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1e1f4f78-e1b7-5008-9940-d59e53844df4",
           "sourceRange": []
         }
       },
@@ -3579,9 +3579,9 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+      "originalId": "7207dcef-ae46-501c-bdb4-7d4d031bf641",
+      "originSketchId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "units": "m"
     }
   },
@@ -3608,11 +3608,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
             "sourceRange": []
           },
           "from": [
@@ -3636,7 +3636,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8be0689a-5d1b-5b9f-aebb-798330928c88",
             "sourceRange": []
           },
           "from": [
@@ -3660,7 +3660,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f4177ce-9e0b-53ac-9996-866b5413823b",
             "sourceRange": []
           },
           "from": [
@@ -3684,7 +3684,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f52b697d-e531-562e-8ba1-48236ae65cca",
             "sourceRange": []
           },
           "from": [
@@ -3708,7 +3708,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3478de7e-b848-5206-817d-ddcbe469fe64",
             "sourceRange": []
           },
           "from": [
@@ -3732,7 +3732,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "464887bf-1223-5b24-b9c6-b745024cd247",
             "sourceRange": []
           },
           "from": [
@@ -3756,8 +3756,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+        "id": "e383621f-755a-5f2e-ada3-608aff393dab",
         "kind": "Custom",
         "objectId": 26,
         "origin": {
@@ -3798,7 +3798,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
           "sourceRange": []
         }
       },
@@ -3828,9 +3828,9 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "value": "line6"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "originalId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
       "units": "m"
     }
   },
@@ -3838,12 +3838,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
+          "id": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
           "sourceRange": [],
           "tag": {
             "commentStart": 3908,
@@ -3856,8 +3856,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e7c77a8e-ee38-5d7b-81ea-18c32d0468fd",
+          "id": "8be0689a-5d1b-5b9f-aebb-798330928c88",
           "sourceRange": [],
           "tag": {
             "commentStart": 3985,
@@ -3870,8 +3870,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
+          "id": "0f4177ce-9e0b-53ac-9996-866b5413823b",
           "sourceRange": [],
           "tag": {
             "commentStart": 4101,
@@ -3884,8 +3884,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "feeac1f5-9099-57d5-9583-b2fe93c70cec",
+          "id": "f52b697d-e531-562e-8ba1-48236ae65cca",
           "sourceRange": [],
           "tag": {
             "commentStart": 4257,
@@ -3898,8 +3898,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
+          "id": "3478de7e-b848-5206-817d-ddcbe469fe64",
           "sourceRange": [],
           "tag": {
             "commentStart": 4373,
@@ -3912,8 +3912,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
+          "id": "464887bf-1223-5b24-b9c6-b745024cd247",
           "sourceRange": [],
           "tag": {
             "commentStart": 4491,
@@ -3929,11 +3929,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
               "sourceRange": []
             },
             "from": [
@@ -3957,7 +3957,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8be0689a-5d1b-5b9f-aebb-798330928c88",
               "sourceRange": []
             },
             "from": [
@@ -3981,7 +3981,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0f4177ce-9e0b-53ac-9996-866b5413823b",
               "sourceRange": []
             },
             "from": [
@@ -4005,7 +4005,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f52b697d-e531-562e-8ba1-48236ae65cca",
               "sourceRange": []
             },
             "from": [
@@ -4029,7 +4029,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3478de7e-b848-5206-817d-ddcbe469fe64",
               "sourceRange": []
             },
             "from": [
@@ -4053,7 +4053,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "464887bf-1223-5b24-b9c6-b745024cd247",
               "sourceRange": []
             },
             "from": [
@@ -4077,8 +4077,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -4119,7 +4119,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -4149,13 +4149,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "originalId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "adce3691-f4a2-5b4b-8b97-005271c17a50",
+      "endCapId": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
       "units": "m",
       "sectional": false
     }
@@ -4164,12 +4164,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "1583b450-a578-582f-8d23-686bccf95d8b",
+      "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "39baf89e-e776-55de-84df-06857c01d0aa",
+          "id": "54237396-26c0-5d2d-ad63-54e649d8936a",
           "sourceRange": [],
           "tag": {
             "commentStart": 10097,
@@ -4185,11 +4185,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "1583b450-a578-582f-8d23-686bccf95d8b",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "54237396-26c0-5d2d-ad63-54e649d8936a",
               "sourceRange": []
             },
             "ccw": true,
@@ -4219,8 +4219,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+          "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
           "kind": "Custom",
           "objectId": 145,
           "origin": {
@@ -4261,7 +4261,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
             "sourceRange": []
           }
         },
@@ -4275,13 +4275,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "circle2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "1583b450-a578-582f-8d23-686bccf95d8b",
+        "originalId": "1583b450-a578-582f-8d23-686bccf95d8b",
+        "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "f70a14d3-75ff-58a3-a144-35932dd6e2cb",
+      "endCapId": "360d1a03-5f11-5649-92a0-084c4b44dab4",
       "units": "m",
       "sectional": false
     }
@@ -4290,11 +4290,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "1583b450-a578-582f-8d23-686bccf95d8b",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "54237396-26c0-5d2d-ad63-54e649d8936a",
             "sourceRange": []
           },
           "ccw": true,
@@ -4324,8 +4324,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+        "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
         "kind": "Custom",
         "objectId": 145,
         "origin": {
@@ -4366,7 +4366,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
           "sourceRange": []
         }
       },
@@ -4380,9 +4380,9 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "value": "circle2"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "1583b450-a578-582f-8d23-686bccf95d8b",
+      "originalId": "1583b450-a578-582f-8d23-686bccf95d8b",
+      "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
       "units": "m"
     }
   },
@@ -4390,12 +4390,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
+      "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bae84aa3-ea40-521b-946b-853e3c506509",
+          "id": "1d2a6990-1588-5864-b54d-83af5a6d4fa5",
           "sourceRange": [],
           "tag": {
             "commentStart": 2709,
@@ -4408,8 +4408,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "53c23738-8a00-5f59-8f43-97fa75d69785",
+          "id": "f8699e46-d723-5804-9164-e3d83ac0e7ce",
           "sourceRange": [],
           "tag": {
             "commentStart": 2774,
@@ -4422,8 +4422,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d0b2ae9c-6174-5964-89c4-7ef6c64c0e98",
+          "id": "7e5290ab-f009-518e-b152-ced2e33e9b34",
           "sourceRange": [],
           "tag": {
             "commentStart": 2839,
@@ -4436,8 +4436,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6a805151-028a-5528-bb54-5cd649a0bf8a",
+          "id": "bf4f7fde-4fec-5c7d-857b-f94382cd4baa",
           "sourceRange": [],
           "tag": {
             "commentStart": 2904,
@@ -4453,11 +4453,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1d2a6990-1588-5864-b54d-83af5a6d4fa5",
               "sourceRange": []
             },
             "from": [
@@ -4481,7 +4481,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f8699e46-d723-5804-9164-e3d83ac0e7ce",
               "sourceRange": []
             },
             "from": [
@@ -4505,7 +4505,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e5290ab-f009-518e-b152-ced2e33e9b34",
               "sourceRange": []
             },
             "from": [
@@ -4529,7 +4529,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bf4f7fde-4fec-5c7d-857b-f94382cd4baa",
               "sourceRange": []
             },
             "from": [
@@ -4553,8 +4553,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -4595,7 +4595,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -4617,13 +4617,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+        "originalId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "bfae3094-929d-5600-ab09-96c96c960ede",
+      "endCapId": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
       "units": "m",
       "sectional": false
     }
@@ -4664,7 +4664,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -4738,8 +4738,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4768,7 +4768,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4784,7 +4784,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -4858,8 +4858,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4888,7 +4888,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4904,7 +4904,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -4978,8 +4978,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5008,7 +5008,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5024,7 +5024,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -5098,8 +5098,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5128,7 +5128,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "7b681387-29ea-57f1-8713-d63280827139",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5145,11 +5145,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -5173,7 +5173,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
                     "sourceRange": []
                   },
                   "from": [
@@ -5190,7 +5190,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -5214,7 +5214,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
                     "sourceRange": []
                   },
                   "from": [
@@ -5231,7 +5231,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -5255,7 +5255,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
                     "sourceRange": []
                   },
                   "from": [
@@ -5272,7 +5272,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -5296,8 +5296,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -5338,7 +5338,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
                   "sourceRange": []
                 }
               },
@@ -5360,8 +5360,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "7b681387-29ea-57f1-8713-d63280827139",
+              "originalId": "7b681387-29ea-57f1-8713-d63280827139",
               "units": "m",
               "isClosed": "no"
             }
@@ -5376,11 +5376,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1d2a6990-1588-5864-b54d-83af5a6d4fa5",
             "sourceRange": []
           },
           "from": [
@@ -5404,7 +5404,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f8699e46-d723-5804-9164-e3d83ac0e7ce",
             "sourceRange": []
           },
           "from": [
@@ -5428,7 +5428,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7e5290ab-f009-518e-b152-ced2e33e9b34",
             "sourceRange": []
           },
           "from": [
@@ -5452,7 +5452,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bf4f7fde-4fec-5c7d-857b-f94382cd4baa",
             "sourceRange": []
           },
           "from": [
@@ -5476,8 +5476,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -5518,7 +5518,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
           "sourceRange": []
         }
       },
@@ -5540,9 +5540,9 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+      "originalId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+      "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
       "units": "m"
     }
   },
@@ -5559,12 +5559,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
+      "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bae84aa3-ea40-521b-946b-853e3c506509",
+          "id": "1d2a6990-1588-5864-b54d-83af5a6d4fa5",
           "sourceRange": [],
           "tag": {
             "commentStart": 2709,
@@ -5577,8 +5577,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "53c23738-8a00-5f59-8f43-97fa75d69785",
+          "id": "f8699e46-d723-5804-9164-e3d83ac0e7ce",
           "sourceRange": [],
           "tag": {
             "commentStart": 2774,
@@ -5591,8 +5591,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d0b2ae9c-6174-5964-89c4-7ef6c64c0e98",
+          "id": "7e5290ab-f009-518e-b152-ced2e33e9b34",
           "sourceRange": [],
           "tag": {
             "commentStart": 2839,
@@ -5605,8 +5605,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6a805151-028a-5528-bb54-5cd649a0bf8a",
+          "id": "bf4f7fde-4fec-5c7d-857b-f94382cd4baa",
           "sourceRange": [],
           "tag": {
             "commentStart": 2904,
@@ -5622,11 +5622,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1d2a6990-1588-5864-b54d-83af5a6d4fa5",
               "sourceRange": []
             },
             "from": [
@@ -5650,7 +5650,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f8699e46-d723-5804-9164-e3d83ac0e7ce",
               "sourceRange": []
             },
             "from": [
@@ -5674,7 +5674,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7e5290ab-f009-518e-b152-ced2e33e9b34",
               "sourceRange": []
             },
             "from": [
@@ -5698,7 +5698,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "bf4f7fde-4fec-5c7d-857b-f94382cd4baa",
               "sourceRange": []
             },
             "from": [
@@ -5722,8 +5722,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -5764,7 +5764,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
             "sourceRange": []
           }
         },
@@ -5786,13 +5786,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+        "originalId": "2c522d90-5fef-5750-b489-b008732bd2c3",
+        "originSketchId": "7b681387-29ea-57f1-8713-d63280827139",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "bfae3094-929d-5600-ab09-96c96c960ede",
+      "endCapId": "83a52423-af69-5b6d-ad55-85cdf4223cf4",
       "units": "m",
       "sectional": false
     }
@@ -5801,12 +5801,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+      "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d77be279-8026-5289-8e15-5f4a1815b9b0",
+          "id": "a0f34065-202f-541e-898d-0a1282b2b4e9",
           "sourceRange": [],
           "tag": {
             "commentStart": 3908,
@@ -5819,8 +5819,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7ee14956-7275-569b-b940-7fef3f665057",
+          "id": "c8f793f6-7fe9-5a6e-9e46-51ebbfffa0fc",
           "sourceRange": [],
           "tag": {
             "commentStart": 3985,
@@ -5833,8 +5833,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7835efdb-90ca-569e-9f0b-e9cedd6a3544",
+          "id": "01c343a4-ebca-5cb6-92e7-be4bc5228853",
           "sourceRange": [],
           "tag": {
             "commentStart": 4101,
@@ -5847,8 +5847,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ea5ce42d-d5fc-51a5-9255-16add0aedda5",
+          "id": "7976e9f4-c433-5caa-bb0b-831d7cabb0c9",
           "sourceRange": [],
           "tag": {
             "commentStart": 4257,
@@ -5861,8 +5861,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8575c95a-6a64-56fb-b6c0-34483e44ff8d",
+          "id": "7d6749e2-5998-57c3-b3b5-458d4e08b9d1",
           "sourceRange": [],
           "tag": {
             "commentStart": 4373,
@@ -5875,8 +5875,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a8ad62ad-d2e3-5d76-9ed5-3619f6df1791",
+          "id": "83bd425b-de02-5531-b5c8-0baff82238e5",
           "sourceRange": [],
           "tag": {
             "commentStart": 4491,
@@ -5892,11 +5892,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a0f34065-202f-541e-898d-0a1282b2b4e9",
               "sourceRange": []
             },
             "from": [
@@ -5920,7 +5920,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "c8f793f6-7fe9-5a6e-9e46-51ebbfffa0fc",
               "sourceRange": []
             },
             "from": [
@@ -5944,7 +5944,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "01c343a4-ebca-5cb6-92e7-be4bc5228853",
               "sourceRange": []
             },
             "from": [
@@ -5968,7 +5968,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7976e9f4-c433-5caa-bb0b-831d7cabb0c9",
               "sourceRange": []
             },
             "from": [
@@ -5992,7 +5992,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7d6749e2-5998-57c3-b3b5-458d4e08b9d1",
               "sourceRange": []
             },
             "from": [
@@ -6016,7 +6016,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "83bd425b-de02-5531-b5c8-0baff82238e5",
               "sourceRange": []
             },
             "from": [
@@ -6040,8 +6040,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -6082,7 +6082,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -6112,13 +6112,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "originalId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "93d860bd-86a2-5fa8-80fe-57be39b71bc8",
+      "endCapId": "3a7a0e7b-7ad0-5e7b-b0b7-56b34083d08c",
       "units": "m",
       "sectional": false
     }
@@ -6127,12 +6127,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+      "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "72f50e6a-bad9-50bc-a624-6583da780dd5",
+          "id": "f64d0dae-3679-58db-bc44-8aeda11fa92c",
           "sourceRange": [],
           "tag": {
             "commentStart": 3908,
@@ -6145,8 +6145,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "66c2c253-d4a4-5428-8762-35d91a712f51",
+          "id": "031803b4-286b-5fe0-9f93-b05dc840248d",
           "sourceRange": [],
           "tag": {
             "commentStart": 3985,
@@ -6159,8 +6159,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0ea65eb7-c280-5cd4-bf05-8dc1aaf0b01b",
+          "id": "d1bbad67-a6b1-54a1-92d2-4d84769dada6",
           "sourceRange": [],
           "tag": {
             "commentStart": 4101,
@@ -6173,8 +6173,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "415b3116-d451-5d22-a9e5-b06133bdf861",
+          "id": "1d46309a-cca2-5dfc-a2c2-0612ca592d7a",
           "sourceRange": [],
           "tag": {
             "commentStart": 4257,
@@ -6187,8 +6187,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e87adfa5-4f60-5241-b09f-71a7287871de",
+          "id": "9a364fdf-ffe0-53cb-84ba-86a45fdabfb4",
           "sourceRange": [],
           "tag": {
             "commentStart": 4373,
@@ -6201,8 +6201,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "7d3b7dab-fc58-54d6-920e-ff0ba4127d56",
+          "id": "6ba6c4ce-a540-5418-9a8d-61e357b6b1c9",
           "sourceRange": [],
           "tag": {
             "commentStart": 4491,
@@ -6218,11 +6218,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "2ed3043b-96d9-5307-babe-4ee1188fa544",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f64d0dae-3679-58db-bc44-8aeda11fa92c",
               "sourceRange": []
             },
             "from": [
@@ -6246,7 +6246,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "031803b4-286b-5fe0-9f93-b05dc840248d",
               "sourceRange": []
             },
             "from": [
@@ -6270,7 +6270,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d1bbad67-a6b1-54a1-92d2-4d84769dada6",
               "sourceRange": []
             },
             "from": [
@@ -6294,7 +6294,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1d46309a-cca2-5dfc-a2c2-0612ca592d7a",
               "sourceRange": []
             },
             "from": [
@@ -6318,7 +6318,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "9a364fdf-ffe0-53cb-84ba-86a45fdabfb4",
               "sourceRange": []
             },
             "from": [
@@ -6342,7 +6342,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6ba6c4ce-a540-5418-9a8d-61e357b6b1c9",
               "sourceRange": []
             },
             "from": [
@@ -6366,8 +6366,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -6408,7 +6408,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -6438,13 +6438,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+        "originalId": "2ed3043b-96d9-5307-babe-4ee1188fa544",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "7a96c229-5b8c-588d-88fc-45140676ab64",
+      "endCapId": "b85a8d32-0360-58aa-a9db-5318a1787848",
       "units": "m",
       "sectional": false
     }
@@ -6462,12 +6462,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "855fafc2-5621-5264-953e-1be6964b7a16",
+      "artifactId": "aa0e2533-e8d9-5b33-ac82-b003e1e03207",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a6b82e29-871d-5bc7-9268-f567e578144b",
+          "id": "90235608-c87d-560d-9515-1e667bc46406",
           "sourceRange": [],
           "tag": {
             "commentStart": 12242,
@@ -6480,8 +6480,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "44155cf5-e201-52c7-87e8-9f9464e4e1d1",
+          "id": "cc5708f6-7d73-5fbd-ab60-ffbf6a05aa31",
           "sourceRange": [],
           "tag": {
             "commentStart": 12307,
@@ -6494,8 +6494,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "45f7f553-3760-50cc-9891-14bad9365d6a",
+          "id": "433eb04b-c93c-502b-84e1-0478fcd9f2aa",
           "sourceRange": [],
           "tag": {
             "commentStart": 12372,
@@ -6508,8 +6508,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "843ff0ea-da4d-549f-9f6a-ed1869f4a7a1",
+          "id": "439e73e5-3055-5be2-866f-3d704e956625",
           "sourceRange": [],
           "tag": {
             "commentStart": 12437,
@@ -6525,11 +6525,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "855fafc2-5621-5264-953e-1be6964b7a16",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "90235608-c87d-560d-9515-1e667bc46406",
               "sourceRange": []
             },
             "from": [
@@ -6553,7 +6553,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cc5708f6-7d73-5fbd-ab60-ffbf6a05aa31",
               "sourceRange": []
             },
             "from": [
@@ -6577,7 +6577,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "433eb04b-c93c-502b-84e1-0478fcd9f2aa",
               "sourceRange": []
             },
             "from": [
@@ -6601,7 +6601,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "439e73e5-3055-5be2-866f-3d704e956625",
               "sourceRange": []
             },
             "from": [
@@ -6625,8 +6625,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+          "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
           "kind": "Custom",
           "objectId": 166,
           "origin": {
@@ -6667,7 +6667,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
             "sourceRange": []
           }
         },
@@ -6689,13 +6689,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+        "originalId": "855fafc2-5621-5264-953e-1be6964b7a16",
+        "originSketchId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "911dcd05-6b69-57b2-b7a4-5d0ea7407b2a",
+      "endCapId": "19027680-a4a4-5dad-a375-ddfc6a158a68",
       "units": "m",
       "sectional": false
     }
@@ -6730,8 +6730,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
   "headlightsPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+      "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
       "kind": "Custom",
       "objectId": 166,
       "origin": {
@@ -6764,11 +6764,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "855fafc2-5621-5264-953e-1be6964b7a16",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "90235608-c87d-560d-9515-1e667bc46406",
             "sourceRange": []
           },
           "from": [
@@ -6792,7 +6792,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc5708f6-7d73-5fbd-ab60-ffbf6a05aa31",
             "sourceRange": []
           },
           "from": [
@@ -6816,7 +6816,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "433eb04b-c93c-502b-84e1-0478fcd9f2aa",
             "sourceRange": []
           },
           "from": [
@@ -6840,7 +6840,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "439e73e5-3055-5be2-866f-3d704e956625",
             "sourceRange": []
           },
           "from": [
@@ -6864,8 +6864,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+        "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
         "kind": "Custom",
         "objectId": 166,
         "origin": {
@@ -6906,7 +6906,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
           "sourceRange": []
         }
       },
@@ -6928,9 +6928,9 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "855fafc2-5621-5264-953e-1be6964b7a16",
+      "originalId": "855fafc2-5621-5264-953e-1be6964b7a16",
+      "originSketchId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
       "units": "m"
     }
   },
@@ -6943,7 +6943,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "77202593-ebf9-50c7-b715-41557309d9ab",
                 "objectId": 170,
                 "kind": {
                   "line": {
@@ -7017,8 +7017,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+                  "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
                   "kind": "Custom",
                   "objectId": 166,
                   "origin": {
@@ -7047,7 +7047,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -7063,7 +7063,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
                 "objectId": 173,
                 "kind": {
                   "line": {
@@ -7137,8 +7137,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+                  "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
                   "kind": "Custom",
                   "objectId": 166,
                   "origin": {
@@ -7167,7 +7167,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -7183,7 +7183,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "fc243886-5941-5a64-8a15-a0b50bb063cb",
                 "objectId": 176,
                 "kind": {
                   "line": {
@@ -7257,8 +7257,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+                  "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
                   "kind": "Custom",
                   "objectId": 166,
                   "origin": {
@@ -7287,7 +7287,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -7303,7 +7303,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
                 "objectId": 179,
                 "kind": {
                   "line": {
@@ -7377,8 +7377,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+                  "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
                   "kind": "Custom",
                   "objectId": 166,
                   "origin": {
@@ -7407,7 +7407,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -7424,11 +7424,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "77202593-ebf9-50c7-b715-41557309d9ab",
                     "sourceRange": []
                   },
                   "from": [
@@ -7452,7 +7452,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dfdda8f5-4f4a-5599-9c74-ba5fdd0a0084",
                     "sourceRange": []
                   },
                   "from": [
@@ -7469,7 +7469,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
                     "sourceRange": []
                   },
                   "from": [
@@ -7493,7 +7493,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d60ddbad-e06f-5b11-9ef8-b52ac282856c",
                     "sourceRange": []
                   },
                   "from": [
@@ -7510,7 +7510,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fc243886-5941-5a64-8a15-a0b50bb063cb",
                     "sourceRange": []
                   },
                   "from": [
@@ -7534,7 +7534,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "1ebd4bb2-74ae-5a2f-a7a7-a778232f13a4",
                     "sourceRange": []
                   },
                   "from": [
@@ -7551,7 +7551,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
                     "sourceRange": []
                   },
                   "from": [
@@ -7575,8 +7575,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
+                "id": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
                 "kind": "Custom",
                 "objectId": 166,
                 "origin": {
@@ -7617,7 +7617,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5c95ab49-a18e-5d8b-a77b-13603dc90286",
                   "sourceRange": []
                 }
               },
@@ -7639,8 +7639,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
+              "originalId": "5cc9b1ef-6bbb-5732-ab74-2b614503d639",
               "units": "m",
               "isClosed": "no"
             }
@@ -7712,12 +7712,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+      "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "51192ec8-515b-5dc0-a02f-1e1455013823",
+          "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
           "sourceRange": [],
           "tag": {
             "commentStart": 3908,
@@ -7730,8 +7730,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e3bce775-5974-51d9-8b15-c50c11d6ed22",
+          "id": "be6b19b8-9e9f-5829-a36e-c9b75bcf6d9a",
           "sourceRange": [],
           "tag": {
             "commentStart": 3985,
@@ -7744,8 +7744,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8461e964-eca6-5e3c-a1bc-b6ba6da58b16",
+          "id": "74322c76-b563-5063-9044-70becaa99e60",
           "sourceRange": [],
           "tag": {
             "commentStart": 4101,
@@ -7758,8 +7758,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6af35eb3-1fe4-5a5d-89be-685b2cd4a4e4",
+          "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
           "sourceRange": [],
           "tag": {
             "commentStart": 4257,
@@ -7772,8 +7772,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "790f6830-3713-5616-b0d9-989ec3ea3f41",
+          "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
           "sourceRange": [],
           "tag": {
             "commentStart": 4373,
@@ -7786,8 +7786,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "f718c37b-bc3f-517d-ac55-facb44e01867",
+          "id": "d665e8b8-04b3-5cae-a881-f3658e472092",
           "sourceRange": [],
           "tag": {
             "commentStart": 4491,
@@ -7803,11 +7803,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f611456b-82df-55af-a95e-b0c5e1ba1457",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "957065b8-0f3a-5c2c-b135-5e132da133b6",
               "sourceRange": []
             },
             "from": [
@@ -7831,7 +7831,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "be6b19b8-9e9f-5829-a36e-c9b75bcf6d9a",
               "sourceRange": []
             },
             "from": [
@@ -7855,7 +7855,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "74322c76-b563-5063-9044-70becaa99e60",
               "sourceRange": []
             },
             "from": [
@@ -7879,7 +7879,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "16871db5-3fde-549f-a16e-c9c31aa34387",
               "sourceRange": []
             },
             "from": [
@@ -7903,7 +7903,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f629c1b3-ef34-5d38-9392-d0ad05fafac3",
               "sourceRange": []
             },
             "from": [
@@ -7927,7 +7927,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d665e8b8-04b3-5cae-a881-f3658e472092",
               "sourceRange": []
             },
             "from": [
@@ -7951,8 +7951,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -7993,7 +7993,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -8023,13 +8023,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+        "originalId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "2febc3e0-e362-5a22-921a-27594c8a4aa7",
+      "endCapId": "2bfedd8d-8eb3-5380-8809-4b970d03ca3d",
       "units": "m",
       "sectional": false
     }
@@ -8047,12 +8047,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+      "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
+          "id": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
           "sourceRange": [],
           "tag": {
             "commentStart": 3908,
@@ -8065,8 +8065,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e7c77a8e-ee38-5d7b-81ea-18c32d0468fd",
+          "id": "8be0689a-5d1b-5b9f-aebb-798330928c88",
           "sourceRange": [],
           "tag": {
             "commentStart": 3985,
@@ -8079,8 +8079,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
+          "id": "0f4177ce-9e0b-53ac-9996-866b5413823b",
           "sourceRange": [],
           "tag": {
             "commentStart": 4101,
@@ -8093,8 +8093,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "feeac1f5-9099-57d5-9583-b2fe93c70cec",
+          "id": "f52b697d-e531-562e-8ba1-48236ae65cca",
           "sourceRange": [],
           "tag": {
             "commentStart": 4257,
@@ -8107,8 +8107,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
+          "id": "3478de7e-b848-5206-817d-ddcbe469fe64",
           "sourceRange": [],
           "tag": {
             "commentStart": 4373,
@@ -8121,8 +8121,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
+          "id": "464887bf-1223-5b24-b9c6-b745024cd247",
           "sourceRange": [],
           "tag": {
             "commentStart": 4491,
@@ -8138,11 +8138,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "9be00e59-09ca-5d92-b815-256daf9fc98e",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5d5bf2b1-5b90-5e4b-ae36-373c43deddf9",
               "sourceRange": []
             },
             "from": [
@@ -8166,7 +8166,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8be0689a-5d1b-5b9f-aebb-798330928c88",
               "sourceRange": []
             },
             "from": [
@@ -8190,7 +8190,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0f4177ce-9e0b-53ac-9996-866b5413823b",
               "sourceRange": []
             },
             "from": [
@@ -8214,7 +8214,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f52b697d-e531-562e-8ba1-48236ae65cca",
               "sourceRange": []
             },
             "from": [
@@ -8238,7 +8238,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3478de7e-b848-5206-817d-ddcbe469fe64",
               "sourceRange": []
             },
             "from": [
@@ -8262,7 +8262,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "464887bf-1223-5b24-b9c6-b745024cd247",
               "sourceRange": []
             },
             "from": [
@@ -8286,8 +8286,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+          "id": "e383621f-755a-5f2e-ada3-608aff393dab",
           "kind": "Custom",
           "objectId": 26,
           "origin": {
@@ -8328,7 +8328,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
             "sourceRange": []
           }
         },
@@ -8358,13 +8358,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line6"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "originalId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
+        "originSketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "adce3691-f4a2-5b4b-8b97-005271c17a50",
+      "endCapId": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
       "units": "m",
       "sectional": false
     }
@@ -8382,12 +8382,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79",
+      "artifactId": "7a96966c-8df1-5353-a0a1-c191f9108448",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fd5597ae-7df3-5084-83c2-de0656cc42e7",
+          "id": "65ffd5a5-c6c8-5b99-8929-2f79c2289c92",
           "sourceRange": [],
           "tag": {
             "commentStart": 13414,
@@ -8400,8 +8400,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "754399ad-93ac-50de-b7ca-1b44a5a85837",
+          "id": "fc697ed3-e47f-5247-814e-19acf3858551",
           "sourceRange": [],
           "tag": {
             "commentStart": 13479,
@@ -8414,8 +8414,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "926cf6e9-d041-57c5-a0d2-db26f9d61337",
+          "id": "f55e865c-b7da-53f5-974c-bc82ae8bf753",
           "sourceRange": [],
           "tag": {
             "commentStart": 13544,
@@ -8428,8 +8428,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "452094fe-d47a-5fb1-a30d-aeded108217e",
+          "id": "4d213a76-658d-53b1-b411-8bbe4429cc6d",
           "sourceRange": [],
           "tag": {
             "commentStart": 13609,
@@ -8445,11 +8445,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "65ffd5a5-c6c8-5b99-8929-2f79c2289c92",
               "sourceRange": []
             },
             "from": [
@@ -8473,7 +8473,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fc697ed3-e47f-5247-814e-19acf3858551",
               "sourceRange": []
             },
             "from": [
@@ -8497,7 +8497,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f55e865c-b7da-53f5-974c-bc82ae8bf753",
               "sourceRange": []
             },
             "from": [
@@ -8521,7 +8521,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4d213a76-658d-53b1-b411-8bbe4429cc6d",
               "sourceRange": []
             },
             "from": [
@@ -8545,8 +8545,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+          "id": "cb96bce2-64b3-5697-9ac4-41978548d779",
           "kind": "Custom",
           "objectId": 192,
           "origin": {
@@ -8587,7 +8587,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d9bbf8b8-59d6-5d87-a075-0dac9e20e173",
             "sourceRange": []
           }
         },
@@ -8609,13 +8609,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79",
+        "originalId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79",
+        "originSketchId": "13284012-5aa9-5cfb-8236-12f94ca6550e",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "57011f48-ea32-5670-9a8f-6cb290295158",
+      "endCapId": "d80286ff-694d-5476-9415-2a83a4da3983",
       "units": "m",
       "sectional": false
     }
@@ -8659,8 +8659,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
   "taillightsPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+      "id": "cb96bce2-64b3-5697-9ac4-41978548d779",
       "kind": "Custom",
       "objectId": 192,
       "origin": {
@@ -8693,11 +8693,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "65ffd5a5-c6c8-5b99-8929-2f79c2289c92",
             "sourceRange": []
           },
           "from": [
@@ -8721,7 +8721,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fc697ed3-e47f-5247-814e-19acf3858551",
             "sourceRange": []
           },
           "from": [
@@ -8745,7 +8745,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f55e865c-b7da-53f5-974c-bc82ae8bf753",
             "sourceRange": []
           },
           "from": [
@@ -8769,7 +8769,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4d213a76-658d-53b1-b411-8bbe4429cc6d",
             "sourceRange": []
           },
           "from": [
@@ -8793,8 +8793,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+        "id": "cb96bce2-64b3-5697-9ac4-41978548d779",
         "kind": "Custom",
         "objectId": 192,
         "origin": {
@@ -8835,7 +8835,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "d9bbf8b8-59d6-5d87-a075-0dac9e20e173",
           "sourceRange": []
         }
       },
@@ -8857,9 +8857,9 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79",
+      "originalId": "e8fa8cfb-5619-5bad-a6f8-bfb3bfe36b79",
+      "originSketchId": "13284012-5aa9-5cfb-8236-12f94ca6550e",
       "units": "m"
     }
   },
@@ -8881,7 +8881,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "27284bc1-5676-5b5a-baa2-003a7224d266",
                 "objectId": 196,
                 "kind": {
                   "line": {
@@ -8955,8 +8955,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+                  "id": "cb96bce2-64b3-5697-9ac4-41978548d779",
                   "kind": "Custom",
                   "objectId": 192,
                   "origin": {
@@ -8985,7 +8985,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "13284012-5aa9-5cfb-8236-12f94ca6550e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -9001,7 +9001,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "47ae25d7-94a7-5b84-85ef-b0a4633920cd",
                 "objectId": 199,
                 "kind": {
                   "line": {
@@ -9075,8 +9075,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+                  "id": "cb96bce2-64b3-5697-9ac4-41978548d779",
                   "kind": "Custom",
                   "objectId": 192,
                   "origin": {
@@ -9105,7 +9105,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "13284012-5aa9-5cfb-8236-12f94ca6550e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -9121,7 +9121,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "10afce2b-40ff-5ee3-a44b-bd101e341780",
                 "objectId": 202,
                 "kind": {
                   "line": {
@@ -9195,8 +9195,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+                  "id": "cb96bce2-64b3-5697-9ac4-41978548d779",
                   "kind": "Custom",
                   "objectId": 192,
                   "origin": {
@@ -9225,7 +9225,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "13284012-5aa9-5cfb-8236-12f94ca6550e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -9241,7 +9241,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "cdfcbbd0-d34e-5191-8ac3-35754fd4e366",
                 "objectId": 205,
                 "kind": {
                   "line": {
@@ -9315,8 +9315,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+                  "id": "cb96bce2-64b3-5697-9ac4-41978548d779",
                   "kind": "Custom",
                   "objectId": 192,
                   "origin": {
@@ -9345,7 +9345,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "13284012-5aa9-5cfb-8236-12f94ca6550e",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -9362,11 +9362,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "13284012-5aa9-5cfb-8236-12f94ca6550e",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "27284bc1-5676-5b5a-baa2-003a7224d266",
                     "sourceRange": []
                   },
                   "from": [
@@ -9390,7 +9390,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "fe9dcb80-3187-5ea7-ba83-fe14f1a75891",
                     "sourceRange": []
                   },
                   "from": [
@@ -9407,7 +9407,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "47ae25d7-94a7-5b84-85ef-b0a4633920cd",
                     "sourceRange": []
                   },
                   "from": [
@@ -9431,7 +9431,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ae9b8e6a-e42c-5886-830e-517108f76e7f",
                     "sourceRange": []
                   },
                   "from": [
@@ -9448,7 +9448,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "10afce2b-40ff-5ee3-a44b-bd101e341780",
                     "sourceRange": []
                   },
                   "from": [
@@ -9472,7 +9472,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "585c0507-64ec-597f-addc-f52df0ac2e7f",
                     "sourceRange": []
                   },
                   "from": [
@@ -9489,7 +9489,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "cdfcbbd0-d34e-5191-8ac3-35754fd4e366",
                     "sourceRange": []
                   },
                   "from": [
@@ -9513,8 +9513,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "cb96bce2-64b3-5697-9ac4-41978548d779",
+                "id": "cb96bce2-64b3-5697-9ac4-41978548d779",
                 "kind": "Custom",
                 "objectId": 192,
                 "origin": {
@@ -9555,7 +9555,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "d9bbf8b8-59d6-5d87-a075-0dac9e20e173",
                   "sourceRange": []
                 }
               },
@@ -9577,8 +9577,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "13284012-5aa9-5cfb-8236-12f94ca6550e",
+              "originalId": "13284012-5aa9-5cfb-8236-12f94ca6550e",
               "units": "m",
               "isClosed": "no"
             }
@@ -9616,7 +9616,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                 "objectId": 30,
                 "kind": {
                   "circle": {
@@ -9691,8 +9691,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -9721,7 +9721,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -9737,7 +9737,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
                 "objectId": 33,
                 "kind": {
                   "line": {
@@ -9811,8 +9811,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -9841,7 +9841,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -9857,7 +9857,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
                 "objectId": 36,
                 "kind": {
                   "line": {
@@ -9931,8 +9931,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -9961,7 +9961,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -9977,7 +9977,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -10051,8 +10051,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -10081,7 +10081,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -10097,7 +10097,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                 "objectId": 45,
                 "kind": {
                   "line": {
@@ -10171,8 +10171,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -10201,7 +10201,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -10217,7 +10217,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                 "objectId": 49,
                 "kind": {
                   "line": {
@@ -10291,8 +10291,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -10321,7 +10321,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -10337,7 +10337,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
                 "objectId": 53,
                 "kind": {
                   "line": {
@@ -10411,8 +10411,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -10441,7 +10441,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -10457,7 +10457,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "372890e3-2e6c-58b4-9c42-35f8d38804dc",
                 "objectId": 64,
                 "kind": {
                   "line": {
@@ -10532,8 +10532,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                  "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                   "kind": "Custom",
                   "objectId": 26,
                   "origin": {
@@ -10562,7 +10562,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line7"
@@ -10579,11 +10579,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "eedabccb-e42b-5224-a499-7c2981b239e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -10607,7 +10607,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
                     "sourceRange": []
                   },
                   "from": [
@@ -10631,7 +10631,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
                     "sourceRange": []
                   },
                   "from": [
@@ -10655,7 +10655,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                     "sourceRange": []
                   },
                   "from": [
@@ -10679,7 +10679,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
                     "sourceRange": []
                   },
                   "from": [
@@ -10703,7 +10703,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
                     "sourceRange": []
                   },
                   "from": [
@@ -10727,8 +10727,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab",
+                "id": "e383621f-755a-5f2e-ada3-608aff393dab",
                 "kind": "Custom",
                 "objectId": 26,
                 "origin": {
@@ -10769,7 +10769,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
                   "sourceRange": []
                 }
               },
@@ -10799,8 +10799,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "value": "line6"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
+              "originalId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
               "units": "m",
               "isClosed": "implicitly"
             }
@@ -10827,12 +10827,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
+          "artifactId": "94906884-1803-5336-93e6-0aca938f73f1",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "0296c89e-9dc4-5207-8f3d-a8ab7efd5612",
+              "id": "d9f97389-944d-508c-88b8-212d687d1238",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10012,
@@ -10845,8 +10845,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c0e25318-0bdd-5433-861d-21dcda2befaf",
+              "id": "fab2c6c3-bfe9-59ec-b5b2-d5d3391d2307",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10097,
@@ -10862,11 +10862,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "d9f97389-944d-508c-88b8-212d687d1238",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -10896,7 +10896,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "fab2c6c3-bfe9-59ec-b5b2-d5d3391d2307",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -10926,8 +10926,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+              "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
               "kind": "Custom",
               "objectId": 145,
               "origin": {
@@ -10968,7 +10968,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                 "sourceRange": []
               }
             },
@@ -10982,13 +10982,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
+            "originalId": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
+            "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "2730aed0-92eb-5541-9426-c3283c0580fa",
+          "endCapId": "893d2060-48f6-5f49-b54e-092b77cd809a",
           "units": "m",
           "sectional": false
         }
@@ -10997,12 +10997,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
+          "artifactId": "af94b4da-da53-5386-a65f-ed75c251c9ff",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "5aa7783c-b431-5bf3-b285-9314200e3795",
+              "id": "bd21b1ba-95d8-5201-afb7-a168954440df",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10097,
@@ -11018,11 +11018,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "bd21b1ba-95d8-5201-afb7-a168954440df",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11052,8 +11052,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+              "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
               "kind": "Custom",
               "objectId": 145,
               "origin": {
@@ -11094,7 +11094,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                 "sourceRange": []
               }
             },
@@ -11108,13 +11108,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
+            "originalId": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
+            "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "022d0280-ddb7-50b6-a67e-89e26cf461b3",
+          "endCapId": "e034456d-ab1d-57c7-b432-8463c2310e89",
           "units": "m",
           "sectional": false
         }
@@ -11128,12 +11128,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
+          "artifactId": "c42bee5e-b2b1-5cbc-8ff1-ab224da718f1",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "db891d0e-630b-55b2-bcb3-20e8761b5ba3",
+              "id": "43292b22-be75-5a74-947b-67c1d6ac7546",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10012,
@@ -11146,8 +11146,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b3023975-46b0-508c-a1b9-4a891693739f",
+              "id": "d16540c6-833d-5d60-acd0-dfab9e621d48",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10097,
@@ -11163,11 +11163,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "43292b22-be75-5a74-947b-67c1d6ac7546",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11197,7 +11197,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "d16540c6-833d-5d60-acd0-dfab9e621d48",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11227,8 +11227,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+              "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
               "kind": "Custom",
               "objectId": 145,
               "origin": {
@@ -11269,7 +11269,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                 "sourceRange": []
               }
             },
@@ -11283,13 +11283,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
+            "originalId": "8d695cfb-b4c7-5cf4-9ce3-56d1cd39cb6c",
+            "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "3514c73d-a0df-5fb2-92b4-7c997db0fc4d",
+          "endCapId": "6df57b6b-a527-5076-b1d9-2d3bc8f7f4df",
           "units": "m",
           "sectional": false
         }
@@ -11298,12 +11298,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
+          "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "9f52f157-7a9f-5549-8938-d511ef9285b8",
+              "id": "209eb5c1-7b2a-5251-a306-dc0ccd562b02",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10097,
@@ -11319,11 +11319,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "209eb5c1-7b2a-5251-a306-dc0ccd562b02",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11353,8 +11353,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+              "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
               "kind": "Custom",
               "objectId": 145,
               "origin": {
@@ -11395,7 +11395,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                 "sourceRange": []
               }
             },
@@ -11409,13 +11409,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
+            "originalId": "9ccb7921-1d61-55b9-bd52-98bcc5a34efa",
+            "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "f7c949c6-9cfc-5f5d-8fdd-9557c1acfbe7",
+          "endCapId": "f7f32eab-7072-57d9-a53c-d223077f302a",
           "units": "m",
           "sectional": false
         }
@@ -11426,11 +11426,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "048d4247-26c9-5763-a1ef-4c2969eb0113",
             "sourceRange": []
           },
           "ccw": true,
@@ -11460,7 +11460,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "73371560-1478-5b6c-9831-db48144f24ac",
             "sourceRange": []
           },
           "ccw": true,
@@ -11490,8 +11490,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+        "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
         "kind": "Custom",
         "objectId": 145,
         "origin": {
@@ -11532,7 +11532,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
           "sourceRange": []
         }
       },
@@ -11546,9 +11546,9 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "value": "circle2"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
+      "originalId": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
+      "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
       "units": "m"
     }
   },
@@ -11559,12 +11559,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
+          "artifactId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "83e118a5-e3ef-5bcd-9641-8203fa292c85",
+              "id": "25f23ce8-22fa-5045-a31f-4c3f4f83c8d6",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10012,
@@ -11577,8 +11577,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "4b732a5d-ae3c-5391-9097-a44affa81e58",
+              "id": "39042e46-00e7-5fac-b650-4bac6242d776",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10097,
@@ -11594,11 +11594,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "25f23ce8-22fa-5045-a31f-4c3f4f83c8d6",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11628,7 +11628,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "39042e46-00e7-5fac-b650-4bac6242d776",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11658,8 +11658,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+              "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
               "kind": "Custom",
               "objectId": 145,
               "origin": {
@@ -11700,7 +11700,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                 "sourceRange": []
               }
             },
@@ -11714,13 +11714,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
+            "originalId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
+            "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "8ba578b9-b716-5d49-b72d-3c9c949127f9",
+          "endCapId": "61388068-b212-59ee-8f46-ea5ee9af9d03",
           "units": "m",
           "sectional": false
         }
@@ -11729,12 +11729,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "da427568-57f9-5fba-9ace-3a3e7be5bc36",
+          "artifactId": "887f8b95-6182-5637-a45b-e92f2860796c",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "76bb6256-e1c5-588f-8dba-ccd9214e0a74",
+              "id": "946206c5-dc53-5d70-a93c-38a30f606977",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10097,
@@ -11750,11 +11750,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "da427568-57f9-5fba-9ace-3a3e7be5bc36",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "946206c5-dc53-5d70-a93c-38a30f606977",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11784,8 +11784,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+              "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
               "kind": "Custom",
               "objectId": 145,
               "origin": {
@@ -11826,7 +11826,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                 "sourceRange": []
               }
             },
@@ -11840,13 +11840,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "da427568-57f9-5fba-9ace-3a3e7be5bc36",
+            "originalId": "da427568-57f9-5fba-9ace-3a3e7be5bc36",
+            "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "63c0ec36-92e9-5c8c-89dc-a81ddf81e982",
+          "endCapId": "9b55e07c-1bf1-5d98-9301-a2317cb939b9",
           "units": "m",
           "sectional": false
         }
@@ -11860,12 +11860,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
+          "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "57562559-47fd-5034-a112-12f3b971b2b6",
+              "id": "048d4247-26c9-5763-a1ef-4c2969eb0113",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10012,
@@ -11878,8 +11878,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "type": "extrudeArc"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "04701160-9997-5352-a53f-c4287ada686b",
+              "id": "73371560-1478-5b6c-9831-db48144f24ac",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10097,
@@ -11895,11 +11895,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "048d4247-26c9-5763-a1ef-4c2969eb0113",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11929,7 +11929,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "73371560-1478-5b6c-9831-db48144f24ac",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -11959,8 +11959,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+              "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
               "kind": "Custom",
               "objectId": 145,
               "origin": {
@@ -12001,7 +12001,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                 "sourceRange": []
               }
             },
@@ -12015,13 +12015,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
+            "originalId": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
+            "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "4cd5b5a0-fbf6-5797-9879-422b527d42f8",
+          "endCapId": "119dc576-c7c8-5ba3-bddd-860a26765325",
           "units": "m",
           "sectional": false
         }
@@ -12030,12 +12030,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "1583b450-a578-582f-8d23-686bccf95d8b",
+          "artifactId": "c349d1a9-19a0-5db8-b19d-4e0dc473c583",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "39baf89e-e776-55de-84df-06857c01d0aa",
+              "id": "54237396-26c0-5d2d-ad63-54e649d8936a",
               "sourceRange": [],
               "tag": {
                 "commentStart": 10097,
@@ -12051,11 +12051,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "1583b450-a578-582f-8d23-686bccf95d8b",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "54237396-26c0-5d2d-ad63-54e649d8936a",
                   "sourceRange": []
                 },
                 "ccw": true,
@@ -12085,8 +12085,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+              "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
               "kind": "Custom",
               "objectId": 145,
               "origin": {
@@ -12127,7 +12127,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                 "sourceRange": []
               }
             },
@@ -12141,13 +12141,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "value": "circle2"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "1583b450-a578-582f-8d23-686bccf95d8b",
+            "originalId": "1583b450-a578-582f-8d23-686bccf95d8b",
+            "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "f70a14d3-75ff-58a3-a144-35932dd6e2cb",
+          "endCapId": "360d1a03-5f11-5649-92a0-084c4b44dab4",
           "units": "m",
           "sectional": false
         }
@@ -12163,7 +12163,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "d4cbda13-cf30-51b5-adde-debccd5ae685",
                 "objectId": 149,
                 "kind": {
                   "circle": {
@@ -12237,8 +12237,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+                  "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
                   "kind": "Custom",
                   "objectId": 145,
                   "origin": {
@@ -12267,7 +12267,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -12283,7 +12283,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
                 "objectId": 152,
                 "kind": {
                   "circle": {
@@ -12357,8 +12357,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+                  "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
                   "kind": "Custom",
                   "objectId": 145,
                   "origin": {
@@ -12387,7 +12387,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle2"
@@ -12403,7 +12403,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
                 "objectId": 156,
                 "kind": {
                   "line": {
@@ -12478,8 +12478,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+                  "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
                   "kind": "Custom",
                   "objectId": 145,
                   "origin": {
@@ -12508,7 +12508,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -12525,11 +12525,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "d4cbda13-cf30-51b5-adde-debccd5ae685",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12559,7 +12559,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c47bdefb-e100-5d1c-a209-66adc3d957b5",
                     "sourceRange": []
                   },
                   "from": [
@@ -12576,7 +12576,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -12606,8 +12606,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+                "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
                 "kind": "Custom",
                 "objectId": 145,
                 "origin": {
@@ -12648,7 +12648,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
                   "sourceRange": []
                 }
               },
@@ -12662,8 +12662,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "value": "circle2"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
+              "originalId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
               "units": "m",
               "isClosed": "no"
             }
@@ -12678,12 +12678,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
+      "artifactId": "7faa0516-2581-52ca-b80e-97150bf2f040",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "57562559-47fd-5034-a112-12f3b971b2b6",
+          "id": "048d4247-26c9-5763-a1ef-4c2969eb0113",
           "sourceRange": [],
           "tag": {
             "commentStart": 10012,
@@ -12696,8 +12696,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "04701160-9997-5352-a53f-c4287ada686b",
+          "id": "73371560-1478-5b6c-9831-db48144f24ac",
           "sourceRange": [],
           "tag": {
             "commentStart": 10097,
@@ -12713,11 +12713,11 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "048d4247-26c9-5763-a1ef-4c2969eb0113",
               "sourceRange": []
             },
             "ccw": true,
@@ -12747,7 +12747,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "73371560-1478-5b6c-9831-db48144f24ac",
               "sourceRange": []
             },
             "ccw": true,
@@ -12777,8 +12777,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
+          "id": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
           "kind": "Custom",
           "objectId": 145,
           "origin": {
@@ -12819,7 +12819,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "aa43dd44-3af9-5d70-8bc7-9c69475889f4",
             "sourceRange": []
           }
         },
@@ -12833,13 +12833,13 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "circle2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
+        "originalId": "ff1065dd-9055-5af8-80e6-8be3e4a026ad",
+        "originSketchId": "33bbd8bc-5a6b-54a8-9fab-10db26810cb4",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "4cd5b5a0-fbf6-5797-9879-422b527d42f8",
+      "endCapId": "119dc576-c7c8-5ba3-bddd-860a26765325",
       "units": "m",
       "sectional": false
     }

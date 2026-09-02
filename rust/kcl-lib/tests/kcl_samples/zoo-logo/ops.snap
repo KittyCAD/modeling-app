@@ -86073,7 +86073,7 @@ description: Operations executed zoo-logo.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
               }
             ]
           },
@@ -86107,11 +86107,11 @@ description: Operations executed zoo-logo.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d4a58bb1-6e9a-567c-9a22-4e8a1d8a3d75"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1e2b65ac-2924-54ff-bec0-ab0c7d7dcc8f"
               }
             ]
           },
@@ -86145,11 +86145,11 @@ description: Operations executed zoo-logo.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "90a22bce-a2ca-552b-9fe8-88c683c0bcea"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "80a8b4e9-24bb-51f6-9da1-58ae390711da"
               }
             ]
           },
@@ -86183,11 +86183,11 @@ description: Operations executed zoo-logo.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2c371237-88fa-53b2-ba88-3c244cad140c"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9666db41-263f-5de1-b191-fdcb3bbe6c16"
               }
             ]
           },
@@ -86221,11 +86221,11 @@ description: Operations executed zoo-logo.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "988e3a7a-9ffa-5232-a3f3-e48ac03f1a51"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8bfc9eae-7eed-5702-8240-a1ffa41b7b28"
               }
             ]
           },
@@ -86258,31 +86258,31 @@ description: Operations executed zoo-logo.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "179dc5a1-f8e9-5f6e-89ba-069ef2475fe0"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "348d6486-d6e2-5249-9bed-72165da137b7"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e6486410-ccae-52b7-8847-ca5cd06c7c5e"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b0776c43-3492-52d5-ba16-5349fad27ac1"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7691f6c2-ed02-5a06-93c3-b23fb17d7c93"
               }
             }
           ]
@@ -86313,31 +86313,31 @@ description: Operations executed zoo-logo.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fec7e183-89c4-56b6-9b3e-a77011dc0654"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7e440f08-f96b-582a-99a3-698ba9233cb0"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b58f4d26-33b7-52df-b124-06c5aef2752e"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "85d6b8dc-4222-5d2c-b48e-2fb6533ea84f"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2ebf2ae8-ff45-567a-a7ce-e2769c8e776c"
               }
             }
           ]

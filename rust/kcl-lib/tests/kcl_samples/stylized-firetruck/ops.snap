@@ -1893,7 +1893,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -1923,7 +1923,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2c522d90-5fef-5750-b489-b008732bd2c3"
           }
         },
         "sourceRange": []
@@ -1976,7 +1976,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
           }
         },
         "sourceRange": []
@@ -2017,7 +2017,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -3671,7 +3671,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "eedabccb-e42b-5224-a499-7c2981b239e5"
               }
             ]
           },
@@ -3701,7 +3701,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9be00e59-09ca-5d92-b815-256daf9fc98e"
           }
         },
         "sourceRange": []
@@ -3750,7 +3750,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -3776,7 +3776,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3809,7 +3809,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
           }
         },
         "sourceRange": []
@@ -3886,7 +3886,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -3919,7 +3919,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
           }
         },
         "sourceRange": []
@@ -3996,7 +3996,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -4029,7 +4029,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
           }
         },
         "sourceRange": []
@@ -4106,7 +4106,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
           }
         },
         "sourceRange": []
@@ -4183,7 +4183,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1"
           }
         },
         "sourceRange": []
@@ -4196,25 +4196,25 @@ description: Operations executed stylized-firetruck.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "3312f826-b323-5332-871a-6a8a59a3ae93"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "c496fd9a-d996-5b8a-811c-f9066ac8b2c6"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "1da187cf-4f25-596d-a170-2007a75f41c6"
                 }
               }
             ]
@@ -4249,7 +4249,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d7fbae6-97b8-5b45-94f9-3c60e7ae1b62"
           }
         },
         "sourceRange": []
@@ -5215,7 +5215,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0030d44a-e936-52d0-b5b6-efd80f2f6770"
               }
             ]
           },
@@ -5245,7 +5245,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5298,7 +5298,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "db5c3d30-91ae-5a67-ae73-8acbcb44a5a3"
           }
         },
         "sourceRange": []
@@ -5339,7 +5339,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d90f6603-b0cd-5c83-a076-386b01d9e12a"
           }
         },
         "sourceRange": []
@@ -6348,7 +6348,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bb2ee501-11e8-5c4e-b7a4-cf4d0273f1d6"
               }
             ]
           },
@@ -6378,7 +6378,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6f85cbad-5e6d-549c-850d-909283a25e83"
           }
         },
         "sourceRange": []
@@ -6431,7 +6431,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "035728b5-01db-5e9b-b285-181bc5693d5a"
           }
         },
         "sourceRange": []
@@ -6472,7 +6472,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5a7368ed-12c7-59b9-88f4-186289245e86"
           }
         },
         "sourceRange": []
@@ -7470,7 +7470,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ab10cb94-5e01-5790-97d1-ad4ca036a752"
               }
             ]
           },
@@ -7500,7 +7500,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bd2c7879-5553-55c3-bc25-46df0c8081fc"
           }
         },
         "sourceRange": []
@@ -7553,7 +7553,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "93fe6743-e0aa-5d65-834b-87a82208c703"
           }
         },
         "sourceRange": []
@@ -7594,7 +7594,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
           }
         },
         "sourceRange": []
@@ -8545,7 +8545,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "95d80984-dc84-541c-af31-df26752c9fd4"
               }
             ]
           },
@@ -8575,7 +8575,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26"
           }
         },
         "sourceRange": []
@@ -8628,7 +8628,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "065d6e6f-62af-500d-aae0-fe097d5f952b"
           }
         },
         "sourceRange": []
@@ -8669,7 +8669,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c8fe1f51-8285-5882-9af3-7e3b8d0e3598"
           }
         },
         "sourceRange": []
@@ -9667,7 +9667,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cea75c17-0a18-5ab9-8495-1b1bb278e899"
               }
             ]
           },
@@ -9697,7 +9697,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e6ed3605-69e2-53c9-bebb-df82937c0962"
           }
         },
         "sourceRange": []
@@ -9746,7 +9746,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da427568-57f9-5fba-9ace-3a3e7be5bc36"
           }
         },
         "sourceRange": []
@@ -10573,7 +10573,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0"
               }
             ]
           },
@@ -10607,7 +10607,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc"
               }
             ]
           },
@@ -10637,7 +10637,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "94cfcc75-120e-5336-b89b-66096a401da3"
           }
         },
         "sourceRange": []
@@ -10683,7 +10683,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "97510544-69da-5bcc-ae16-ec102d607510"
           }
         },
         "sourceRange": []
@@ -10724,7 +10724,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a6e62985-97dc-5bc0-bf5d-67848762cf83"
           }
         },
         "sourceRange": []
@@ -10770,7 +10770,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f50bec22-83af-5ac9-9f90-8e8d9796a811"
           }
         },
         "sourceRange": []
@@ -10811,7 +10811,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5eed984f-8da1-571e-9576-dd247a4c55b3"
           }
         },
         "sourceRange": []
@@ -10840,13 +10840,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "97510544-69da-5bcc-ae16-ec102d607510"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f50bec22-83af-5ac9-9f90-8e8d9796a811"
               }
             }
           ]
@@ -10884,13 +10884,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ce0f2476-67d7-5345-810e-e93bbaf612ef"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22"
               }
             }
           ]
@@ -10972,13 +10972,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "97510544-69da-5bcc-ae16-ec102d607510"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f50bec22-83af-5ac9-9f90-8e8d9796a811"
               }
             }
           ]
@@ -11016,13 +11016,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "93084d86-3fba-5437-851f-9a4bb9523e0c"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d8d7c083-add8-5a2a-be8b-22654c3bacfc"
               }
             }
           ]
@@ -11104,13 +11104,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "97510544-69da-5bcc-ae16-ec102d607510"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f50bec22-83af-5ac9-9f90-8e8d9796a811"
               }
             }
           ]
@@ -11148,13 +11148,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "103770af-266b-591f-94e3-5934f2c750c9"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d1e38581-6d4a-5346-9b30-84adae73d10c"
               }
             }
           ]
@@ -11236,13 +11236,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "103770af-266b-591f-94e3-5934f2c750c9"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d1e38581-6d4a-5346-9b30-84adae73d10c"
               }
             }
           ]
@@ -11324,13 +11324,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "97510544-69da-5bcc-ae16-ec102d607510"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f50bec22-83af-5ac9-9f90-8e8d9796a811"
               }
             }
           ]
@@ -11412,13 +11412,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "97510544-69da-5bcc-ae16-ec102d607510"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f50bec22-83af-5ac9-9f90-8e8d9796a811"
               }
             }
           ]
@@ -11496,7 +11496,7 @@ description: Operations executed stylized-firetruck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -11881,7 +11881,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9cbc0821-9ccb-59b5-8a88-96912ec71e5e"
               }
             ]
           },
@@ -11918,13 +11918,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3355433a-c2e1-52ba-9ff4-900c0ab04482"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f15d8844-416b-5d96-8f34-f60637a063d8"
               }
             }
           ]
@@ -11975,13 +11975,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e6163875-a6e3-596d-86e3-93af8ba86db8"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "653db6f1-fef4-5443-9478-695b5150f724"
               }
             }
           ]
@@ -12024,7 +12024,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf"
           }
         },
         "sourceRange": []
@@ -12049,7 +12049,7 @@ description: Operations executed stylized-firetruck.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -13015,7 +13015,7 @@ description: Operations executed stylized-firetruck.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e4bd49fb-f0b4-57f1-aa21-3c8ee7764cee"
               }
             ]
           },
@@ -13052,13 +13052,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e8bd7ef2-9e72-50a4-9e42-47d31a159f59"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5775c4c2-d8c4-50a7-97ea-dec29ca71b59"
               }
             }
           ]
@@ -13109,13 +13109,13 @@ description: Operations executed stylized-firetruck.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f9b5fabe-fd78-5319-89f2-15b20b9cfc57"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "67150385-7d6d-5558-9b12-a25e9c433b14"
               }
             }
           ]
@@ -13158,7 +13158,7 @@ description: Operations executed stylized-firetruck.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6fec3912-fa52-5513-b3f5-b608fd2bcfc1"
           }
         },
         "sourceRange": []

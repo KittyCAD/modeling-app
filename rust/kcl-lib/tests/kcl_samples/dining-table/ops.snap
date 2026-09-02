@@ -271,7 +271,7 @@ description: Operations executed dining-table.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -1167,11 +1167,11 @@ description: Operations executed dining-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               }
             ]
           },
@@ -1201,7 +1201,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1243,7 +1243,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -2211,11 +2211,11 @@ description: Operations executed dining-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "faa6bc39-f12d-53bf-bb63-4db4813c0f44"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2f481fd4-203e-57d7-b5d6-b16289577621"
               }
             ]
           },
@@ -2245,7 +2245,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
           }
         },
         "sourceRange": []
@@ -2291,7 +2291,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
           }
         },
         "sourceRange": []
@@ -2368,7 +2368,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448"
           }
         },
         "sourceRange": []
@@ -2394,7 +2394,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
           }
         },
         "sourceRange": []
@@ -2427,7 +2427,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "62f92a38-07e6-5321-9e56-be9dd50f1d7b"
           }
         },
         "sourceRange": []
@@ -2504,7 +2504,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
           }
         },
         "sourceRange": []
@@ -2537,7 +2537,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1a0ade6f-d355-5121-9adb-351976a78284"
           }
         },
         "sourceRange": []
@@ -2614,7 +2614,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3"
           }
         },
         "sourceRange": []
@@ -2647,7 +2647,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0f805c0b-b523-5978-a0dd-c17f7ac70690"
           }
         },
         "sourceRange": []
@@ -2868,7 +2868,7 @@ description: Operations executed dining-table.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -3764,11 +3764,11 @@ description: Operations executed dining-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd"
               }
             ]
           },
@@ -3798,7 +3798,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
           }
         },
         "sourceRange": []
@@ -3871,7 +3871,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c3c8712b-a8b4-5375-b311-6de9fe3f4ee3"
           }
         },
         "sourceRange": []
@@ -3913,7 +3913,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
           }
         },
         "sourceRange": []
@@ -3939,7 +3939,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ca502980-7bdd-5694-85c5-3eb8ffa8242b"
           }
         },
         "sourceRange": []
@@ -3972,7 +3972,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa"
           }
         },
         "sourceRange": []
@@ -4904,11 +4904,11 @@ description: Operations executed dining-table.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4e30dd66-e64d-5d2d-92d4-2d15c2237140"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "19107e89-bf40-5541-88a5-5106b6de636d"
               }
             ]
           },
@@ -4938,7 +4938,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70"
           }
         },
         "sourceRange": []
@@ -5011,7 +5011,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "41f59362-6fb8-51a4-926e-41d2df55ba70"
           }
         },
         "sourceRange": []
@@ -5053,7 +5053,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7207dcef-ae46-501c-bdb4-7d4d031bf641"
           }
         },
         "sourceRange": []
@@ -5079,7 +5079,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2b8704a7-15b4-5ef7-8498-4a0c612057d6"
           }
         },
         "sourceRange": []
@@ -5112,7 +5112,7 @@ description: Operations executed dining-table.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "acb6b8b6-e024-57d9-a856-353e5c4d001f"
           }
         },
         "sourceRange": []

@@ -6,8 +6,8 @@ description: Variables in memory after executing cylinder.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -44,12 +44,12 @@ description: Variables in memory after executing cylinder.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "artifactId": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "18ab3082-0711-5c03-bd88-cda0bf7f093d",
+          "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
           "sourceRange": [],
           "tag": {
             "commentStart": 313,
@@ -65,11 +65,11 @@ description: Variables in memory after executing cylinder.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
               "sourceRange": []
             },
             "ccw": true,
@@ -99,8 +99,8 @@ description: Variables in memory after executing cylinder.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -141,7 +141,7 @@ description: Variables in memory after executing cylinder.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
             "sourceRange": []
           }
         },
@@ -151,13 +151,13 @@ description: Variables in memory after executing cylinder.kcl
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+        "originalId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+        "originSketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "2258db0c-4e41-5818-9856-c9aee535914a",
+      "endCapId": "688fd424-1de4-51a2-b455-344b29542d3f",
       "units": "mm",
       "sectional": false
     }
@@ -184,11 +184,11 @@ description: Variables in memory after executing cylinder.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "28f7791a-5f48-5065-b727-81d4acd6d2f1",
             "sourceRange": []
           },
           "ccw": true,
@@ -218,8 +218,8 @@ description: Variables in memory after executing cylinder.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -260,7 +260,7 @@ description: Variables in memory after executing cylinder.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "sourceRange": []
         }
       },
@@ -270,9 +270,9 @@ description: Variables in memory after executing cylinder.kcl
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "originalId": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
+      "originSketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "units": "mm"
     }
   },
@@ -285,7 +285,7 @@ description: Variables in memory after executing cylinder.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "circle": {
@@ -359,8 +359,8 @@ description: Variables in memory after executing cylinder.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -389,7 +389,7 @@ description: Variables in memory after executing cylinder.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -406,11 +406,11 @@ description: Variables in memory after executing cylinder.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -440,8 +440,8 @@ description: Variables in memory after executing cylinder.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -482,7 +482,7 @@ description: Variables in memory after executing cylinder.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                   "sourceRange": []
                 }
               },
@@ -492,8 +492,8 @@ description: Variables in memory after executing cylinder.kcl
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
+              "originalId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
               "units": "mm",
               "isClosed": "no"
             }

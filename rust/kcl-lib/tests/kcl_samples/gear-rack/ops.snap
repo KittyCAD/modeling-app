@@ -1052,7 +1052,7 @@ description: Operations executed gear-rack.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -1082,7 +1082,7 @@ description: Operations executed gear-rack.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
           }
         },
         "sourceRange": []
@@ -1124,7 +1124,7 @@ description: Operations executed gear-rack.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7b681387-29ea-57f1-8713-d63280827139"
           }
         },
         "sourceRange": []
@@ -1149,7 +1149,7 @@ description: Operations executed gear-rack.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -3618,7 +3618,7 @@ description: Operations executed gear-rack.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cc4847ec-3187-5c84-8aa1-14794bc7e98d"
               }
             ]
           },
@@ -3648,7 +3648,7 @@ description: Operations executed gear-rack.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2181764b-b5ce-5e14-b499-f36d24b7b28a"
           }
         },
         "sourceRange": []
@@ -3690,7 +3690,7 @@ description: Operations executed gear-rack.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "82295fd4-30e7-52f8-bbfa-45b71b8986dd"
           }
         },
         "sourceRange": []
@@ -3716,7 +3716,7 @@ description: Operations executed gear-rack.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ed3043b-96d9-5307-babe-4ee1188fa544"
           }
         },
         "sourceRange": []

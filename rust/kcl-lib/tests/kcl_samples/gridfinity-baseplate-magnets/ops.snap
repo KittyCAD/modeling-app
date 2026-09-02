@@ -300,7 +300,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7c4571e0-7b14-576f-a82e-22280b05874d"
         },
         "sourceRange": []
       },
@@ -2224,7 +2224,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2254,7 +2254,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a"
           }
         },
         "sourceRange": []
@@ -2296,7 +2296,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
           }
         },
         "sourceRange": []
@@ -2430,7 +2430,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               }
             ]
           },
@@ -2460,7 +2460,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da6695c0-7255-5538-b0f4-c4ea3977fe7d"
           }
         },
         "sourceRange": []
@@ -2556,7 +2556,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "53a9149e-1246-5c44-9e3c-558201ff438c"
           }
         },
         "sourceRange": []
@@ -2582,7 +2582,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
           }
         },
         "sourceRange": []
@@ -2715,25 +2715,25 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "51fdff2e-bf9e-5b7a-a763-be68e8862cf8"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "46c1c873-adde-54a9-8c92-5f163decf204"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bf2569f4-8303-5a9a-817c-062b9a00a926"
               }
             }
           ]
@@ -2830,49 +2830,49 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "372890e3-2e6c-58b4-9c42-35f8d38804dc"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f7dce085-f4da-5dd8-b353-dcc2149fa091"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "51fdff2e-bf9e-5b7a-a763-be68e8862cf8"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "1ca88202-28a4-5453-86b2-137341ba3b82"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "46c1c873-adde-54a9-8c92-5f163decf204"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "0c0fc85f-b896-5ad8-93ba-3ab0696db8c2"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bf2569f4-8303-5a9a-817c-062b9a00a926"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5aef7c6e-34c0-55cd-954d-2cc03a99a2ac"
               }
             }
           ]
@@ -2969,25 +2969,25 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6489eeeb-3652-50fa-9d8e-723c2c670f39"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "813463c6-1c89-5251-84d8-6159121dd7b3"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "229b0da4-30f2-58ab-a274-0ad55ebca336"
               }
             }
           ]
@@ -3084,49 +3084,49 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fc8b23af-e276-5b5c-a7c2-b40c2f8d3f71"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f80c3690-fdcb-530e-af33-3e641f2497c4"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6489eeeb-3652-50fa-9d8e-723c2c670f39"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "646813a2-6477-57f4-a8d3-5a8baa359e14"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "813463c6-1c89-5251-84d8-6159121dd7b3"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "163894bb-abcd-5c32-80eb-82564a57fe78"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "229b0da4-30f2-58ab-a274-0ad55ebca336"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "31154c89-6d38-5b0c-9b74-6095b3164530"
               }
             }
           ]
@@ -6779,11 +6779,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "e8637a6d-00c2-5b87-831e-2db8c2223948"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0919e597-7112-50da-97bb-e5ba198e1dcd"
               }
             ]
           },
@@ -6813,7 +6813,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2ab8a671-6218-5516-901a-d1a83480ded7"
           }
         },
         "sourceRange": []
@@ -6855,7 +6855,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
           }
         },
         "sourceRange": []
@@ -6879,19 +6879,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "5b00d88d-9949-5483-aad1-21877c68db18"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "a84fcff7-34de-5f2e-8bcc-8025bfc87540"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "c9cf69e5-e177-5669-8b55-95486bcf2f2c"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "891ff527-b205-5f94-be7d-f14f7045a650"
               }
             ]
           },
@@ -6921,7 +6921,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
           }
         },
         "sourceRange": []
@@ -7016,13 +7016,13 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9fad4f1e-4b1e-597b-9a2e-c77aa6ca6d94"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ee89986d-15de-5ef8-b8f1-0e0680ad440e"
               }
             }
           ]
@@ -7115,7 +7115,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -9912,11 +9912,11 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1a7ba310-a1b1-5111-b970-012df26c5aeb"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9209892e-e35e-575e-b305-9935eac5ab33"
               }
             ]
           },
@@ -9946,7 +9946,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "775bc85a-03b5-55c6-9ab0-09c99f48f5e7"
           }
         },
         "sourceRange": []
@@ -9988,7 +9988,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d569b1e-3e41-5603-8816-9c625622a434"
           }
         },
         "sourceRange": []
@@ -10012,19 +10012,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             "value": [
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "da33d58d-66c8-52bd-95b5-372a550154f6"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "69826cdc-60e6-540b-b3a6-b34c2b742a3a"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "8bfbe77e-22af-5e52-bd31-9b2cc247116a"
               },
               {
                 "type": "Uuid",
-                "value": "[uuid]"
+                "value": "ac6326dc-e62b-5324-a8bf-617a9f4cc30f"
               }
             ]
           },
@@ -10054,7 +10054,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d569b1e-3e41-5603-8816-9c625622a434"
           }
         },
         "sourceRange": []
@@ -10149,13 +10149,13 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9d569b1e-3e41-5603-8816-9c625622a434"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "cd9f616e-2aa7-5235-9f59-50b60cbfe095"
               }
             }
           ]
@@ -10252,13 +10252,13 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "19107e89-bf40-5541-88a5-5106b6de636d"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fe6e67eb-7a61-566b-b101-f63111291cbc"
               }
             }
           ]

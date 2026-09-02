@@ -7,17 +7,17 @@ description: Variables in memory after executing clone_an_import.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "d7c3c182-9055-5974-aed5-8c6a26dd830a",
+      "artifactId": "d7c3c182-9055-5974-aed5-8c6a26dd830a",
       "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "d7c3c182-9055-5974-aed5-8c6a26dd830a",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "47e56a78-95e5-55a2-8dd1-54edb1e1abe4",
               "sourceRange": []
             },
             "ccw": true,
@@ -47,7 +47,7 @@ description: Variables in memory after executing clone_an_import.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "55f55573-4a17-5173-9af8-767495822462",
               "sourceRange": []
             },
             "ccw": true,
@@ -77,8 +77,8 @@ description: Variables in memory after executing clone_an_import.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+          "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -119,7 +119,7 @@ description: Variables in memory after executing clone_an_import.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "367b0131-ff93-5810-94cf-4d6645cfc79b",
             "sourceRange": []
           }
         },
@@ -133,9 +133,9 @@ description: Variables in memory after executing clone_an_import.kcl
             "value": "circle2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "458bd166-3b39-5b82-86b7-0d0cfea550b1",
+        "originalId": "458bd166-3b39-5b82-86b7-0d0cfea550b1",
+        "originSketchId": "e9d624ea-f34a-57d6-8df3-e1630dccf82c",
         "units": "mm"
       },
       "startCapId": null,
@@ -160,17 +160,17 @@ description: Variables in memory after executing clone_an_import.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "b3f571cf-a507-5510-a6c4-b3754477a444",
+      "artifactId": "b3f571cf-a507-5510-a6c4-b3754477a444",
       "value": [],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "b3f571cf-a507-5510-a6c4-b3754477a444",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3839f6ee-db25-5a2e-bc2d-cdb82e8fd48b",
               "sourceRange": []
             },
             "ccw": true,
@@ -200,7 +200,7 @@ description: Variables in memory after executing clone_an_import.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4579311f-b00c-58c4-af18-cddf42afbd1c",
               "sourceRange": []
             },
             "ccw": true,
@@ -230,8 +230,8 @@ description: Variables in memory after executing clone_an_import.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
+          "id": "d928222f-569e-5fdf-97dd-1103ab13b0aa",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -272,7 +272,7 @@ description: Variables in memory after executing clone_an_import.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "628f15ef-635e-5eac-8d21-2e7ffa497d33",
             "sourceRange": []
           }
         },
@@ -286,9 +286,9 @@ description: Variables in memory after executing clone_an_import.kcl
             "value": "circle2"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "28006c95-3b9c-5732-a899-10c8e6ab53bc",
+        "originalId": "28006c95-3b9c-5732-a899-10c8e6ab53bc",
+        "originSketchId": "285b46c2-67a0-58e7-aa1c-058eda0088b6",
         "units": "mm"
       },
       "startCapId": null,

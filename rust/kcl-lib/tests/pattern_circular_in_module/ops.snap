@@ -46,7 +46,7 @@ description: Operations executed pattern_circular_in_module.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "9e24d3b1-23b0-5737-82c9-f5aee2198f63"
         },
         "sourceRange": []
       },
@@ -94,25 +94,25 @@ description: Operations executed pattern_circular_in_module.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7976e9f4-c433-5caa-bb0b-831d7cabb0c9"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f629c1b3-ef34-5d38-9392-d0ad05fafac3"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6ba6c4ce-a540-5418-9a8d-61e357b6b1c9"
               }
             }
           ]
@@ -192,7 +192,7 @@ description: Operations executed pattern_circular_in_module.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "9e24d3b1-23b0-5737-82c9-f5aee2198f63"
         },
         "sourceRange": []
       },
@@ -240,25 +240,25 @@ description: Operations executed pattern_circular_in_module.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "7c4571e0-7b14-576f-a82e-22280b05874d"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ff644541-0515-5cbb-b057-003c3c1247eb"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "348addf4-a7bf-5d18-a8d1-fa1c52cb243d"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3c03572f-d09c-563b-972c-bca035963672"
               }
             }
           ]

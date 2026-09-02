@@ -6,8 +6,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
   "__sketch_32_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -70,8 +70,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
   "__sketch_52_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+      "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "kind": "Custom",
       "objectId": 51,
       "origin": {
@@ -113,12 +113,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+      "artifactId": "0d2fa0a7-0d7c-5dcf-b9b9-f7010642f7b0",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "af69293d-db36-5dd3-ad98-9ff1e9a1e4a2",
+          "id": "34ac3e23-e114-551a-bea6-86bc44865a42",
           "sourceRange": [],
           "tag": {
             "commentStart": 3084,
@@ -131,8 +131,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "039162c5-93c6-5638-90da-9cdc27116f82",
+          "id": "da726907-370c-5450-98c0-57d934b2f51d",
           "sourceRange": [],
           "tag": {
             "commentStart": 3161,
@@ -145,8 +145,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0f126e7b-acca-5f24-aab5-a8b751c9d51e",
+          "id": "f40a67cc-66c0-5fd9-b8c5-be69be10bb62",
           "sourceRange": [],
           "tag": {
             "commentStart": 3280,
@@ -159,8 +159,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "8cc393b1-9bc2-5519-b3b1-20aed1bb0995",
+          "id": "4c3c9d1b-e1d8-505b-954b-155e069e484d",
           "sourceRange": [],
           "tag": {
             "commentStart": 3394,
@@ -176,11 +176,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "34ac3e23-e114-551a-bea6-86bc44865a42",
               "sourceRange": []
             },
             "from": [
@@ -204,7 +204,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "da726907-370c-5450-98c0-57d934b2f51d",
               "sourceRange": []
             },
             "from": [
@@ -228,7 +228,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f40a67cc-66c0-5fd9-b8c5-be69be10bb62",
               "sourceRange": []
             },
             "from": [
@@ -252,7 +252,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "4c3c9d1b-e1d8-505b-954b-155e069e484d",
               "sourceRange": []
             },
             "from": [
@@ -276,8 +276,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+          "id": "72dddee3-1330-5c4f-b767-659f762ad674",
           "kind": "Custom",
           "objectId": 31,
           "origin": {
@@ -318,7 +318,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
             "sourceRange": []
           }
         },
@@ -340,13 +340,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+        "originalId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+        "originSketchId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "732f48f5-d790-5ba9-a3a1-d09c781ea026",
+      "endCapId": "628b3e21-f60d-5fed-8cd2-20c40e0fd5ac",
       "units": "m",
       "sectional": false
     }
@@ -387,7 +387,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
                 "objectId": 35,
                 "kind": {
                   "line": {
@@ -461,8 +461,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+                  "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -491,7 +491,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -507,7 +507,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                 "objectId": 38,
                 "kind": {
                   "line": {
@@ -581,8 +581,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+                  "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -611,7 +611,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -627,7 +627,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
                 "objectId": 42,
                 "kind": {
                   "line": {
@@ -701,8 +701,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+                  "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -731,7 +731,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -747,7 +747,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                 "objectId": 46,
                 "kind": {
                   "line": {
@@ -821,8 +821,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+                  "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                   "kind": "Custom",
                   "objectId": 31,
                   "origin": {
@@ -851,7 +851,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -868,11 +868,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
                     "sourceRange": []
                   },
                   "from": [
@@ -896,7 +896,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
                     "sourceRange": []
                   },
                   "from": [
@@ -920,7 +920,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
                     "sourceRange": []
                   },
                   "from": [
@@ -944,7 +944,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
                     "sourceRange": []
                   },
                   "from": [
@@ -968,8 +968,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+                "id": "72dddee3-1330-5c4f-b767-659f762ad674",
                 "kind": "Custom",
                 "objectId": 31,
                 "origin": {
@@ -1010,7 +1010,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
                   "sourceRange": []
                 }
               },
@@ -1032,8 +1032,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+              "originalId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
               "units": "m",
               "isClosed": "implicitly"
             }
@@ -1057,12 +1057,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+      "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a0f34065-202f-541e-898d-0a1282b2b4e9",
+          "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
           "sourceRange": [],
           "tag": {
             "commentStart": 3822,
@@ -1075,8 +1075,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c3f8cc1b-cc99-5cd3-9d8a-d53b5a5223b4",
+          "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
           "sourceRange": [],
           "tag": {
             "commentStart": 3898,
@@ -1089,8 +1089,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b669f1f3-7dbd-5015-af83-bf92ffbf8505",
+          "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
           "sourceRange": [],
           "tag": {
             "commentStart": 4015,
@@ -1103,8 +1103,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "fc64c04b-2255-56e9-8dbc-b59b0b235da1",
+          "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
           "sourceRange": [],
           "tag": {
             "commentStart": 4128,
@@ -1120,11 +1120,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
               "sourceRange": []
             },
             "from": [
@@ -1148,7 +1148,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
               "sourceRange": []
             },
             "from": [
@@ -1172,7 +1172,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
               "sourceRange": []
             },
             "from": [
@@ -1196,7 +1196,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
               "sourceRange": []
             },
             "from": [
@@ -1220,8 +1220,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+          "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
           "kind": "Custom",
           "objectId": 51,
           "origin": {
@@ -1262,7 +1262,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
             "sourceRange": []
           }
         },
@@ -1284,13 +1284,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+        "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+        "originSketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "ee86355e-d6bf-5e45-ae7c-438105e605a7",
+      "endCapId": "b4e7673f-ca57-5ff5-ade3-3bad8f62201c",
       "units": "m",
       "sectional": false
     }
@@ -1298,8 +1298,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
   "firstShelfPlane": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+      "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
       "kind": "Custom",
       "objectId": 51,
       "origin": {
@@ -1337,7 +1337,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
                 "objectId": 55,
                 "kind": {
                   "line": {
@@ -1411,8 +1411,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+                  "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
                   "kind": "Custom",
                   "objectId": 51,
                   "origin": {
@@ -1441,7 +1441,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1457,7 +1457,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                 "objectId": 58,
                 "kind": {
                   "line": {
@@ -1531,8 +1531,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+                  "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
                   "kind": "Custom",
                   "objectId": 51,
                   "origin": {
@@ -1561,7 +1561,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1577,7 +1577,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
                 "objectId": 62,
                 "kind": {
                   "line": {
@@ -1651,8 +1651,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+                  "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
                   "kind": "Custom",
                   "objectId": 51,
                   "origin": {
@@ -1681,7 +1681,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1697,7 +1697,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
                 "objectId": 66,
                 "kind": {
                   "line": {
@@ -1771,8 +1771,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+                  "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
                   "kind": "Custom",
                   "objectId": 51,
                   "origin": {
@@ -1801,7 +1801,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1818,11 +1818,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "d5eaf678-0440-563f-ac19-e473850b9270",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
                     "sourceRange": []
                   },
                   "from": [
@@ -1846,7 +1846,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
                     "sourceRange": []
                   },
                   "from": [
@@ -1870,7 +1870,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
                     "sourceRange": []
                   },
                   "from": [
@@ -1894,7 +1894,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
                     "sourceRange": []
                   },
                   "from": [
@@ -1918,8 +1918,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+                "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
                 "kind": "Custom",
                 "objectId": 51,
                 "origin": {
@@ -1960,7 +1960,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                   "sourceRange": []
                 }
               },
@@ -1982,8 +1982,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
+              "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
               "units": "m",
               "isClosed": "implicitly"
             }
@@ -1998,11 +1998,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
             "sourceRange": []
           },
           "from": [
@@ -2026,7 +2026,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
             "sourceRange": []
           },
           "from": [
@@ -2050,7 +2050,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
             "sourceRange": []
           },
           "from": [
@@ -2074,7 +2074,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
             "sourceRange": []
           },
           "from": [
@@ -2098,8 +2098,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "kind": "Custom",
         "objectId": 31,
         "origin": {
@@ -2140,7 +2140,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
           "sourceRange": []
         }
       },
@@ -2162,8 +2162,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
+      "originalId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "units": "m",
       "isClosed": "implicitly"
     }
@@ -2172,11 +2172,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "d5eaf678-0440-563f-ac19-e473850b9270",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "82295fd4-30e7-52f8-bbfa-45b71b8986dd",
             "sourceRange": []
           },
           "from": [
@@ -2200,7 +2200,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "20dfacb2-a19d-5f06-80d9-1dae939bbd58",
             "sourceRange": []
           },
           "from": [
@@ -2224,7 +2224,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ec50dfc5-8660-5f82-906a-6429c34099eb",
             "sourceRange": []
           },
           "from": [
@@ -2248,7 +2248,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "6017d8cf-00f1-589a-82b7-0cc09717f0ab",
             "sourceRange": []
           },
           "from": [
@@ -2272,8 +2272,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+        "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
         "kind": "Custom",
         "objectId": 51,
         "origin": {
@@ -2314,7 +2314,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
           "sourceRange": []
         }
       },
@@ -2336,8 +2336,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "d5eaf678-0440-563f-ac19-e473850b9270",
+      "originalId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "units": "m",
       "isClosed": "implicitly"
     }
@@ -2346,11 +2346,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -2374,7 +2374,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "from": [
@@ -2398,7 +2398,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           },
           "from": [
@@ -2422,7 +2422,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -2446,8 +2446,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -2488,7 +2488,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "sourceRange": []
         }
       },
@@ -2510,8 +2510,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+      "originalId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "units": "m",
       "isClosed": "implicitly"
     }
@@ -2549,11 +2549,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "0917d07d-5996-5994-8a06-602d43e2b6f3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "34ac3e23-e114-551a-bea6-86bc44865a42",
             "sourceRange": []
           },
           "from": [
@@ -2577,7 +2577,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "da726907-370c-5450-98c0-57d934b2f51d",
             "sourceRange": []
           },
           "from": [
@@ -2601,7 +2601,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f40a67cc-66c0-5fd9-b8c5-be69be10bb62",
             "sourceRange": []
           },
           "from": [
@@ -2625,7 +2625,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "4c3c9d1b-e1d8-505b-954b-155e069e484d",
             "sourceRange": []
           },
           "from": [
@@ -2649,8 +2649,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "72dddee3-1330-5c4f-b767-659f762ad674",
+        "id": "72dddee3-1330-5c4f-b767-659f762ad674",
         "kind": "Custom",
         "objectId": 31,
         "origin": {
@@ -2691,7 +2691,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "da6695c0-7255-5538-b0f4-c4ea3977fe7d",
           "sourceRange": []
         }
       },
@@ -2713,9 +2713,9 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+      "originalId": "0917d07d-5996-5994-8a06-602d43e2b6f3",
+      "originSketchId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "units": "m"
     }
   },
@@ -2723,11 +2723,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
             "sourceRange": []
           },
           "from": [
@@ -2751,7 +2751,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
             "sourceRange": []
           },
           "from": [
@@ -2775,7 +2775,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
             "sourceRange": []
           },
           "from": [
@@ -2799,7 +2799,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
             "sourceRange": []
           },
           "from": [
@@ -2823,8 +2823,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+        "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
         "kind": "Custom",
         "objectId": 51,
         "origin": {
@@ -2865,7 +2865,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
           "sourceRange": []
         }
       },
@@ -2887,9 +2887,9 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+      "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+      "originSketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "units": "m"
     }
   },
@@ -2954,12 +2954,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+          "artifactId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a0f34065-202f-541e-898d-0a1282b2b4e9",
+              "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3822,
@@ -2972,8 +2972,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c3f8cc1b-cc99-5cd3-9d8a-d53b5a5223b4",
+              "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3898,
@@ -2986,8 +2986,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b669f1f3-7dbd-5015-af83-bf92ffbf8505",
+              "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4015,
@@ -3000,8 +3000,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "fc64c04b-2255-56e9-8dbc-b59b0b235da1",
+              "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4128,
@@ -3017,11 +3017,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
                   "sourceRange": []
                 },
                 "from": [
@@ -3045,7 +3045,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
                   "sourceRange": []
                 },
                 "from": [
@@ -3069,7 +3069,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
                   "sourceRange": []
                 },
                 "from": [
@@ -3093,7 +3093,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
                   "sourceRange": []
                 },
                 "from": [
@@ -3117,8 +3117,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+              "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
               "kind": "Custom",
               "objectId": 51,
               "origin": {
@@ -3159,7 +3159,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "sourceRange": []
               }
             },
@@ -3181,13 +3181,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originSketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "ee86355e-d6bf-5e45-ae7c-438105e605a7",
+          "endCapId": "b4e7673f-ca57-5ff5-ade3-3bad8f62201c",
           "units": "m",
           "sectional": false
         }
@@ -3196,12 +3196,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
+          "artifactId": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a0f34065-202f-541e-898d-0a1282b2b4e9",
+              "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3822,
@@ -3214,8 +3214,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c3f8cc1b-cc99-5cd3-9d8a-d53b5a5223b4",
+              "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3898,
@@ -3228,8 +3228,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b669f1f3-7dbd-5015-af83-bf92ffbf8505",
+              "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4015,
@@ -3242,8 +3242,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "fc64c04b-2255-56e9-8dbc-b59b0b235da1",
+              "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4128,
@@ -3259,11 +3259,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "f51c0aa0-c5b7-5056-b05b-7236c96cf1ff",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
                   "sourceRange": []
                 },
                 "from": [
@@ -3287,7 +3287,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
                   "sourceRange": []
                 },
                 "from": [
@@ -3311,7 +3311,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
                   "sourceRange": []
                 },
                 "from": [
@@ -3335,7 +3335,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
                   "sourceRange": []
                 },
                 "from": [
@@ -3359,8 +3359,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+              "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
               "kind": "Custom",
               "objectId": 51,
               "origin": {
@@ -3401,7 +3401,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "sourceRange": []
               }
             },
@@ -3423,13 +3423,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originSketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "ee86355e-d6bf-5e45-ae7c-438105e605a7",
+          "endCapId": "b4e7673f-ca57-5ff5-ade3-3bad8f62201c",
           "units": "m",
           "sectional": false
         }
@@ -3438,12 +3438,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "596470ab-316b-5569-92ba-64c1e0a93873",
+          "artifactId": "596470ab-316b-5569-92ba-64c1e0a93873",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a0f34065-202f-541e-898d-0a1282b2b4e9",
+              "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3822,
@@ -3456,8 +3456,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c3f8cc1b-cc99-5cd3-9d8a-d53b5a5223b4",
+              "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3898,
@@ -3470,8 +3470,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b669f1f3-7dbd-5015-af83-bf92ffbf8505",
+              "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4015,
@@ -3484,8 +3484,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "fc64c04b-2255-56e9-8dbc-b59b0b235da1",
+              "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4128,
@@ -3501,11 +3501,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "596470ab-316b-5569-92ba-64c1e0a93873",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
                   "sourceRange": []
                 },
                 "from": [
@@ -3529,7 +3529,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
                   "sourceRange": []
                 },
                 "from": [
@@ -3553,7 +3553,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
                   "sourceRange": []
                 },
                 "from": [
@@ -3577,7 +3577,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
                   "sourceRange": []
                 },
                 "from": [
@@ -3601,8 +3601,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+              "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
               "kind": "Custom",
               "objectId": 51,
               "origin": {
@@ -3643,7 +3643,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "sourceRange": []
               }
             },
@@ -3665,13 +3665,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originSketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "ee86355e-d6bf-5e45-ae7c-438105e605a7",
+          "endCapId": "b4e7673f-ca57-5ff5-ade3-3bad8f62201c",
           "units": "m",
           "sectional": false
         }
@@ -3680,12 +3680,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "1ca88202-28a4-5453-86b2-137341ba3b82",
+          "artifactId": "1ca88202-28a4-5453-86b2-137341ba3b82",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a0f34065-202f-541e-898d-0a1282b2b4e9",
+              "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3822,
@@ -3698,8 +3698,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c3f8cc1b-cc99-5cd3-9d8a-d53b5a5223b4",
+              "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3898,
@@ -3712,8 +3712,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b669f1f3-7dbd-5015-af83-bf92ffbf8505",
+              "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4015,
@@ -3726,8 +3726,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "fc64c04b-2255-56e9-8dbc-b59b0b235da1",
+              "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4128,
@@ -3743,11 +3743,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "1ca88202-28a4-5453-86b2-137341ba3b82",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
                   "sourceRange": []
                 },
                 "from": [
@@ -3771,7 +3771,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
                   "sourceRange": []
                 },
                 "from": [
@@ -3795,7 +3795,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
                   "sourceRange": []
                 },
                 "from": [
@@ -3819,7 +3819,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
                   "sourceRange": []
                 },
                 "from": [
@@ -3843,8 +3843,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+              "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
               "kind": "Custom",
               "objectId": 51,
               "origin": {
@@ -3885,7 +3885,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "sourceRange": []
               }
             },
@@ -3907,13 +3907,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originSketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "ee86355e-d6bf-5e45-ae7c-438105e605a7",
+          "endCapId": "b4e7673f-ca57-5ff5-ade3-3bad8f62201c",
           "units": "m",
           "sectional": false
         }
@@ -3922,12 +3922,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "c9ae8cf7-b03a-5e79-82fc-26f027419f85",
+          "artifactId": "c9ae8cf7-b03a-5e79-82fc-26f027419f85",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a0f34065-202f-541e-898d-0a1282b2b4e9",
+              "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3822,
@@ -3940,8 +3940,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c3f8cc1b-cc99-5cd3-9d8a-d53b5a5223b4",
+              "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3898,
@@ -3954,8 +3954,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b669f1f3-7dbd-5015-af83-bf92ffbf8505",
+              "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4015,
@@ -3968,8 +3968,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "fc64c04b-2255-56e9-8dbc-b59b0b235da1",
+              "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4128,
@@ -3985,11 +3985,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "c9ae8cf7-b03a-5e79-82fc-26f027419f85",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
                   "sourceRange": []
                 },
                 "from": [
@@ -4013,7 +4013,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
                   "sourceRange": []
                 },
                 "from": [
@@ -4037,7 +4037,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
                   "sourceRange": []
                 },
                 "from": [
@@ -4061,7 +4061,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
                   "sourceRange": []
                 },
                 "from": [
@@ -4085,8 +4085,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+              "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
               "kind": "Custom",
               "objectId": 51,
               "origin": {
@@ -4127,7 +4127,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "sourceRange": []
               }
             },
@@ -4149,13 +4149,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originSketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "ee86355e-d6bf-5e45-ae7c-438105e605a7",
+          "endCapId": "b4e7673f-ca57-5ff5-ade3-3bad8f62201c",
           "units": "m",
           "sectional": false
         }
@@ -4164,12 +4164,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "3e8aceef-4be9-502e-add8-3fb63b4b4761",
+          "artifactId": "3e8aceef-4be9-502e-add8-3fb63b4b4761",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a0f34065-202f-541e-898d-0a1282b2b4e9",
+              "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3822,
@@ -4182,8 +4182,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "c3f8cc1b-cc99-5cd3-9d8a-d53b5a5223b4",
+              "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
               "sourceRange": [],
               "tag": {
                 "commentStart": 3898,
@@ -4196,8 +4196,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "b669f1f3-7dbd-5015-af83-bf92ffbf8505",
+              "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4015,
@@ -4210,8 +4210,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "fc64c04b-2255-56e9-8dbc-b59b0b235da1",
+              "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
               "sourceRange": [],
               "tag": {
                 "commentStart": 4128,
@@ -4227,11 +4227,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "3e8aceef-4be9-502e-add8-3fb63b4b4761",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "854d9624-33f5-5f3a-b2e3-1ed6d823456a",
                   "sourceRange": []
                 },
                 "from": [
@@ -4255,7 +4255,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "aa8b1b32-3efd-5da5-aab4-15cd77134859",
                   "sourceRange": []
                 },
                 "from": [
@@ -4279,7 +4279,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "0472ea51-aa3f-5458-945e-f0e6713d3b2b",
                   "sourceRange": []
                 },
                 "from": [
@@ -4303,7 +4303,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "dd8069bb-2ed9-5f40-b6be-85251c0d0d5b",
                   "sourceRange": []
                 },
                 "from": [
@@ -4327,8 +4327,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "226ae769-fcaa-56af-ac65-5807ed297dad",
+              "id": "226ae769-fcaa-56af-ac65-5807ed297dad",
               "kind": "Custom",
               "objectId": 51,
               "origin": {
@@ -4369,7 +4369,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
                 "sourceRange": []
               }
             },
@@ -4391,13 +4391,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originalId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
+            "originSketchId": "d5eaf678-0440-563f-ac19-e473850b9270",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "ee86355e-d6bf-5e45-ae7c-438105e605a7",
+          "endCapId": "b4e7673f-ca57-5ff5-ade3-3bad8f62201c",
           "units": "m",
           "sectional": false
         }
@@ -4408,12 +4408,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+      "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 1803,
@@ -4426,8 +4426,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 1881,
@@ -4440,8 +4440,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 1957,
@@ -4454,8 +4454,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 2029,
@@ -4471,11 +4471,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -4499,7 +4499,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -4523,7 +4523,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -4547,7 +4547,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -4571,8 +4571,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -4613,7 +4613,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "units": "m",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
             "sourceRange": []
           }
         },
@@ -4635,13 +4635,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+        "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+        "originSketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "units": "m"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+      "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
       "units": "m",
       "sectional": false
     }
@@ -4664,7 +4664,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -4738,8 +4738,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4768,7 +4768,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -4784,7 +4784,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -4858,8 +4858,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -4888,7 +4888,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -4904,7 +4904,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -4978,8 +4978,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5008,7 +5008,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -5024,7 +5024,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -5098,8 +5098,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5128,7 +5128,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -5144,7 +5144,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "objectId": 24,
                 "kind": {
                   "line": {
@@ -5219,8 +5219,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -5249,7 +5249,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -5266,11 +5266,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -5294,7 +5294,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -5318,7 +5318,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -5342,7 +5342,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -5366,8 +5366,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -5408,7 +5408,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "units": "m",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "sourceRange": []
                 }
               },
@@ -5430,8 +5430,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+              "originalId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
               "units": "m",
               "isClosed": "implicitly"
             }
@@ -5446,11 +5446,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -5474,7 +5474,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -5498,7 +5498,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -5522,7 +5522,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -5546,8 +5546,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -5588,7 +5588,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "units": "m",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "sourceRange": []
         }
       },
@@ -5610,9 +5610,9 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+      "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+      "originSketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "units": "m"
     }
   },
@@ -5623,12 +5623,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+          "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1803,
@@ -5641,8 +5641,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1881,
@@ -5655,8 +5655,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1957,
@@ -5669,8 +5669,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2029,
@@ -5686,11 +5686,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
                   "sourceRange": []
                 },
                 "from": [
@@ -5714,7 +5714,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
                   "sourceRange": []
                 },
                 "from": [
@@ -5738,7 +5738,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "eb116575-1f8f-50df-810e-a61970915fe0",
                   "sourceRange": []
                 },
                 "from": [
@@ -5762,7 +5762,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
                   "sourceRange": []
                 },
                 "from": [
@@ -5786,8 +5786,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "kind": "Custom",
               "objectId": 0,
               "origin": {
@@ -5828,7 +5828,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "sourceRange": []
               }
             },
@@ -5850,13 +5850,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+            "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+            "originSketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+          "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
           "units": "m",
           "sectional": false
         }
@@ -5865,12 +5865,12 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
         "type": "Solid",
         "value": {
           "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
+          "id": "24655609-c68c-5b76-9ccf-684a19064a93",
+          "artifactId": "24655609-c68c-5b76-9ccf-684a19064a93",
           "value": [
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "092755e4-e002-58b9-a194-69b526ae6929",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1803,
@@ -5883,8 +5883,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1881,
@@ -5897,8 +5897,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": [],
               "tag": {
                 "commentStart": 1957,
@@ -5911,8 +5911,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "type": "extrudePlane"
             },
             {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
+              "faceId": "00f8003d-3b65-5f10-b911-9092660fca40",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": [],
               "tag": {
                 "commentStart": 2029,
@@ -5928,11 +5928,11 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
           "sketch": {
             "creatorType": "sketch",
             "type": "Sketch",
-            "id": "[uuid]",
+            "id": "24655609-c68c-5b76-9ccf-684a19064a93",
             "paths": [
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
                   "sourceRange": []
                 },
                 "from": [
@@ -5956,7 +5956,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
                   "sourceRange": []
                 },
                 "from": [
@@ -5980,7 +5980,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "eb116575-1f8f-50df-810e-a61970915fe0",
                   "sourceRange": []
                 },
                 "from": [
@@ -6004,7 +6004,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               },
               {
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
                   "sourceRange": []
                 },
                 "from": [
@@ -6028,8 +6028,8 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               }
             ],
             "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
+              "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+              "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
               "kind": "Custom",
               "objectId": 0,
               "origin": {
@@ -6070,7 +6070,7 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
               "units": "m",
               "tag": null,
               "__geoMeta": {
-                "id": "[uuid]",
+                "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "sourceRange": []
               }
             },
@@ -6092,13 +6092,13 @@ description: Variables in memory after executing parametric-shelf-unit.kcl
                 "value": "line4"
               }
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "originSketchId": "[uuid]",
+            "artifactId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+            "originalId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
+            "originSketchId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
             "units": "m"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": "a9521f68-97ee-5d4b-8bdc-3e3f26483ee9",
+          "endCapId": "36ddadba-7da4-56f0-bc1f-59abaa29211e",
           "units": "m",
           "sectional": false
         }

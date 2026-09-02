@@ -6,8 +6,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -38,8 +38,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
   "__sketch_23_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
+      "id": "400a2ed4-52ae-5786-967d-7fdba1bd0850",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -76,12 +76,12 @@ description: Variables in memory after executing regression_test_hide_flatten_co
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "artifactId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 61,
@@ -94,8 +94,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "67c68347-0747-5a3d-b270-da035abddd8c",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 140,
@@ -108,8 +108,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "660d6e44-47cd-5ee1-8bee-90267b8cbbc9",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 220,
@@ -122,8 +122,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 301,
@@ -139,11 +139,11 @@ description: Variables in memory after executing regression_test_hide_flatten_co
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -167,7 +167,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -191,7 +191,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -215,7 +215,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -239,8 +239,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -281,7 +281,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
             "sourceRange": []
           }
         },
@@ -303,13 +303,13 @@ description: Variables in memory after executing regression_test_hide_flatten_co
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "originSketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "00f8003d-3b65-5f10-b911-9092660fca40",
+      "endCapId": "092755e4-e002-58b9-a194-69b526ae6929",
       "units": "mm",
       "sectional": false
     }
@@ -318,12 +318,12 @@ description: Variables in memory after executing regression_test_hide_flatten_co
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "artifactId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "99178ce9-13d2-59d8-9bbd-bc77c5b5c97d",
+          "id": "e628cf9a-c8ce-55b0-bb34-465a2b8f75f2",
           "sourceRange": [],
           "tag": {
             "commentStart": 814,
@@ -339,11 +339,11 @@ description: Variables in memory after executing regression_test_hide_flatten_co
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e628cf9a-c8ce-55b0-bb34-465a2b8f75f2",
               "sourceRange": []
             },
             "ccw": true,
@@ -373,8 +373,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "kind": "Custom",
           "objectId": 22,
           "origin": {
@@ -415,7 +415,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
             "sourceRange": []
           }
         },
@@ -425,13 +425,13 @@ description: Variables in memory after executing regression_test_hide_flatten_co
             "value": "circle1"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+        "originalId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+        "originSketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "47ff4dac-32f2-5e48-962f-6870d4f8f118",
+      "endCapId": "21b7dbba-2b34-5938-ba83-578fad340cef",
       "units": "mm",
       "sectional": false
     }
@@ -440,11 +440,11 @@ description: Variables in memory after executing regression_test_hide_flatten_co
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
             "sourceRange": []
           },
           "from": [
@@ -468,7 +468,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "91226189-7e64-5690-9203-67ee33a6eb03",
             "sourceRange": []
           },
           "from": [
@@ -492,7 +492,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
             "sourceRange": []
           },
           "from": [
@@ -516,7 +516,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           },
           "from": [
@@ -540,8 +540,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -582,7 +582,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
           "sourceRange": []
         }
       },
@@ -604,8 +604,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+      "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "units": "mm",
       "isClosed": "implicitly"
     }
@@ -614,11 +614,11 @@ description: Variables in memory after executing regression_test_hide_flatten_co
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
             "sourceRange": []
           },
           "ccw": true,
@@ -648,8 +648,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "kind": "Custom",
         "objectId": 22,
         "origin": {
@@ -690,7 +690,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
           "sourceRange": []
         }
       },
@@ -700,8 +700,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+      "originalId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "units": "mm",
       "isClosed": "no"
     }
@@ -730,11 +730,11 @@ description: Variables in memory after executing regression_test_hide_flatten_co
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
             "sourceRange": []
           },
           "from": [
@@ -758,7 +758,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
             "sourceRange": []
           },
           "from": [
@@ -782,7 +782,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "eb116575-1f8f-50df-810e-a61970915fe0",
             "sourceRange": []
           },
           "from": [
@@ -806,7 +806,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
             "sourceRange": []
           },
           "from": [
@@ -830,8 +830,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -872,7 +872,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
           "sourceRange": []
         }
       },
@@ -894,9 +894,9 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "value": "line4"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+      "originSketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
       "units": "mm"
     }
   },
@@ -904,11 +904,11 @@ description: Variables in memory after executing regression_test_hide_flatten_co
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "c4fac378-d3df-5505-98c1-308b81b0fd96",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e628cf9a-c8ce-55b0-bb34-465a2b8f75f2",
             "sourceRange": []
           },
           "ccw": true,
@@ -938,8 +938,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+        "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
         "kind": "Custom",
         "objectId": 22,
         "origin": {
@@ -980,7 +980,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
           "sourceRange": []
         }
       },
@@ -990,9 +990,9 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "value": "circle1"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "originalId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
+      "originSketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "units": "mm"
     }
   },
@@ -1005,7 +1005,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1079,8 +1079,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1109,7 +1109,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1125,7 +1125,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1199,8 +1199,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1229,7 +1229,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1245,7 +1245,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                 "objectId": 10,
                 "kind": {
                   "line": {
@@ -1319,8 +1319,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1349,7 +1349,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1365,7 +1365,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 13,
                 "kind": {
                   "line": {
@@ -1439,8 +1439,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1469,7 +1469,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1486,11 +1486,11 @@ description: Variables in memory after executing regression_test_hide_flatten_co
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -1514,7 +1514,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -1538,7 +1538,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
                     "sourceRange": []
                   },
                   "from": [
@@ -1562,7 +1562,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -1586,8 +1586,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -1628,7 +1628,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
                   "sourceRange": []
                 }
               },
@@ -1650,8 +1650,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                   "value": "line4"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
+              "originalId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
               "units": "mm",
               "isClosed": "implicitly"
             }
@@ -1671,7 +1671,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                 "objectId": 26,
                 "kind": {
                   "circle": {
@@ -1745,8 +1745,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                  "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                   "kind": "Custom",
                   "objectId": 22,
                   "origin": {
@@ -1775,7 +1775,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "6023bee8-3980-5182-88ac-ac06420ce00f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "circle1"
@@ -1792,11 +1792,11 @@ description: Variables in memory after executing regression_test_hide_flatten_co
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
                     "sourceRange": []
                   },
                   "ccw": true,
@@ -1826,8 +1826,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
+                "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
                 "kind": "Custom",
                 "objectId": 22,
                 "origin": {
@@ -1868,7 +1868,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
                   "sourceRange": []
                 }
               },
@@ -1878,8 +1878,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
                   "value": "circle1"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "6023bee8-3980-5182-88ac-ac06420ce00f",
+              "originalId": "6023bee8-3980-5182-88ac-ac06420ce00f",
               "units": "mm",
               "isClosed": "no"
             }
@@ -1894,12 +1894,12 @@ description: Variables in memory after executing regression_test_hide_flatten_co
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
+      "artifactId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a49b9612-c4dc-5d46-9c14-74c0b7247edd",
+          "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
           "sourceRange": [],
           "tag": {
             "commentStart": 61,
@@ -1912,8 +1912,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "67c68347-0747-5a3d-b270-da035abddd8c",
+          "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
           "sourceRange": [],
           "tag": {
             "commentStart": 140,
@@ -1926,8 +1926,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "660d6e44-47cd-5ee1-8bee-90267b8cbbc9",
+          "id": "eb116575-1f8f-50df-810e-a61970915fe0",
           "sourceRange": [],
           "tag": {
             "commentStart": 220,
@@ -1940,8 +1940,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bb04bee5-f92e-54fd-b9d8-0e476678cb88",
+          "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
           "sourceRange": [],
           "tag": {
             "commentStart": 301,
@@ -1957,11 +1957,11 @@ description: Variables in memory after executing regression_test_hide_flatten_co
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1b0b0c60-a447-579e-b1b3-c921dfddeafc",
               "sourceRange": []
             },
             "from": [
@@ -1985,7 +1985,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "86bdbceb-1f3e-5644-8535-dcbe75b5fc3f",
               "sourceRange": []
             },
             "from": [
@@ -2009,7 +2009,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb116575-1f8f-50df-810e-a61970915fe0",
               "sourceRange": []
             },
             "from": [
@@ -2033,7 +2033,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3eeacc05-5c65-53e8-ad05-5ff4071739c5",
               "sourceRange": []
             },
             "from": [
@@ -2057,8 +2057,8 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -2099,7 +2099,7 @@ description: Variables in memory after executing regression_test_hide_flatten_co
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
             "sourceRange": []
           }
         },
@@ -2121,13 +2121,13 @@ description: Variables in memory after executing regression_test_hide_flatten_co
             "value": "line4"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "originalId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
+        "originSketchId": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "00f8003d-3b65-5f10-b911-9092660fca40",
+      "endCapId": "092755e4-e002-58b9-a194-69b526ae6929",
       "units": "mm",
       "sectional": false
     }

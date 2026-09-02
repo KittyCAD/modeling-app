@@ -356,11 +356,11 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
             "value": {
               "hi": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53"
               },
               "line2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "91226189-7e64-5690-9203-67ee33a6eb03"
               },
               "meta": {
                 "type": "Object",
@@ -368,14 +368,14 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "efd1e3b2-5268-50fd-858e-26540f8146e5"
                     }
                   }
                 }
               },
               "yoyo": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             }
           },
@@ -405,7 +405,7 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19fe8534-2bed-5e2a-afe9-63f57b621004"
           }
         },
         "sourceRange": []
@@ -777,15 +777,15 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
             "value": {
               "cut1": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "6f9536f6-0229-5cbb-bd5f-d3e20949d527"
               },
               "cut2": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5173c024-ac32-59f6-acbe-69ddbf68893d"
               },
               "cut3": {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "59bc8baf-257f-5783-ad91-95db236aa6b0"
               },
               "meta": {
                 "type": "Object",
@@ -793,7 +793,7 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
                   "sketch": {
                     "type": "Sketch",
                     "value": {
-                      "artifactId": "[uuid]"
+                      "artifactId": "037b0f2d-13ef-58af-b918-43b89e77393e"
                     }
                   }
                 }
@@ -826,7 +826,7 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2f481fd4-203e-57d7-b5d6-b16289577621"
           }
         },
         "sourceRange": []
@@ -868,7 +868,7 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f"
           }
         },
         "sourceRange": []
@@ -878,7 +878,7 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
           "value": {
             "type": "Solid",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "e383621f-755a-5f2e-ada3-608aff393dab"
             }
           },
           "sourceRange": []
@@ -907,7 +907,7 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead"
           }
         },
         "sourceRange": []
@@ -923,7 +923,7 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
                   {
                     "type": "TagIdentifier",
                     "value": "startCap",
-                    "artifact_id": "[uuid]"
+                    "artifact_id": "cbbb4f65-6ab2-564b-ab3f-1e225724a282"
                   }
                 ]
               },
@@ -933,12 +933,12 @@ description: Operations executed mirror3d_edge_specifier_after_subtract.kcl
                   {
                     "type": "TagIdentifier",
                     "value": "hi",
-                    "artifact_id": "[uuid]"
+                    "artifact_id": "126498f1-2635-5500-bf0d-757df8fb0e18"
                   },
                   {
                     "type": "TagIdentifier",
                     "value": "yoyo",
-                    "artifact_id": "[uuid]"
+                    "artifact_id": "b3a327ba-a286-5e82-8eb4-ed878dab91fb"
                   }
                 ]
               }

@@ -1242,25 +1242,25 @@ description: Operations executed utility-sink.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "decb8d52-7bd5-5a54-b71e-8faf9a6460e6"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3e16a80d-31d4-576f-aae8-1bf36b028e5a"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "71a72feb-bdc7-50b4-97fd-9fa2630226d6"
               }
             }
           ]
@@ -1361,7 +1361,7 @@ description: Operations executed utility-sink.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -2477,13 +2477,13 @@ description: Operations executed utility-sink.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e87adfa5-4f60-5241-b09f-71a7287871de"
               }
             }
           ]
@@ -3631,13 +3631,13 @@ description: Operations executed utility-sink.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "40d8c462-7810-5666-bb09-1db7308cf666"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "df3b3a1e-134f-50f3-a511-3aaa47b02270"
               }
             }
           ]
@@ -3709,7 +3709,7 @@ description: Operations executed utility-sink.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -4862,11 +4862,11 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ca431487-8e9a-59ce-a472-84fe45652fab"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93954f29-a246-54bd-ac2a-62572f26d508"
               }
             ]
           },
@@ -4902,13 +4902,13 @@ description: Operations executed utility-sink.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d4d190cd-f03d-5848-889a-e310992c5477"
               }
             }
           ]
@@ -4955,13 +4955,13 @@ description: Operations executed utility-sink.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b6048962-8de8-56e0-bd4c-204ee5451b34"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "30efa5e2-105e-56b9-85d8-16e0935167b0"
               }
             }
           ]
@@ -5050,7 +5050,7 @@ description: Operations executed utility-sink.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -5945,13 +5945,13 @@ description: Operations executed utility-sink.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "80bbeefb-af76-5c3c-8298-0644df578435"
               }
             }
           ]
@@ -7099,13 +7099,13 @@ description: Operations executed utility-sink.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e9531b65-3013-5f8b-bebc-accdbd43919c"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9"
               }
             }
           ]
@@ -7148,7 +7148,7 @@ description: Operations executed utility-sink.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -8051,11 +8051,11 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "67d03316-0deb-5224-a7ce-b3394ba08db9"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e"
               }
             ]
           },
@@ -8085,7 +8085,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9bc907a5-bec7-5f87-9105-27ffee0da4e4"
           }
         },
         "sourceRange": []
@@ -8127,7 +8127,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ca586750-6453-56e0-b4cf-8e561096e7ca"
           }
         },
         "sourceRange": []
@@ -9653,11 +9653,11 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d1c03f64-0489-502b-bc48-3ba001cf2ed6"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fc243886-5941-5a64-8a15-a0b50bb063cb"
               }
             ]
           },
@@ -9687,7 +9687,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0"
           }
         },
         "sourceRange": []
@@ -9729,7 +9729,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a6e62985-97dc-5bc0-bf5d-67848762cf83"
           }
         },
         "sourceRange": []
@@ -11059,11 +11059,11 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "93084d86-3fba-5437-851f-9a4bb9523e0c"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4636f241-62ef-5015-8685-79b861e20d6d"
               }
             ]
           },
@@ -11093,7 +11093,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "611f15e9-bff8-53b7-b7e4-4d59a86ecb97"
           }
         },
         "sourceRange": []
@@ -11135,7 +11135,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25"
           }
         },
         "sourceRange": []
@@ -11160,7 +11160,7 @@ description: Operations executed utility-sink.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -12091,7 +12091,7 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "7a19efe4-7510-5cd4-a3de-a794693ae355"
               }
             ]
           },
@@ -12121,7 +12121,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c9a45a79-666c-55bc-a066-80e3fc2ca11c"
           }
         },
         "sourceRange": []
@@ -12163,7 +12163,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eab0138f-4d34-5ad1-be64-4c06e431cd98"
           }
         },
         "sourceRange": []
@@ -12251,7 +12251,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c3389e24-1221-5b7e-bf3a-8befd6d8e80f"
           }
         },
         "sourceRange": []
@@ -12276,7 +12276,7 @@ description: Operations executed utility-sink.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -13207,7 +13207,7 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "d46dcf7a-3c8b-5383-b783-931fc579f81e"
               }
             ]
           },
@@ -13237,7 +13237,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "bcc1a6e3-753e-566e-b68e-67e374552a75"
           }
         },
         "sourceRange": []
@@ -13279,7 +13279,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "5b5bd21f-4e8b-5eb5-b86b-6c5a708d5a3d"
           }
         },
         "sourceRange": []
@@ -13367,7 +13367,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1ec6fecb-0505-5e02-86f5-4c58bf5323cd"
           }
         },
         "sourceRange": []
@@ -13392,7 +13392,7 @@ description: Operations executed utility-sink.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -14323,7 +14323,7 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "c424e793-1f50-58e9-b280-c610d3a87b00"
               }
             ]
           },
@@ -14353,7 +14353,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e31d7de7-89b0-511e-b9d7-de347a758b0a"
           }
         },
         "sourceRange": []
@@ -14395,7 +14395,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3fa61102-cd56-5477-94bb-ce5e89d9e222"
           }
         },
         "sourceRange": []
@@ -14483,7 +14483,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33"
           }
         },
         "sourceRange": []
@@ -14508,7 +14508,7 @@ description: Operations executed utility-sink.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a"
         },
         "sourceRange": []
       },
@@ -15439,7 +15439,7 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1632f8b6-ad43-564a-88e5-8f866fc32fa5"
               }
             ]
           },
@@ -15469,7 +15469,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef75b5ec-d05f-5fb2-91d8-3df8cdba5ea9"
           }
         },
         "sourceRange": []
@@ -15511,7 +15511,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f6c12cae-a6a5-5787-9cee-d878f6a857bd"
           }
         },
         "sourceRange": []
@@ -15599,7 +15599,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "14723099-2795-58fa-bba5-4d139bdfa016"
           }
         },
         "sourceRange": []
@@ -15798,7 +15798,7 @@ description: Operations executed utility-sink.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -16922,11 +16922,11 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0919a55b-e67e-50b7-997a-87265757cea8"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "55aabc96-c8e2-5702-8efd-9e29535e01ea"
               }
             ]
           },
@@ -16956,7 +16956,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f0e53d08-0838-5ec1-bb88-e74e2f619376"
           }
         },
         "sourceRange": []
@@ -16998,7 +16998,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9166517e-4bba-584c-a2d9-297c0bf6a7a1"
           }
         },
         "sourceRange": []
@@ -17089,13 +17089,13 @@ description: Operations executed utility-sink.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9166517e-4bba-584c-a2d9-297c0bf6a7a1"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "4b112da2-517d-5a03-b13b-368884dd561c"
               }
             }
           ]
@@ -17185,7 +17185,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f2f967ef-7b25-5118-be53-a7993a21e4b2"
           }
         },
         "sourceRange": []
@@ -18381,11 +18381,11 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f002859b-a914-5327-8934-6d752f24d128"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a4afe779-525f-5f23-8758-c291de6d5c4a"
               }
             ]
           },
@@ -18415,7 +18415,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b824665f-7544-5ec9-8151-73536e7f467e"
           }
         },
         "sourceRange": []
@@ -18457,7 +18457,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8869f3fa-1217-5a3e-b363-3f81fd6766b9"
           }
         },
         "sourceRange": []
@@ -18545,7 +18545,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ede1fbbf-5a26-5b3e-862c-80224a6ed768"
           }
         },
         "sourceRange": []
@@ -18773,7 +18773,7 @@ description: Operations executed utility-sink.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "400a2ed4-52ae-5786-967d-7fdba1bd0850"
         },
         "sourceRange": []
       },
@@ -21969,7 +21969,7 @@ description: Operations executed utility-sink.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2c20c2dc-a7a6-52a4-80f4-3546cd91849c"
               }
             ]
           },
@@ -21999,7 +21999,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "17205e6b-a54a-5088-a37d-20c294c8ad8b"
           }
         },
         "sourceRange": []
@@ -22009,7 +22009,7 @@ description: Operations executed utility-sink.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e"
             }
           },
           "sourceRange": []
@@ -22038,7 +22038,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "c1710d01-2190-551e-ad44-a427e9010617"
           }
         },
         "sourceRange": []
@@ -22126,7 +22126,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e"
           }
         },
         "sourceRange": []
@@ -22152,7 +22152,7 @@ description: Operations executed utility-sink.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1beac282-d5bc-5118-b0cf-e5e652bf3ada"
           }
         },
         "sourceRange": []

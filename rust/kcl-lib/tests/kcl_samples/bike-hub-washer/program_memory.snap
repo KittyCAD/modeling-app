@@ -6,8 +6,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
   "__sketch_1_on": {
     "type": "Plane",
     "value": {
-      "artifactId": "[uuid]",
-      "id": "[uuid]",
+      "artifactId": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
+      "id": "3aeeb2db-cc07-5a1e-840d-baeb34ceb75a",
       "kind": "Custom",
       "origin": {
         "x": 0.0,
@@ -89,11 +89,11 @@ description: Variables in memory after executing bike-hub-washer.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e99f2d75-6d38-5aa6-abee-823a886cd20b",
             "sourceRange": []
           },
           "from": [
@@ -117,7 +117,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "d4f03e34-f15c-5237-9143-1e9b1cda6547",
             "sourceRange": []
           },
           "from": [
@@ -141,7 +141,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
             "sourceRange": []
           },
           "from": [
@@ -165,7 +165,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "adce3691-f4a2-5b4b-8b97-005271c17a50",
             "sourceRange": []
           },
           "from": [
@@ -189,7 +189,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "e7c77a8e-ee38-5d7b-81ea-18c32d0468fd",
             "sourceRange": []
           },
           "from": [
@@ -213,7 +213,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
             "sourceRange": []
           },
           "from": [
@@ -237,7 +237,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "feeac1f5-9099-57d5-9583-b2fe93c70cec",
             "sourceRange": []
           },
           "ccw": false,
@@ -267,7 +267,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
             "sourceRange": []
           },
           "from": [
@@ -291,7 +291,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
             "sourceRange": []
           },
           "from": [
@@ -315,7 +315,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
             "sourceRange": []
           },
           "from": [
@@ -339,7 +339,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ad26d60e-d1ae-5f39-b1c8-e54392eb3176",
             "sourceRange": []
           },
           "from": [
@@ -363,8 +363,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+        "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "kind": "Custom",
         "objectId": 0,
         "origin": {
@@ -405,7 +405,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
           "sourceRange": []
         }
       },
@@ -455,9 +455,9 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "value": "line9"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
+      "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+      "originalId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+      "originSketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
       "units": "mm"
     }
   },
@@ -465,12 +465,12 @@ description: Variables in memory after executing bike-hub-washer.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+      "artifactId": "4da16780-5d2e-5aa7-9a9e-c4891160dc60",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "15251de4-ee7e-5432-adb9-6fcfd2f02f3e",
+          "id": "e99f2d75-6d38-5aa6-abee-823a886cd20b",
           "sourceRange": [],
           "tag": {
             "commentStart": 527,
@@ -483,8 +483,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "6d78b330-a34a-5b5b-9202-3384a093e818",
+          "id": "d4f03e34-f15c-5237-9143-1e9b1cda6547",
           "sourceRange": [],
           "tag": {
             "commentStart": 600,
@@ -497,8 +497,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "27e6e5c8-17e3-548b-8a3a-e1a0ea2349bd",
+          "id": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
           "sourceRange": [],
           "tag": {
             "commentStart": 713,
@@ -511,8 +511,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eeabb0c0-64fa-5297-8107-ee8264523bda",
+          "id": "adce3691-f4a2-5b4b-8b97-005271c17a50",
           "sourceRange": [],
           "tag": {
             "commentStart": 828,
@@ -525,8 +525,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "619ba9ff-09fd-5643-a29d-ca9132792d62",
+          "id": "e7c77a8e-ee38-5d7b-81ea-18c32d0468fd",
           "sourceRange": [],
           "tag": {
             "commentStart": 943,
@@ -539,8 +539,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "40828a07-d8be-51db-819f-2375028afc75",
+          "id": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
           "sourceRange": [],
           "tag": {
             "commentStart": 1057,
@@ -553,8 +553,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "eb99ea53-9f9d-5349-85d3-436ac2fcefb2",
+          "id": "feeac1f5-9099-57d5-9583-b2fe93c70cec",
           "sourceRange": [],
           "tag": {
             "commentStart": 1171,
@@ -567,8 +567,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "type": "extrudeArc"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b124b380-9f3e-5a36-a0f5-c862e264e442",
+          "id": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
           "sourceRange": [],
           "tag": {
             "commentStart": 1315,
@@ -581,8 +581,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c9ae8cf7-b03a-5e79-82fc-26f027419f85",
+          "id": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
           "sourceRange": [],
           "tag": {
             "commentStart": 1431,
@@ -595,8 +595,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "9d384729-9b9e-5c06-8d62-3f4e7bf908c8",
+          "id": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
           "sourceRange": [],
           "tag": {
             "commentStart": 1547,
@@ -609,8 +609,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "5f28331c-87e4-56a9-beb5-2acec58303fc",
+          "id": "ad26d60e-d1ae-5f39-b1c8-e54392eb3176",
           "sourceRange": [],
           "tag": {
             "commentStart": 1665,
@@ -626,11 +626,11 @@ description: Variables in memory after executing bike-hub-washer.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e99f2d75-6d38-5aa6-abee-823a886cd20b",
               "sourceRange": []
             },
             "from": [
@@ -654,7 +654,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "d4f03e34-f15c-5237-9143-1e9b1cda6547",
               "sourceRange": []
             },
             "from": [
@@ -678,7 +678,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3e015ca9-a3c4-52f1-b0d0-15eff4fa1e53",
               "sourceRange": []
             },
             "from": [
@@ -702,7 +702,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "adce3691-f4a2-5b4b-8b97-005271c17a50",
               "sourceRange": []
             },
             "from": [
@@ -726,7 +726,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "e7c77a8e-ee38-5d7b-81ea-18c32d0468fd",
               "sourceRange": []
             },
             "from": [
@@ -750,7 +750,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "3192ee7e-3acd-5ca1-b486-c05ef9f249c8",
               "sourceRange": []
             },
             "from": [
@@ -774,7 +774,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "feeac1f5-9099-57d5-9583-b2fe93c70cec",
               "sourceRange": []
             },
             "ccw": false,
@@ -804,7 +804,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cfa8de4e-e7f4-5768-abc8-9fed336c272f",
               "sourceRange": []
             },
             "from": [
@@ -828,7 +828,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "36972068-e2f3-57f5-b162-d3ab5b53b2b4",
               "sourceRange": []
             },
             "from": [
@@ -852,7 +852,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "a2cb1a85-c34a-5a79-873e-d23308e041ba",
               "sourceRange": []
             },
             "from": [
@@ -876,7 +876,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ad26d60e-d1ae-5f39-b1c8-e54392eb3176",
               "sourceRange": []
             },
             "from": [
@@ -900,8 +900,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+          "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
           "kind": "Custom",
           "objectId": 0,
           "origin": {
@@ -942,7 +942,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
             "sourceRange": []
           }
         },
@@ -992,9 +992,9 @@ description: Variables in memory after executing bike-hub-washer.kcl
             "value": "line9"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
+        "artifactId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+        "originalId": "4482cd0e-0ba6-5706-bd3a-a7e479e352c8",
+        "originSketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
         "units": "mm"
       },
       "startCapId": null,
@@ -1012,7 +1012,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                 "objectId": 28,
                 "kind": {
                   "arc": {
@@ -1118,8 +1118,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1148,7 +1148,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "arc7"
@@ -1164,7 +1164,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                 "objectId": 4,
                 "kind": {
                   "line": {
@@ -1238,8 +1238,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1268,7 +1268,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1284,7 +1284,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                 "objectId": 40,
                 "kind": {
                   "line": {
@@ -1358,8 +1358,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1388,7 +1388,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line10"
@@ -1404,7 +1404,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                 "objectId": 44,
                 "kind": {
                   "line": {
@@ -1478,8 +1478,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1508,7 +1508,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line11"
@@ -1524,7 +1524,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                 "objectId": 7,
                 "kind": {
                   "line": {
@@ -1598,8 +1598,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1628,7 +1628,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1644,7 +1644,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                 "objectId": 11,
                 "kind": {
                   "line": {
@@ -1718,8 +1718,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1748,7 +1748,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1764,7 +1764,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                 "objectId": 15,
                 "kind": {
                   "line": {
@@ -1838,8 +1838,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1868,7 +1868,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1884,7 +1884,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                 "objectId": 19,
                 "kind": {
                   "line": {
@@ -1958,8 +1958,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -1988,7 +1988,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line5"
@@ -2004,7 +2004,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                 "objectId": 23,
                 "kind": {
                   "line": {
@@ -2078,8 +2078,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2108,7 +2108,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line6"
@@ -2124,7 +2124,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                 "objectId": 32,
                 "kind": {
                   "line": {
@@ -2198,8 +2198,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2228,7 +2228,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line8"
@@ -2244,7 +2244,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "id": "[uuid]",
+                "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                 "objectId": 36,
                 "kind": {
                   "line": {
@@ -2318,8 +2318,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   }
                 },
                 "surface": {
-                  "artifactId": "[uuid]",
-                  "id": "[uuid]",
+                  "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                  "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
@@ -2348,7 +2348,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                     "units": null
                   }
                 },
-                "sketchId": "[uuid]",
+                "sketchId": "907cac50-3701-5367-b35c-4ec2132c824f",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line9"
@@ -2365,11 +2365,11 @@ description: Variables in memory after executing bike-hub-washer.kcl
             "type": "Sketch",
             "value": {
               "type": "Sketch",
-              "id": "[uuid]",
+              "id": "907cac50-3701-5367-b35c-4ec2132c824f",
               "paths": [
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
                     "sourceRange": []
                   },
                   "from": [
@@ -2393,7 +2393,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "91226189-7e64-5690-9203-67ee33a6eb03",
                     "sourceRange": []
                   },
                   "from": [
@@ -2417,7 +2417,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
                     "sourceRange": []
                   },
                   "from": [
@@ -2441,7 +2441,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
                     "sourceRange": []
                   },
                   "from": [
@@ -2465,7 +2465,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
                     "sourceRange": []
                   },
                   "from": [
@@ -2489,7 +2489,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
                     "sourceRange": []
                   },
                   "from": [
@@ -2513,7 +2513,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
                     "sourceRange": []
                   },
                   "ccw": false,
@@ -2543,7 +2543,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
                     "sourceRange": []
                   },
                   "from": [
@@ -2567,7 +2567,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
                     "sourceRange": []
                   },
                   "from": [
@@ -2591,7 +2591,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
                     "sourceRange": []
                   },
                   "from": [
@@ -2615,7 +2615,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 },
                 {
                   "__geoMeta": {
-                    "id": "[uuid]",
+                    "id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
                     "sourceRange": []
                   },
                   "from": [
@@ -2639,8 +2639,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 }
               ],
               "on": {
-                "artifactId": "[uuid]",
-                "id": "[uuid]",
+                "artifactId": "f7696437-0c54-515c-9a57-315967ca9a9d",
+                "id": "f7696437-0c54-515c-9a57-315967ca9a9d",
                 "kind": "Custom",
                 "objectId": 0,
                 "origin": {
@@ -2681,7 +2681,7 @@ description: Variables in memory after executing bike-hub-washer.kcl
                 "units": "mm",
                 "tag": null,
                 "__geoMeta": {
-                  "id": "[uuid]",
+                  "id": "1144ecbd-366d-5a7a-bb6c-2e169ba3c205",
                   "sourceRange": []
                 }
               },
@@ -2731,8 +2731,8 @@ description: Variables in memory after executing bike-hub-washer.kcl
                   "value": "line9"
                 }
               },
-              "artifactId": "[uuid]",
-              "originalId": "[uuid]",
+              "artifactId": "907cac50-3701-5367-b35c-4ec2132c824f",
+              "originalId": "907cac50-3701-5367-b35c-4ec2132c824f",
               "units": "mm",
               "isClosed": "implicitly"
             }

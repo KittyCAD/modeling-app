@@ -5,7 +5,7 @@ description: Artifact commands utility-sink.kcl
 {
   "public/kcl-samples/utility-sink/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "59bc8baf-257f-5783-ad91-95db236aa6b0",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "037b0f2d-13ef-58af-b918-43b89e77393e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -75,18 +75,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcd405a-3da3-5b6f-a7b5-95071e3f2d53",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "segment": {
           "type": "line",
           "end": {
@@ -150,11 +150,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc141785-f204-5d03-bdf3-aa7163368c30",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "transform": [],
         "transforms": [
           [
@@ -190,11 +190,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "transform": [],
         "transforms": [
           [
@@ -230,11 +230,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "53a9149e-1246-5c44-9e3c-558201ff438c",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "3e16a80d-31d4-576f-aae8-1bf36b028e5a",
         "transform": [],
         "transforms": [
           [
@@ -270,11 +270,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -286,11 +286,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
         "distance": 834.5,
         "faces": null,
         "opposite": "None",
@@ -299,44 +299,44 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "deb86259-17a0-5782-a352-d25992246cc0",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+        "edge_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6023bee8-3980-5182-88ac-ac06420ce00f",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
+        "edge_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e342814e-d7c1-537b-959c-f7fd92c90294",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -348,11 +348,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "907cac50-3701-5367-b35c-4ec2132c824f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "decb8d52-7bd5-5a54-b71e-8faf9a6460e6",
         "distance": 834.5,
         "faces": null,
         "opposite": "None",
@@ -361,44 +361,44 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "decb8d52-7bd5-5a54-b71e-8faf9a6460e6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e383621f-755a-5f2e-ada3-608aff393dab",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "decb8d52-7bd5-5a54-b71e-8faf9a6460e6",
+        "edge_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f4a53e9-f562-58ba-9c11-a9e246658ac4",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "decb8d52-7bd5-5a54-b71e-8faf9a6460e6",
+        "edge_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eedabccb-e42b-5224-a499-7c2981b239e5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -410,11 +410,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "3e16a80d-31d4-576f-aae8-1bf36b028e5a",
         "distance": 834.5,
         "faces": null,
         "opposite": "None",
@@ -423,44 +423,44 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4fac378-d3df-5505-98c1-308b81b0fd96",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "3e16a80d-31d4-576f-aae8-1bf36b028e5a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b30e4f4-72d5-5970-a1d1-3f46183d0ead",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "3e16a80d-31d4-576f-aae8-1bf36b028e5a",
+        "edge_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2b69d6-85b7-5bae-b1c9-66ff0b6c4b2d",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "3e16a80d-31d4-576f-aae8-1bf36b028e5a",
+        "edge_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "663fe57f-e0fe-5661-bf24-d25b7a92874c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -472,11 +472,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
         "distance": 834.5,
         "faces": null,
         "opposite": "None",
@@ -485,40 +485,40 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cf3baf1a-5582-5a3b-97c6-f5beb1dcc1a7",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d4c814d-f292-503d-a012-68ab58c77524",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
+        "edge_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ad4b4be8-b535-5c5c-bc14-07fc0c74a448",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "71a72feb-bdc7-50b4-97fd-9fa2630226d6",
+        "edge_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -543,11 +543,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbcacf2c-f132-502a-87e1-0b0ffa846931",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -557,20 +557,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -582,18 +582,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
         "to": {
           "x": 13.0,
           "y": 0.0,
@@ -602,18 +602,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
         "segment": {
           "type": "line",
           "end": {
@@ -626,11 +626,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bf36bb46-40a6-5ff3-9663-2020512db63c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
         "segment": {
           "type": "line",
           "end": {
@@ -643,11 +643,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc4847ec-3187-5c84-8aa1-14794bc7e98d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
         "segment": {
           "type": "line",
           "end": {
@@ -660,11 +660,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "067ed736-8554-5b63-8bf6-a3fbc610eb7a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
         "segment": {
           "type": "line",
           "end": {
@@ -677,21 +677,21 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
         "transform": [],
         "transforms": []
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
         "transform": [],
         "transforms": [
           [
@@ -727,11 +727,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -743,11 +743,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
         "distance": 13.0,
         "faces": null,
         "opposite": "None",
@@ -756,44 +756,44 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+        "edge_id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "3eb4eacd-aa5c-58ee-841d-0c851c6c7c6b",
+        "edge_id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -805,11 +805,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e87adfa5-4f60-5241-b09f-71a7287871de",
         "distance": 13.0,
         "faces": null,
         "opposite": "None",
@@ -818,53 +818,53 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e87adfa5-4f60-5241-b09f-71a7287871de"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7e54a2d-6c3f-5b6d-b6b4-ecca6249a1d3",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e87adfa5-4f60-5241-b09f-71a7287871de",
+        "edge_id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d54d724-527e-5b4f-96a3-d09d0f4fca8a",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e87adfa5-4f60-5241-b09f-71a7287871de",
+        "edge_id": "e5c6bfe7-79f7-55b4-bc63-41e6c32606ec"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd55e140-6df1-5fb8-9388-bd59c5c7ddde",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f4e71cbc-068a-5ab6-8914-ad9db323a7b6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -876,18 +876,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "40d8c462-7810-5666-bb09-1db7308cf666",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d7299f54-f2ed-5b6b-a2c6-d6da0a86fdfa",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "40d8c462-7810-5666-bb09-1db7308cf666",
         "to": {
           "x": 0.0,
           "y": 13.0,
@@ -896,18 +896,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e09e1ff-f381-55c4-87b4-0eda2d4522ce",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "724b87fd-c709-5232-b7a1-547c15affb9b",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "40d8c462-7810-5666-bb09-1db7308cf666",
         "segment": {
           "type": "line",
           "end": {
@@ -920,11 +920,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c83dae2b-a4af-5f0a-ad34-f4e867b193ba",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "40d8c462-7810-5666-bb09-1db7308cf666",
         "segment": {
           "type": "line",
           "end": {
@@ -937,11 +937,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f611456b-82df-55af-a95e-b0c5e1ba1457",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "40d8c462-7810-5666-bb09-1db7308cf666",
         "segment": {
           "type": "line",
           "end": {
@@ -954,11 +954,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3312f826-b323-5332-871a-6a8a59a3ae93",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "40d8c462-7810-5666-bb09-1db7308cf666",
         "segment": {
           "type": "line",
           "end": {
@@ -971,11 +971,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c820e130-6f59-5cd5-8ff1-7228a584ef66",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "40d8c462-7810-5666-bb09-1db7308cf666",
         "transform": [],
         "transforms": [
           [
@@ -1011,11 +1011,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1e31790b-7616-51eb-9bbe-0d46f611d053",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1027,11 +1027,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d90f6603-b0cd-5c83-a076-386b01d9e12a",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "40d8c462-7810-5666-bb09-1db7308cf666",
         "distance": 13.0,
         "faces": null,
         "opposite": "None",
@@ -1040,44 +1040,44 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c09fdf6c-1c65-5d67-95d9-7a9b221e3aba",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03cd9cd9-3406-55e1-ae54-f1d9525eb3ba",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "40d8c462-7810-5666-bb09-1db7308cf666"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7cba4b1e-0ab8-5276-a74e-b8b435085d01",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "edge_id": "724b87fd-c709-5232-b7a1-547c15affb9b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e30dd66-e64d-5d2d-92d4-2d15c2237140",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "40d8c462-7810-5666-bb09-1db7308cf666",
+        "edge_id": "724b87fd-c709-5232-b7a1-547c15affb9b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9ee924c8-9a14-5ca4-9014-20f9b1039bef",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "50f5fd52-8c8c-5c1d-9c20-c4ac7d39a153",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1089,11 +1089,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "19107e89-bf40-5541-88a5-5106b6de636d",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "df3b3a1e-134f-50f3-a511-3aaa47b02270",
         "distance": 13.0,
         "faces": null,
         "opposite": "None",
@@ -1102,40 +1102,40 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6653835-b8aa-50b7-ae77-6895c7e055ab",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "020035cf-ab88-50f3-91b0-886b7f399647",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "df3b3a1e-134f-50f3-a511-3aaa47b02270"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "63f9b5f8-bdd0-5943-9b5e-46fa635aacbc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "df3b3a1e-134f-50f3-a511-3aaa47b02270",
+        "edge_id": "724b87fd-c709-5232-b7a1-547c15affb9b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bbc9bd1d-6402-59d1-a098-3cf2005cc1c2",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "df3b3a1e-134f-50f3-a511-3aaa47b02270",
+        "edge_id": "724b87fd-c709-5232-b7a1-547c15affb9b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2489202c-0475-5b18-97c8-c3f239bd1947",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1160,11 +1160,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e02115f0-d853-5684-82c8-298aa25e4541",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "2489202c-0475-5b18-97c8-c3f239bd1947",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1174,20 +1174,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c8da3189-2eee-5307-9477-076b12db84a5",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2489202c-0475-5b18-97c8-c3f239bd1947",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "16e09773-2c0d-5da9-bdec-993f8a9ed856",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2489202c-0475-5b18-97c8-c3f239bd1947",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1199,18 +1199,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0c1140b-284f-50ff-b80d-615b8b938475",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2e3fae3-4069-58be-a5a5-17ae327df966",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "to": {
           "x": 593.500000013,
           "y": 0.0,
@@ -1219,18 +1219,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a7b34ba2-fd7c-5682-81f5-8deb44c234d5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca431487-8e9a-59ce-a472-84fe45652fab",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "segment": {
           "type": "line",
           "end": {
@@ -1243,11 +1243,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93954f29-a246-54bd-ac2a-62572f26d508",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "segment": {
           "type": "line",
           "end": {
@@ -1260,11 +1260,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "20f09319-bab0-5dd8-8c40-ce90cd688483",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "segment": {
           "type": "line",
           "end": {
@@ -1277,11 +1277,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bee9909d-abbf-534c-b266-2c2c04133834",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c0c1140b-284f-50ff-b80d-615b8b938475",
         "segment": {
           "type": "line",
           "end": {
@@ -1294,24 +1294,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "c0c1140b-284f-50ff-b80d-615b8b938475",
+        "segment": "ca431487-8e9a-59ce-a472-84fe45652fab",
+        "intersection_segment": "93954f29-a246-54bd-ac2a-62572f26d508",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ee265ae4-d91c-58e8-93b9-3612710e3ae7",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
         "transform": [],
         "transforms": [
           [
@@ -1347,11 +1347,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bae7e631-b71d-5980-89ea-29b2140a8a32",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2489202c-0475-5b18-97c8-c3f239bd1947",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1363,11 +1363,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6048962-8de8-56e0-bd4c-204ee5451b34",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
         "distance": 671.5,
         "faces": null,
         "opposite": "None",
@@ -1376,44 +1376,44 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "76d81d0d-ef16-5794-bc58-3132468566e9",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbbcaed5-0a21-593e-a7bc-e653364344a4",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5e2f4d6-228a-502b-94db-3100e57ccc81",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+        "edge_id": "10431699-f002-5b74-80a2-7e994b310734"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9f06e448-59b6-56d0-aecd-6aee7546d7c3",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
+        "edge_id": "10431699-f002-5b74-80a2-7e994b310734"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eeb336b4-adc7-580c-be25-5e81ad6a56ee",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "2489202c-0475-5b18-97c8-c3f239bd1947",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1425,11 +1425,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "30efa5e2-105e-56b9-85d8-16e0935167b0",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "d4d190cd-f03d-5848-889a-e310992c5477",
         "distance": 671.5,
         "faces": null,
         "opposite": "None",
@@ -1438,60 +1438,60 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4984af9-3fa9-53ec-9e9c-b8d013eb1511",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6f85cbad-5e6d-549c-850d-909283a25e83",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "d4d190cd-f03d-5848-889a-e310992c5477"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "035728b5-01db-5e9b-b285-181bc5693d5a",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d4d190cd-f03d-5848-889a-e310992c5477",
+        "edge_id": "10431699-f002-5b74-80a2-7e994b310734"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f325d8b-adf2-5076-89e7-9a8b0cec3731",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "d4d190cd-f03d-5848-889a-e310992c5477",
+        "edge_id": "10431699-f002-5b74-80a2-7e994b310734"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b45af9b-6b90-5530-b9b7-b193031152d8",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "48adc7c5-6ab6-58b6-bf7c-b9b108dad978",
         "transform": [],
         "transforms": []
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "08138142-a558-56a4-a23f-2f334e02b011",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "d4d190cd-f03d-5848-889a-e310992c5477",
         "transform": [],
         "transforms": []
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -1516,11 +1516,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e37f0c41-fa06-5331-9fe6-fafe466ea8fa",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -1530,20 +1530,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b45580d1-28b2-5700-a6b3-7be443b3bfd8",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7239bb75-ea9c-5e04-812d-426e933ce851",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1555,18 +1555,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6dc9e0c0-84d4-5f0c-af6a-4eb8bcc4f6fc",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -1575,18 +1575,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0f4a9e9-b7cb-55fa-b527-08fd1f320cd2",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "906a1f18-6a62-5deb-b39b-61d540081804",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
         "segment": {
           "type": "line",
           "end": {
@@ -1599,11 +1599,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c72a5b97-c42a-573c-bbdf-1ce176bd07cd",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
         "segment": {
           "type": "line",
           "end": {
@@ -1616,11 +1616,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ba769d4c-3a67-5309-824d-fd59f263bb46",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
         "segment": {
           "type": "line",
           "end": {
@@ -1633,11 +1633,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab10cb94-5e01-5790-97d1-ad4ca036a752",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
         "segment": {
           "type": "line",
           "end": {
@@ -1650,11 +1650,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3f3eb2b1-9f23-5eef-8880-43b00b94a326",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
         "transform": [],
         "transforms": [
           [
@@ -1690,11 +1690,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "662e081e-0c36-5b97-b2b8-ea0464220525",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1706,11 +1706,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff863943-02de-5b48-baf7-471ff32b980f",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
         "distance": -13.0,
         "faces": null,
         "opposite": "None",
@@ -1719,44 +1719,44 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b060302-5d33-5353-bd5e-3f938c80ea7f",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fd9de7dd-b79f-57cc-9aca-d5f0c32b8322",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bd2c7879-5553-55c3-bc25-46df0c8081fc",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
+        "edge_id": "906a1f18-6a62-5deb-b39b-61d540081804"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93fe6743-e0aa-5d65-834b-87a82208c703",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b0fd1e76-dbd8-5781-b53b-bb4b207ad6a8",
+        "edge_id": "906a1f18-6a62-5deb-b39b-61d540081804"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "880f0f46-f5a4-5d69-b352-2aabbd0c7ed4",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1768,11 +1768,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03314dc0-0005-55f9-bfa2-d4e07847c4b2",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "80bbeefb-af76-5c3c-8298-0644df578435",
         "distance": -13.0,
         "faces": null,
         "opposite": "None",
@@ -1781,53 +1781,53 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4cbda13-cf30-51b5-adde-debccd5ae685",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3e6c46b9-bbdd-5d47-a756-0be941ae8b98",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "80bbeefb-af76-5c3c-8298-0644df578435"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4608674b-5141-508f-8ee7-95c7819212bb",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "80bbeefb-af76-5c3c-8298-0644df578435",
+        "edge_id": "906a1f18-6a62-5deb-b39b-61d540081804"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a7ba310-a1b1-5111-b970-012df26c5aeb",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "80bbeefb-af76-5c3c-8298-0644df578435",
+        "edge_id": "906a1f18-6a62-5deb-b39b-61d540081804"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f41b64cc-a0bb-5a3a-a1a2-6bb37bda7c26",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "065d6e6f-62af-500d-aae0-fe097d5f952b",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1839,18 +1839,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e9531b65-3013-5f8b-bebc-accdbd43919c",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fed04fa9-172b-5dd7-8ef3-f2c390c0a3f4",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "e9531b65-3013-5f8b-bebc-accdbd43919c",
         "to": {
           "x": 0.0,
           "y": 13.0,
@@ -1859,18 +1859,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fe6e67eb-7a61-566b-b101-f63111291cbc",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "44d94cee-dac7-5b9f-829d-112d277b8975",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e9531b65-3013-5f8b-bebc-accdbd43919c",
         "segment": {
           "type": "line",
           "end": {
@@ -1883,11 +1883,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "95d80984-dc84-541c-af31-df26752c9fd4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e9531b65-3013-5f8b-bebc-accdbd43919c",
         "segment": {
           "type": "line",
           "end": {
@@ -1900,11 +1900,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1a9edb1-e018-53ba-86b4-c8f4482cc27f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e9531b65-3013-5f8b-bebc-accdbd43919c",
         "segment": {
           "type": "line",
           "end": {
@@ -1917,11 +1917,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f18bf81-bc67-555b-bc5f-0a5fbcd2f487",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "e9531b65-3013-5f8b-bebc-accdbd43919c",
         "segment": {
           "type": "line",
           "end": {
@@ -1934,11 +1934,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c91b9ebe-ef24-5090-8a15-d377717956bf",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
         "transform": [],
         "transforms": [
           [
@@ -1974,11 +1974,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "94906884-1803-5336-93e6-0aca938f73f1",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -1990,11 +1990,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff7ee7c9-c639-51f1-8d87-df7f7aaf95ec",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e9531b65-3013-5f8b-bebc-accdbd43919c",
         "distance": -13.0,
         "faces": null,
         "opposite": "None",
@@ -2003,44 +2003,44 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c7d3a70e-3921-5009-ad0e-e05ef0d30709",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12610836-7dea-569b-a3df-ec2ff8b2c295",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e9531b65-3013-5f8b-bebc-accdbd43919c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0a92fa6-be55-5cfb-a650-710b68437549",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
+        "edge_id": "44d94cee-dac7-5b9f-829d-112d277b8975"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f296bd37-495b-5038-81a3-eade3812cc2e",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e9531b65-3013-5f8b-bebc-accdbd43919c",
+        "edge_id": "44d94cee-dac7-5b9f-829d-112d277b8975"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4728ade4-a3a9-5b06-851f-c0795fb8ba92",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "7b8ae56e-c9b0-55b7-a0b6-d20f44780498",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2052,11 +2052,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cea75c17-0a18-5ab9-8495-1b1bb278e899",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9",
         "distance": -13.0,
         "faces": null,
         "opposite": "None",
@@ -2065,40 +2065,40 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "af94b4da-da53-5386-a65f-ed75c251c9ff",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "28c981cc-7131-50cd-b5b9-f2a7f868c0bf",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "33d4ddb8-e281-5429-897a-8b34342e4a06",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9",
+        "edge_id": "44d94cee-dac7-5b9f-829d-112d277b8975"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "df641c7f-27a7-5524-a6c2-93d1677bc829",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "8f1534da-e1e3-56ab-a5cd-b1e311de0ac9",
+        "edge_id": "44d94cee-dac7-5b9f-829d-112d277b8975"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6df8ec7f-7a39-55d7-a123-33133fbcbbd6",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2123,11 +2123,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c4aa09ae-7e71-562f-b6c8-079aeb535be9",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "6df8ec7f-7a39-55d7-a123-33133fbcbbd6",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2137,20 +2137,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5fd1215-9080-56e3-9845-e939e4245bdb",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "6df8ec7f-7a39-55d7-a123-33133fbcbbd6",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f24ed84c-9623-59b6-bf31-be6202c5a133",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6df8ec7f-7a39-55d7-a123-33133fbcbbd6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2162,18 +2162,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ca586750-6453-56e0-b4cf-8e561096e7ca",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "60f59271-6b58-59b1-94ae-dad793e5c6cd",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ca586750-6453-56e0-b4cf-8e561096e7ca",
         "to": {
           "x": 0.0,
           "y": 0.0,
@@ -2182,18 +2182,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "349ba77a-8183-57f6-8580-b06227eac5bd",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "67d03316-0deb-5224-a7ce-b3394ba08db9",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ca586750-6453-56e0-b4cf-8e561096e7ca",
         "segment": {
           "type": "line",
           "end": {
@@ -2206,11 +2206,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ca586750-6453-56e0-b4cf-8e561096e7ca",
         "segment": {
           "type": "line",
           "end": {
@@ -2223,11 +2223,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e47f2e3b-0460-52b0-a07e-9a08403f5c49",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ca586750-6453-56e0-b4cf-8e561096e7ca",
         "segment": {
           "type": "line",
           "end": {
@@ -2240,11 +2240,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ab87837d-7702-50ae-a973-1b474e1e48bf",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ca586750-6453-56e0-b4cf-8e561096e7ca",
         "segment": {
           "type": "line",
           "end": {
@@ -2257,24 +2257,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "ca586750-6453-56e0-b4cf-8e561096e7ca",
+        "segment": "67d03316-0deb-5224-a7ce-b3394ba08db9",
+        "intersection_segment": "b6f946ca-ccd6-5fa9-942d-14331e8fb26e",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cbd0a735-3417-50fd-a670-41b483234c04",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "6df8ec7f-7a39-55d7-a123-33133fbcbbd6",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2286,11 +2286,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "84468ff1-4b26-5c88-8618-6cea09661aac",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
@@ -2299,53 +2299,53 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b744d7bf-2b88-5bbb-8649-bc2ee7b9a1f0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e11c45c-4e86-5b88-8029-f0565bc2f6cc",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9d8522f-60d2-513b-9c62-a4a3110e5970",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+        "edge_id": "e4f462d1-ccb0-5adf-8207-a51ddd9a341f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5d2a2786-5258-5364-b1b2-b28334229017",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+        "edge_id": "e4f462d1-ccb0-5adf-8207-a51ddd9a341f"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "77ac15fd-2d5b-5522-8e03-3d29dfb3c1c7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ca586750-6453-56e0-b4cf-8e561096e7ca",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3160ffad-2e46-5554-be76-1b632140926c",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "af362d26-5a3e-5e1f-88f4-e74333b5da62",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2353,18 +2353,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5e069ec3-b22a-5c34-ae73-15c55f4f871f",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
         "to": {
           "x": -296.750000001,
           "y": 40.0,
@@ -2373,18 +2373,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5906c65e-a86e-5e74-ad3b-71b0fd95ea81",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
         "segment": {
           "type": "line",
           "end": {
@@ -2397,11 +2397,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fc243886-5941-5a64-8a15-a0b50bb063cb",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
         "segment": {
           "type": "line",
           "end": {
@@ -2414,11 +2414,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4297dd91-9fd9-5f76-b341-b0a955f3429c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
         "segment": {
           "type": "line",
           "end": {
@@ -2431,11 +2431,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "388597b8-4546-5655-b3a3-c3a0bba239ad",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
         "segment": {
           "type": "line",
           "end": {
@@ -2448,24 +2448,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
+        "segment": "d1c03f64-0489-502b-bc48-3ba001cf2ed6",
+        "intersection_segment": "fc243886-5941-5a64-8a15-a0b50bb063cb",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f72a5f9c-40cd-5f21-ba89-b0c45afa0f22",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "af362d26-5a3e-5e1f-88f4-e74333b5da62",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2473,11 +2473,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb96bce2-64b3-5697-9ac4-41978548d779",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "fccef8b5-45dc-52a0-be38-798ebf7b76e0",
         "distance": 200.0,
         "faces": null,
         "opposite": "None",
@@ -2486,53 +2486,53 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8dd6a1f9-f7dd-5a96-8f45-ee3180cbe380",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27284bc1-5676-5b5a-baa2-003a7224d266",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "fccef8b5-45dc-52a0-be38-798ebf7b76e0"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "47ae25d7-94a7-5b84-85ef-b0a4633920cd",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+        "edge_id": "fd6eddca-cb45-5c88-9e3e-8a3f0c5493aa"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "10afce2b-40ff-5ee3-a44b-bd101e341780",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+        "edge_id": "fd6eddca-cb45-5c88-9e3e-8a3f0c5493aa"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cdfcbbd0-d34e-5191-8ac3-35754fd4e366",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a6e62985-97dc-5bc0-bf5d-67848762cf83",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9cbc0821-9ccb-59b5-8a88-96912ec71e5e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e22575fd-c83f-5e35-aa90-bc608494165e",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2540,18 +2540,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "71136424-dffe-5ef9-9646-f40c0804ce04",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
         "to": {
           "x": 298.750000001,
           "y": 42.0,
@@ -2560,18 +2560,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8a0bb768-ecd5-5a98-afa4-b22c9e2461f5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "93084d86-3fba-5437-851f-9a4bb9523e0c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
         "segment": {
           "type": "line",
           "end": {
@@ -2584,11 +2584,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4636f241-62ef-5015-8685-79b861e20d6d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
         "segment": {
           "type": "line",
           "end": {
@@ -2601,11 +2601,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f17f2574-657c-597f-b5c5-83541ffc9f7f",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
         "segment": {
           "type": "line",
           "end": {
@@ -2618,11 +2618,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a1bdb8e2-0355-55d0-817d-37899c725e43",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
         "segment": {
           "type": "line",
           "end": {
@@ -2635,24 +2635,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "611f15e9-bff8-53b7-b7e4-4d59a86ecb97",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
+        "segment": "93084d86-3fba-5437-851f-9a4bb9523e0c",
+        "intersection_segment": "4636f241-62ef-5015-8685-79b861e20d6d",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4e062ca-0c0d-5f72-9a1c-3ee51aa27baf",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "e22575fd-c83f-5e35-aa90-bc608494165e",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2660,11 +2660,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bcea99ab-ad5b-5250-892e-7591c3803c32",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "611f15e9-bff8-53b7-b7e4-4d59a86ecb97",
         "distance": -200.0,
         "faces": null,
         "opposite": "None",
@@ -2673,49 +2673,49 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "70c10df5-b464-5988-aad4-84d4f2013c06",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b3497540-ae83-5eca-a51f-eae165d8cf92",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "611f15e9-bff8-53b7-b7e4-4d59a86ecb97"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c68f556e-b1c3-571c-8226-f07ddcc9af23",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+        "edge_id": "261b559b-5f2c-5919-a575-64df5fee3897"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c0321704-af94-58ee-b6d0-c31f850b1c48",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "9bc907a5-bec7-5f87-9105-27ffee0da4e4",
+        "edge_id": "261b559b-5f2c-5919-a575-64df5fee3897"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f5a3fbe3-0465-5b47-9050-932ea87d7329",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "4e4f8a42-f69c-5a93-b651-c5c711dcbd25",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a861a602-02d2-5837-8c84-f8454301adec",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2740,11 +2740,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "65f68220-38a0-517d-9666-f98e36344863",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "a861a602-02d2-5837-8c84-f8454301adec",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2754,20 +2754,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f8675931-ab2b-5494-9fb8-5c9575d5cb1d",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a861a602-02d2-5837-8c84-f8454301adec",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91e2b666-c0db-5d3c-875d-c0cfd8b5dd9e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a861a602-02d2-5837-8c84-f8454301adec",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2779,18 +2779,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c3389e24-1221-5b7e-bf3a-8befd6d8e80f",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b19a9f9b-8301-5d8c-a1c0-0e5bbb346ba0",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "c3389e24-1221-5b7e-bf3a-8befd6d8e80f",
         "to": {
           "x": 633.500000013,
           "y": 545.0,
@@ -2799,18 +2799,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "57441093-dfdf-5e5c-b0eb-9525e256fd63",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7a19efe4-7510-5cd4-a3de-a794693ae355",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "c3389e24-1221-5b7e-bf3a-8befd6d8e80f",
         "segment": {
           "type": "arc",
           "center": {
@@ -2831,24 +2831,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9a45a79-666c-55bc-a066-80e3fc2ca11c",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "c3389e24-1221-5b7e-bf3a-8befd6d8e80f",
+        "segment": "7a19efe4-7510-5cd4-a3de-a794693ae355",
+        "intersection_segment": "7a19efe4-7510-5cd4-a3de-a794693ae355",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a191b91a-b1f1-5715-bc25-25a1f106866e",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a861a602-02d2-5837-8c84-f8454301adec",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2860,11 +2860,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "eab0138f-4d34-5ad1-be64-4c06e431cd98",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "c9a45a79-666c-55bc-a066-80e3fc2ca11c",
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
@@ -2873,59 +2873,59 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6fec3912-fa52-5513-b3f5-b608fd2bcfc1",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "42bc78b9-4b08-5bc9-bc7d-76e8c6158b42",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "c9a45a79-666c-55bc-a066-80e3fc2ca11c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7ae875a8-ae57-5b6a-ae5d-65f2501893ad",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c9a45a79-666c-55bc-a066-80e3fc2ca11c",
+        "edge_id": "4f21755a-a90c-5e31-9f9c-e4d72de93290"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a3fed421-ce33-5a4f-b048-d3a68dfce32d",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "c9a45a79-666c-55bc-a066-80e3fc2ca11c",
+        "edge_id": "4f21755a-a90c-5e31-9f9c-e4d72de93290"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "296133c8-94a5-5fd9-851a-d484fa3dc66a",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "c9a45a79-666c-55bc-a066-80e3fc2ca11c",
         "transform": [],
         "transforms": []
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "09bc7d66-414a-560e-9855-7a04ab7b5e7e",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c3389e24-1221-5b7e-bf3a-8befd6d8e80f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c9419ead-8fe3-58ae-821f-b6a562bd113d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -2950,11 +2950,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9091619d-ebc5-5e38-b770-c9cad323ebc4",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "c9419ead-8fe3-58ae-821f-b6a562bd113d",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -2964,20 +2964,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f69e9fb-8cfe-5f9d-b54f-96265c6afc83",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "c9419ead-8fe3-58ae-821f-b6a562bd113d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ba624ec-0a0b-564c-90e4-cfa74956d06b",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c9419ead-8fe3-58ae-821f-b6a562bd113d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -2989,18 +2989,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1ec6fecb-0505-5e02-86f5-4c58bf5323cd",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d34a0ded-ed1b-5139-836b-e00b779bd892",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1ec6fecb-0505-5e02-86f5-4c58bf5323cd",
         "to": {
           "x": 608.500000013,
           "y": 545.0,
@@ -3009,18 +3009,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ce3966c0-d3aa-5d09-95fe-a587aa26e2fd",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d46dcf7a-3c8b-5383-b783-931fc579f81e",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1ec6fecb-0505-5e02-86f5-4c58bf5323cd",
         "segment": {
           "type": "arc",
           "center": {
@@ -3041,24 +3041,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bcc1a6e3-753e-566e-b68e-67e374552a75",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1ec6fecb-0505-5e02-86f5-4c58bf5323cd",
+        "segment": "d46dcf7a-3c8b-5383-b783-931fc579f81e",
+        "intersection_segment": "d46dcf7a-3c8b-5383-b783-931fc579f81e",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3cff0e16-6db2-54dd-a35f-1609f20de855",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "c9419ead-8fe3-58ae-821f-b6a562bd113d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3070,11 +3070,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5b5bd21f-4e8b-5eb5-b86b-6c5a708d5a3d",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "bcc1a6e3-753e-566e-b68e-67e374552a75",
         "distance": 170.0,
         "faces": null,
         "opposite": "None",
@@ -3083,59 +3083,59 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "286b9632-8f7e-58a1-9be7-c68cdb74bd58",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4b13501d-0c35-5367-95cd-29691ec63825",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "bcc1a6e3-753e-566e-b68e-67e374552a75"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9794ca46-f9b1-580c-a79d-2169f4b5a877",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bcc1a6e3-753e-566e-b68e-67e374552a75",
+        "edge_id": "474d1dbf-6657-55ab-9c61-372929f5815c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abbeb3b2-3421-545a-b53f-5519bb63b75b",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "bcc1a6e3-753e-566e-b68e-67e374552a75",
+        "edge_id": "474d1dbf-6657-55ab-9c61-372929f5815c"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4d8a7798-d78b-5c52-9f26-61abf5de0230",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "bcc1a6e3-753e-566e-b68e-67e374552a75",
         "transform": [],
         "transforms": []
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ba5b88a-6ca4-5923-9f3c-edc551a4a985",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1ec6fecb-0505-5e02-86f5-4c58bf5323cd",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6377ba4-817c-5a60-be28-c49b95411e3d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3160,11 +3160,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a675f7bb-96df-5f26-82d6-a831562f09ed",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "d6377ba4-817c-5a60-be28-c49b95411e3d",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -3174,20 +3174,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a033dab5-0390-57db-8839-ba1e2994485a",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d6377ba4-817c-5a60-be28-c49b95411e3d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "22ba7afc-f279-51e5-b5e8-7cf66be455e6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d6377ba4-817c-5a60-be28-c49b95411e3d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3199,18 +3199,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ddae3a47-d1c4-5304-85bb-00753661f913",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
         "to": {
           "x": 603.500000013,
           "y": 950.0,
@@ -3219,18 +3219,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4f12f4f7-d3b8-5e47-a4e1-a6dd36f64fee",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c424e793-1f50-58e9-b280-c610d3a87b00",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
         "segment": {
           "type": "arc",
           "center": {
@@ -3251,24 +3251,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e31d7de7-89b0-511e-b9d7-de347a758b0a",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
+        "segment": "c424e793-1f50-58e9-b280-c610d3a87b00",
+        "intersection_segment": "c424e793-1f50-58e9-b280-c610d3a87b00",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cb7fe19d-d3c9-5d32-9874-193084f5a579",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d6377ba4-817c-5a60-be28-c49b95411e3d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3280,11 +3280,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3fa61102-cd56-5477-94bb-ce5e89d9e222",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "e31d7de7-89b0-511e-b9d7-de347a758b0a",
         "distance": 237.4,
         "faces": null,
         "opposite": "None",
@@ -3293,59 +3293,59 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "83cd7212-1ada-558a-a1fa-c007b98d2d6d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9d90de2c-e90a-555e-8e4b-8feb0fc81637",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "e31d7de7-89b0-511e-b9d7-de347a758b0a"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "21f4265c-f137-5d70-bd15-fef61fa118ad",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e31d7de7-89b0-511e-b9d7-de347a758b0a",
+        "edge_id": "298bbcf9-34d2-51b1-9df9-727520b422db"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "75a71087-3ea4-59f8-8b21-e05a9ebd7b03",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "e31d7de7-89b0-511e-b9d7-de347a758b0a",
+        "edge_id": "298bbcf9-34d2-51b1-9df9-727520b422db"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "54856312-89c1-5f60-a671-1f47b4a401c8",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "e31d7de7-89b0-511e-b9d7-de347a758b0a",
         "transform": [],
         "transforms": []
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e5931419-54d0-5270-81d7-b3235d3b9d95",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "8b9171b1-4f94-50cc-9ae4-5bf95fb85c33",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d6de2ace-61d0-5f36-81da-c9b97fe5f521",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3370,11 +3370,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd375147-3e72-51bd-b4ae-e1898cd8385a",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "d6de2ace-61d0-5f36-81da-c9b97fe5f521",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -3384,20 +3384,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4528a4c9-e794-5107-862d-5d3ecf67c610",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "d6de2ace-61d0-5f36-81da-c9b97fe5f521",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "887c0877-1b4f-5fea-a0d9-50772562bc0a",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d6de2ace-61d0-5f36-81da-c9b97fe5f521",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3409,18 +3409,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14723099-2795-58fa-bba5-4d139bdfa016",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d4fa3036-d755-50a5-915c-169bc8f06373",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "14723099-2795-58fa-bba5-4d139bdfa016",
         "to": {
           "x": 597.500000013,
           "y": 1000.0,
@@ -3429,18 +3429,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "968ffe0e-1237-542c-b1fa-8e9983980aec",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1632f8b6-ad43-564a-88e5-8f866fc32fa5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "14723099-2795-58fa-bba5-4d139bdfa016",
         "segment": {
           "type": "arc",
           "center": {
@@ -3461,24 +3461,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ef75b5ec-d05f-5fb2-91d8-3df8cdba5ea9",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "14723099-2795-58fa-bba5-4d139bdfa016",
+        "segment": "1632f8b6-ad43-564a-88e5-8f866fc32fa5",
+        "intersection_segment": "1632f8b6-ad43-564a-88e5-8f866fc32fa5",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1139a380-6d14-50a7-8aca-3ff3d423d607",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "d6de2ace-61d0-5f36-81da-c9b97fe5f521",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3490,11 +3490,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f6c12cae-a6a5-5787-9cee-d878f6a857bd",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "ef75b5ec-d05f-5fb2-91d8-3df8cdba5ea9",
         "distance": 70.0,
         "faces": null,
         "opposite": "None",
@@ -3503,59 +3503,59 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "589feeab-5bd5-57b3-8210-34189549c7ae",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8282317b-7b33-5b29-a0b3-e7bdb56738b2",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "ef75b5ec-d05f-5fb2-91d8-3df8cdba5ea9"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "88dacb09-a1b7-5b29-9f59-88a39804e9c6",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ef75b5ec-d05f-5fb2-91d8-3df8cdba5ea9",
+        "edge_id": "2a2633dd-a73c-599e-ad82-35a89b90a25d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "545a676d-b0ca-51cf-8692-352f22a96abb",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "ef75b5ec-d05f-5fb2-91d8-3df8cdba5ea9",
+        "edge_id": "2a2633dd-a73c-599e-ad82-35a89b90a25d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6510dba2-d853-5488-8213-228f71d4dde9",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "ef75b5ec-d05f-5fb2-91d8-3df8cdba5ea9",
         "transform": [],
         "transforms": []
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bba69a31-6872-538b-ae52-5fb777fa3c22",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "14723099-2795-58fa-bba5-4d139bdfa016",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ff4c146e-5f80-5a26-becd-54747f974af4",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -3580,11 +3580,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f21dbbae-f507-5df7-8f8f-978af9cff31c",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "ff4c146e-5f80-5a26-becd-54747f974af4",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -3594,20 +3594,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a53d2782-8625-5706-a921-23b8bf01a0bd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ff4c146e-5f80-5a26-becd-54747f974af4",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abcc7f98-a97c-5b99-b391-c3098c630ab5",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ff4c146e-5f80-5a26-becd-54747f974af4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3619,18 +3619,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f2f967ef-7b25-5118-be53-a7993a21e4b2",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6b809edf-d342-5e88-8a11-67808067d72a",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "f2f967ef-7b25-5118-be53-a7993a21e4b2",
         "to": {
           "x": 14.999999994,
           "y": 0.0,
@@ -3639,18 +3639,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c6e35f00-4ad9-5601-9c9a-9274c22d495d",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0919a55b-e67e-50b7-997a-87265757cea8",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f2f967ef-7b25-5118-be53-a7993a21e4b2",
         "segment": {
           "type": "line",
           "end": {
@@ -3663,11 +3663,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "55aabc96-c8e2-5702-8efd-9e29535e01ea",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f2f967ef-7b25-5118-be53-a7993a21e4b2",
         "segment": {
           "type": "line",
           "end": {
@@ -3680,11 +3680,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3ab5b77d-0eb4-51a0-8d79-c530f0d55a1c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f2f967ef-7b25-5118-be53-a7993a21e4b2",
         "segment": {
           "type": "line",
           "end": {
@@ -3697,11 +3697,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d256da65-d829-58fc-a58f-e41cfc617df4",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "f2f967ef-7b25-5118-be53-a7993a21e4b2",
         "segment": {
           "type": "line",
           "end": {
@@ -3714,24 +3714,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "f2f967ef-7b25-5118-be53-a7993a21e4b2",
+        "segment": "0919a55b-e67e-50b7-997a-87265757cea8",
+        "intersection_segment": "55aabc96-c8e2-5702-8efd-9e29535e01ea",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f16cdc63-cd53-59d6-8d8a-53a57401e29d",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ff4c146e-5f80-5a26-becd-54747f974af4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3743,11 +3743,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9166517e-4bba-584c-a2d9-297c0bf6a7a1",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
         "distance": 667.5,
         "faces": null,
         "opposite": "None",
@@ -3756,44 +3756,44 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5fdfdd82-8c37-538e-b6d4-8ebec96cbed5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "127d3670-18c3-5543-a734-b47c9f3adddf",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "f0e53d08-0838-5ec1-bb88-e74e2f619376"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1b1369f0-6fa2-5ce2-bb30-326225eea75b",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
+        "edge_id": "885c3eb8-f939-5023-ae67-1ec917214211"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a0424b10-9f49-5f18-8a12-9cc11615a8dd",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
+        "edge_id": "885c3eb8-f939-5023-ae67-1ec917214211"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9cbed381-7b5d-5a2a-8f23-c3a48258a61b",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
         "transform": [],
         "transforms": [
           [
@@ -3829,11 +3829,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "03ea2fde-e62d-50db-91e9-0e50829dd0e7",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "f0e53d08-0838-5ec1-bb88-e74e2f619376",
         "transform": [],
         "transforms": [
           [
@@ -3869,11 +3869,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "54fd6cb3-e401-5a20-9ff7-b257f2946f22",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "4b112da2-517d-5a03-b13b-368884dd561c",
         "transform": [],
         "transforms": [
           [
@@ -3909,29 +3909,29 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b373dedf-b9c8-52fe-b67e-54e4fd4952f2",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f2f967ef-7b25-5118-be53-a7993a21e4b2",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7fb09ab0-81bb-5760-8df5-4370328dc037",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ff4c146e-5f80-5a26-becd-54747f974af4",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4df46633-c5e8-576d-ae02-2f81135657df",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ff4c146e-5f80-5a26-becd-54747f974af4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -3943,18 +3943,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ede1fbbf-5a26-5b3e-862c-80224a6ed768",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "3fd6daa4-493b-5c16-aedd-2ab98a080919",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "ede1fbbf-5a26-5b3e-862c-80224a6ed768",
         "to": {
           "x": 0.0,
           "y": 15.0,
@@ -3963,18 +3963,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "fbd2a2ed-a3f8-5b5d-b45c-0c8de9606fa5",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f002859b-a914-5327-8934-6d752f24d128",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ede1fbbf-5a26-5b3e-862c-80224a6ed768",
         "segment": {
           "type": "line",
           "end": {
@@ -3987,11 +3987,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a4afe779-525f-5f23-8758-c291de6d5c4a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ede1fbbf-5a26-5b3e-862c-80224a6ed768",
         "segment": {
           "type": "line",
           "end": {
@@ -4004,11 +4004,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e9ef62a-e833-57fd-b916-7ab81f305859",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ede1fbbf-5a26-5b3e-862c-80224a6ed768",
         "segment": {
           "type": "line",
           "end": {
@@ -4021,11 +4021,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "390e839a-94f9-51f0-93af-9cce7dc4a3c0",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "ede1fbbf-5a26-5b3e-862c-80224a6ed768",
         "segment": {
           "type": "line",
           "end": {
@@ -4038,24 +4038,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b824665f-7544-5ec9-8151-73536e7f467e",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "ede1fbbf-5a26-5b3e-862c-80224a6ed768",
+        "segment": "f002859b-a914-5327-8934-6d752f24d128",
+        "intersection_segment": "a4afe779-525f-5f23-8758-c291de6d5c4a",
         "intersection_index": -1,
         "curve_clockwise": true,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "280dc75d-8090-54ec-85f7-0d32f3519ac3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ff4c146e-5f80-5a26-becd-54747f974af4",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4067,11 +4067,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8869f3fa-1217-5a3e-b363-3f81fd6766b9",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "b824665f-7544-5ec9-8151-73536e7f467e",
         "distance": 667.5,
         "faces": null,
         "opposite": "None",
@@ -4080,44 +4080,44 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "24a126b1-e705-5e67-a207-c74cc4a1f293",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b5d7b26d-5932-5ec6-a327-1367f6a1d437",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "b824665f-7544-5ec9-8151-73536e7f467e"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b8c3fbb5-91c4-5ef0-82b6-e98f16cdc401",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b824665f-7544-5ec9-8151-73536e7f467e",
+        "edge_id": "018674f1-2f7d-5c88-8f15-f6f671ae5667"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "34a3af71-5f67-5285-a334-19790957fc9a",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "b824665f-7544-5ec9-8151-73536e7f467e",
+        "edge_id": "018674f1-2f7d-5c88-8f15-f6f671ae5667"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "dd06fa91-239f-59e6-a155-9bb7ddb4c372",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "b824665f-7544-5ec9-8151-73536e7f467e",
         "transform": [],
         "transforms": [
           [
@@ -4153,16 +4153,16 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "aff7bbe5-b62b-5343-8440-5fda86f9729f",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ede1fbbf-5a26-5b3e-862c-80224a6ed768",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a62e50da-cc5a-5bda-bda2-55426cbe0857",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4187,11 +4187,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "547d4ee1-e80a-5a5f-8fcb-6f82f3ea7145",
       "range": [],
       "command": {
         "type": "plane_set_color",
-        "plane_id": "[uuid]",
+        "plane_id": "a62e50da-cc5a-5bda-bda2-55426cbe0857",
         "color": {
           "r": 0.6,
           "g": 0.6,
@@ -4201,20 +4201,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "27933fba-01d2-5b7c-aa89-4c472ddc51e9",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "a62e50da-cc5a-5bda-bda2-55426cbe0857",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9b00f773-bb8b-5261-aa36-57792c76d3bb",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "a62e50da-cc5a-5bda-bda2-55426cbe0857",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4226,18 +4226,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2b71c9cb-6de6-5fd0-be55-a3ac2938a448",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e",
         "to": {
           "x": 243.25,
           "y": 0.0,
@@ -4246,18 +4246,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92e958ff-d0d3-5120-8e4c-d5157fdddd4e",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f231d0e5-6852-54e5-938d-2523da9f44d7",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e",
         "segment": {
           "type": "line",
           "end": {
@@ -4270,11 +4270,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a57d9fa7-0c78-53b5-9866-14367c7a4620",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e",
         "segment": {
           "type": "arc",
           "center": {
@@ -4295,11 +4295,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cec4804c-5314-50ba-8366-9899aec78655",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e",
         "segment": {
           "type": "line",
           "end": {
@@ -4312,11 +4312,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "96241cd0-15bb-5bd9-b6d1-1f366716384a",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e",
         "segment": {
           "type": "arc",
           "center": {
@@ -4337,11 +4337,11 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7f7bcbda-3dc9-50f9-853b-986e8b2e9530",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e",
         "segment": {
           "type": "line",
           "end": {
@@ -4354,7 +4354,7 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ce979aa8-bc44-5b2a-b8ad-9f86631821b0",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -4379,20 +4379,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "ea00adda-e90e-5ed3-85b2-557cea7f29fe",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "ce979aa8-bc44-5b2a-b8ad-9f86631821b0",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0858a602-bd64-50b8-8399-a96cf71ab280",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ce979aa8-bc44-5b2a-b8ad-9f86631821b0",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4404,18 +4404,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1beac282-d5bc-5118-b0cf-e5e652bf3ada",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e733a33-e67c-5bfb-b8c4-07c1c8070943",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "1beac282-d5bc-5118-b0cf-e5e652bf3ada",
         "to": {
           "x": 245.25,
           "y": 780.0,
@@ -4424,18 +4424,18 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "db63a452-f476-5d29-bd2a-6dacd920e343",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c20c2dc-a7a6-52a4-80f4-3546cd91849c",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "1beac282-d5bc-5118-b0cf-e5e652bf3ada",
         "segment": {
           "type": "arc",
           "center": {
@@ -4456,24 +4456,24 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "17205e6b-a54a-5088-a37d-20c294c8ad8b",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "1beac282-d5bc-5118-b0cf-e5e652bf3ada",
+        "segment": "2c20c2dc-a7a6-52a4-80f4-3546cd91849c",
+        "intersection_segment": "2c20c2dc-a7a6-52a4-80f4-3546cd91849c",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d9779ddb-867b-5e29-b375-a577f4869b89",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "ce979aa8-bc44-5b2a-b8ad-9f86631821b0",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -4485,12 +4485,12 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "c1710d01-2190-551e-ad44-a427e9010617",
       "range": [],
       "command": {
         "type": "sweep",
-        "target": "[uuid]",
-        "trajectory": "[uuid]",
+        "target": "17205e6b-a54a-5088-a37d-20c294c8ad8b",
+        "trajectory": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e",
         "sectional": false,
         "tolerance": 0.0000001,
         "body_type": "solid",
@@ -4498,53 +4498,53 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e0575921-ab6f-5505-a805-5f9cfc8fa9c9",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "6a271c85-e3df-509d-ad66-26b5c6dee687",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "17205e6b-a54a-5088-a37d-20c294c8ad8b"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "a69be77b-c3ff-5c6a-949a-330926634f19",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "17205e6b-a54a-5088-a37d-20c294c8ad8b",
+        "edge_id": "b3d4ea3e-d452-5c31-9234-f1eb5c563a83"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "bdfa8233-4ee6-5ad7-a8d3-d9cacbd119dc",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "17205e6b-a54a-5088-a37d-20c294c8ad8b",
+        "edge_id": "b3d4ea3e-d452-5c31-9234-f1eb5c563a83"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "12a0daa3-b8e6-5aa8-8f65-05a151ede4e7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "df47957b-6b46-5d6a-9d8b-a59eb4951e98",
       "range": [],
       "command": {
         "type": "entity_linear_pattern_transform",
-        "entity_id": "[uuid]",
+        "entity_id": "17205e6b-a54a-5088-a37d-20c294c8ad8b",
         "transform": [],
         "transforms": [
           [
@@ -4580,20 +4580,20 @@ description: Artifact commands utility-sink.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "540113e1-d602-5952-ac8a-181a65fa2df8",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "32af7e9a-e3b8-5d57-a6b1-2196ddc2ea8e",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "83375bdf-9587-5b09-8818-0393e84c51a7",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "1beac282-d5bc-5118-b0cf-e5e652bf3ada",
         "hidden": true
       }
     }

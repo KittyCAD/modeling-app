@@ -127,7 +127,7 @@ description: Operations executed clone_a_pattern.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3"
               }
             ]
           },
@@ -157,7 +157,7 @@ description: Operations executed clone_a_pattern.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79"
           }
         },
         "sourceRange": []
@@ -199,7 +199,7 @@ description: Operations executed clone_a_pattern.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
           }
         },
         "sourceRange": []
@@ -290,25 +290,25 @@ description: Operations executed clone_a_pattern.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fc1035ae-3877-5cf6-9e94-7e1f3b755966"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "eb0b3009-1694-5623-98ce-4ab9986356e2"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "14e5189b-50c0-50d0-ac67-fb5a7c7e6b4b"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ab9401f1-4f04-5047-ac41-8164231e0bf5"
               }
             }
           ]
@@ -343,25 +343,25 @@ description: Operations executed clone_a_pattern.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "907cac50-3701-5367-b35c-4ec2132c824f"
               }
             }
           ]

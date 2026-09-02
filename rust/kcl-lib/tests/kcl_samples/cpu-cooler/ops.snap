@@ -1014,11 +1014,11 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b5a82876-56b8-5012-910a-c84983933af0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "ecd9c86f-020d-5b89-a575-8f6ed2ae004d"
               }
             ]
           },
@@ -1048,7 +1048,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "451389f5-0508-53af-befd-4e7dc409ce93"
           }
         },
         "sourceRange": []
@@ -1094,7 +1094,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b3f571cf-a507-5510-a6c4-b3754477a444"
           }
         },
         "sourceRange": []
@@ -1113,12 +1113,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "a80250d3-b686-51a3-abed-c9f6717726ba"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line2",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "f8d01819-6270-582b-b038-05b10e3097a2"
                       }
                     ]
                   }
@@ -1133,12 +1133,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line2",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "f8d01819-6270-582b-b038-05b10e3097a2"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line3",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "4dd21888-048f-55ee-a851-9884c1b16195"
                       }
                     ]
                   }
@@ -1153,12 +1153,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line3",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "4dd21888-048f-55ee-a851-9884c1b16195"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line4",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "882580af-4a8f-5a96-b6a7-a339e5bf03c7"
                       }
                     ]
                   }
@@ -1173,12 +1173,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line4",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "882580af-4a8f-5a96-b6a7-a339e5bf03c7"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "a80250d3-b686-51a3-abed-c9f6717726ba"
                       }
                     ]
                   }
@@ -2409,11 +2409,11 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2cab62cd-b9c0-5ce4-857b-6286335fe034"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1dad485e-36f7-5f95-b2d8-25adae637a7d"
               }
             ]
           },
@@ -2443,7 +2443,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b11f16f3-d1c8-5014-bbf1-df7999757c47"
           }
         },
         "sourceRange": []
@@ -2485,7 +2485,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a10a8d5c-90bc-5c2e-ada0-dfa218639434"
           }
         },
         "sourceRange": []
@@ -2652,7 +2652,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b3f571cf-a507-5510-a6c4-b3754477a444"
           }
         },
         "sourceRange": []
@@ -2665,25 +2665,25 @@ description: Operations executed cpu-cooler.kcl
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "a10a8d5c-90bc-5c2e-ada0-dfa218639434"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "d32c9e40-fc2f-59cb-b5fa-2313241d0db9"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "5765fbf6-cfd5-5322-b338-b30e28e073ab"
                 }
               },
               {
                 "type": "Solid",
                 "value": {
-                  "artifactId": "[uuid]"
+                  "artifactId": "4615b56e-b324-5b85-a959-ae8267f3e6b8"
                 }
               }
             ]
@@ -3895,11 +3895,11 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0fc6e4cd-2a07-5ed8-8423-f2b90ef55eb0"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5abd47ad-1128-5a57-9b60-b1a709d3bef4"
               }
             ]
           },
@@ -3929,7 +3929,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2224641f-25ad-5575-b005-e16db99ed65a"
           }
         },
         "sourceRange": []
@@ -4087,7 +4087,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "2128dde6-7045-5d16-a133-ed6a3d89ad11"
               }
             ]
           },
@@ -4117,7 +4117,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7bc3f103-5e33-5d70-bed7-c63fd811baf1"
           }
         },
         "sourceRange": []
@@ -5147,11 +5147,11 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cb31c4d5-7e2c-565f-b920-6022f61f3eec"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "fcdb8a82-4318-5b1c-9638-97b4bbb273f0"
               }
             ]
           },
@@ -5181,7 +5181,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ff83d5c8-9404-5207-ab88-10d4002a3ea9"
           }
         },
         "sourceRange": []
@@ -5227,7 +5227,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f75f5873-8128-528b-aec7-d93f28a9a820"
           }
         },
         "sourceRange": []
@@ -5246,12 +5246,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "8fddb806-0984-5bd4-be8f-4f222b0f652a"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line2",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "8cbaebd1-b6eb-5d2b-8bd6-3a19150386d1"
                       }
                     ]
                   }
@@ -5266,12 +5266,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line2",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "8cbaebd1-b6eb-5d2b-8bd6-3a19150386d1"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line3",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "432069bc-7eaa-5d5b-a26c-aa20ee84649c"
                       }
                     ]
                   }
@@ -5286,12 +5286,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line3",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "432069bc-7eaa-5d5b-a26c-aa20ee84649c"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line4",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "7cf36451-ca2f-5a03-8a1a-2536cfbd010e"
                       }
                     ]
                   }
@@ -5306,12 +5306,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line4",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "7cf36451-ca2f-5a03-8a1a-2536cfbd010e"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "8fddb806-0984-5bd4-be8f-4f222b0f652a"
                       }
                     ]
                   }
@@ -5477,7 +5477,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "15db9409-d58d-5675-8092-2924ff07f006"
               }
             ]
           },
@@ -5510,7 +5510,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d59ebc0d-7e1f-5190-9e28-622f9f51cb2f"
           }
         },
         "sourceRange": []
@@ -5668,7 +5668,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0ebb8dad-7838-5e57-ab11-047f196d5388"
               }
             ]
           },
@@ -5698,7 +5698,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "99be262a-7e89-5430-b23e-eb74802cdd7c"
           }
         },
         "sourceRange": []
@@ -5740,7 +5740,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d5e77cd6-284a-5393-8426-ce794ee2bbeb"
           }
         },
         "sourceRange": []
@@ -5766,7 +5766,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e10303f0-c64c-5467-bfd6-8da758d0e54e"
           }
         },
         "sourceRange": []
@@ -5792,7 +5792,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "301d2d1d-fcab-5d53-aef3-d089758b637e"
           }
         },
         "sourceRange": []
@@ -5818,7 +5818,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f8831c06-bd41-560a-a95d-01e1214e160f"
           }
         },
         "sourceRange": []
@@ -5844,7 +5844,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e9b9ca7c-6967-5ccf-b62a-f8a0f3310579"
           }
         },
         "sourceRange": []
@@ -5870,7 +5870,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "00e03c81-14b4-5f89-8b0f-21b2c2d3101a"
           }
         },
         "sourceRange": []
@@ -5896,7 +5896,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0ff5a4fc-af95-50dd-9733-f5dc79c590b0"
           }
         },
         "sourceRange": []
@@ -5922,7 +5922,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "17cb387c-98f3-5085-80f7-bbb50aadb22d"
           }
         },
         "sourceRange": []
@@ -6096,7 +6096,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "9adef1b0-205f-5ea6-85ea-a530a6abee69"
               }
             ]
           },
@@ -6126,7 +6126,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ef36dac0-1abc-5f2c-ab57-b0a08d1d2e31"
           }
         },
         "sourceRange": []
@@ -6179,7 +6179,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f759c3cc-ed0b-51f0-a226-072f3879a79c"
           }
         },
         "sourceRange": []
@@ -6198,12 +6198,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "hub",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "ea76ac05-8d48-5c5c-8883-61eb3b1ef083"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "hubEnd",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "1352058f-646f-562b-8e23-42fa6a3e2c09"
                       }
                     ]
                   }
@@ -6252,7 +6252,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "73ed8331-439e-58d0-9be5-b690ed472ea6"
         },
         "sourceRange": []
       },
@@ -6948,7 +6948,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "73ed8331-439e-58d0-9be5-b690ed472ea6"
         },
         "sourceRange": []
       },
@@ -7644,7 +7644,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "73ed8331-439e-58d0-9be5-b690ed472ea6"
         },
         "sourceRange": []
       },
@@ -8344,19 +8344,19 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "acb250d0-d2e5-5973-9660-450dd3452c17"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a9110f55-6b3e-5074-a6ff-f5db965ee01b"
               }
             },
             {
               "type": "Sketch",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "46c19b54-65f6-5eaf-839d-88377621da7a"
               }
             }
           ]
@@ -8391,7 +8391,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fb99c183-0f18-591f-8fca-7e3f01d2ad21"
           }
         },
         "sourceRange": []
@@ -8562,7 +8562,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f1634645-3502-580b-a84b-0466ff4d66c4"
           }
         },
         "sourceRange": []
@@ -8588,7 +8588,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "acb250d0-d2e5-5973-9660-450dd3452c17"
           }
         },
         "sourceRange": []
@@ -8614,7 +8614,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "a9110f55-6b3e-5074-a6ff-f5db965ee01b"
           }
         },
         "sourceRange": []
@@ -8640,7 +8640,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "46c19b54-65f6-5eaf-839d-88377621da7a"
           }
         },
         "sourceRange": []
@@ -8669,7 +8669,7 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f759c3cc-ed0b-51f0-a226-072f3879a79c"
               }
             },
             {
@@ -8678,55 +8678,55 @@ description: Operations executed cpu-cooler.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "fb99c183-0f18-591f-8fca-7e3f01d2ad21"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "482d40f3-52ea-5845-b892-639330ea98de"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "64865a7c-869f-5f10-82b7-03e12dd33610"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "bb94088a-4cd9-5e2a-b162-4e58bfa040ba"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "a78b18f7-7890-5550-a664-d1a0a786ca38"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "98201707-8c9a-5bc4-aae3-aea16e2c69a2"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "331f73dc-e158-5ca4-8fd5-ac4b59761984"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "77232ea8-abcb-5a4f-ae90-2ed80bf14783"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "9bd6d602-d72a-597a-a00e-1b12b2a868ab"
                   }
                 }
               ]
@@ -8784,7 +8784,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "73ed8331-439e-58d0-9be5-b690ed472ea6"
         },
         "sourceRange": []
       },
@@ -9682,7 +9682,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -9929,7 +9929,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "b495fdb8-4108-5186-aaff-c6a8041a3516"
               }
             ]
           },
@@ -9959,7 +9959,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d52c5174-bdd6-5d55-a6bc-29b55dd06287"
           }
         },
         "sourceRange": []
@@ -9969,7 +9969,7 @@ description: Operations executed cpu-cooler.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "0f2b17c5-fdf9-564a-b621-4c8e4ef7ff54"
             }
           },
           "sourceRange": []
@@ -10002,7 +10002,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "066e5460-c057-5819-b57e-c6c25bed01bb"
           }
         },
         "sourceRange": []
@@ -10135,7 +10135,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "73ed8331-439e-58d0-9be5-b690ed472ea6"
         },
         "sourceRange": []
       },
@@ -11561,7 +11561,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -11808,7 +11808,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "13e64a61-bba9-5c75-9f19-667f0fd73a6e"
               }
             ]
           },
@@ -11838,7 +11838,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "19af0132-5e72-5833-acfb-fc1e190f7c95"
           }
         },
         "sourceRange": []
@@ -11848,7 +11848,7 @@ description: Operations executed cpu-cooler.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "856eb6e9-9a0e-58ad-9dcb-e8438c52b3e0"
             }
           },
           "sourceRange": []
@@ -11881,7 +11881,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9d1357e5-134c-5d64-94bb-2b1bbc1adae8"
           }
         },
         "sourceRange": []
@@ -12018,13 +12018,13 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9d1357e5-134c-5d64-94bb-2b1bbc1adae8"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "ff94b866-5394-565d-8fd4-4d36b2d00c93"
               }
             }
           ]
@@ -12117,7 +12117,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -16852,11 +16852,11 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "11328236-0af3-517a-9fec-b8a45d041741"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "a711a029-2839-5e78-a01d-4a30249aa217"
               }
             ]
           },
@@ -16886,7 +16886,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ba52a901-12b2-5307-970a-7d4b7cf9f3db"
           }
         },
         "sourceRange": []
@@ -16932,7 +16932,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "da7d344e-bd20-5322-b77f-314fa6846716"
           }
         },
         "sourceRange": []
@@ -18572,11 +18572,11 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1434cc8f-fb9e-51a8-8f07-3994acdce556"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1b5ddf60-5f8a-5400-ba23-11e61fc78096"
               }
             ]
           },
@@ -18606,7 +18606,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "e4074746-98cd-5046-bd58-a1a245bdcf55"
           }
         },
         "sourceRange": []
@@ -18655,7 +18655,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "d927bf48-1016-528f-9ac3-94b6ae0be798"
           }
         },
         "sourceRange": []
@@ -18664,7 +18664,7 @@ description: Operations executed cpu-cooler.kcl
         "across": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "73ed8331-439e-58d0-9be5-b690ed472ea6"
           },
           "sourceRange": []
         }
@@ -18702,13 +18702,13 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "d927bf48-1016-528f-9ac3-94b6ae0be798"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "c123894c-0dd2-5cd5-9e3b-23f6fdad05d0"
               }
             }
           ]
@@ -20444,11 +20444,11 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "826fb5ab-1af6-53e1-a9cf-85ec054afb19"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "444404cf-682e-533f-b912-ea27470b9ee7"
               }
             ]
           },
@@ -20478,7 +20478,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fa10a9c6-5360-51a6-9c12-aa78c69b77e7"
           }
         },
         "sourceRange": []
@@ -20527,7 +20527,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fa4b9b8a-38f9-5e9d-94f8-129d5514f757"
           }
         },
         "sourceRange": []
@@ -20536,7 +20536,7 @@ description: Operations executed cpu-cooler.kcl
         "across": {
           "value": {
             "type": "Plane",
-            "artifact_id": "[uuid]"
+            "artifact_id": "73ed8331-439e-58d0-9be5-b690ed472ea6"
           },
           "sourceRange": []
         }
@@ -20574,13 +20574,13 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fa4b9b8a-38f9-5e9d-94f8-129d5514f757"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b9931895-27b1-5363-b452-5b871a2e9403"
               }
             }
           ]
@@ -22308,11 +22308,11 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "1a20607b-f929-5658-aeea-fe4ff2b49941"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "be9c3055-858d-5c1c-809c-430b60d82b21"
               }
             ]
           },
@@ -22342,7 +22342,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "184ed43d-add0-59e8-9b73-a4fd1dda7f54"
           }
         },
         "sourceRange": []
@@ -22409,7 +22409,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eba5c536-eb5f-54e0-8fed-d7bc8cd14310"
           }
         },
         "sourceRange": []
@@ -22428,12 +22428,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line12",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "d20ebac8-f1b0-5128-b028-e62ec7c2c84d"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "capEnd001",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "b4851c85-e265-50fe-b9f6-02941c312694"
                       }
                     ]
                   }
@@ -22448,12 +22448,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line6",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "d10bd7e4-c1ea-5835-9afc-d5da48117ab7"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "capEnd001",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "b4851c85-e265-50fe-b9f6-02941c312694"
                       }
                     ]
                   }
@@ -22468,12 +22468,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line6",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "d10bd7e4-c1ea-5835-9afc-d5da48117ab7"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "capStart001",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "3d4af8dd-a48c-56f2-9c70-1ab10230bd5b"
                       }
                     ]
                   }
@@ -22488,12 +22488,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line12",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "d20ebac8-f1b0-5128-b028-e62ec7c2c84d"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "capStart001",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "3d4af8dd-a48c-56f2-9c70-1ab10230bd5b"
                       }
                     ]
                   }
@@ -22659,7 +22659,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "4ed426d5-3bec-5bf2-b561-3114fc379c22"
               }
             ]
           },
@@ -22689,7 +22689,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0909193e-9177-5c99-b122-ee6485e537b0"
           }
         },
         "sourceRange": []
@@ -22735,7 +22735,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1fea61cc-b24f-5bcc-9082-9b6a674577c8"
           }
         },
         "sourceRange": []
@@ -22754,12 +22754,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line7",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "a0d814bc-68c7-582e-9f89-fe14cf7b1aff"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "circle1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "83e05029-147b-51ef-96a8-015a0c74ec49"
                       }
                     ]
                   }
@@ -22809,7 +22809,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1fea61cc-b24f-5bcc-9082-9b6a674577c8"
           }
         },
         "sourceRange": []
@@ -22943,7 +22943,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0f2b17c5-fdf9-564a-b621-4c8e4ef7ff54"
           }
         },
         "sourceRange": []
@@ -22969,7 +22969,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "1f956036-f468-5704-b717-fd7a50eacfe0"
           }
         },
         "sourceRange": []
@@ -22995,7 +22995,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "856eb6e9-9a0e-58ad-9dcb-e8438c52b3e0"
           }
         },
         "sourceRange": []
@@ -23021,7 +23021,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "fe28d73f-e3ef-5184-b047-b5b74754896f"
           }
         },
         "sourceRange": []
@@ -23047,7 +23047,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "7fda93cd-9a5c-5358-84ac-61bde95e03ba"
           }
         },
         "sourceRange": []
@@ -23073,7 +23073,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0662e1d4-b87a-518a-a1e7-0594429d2684"
           }
         },
         "sourceRange": []
@@ -23099,7 +23099,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "3ad695eb-a291-5f98-b4a1-99bf13f179d1"
           }
         },
         "sourceRange": []
@@ -23125,7 +23125,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "66197a58-8c0d-50f1-a5ef-12e2f8b51a9d"
           }
         },
         "sourceRange": []
@@ -23151,7 +23151,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "eb568769-50d9-58c1-b2c5-04fde30b2d80"
           }
         },
         "sourceRange": []
@@ -23353,7 +23353,7 @@ description: Operations executed cpu-cooler.kcl
             "value": {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "17cb387c-98f3-5085-80f7-bbb50aadb22d"
               }
             },
             "sourceRange": []
@@ -23380,7 +23380,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "17cb387c-98f3-5085-80f7-bbb50aadb22d"
           }
         },
         "sourceRange": []
@@ -23448,7 +23448,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "17cb387c-98f3-5085-80f7-bbb50aadb22d"
           }
         },
         "sourceRange": []
@@ -23561,13 +23561,13 @@ description: Operations executed cpu-cooler.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "05ab2fc4-1852-5eb6-bd69-96c1c032130e"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "2539e202-3451-5d40-8c6f-50b822800d7a"
                   }
                 }
               ]
@@ -23599,13 +23599,13 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "05ab2fc4-1852-5eb6-bd69-96c1c032130e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2539e202-3451-5d40-8c6f-50b822800d7a"
               }
             }
           ]
@@ -23678,13 +23678,13 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "05ab2fc4-1852-5eb6-bd69-96c1c032130e"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2539e202-3451-5d40-8c6f-50b822800d7a"
               }
             }
           ]
@@ -23799,61 +23799,61 @@ description: Operations executed cpu-cooler.kcl
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "f759c3cc-ed0b-51f0-a226-072f3879a79c"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "fb99c183-0f18-591f-8fca-7e3f01d2ad21"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "482d40f3-52ea-5845-b892-639330ea98de"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "64865a7c-869f-5f10-82b7-03e12dd33610"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "bb94088a-4cd9-5e2a-b162-4e58bfa040ba"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "a78b18f7-7890-5550-a664-d1a0a786ca38"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "98201707-8c9a-5bc4-aae3-aea16e2c69a2"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "331f73dc-e158-5ca4-8fd5-ac4b59761984"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "77232ea8-abcb-5a4f-ae90-2ed80bf14783"
                   }
                 },
                 {
                   "type": "Solid",
                   "value": {
-                    "artifactId": "[uuid]"
+                    "artifactId": "9bd6d602-d72a-597a-a00e-1b12b2a868ab"
                   }
                 }
               ]
@@ -23885,61 +23885,61 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f759c3cc-ed0b-51f0-a226-072f3879a79c"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fb99c183-0f18-591f-8fca-7e3f01d2ad21"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "482d40f3-52ea-5845-b892-639330ea98de"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "64865a7c-869f-5f10-82b7-03e12dd33610"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bb94088a-4cd9-5e2a-b162-4e58bfa040ba"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a78b18f7-7890-5550-a664-d1a0a786ca38"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "98201707-8c9a-5bc4-aae3-aea16e2c69a2"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "331f73dc-e158-5ca4-8fd5-ac4b59761984"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "77232ea8-abcb-5a4f-ae90-2ed80bf14783"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9bd6d602-d72a-597a-a00e-1b12b2a868ab"
               }
             }
           ]
@@ -24012,61 +24012,61 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f759c3cc-ed0b-51f0-a226-072f3879a79c"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "fb99c183-0f18-591f-8fca-7e3f01d2ad21"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "482d40f3-52ea-5845-b892-639330ea98de"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "64865a7c-869f-5f10-82b7-03e12dd33610"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "bb94088a-4cd9-5e2a-b162-4e58bfa040ba"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "a78b18f7-7890-5550-a664-d1a0a786ca38"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "98201707-8c9a-5bc4-aae3-aea16e2c69a2"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "331f73dc-e158-5ca4-8fd5-ac4b59761984"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "77232ea8-abcb-5a4f-ae90-2ed80bf14783"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "9bd6d602-d72a-597a-a00e-1b12b2a868ab"
               }
             }
           ]
@@ -24176,25 +24176,25 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "21cd947a-c374-51f7-8fea-79f3ead80d48"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b6f4405a-0bce-58a5-867a-b34908d6f690"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f23e1e23-7317-55dc-bcbe-59e0da825e5f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6236029a-42a2-5e7f-87ab-e5a763f088ab"
               }
             }
           ]
@@ -24330,49 +24330,49 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "21cd947a-c374-51f7-8fea-79f3ead80d48"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "04910eb0-eca3-5586-8092-525099b148bf"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b6f4405a-0bce-58a5-867a-b34908d6f690"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "2eb3bda7-28ac-5aac-948e-4d0a4be6bd5f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f23e1e23-7317-55dc-bcbe-59e0da825e5f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b16ad255-c779-54b1-92ce-a7b41bd77237"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6236029a-42a2-5e7f-87ab-e5a763f088ab"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "aeb1bdbc-d983-5079-9434-98342f29590d"
               }
             }
           ]
@@ -24521,7 +24521,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "73ed8331-439e-58d0-9be5-b690ed472ea6"
         },
         "sourceRange": []
       },
@@ -24678,7 +24678,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "515e71b6-5068-5314-a362-727be5fd92ee"
               }
             ]
           },
@@ -24708,7 +24708,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9e16ca69-67dd-5294-8693-34fbdb7b414e"
           }
         },
         "sourceRange": []
@@ -24768,7 +24768,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "05ab2fc4-1852-5eb6-bd69-96c1c032130e"
           }
         },
         "sourceRange": []
@@ -24787,12 +24787,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "circle1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "9a637cbd-0b2b-5b9a-ad83-522375676522"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "motorStart",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "80ab6224-6fad-5745-9fde-b6e4b6436a5a"
                       }
                     ]
                   }
@@ -24807,12 +24807,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "circle1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "9a637cbd-0b2b-5b9a-ad83-522375676522"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "motorEnd",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "e3ca543c-39f3-5f25-9f26-c10881fc9ff1"
                       }
                     ]
                   }
@@ -24862,7 +24862,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "05ab2fc4-1852-5eb6-bd69-96c1c032130e"
           }
         },
         "sourceRange": []
@@ -24902,7 +24902,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "73ed8331-439e-58d0-9be5-b690ed472ea6"
         },
         "sourceRange": []
       },
@@ -25062,7 +25062,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "0522b012-e030-5688-a335-da7c2506e314"
               }
             ]
           },
@@ -25092,7 +25092,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "6b47b38f-ef39-55ee-86a3-09330b344cbd"
           }
         },
         "sourceRange": []
@@ -25138,7 +25138,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "2539e202-3451-5d40-8c6f-50b822800d7a"
           }
         },
         "sourceRange": []
@@ -25179,7 +25179,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "782a6a40-2456-5e7d-9296-7cc2489d740e"
           }
         },
         "sourceRange": []
@@ -25205,7 +25205,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "f9a89775-cfba-5031-8e02-ff7b852c56d9"
           }
         },
         "sourceRange": []
@@ -25247,7 +25247,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7eeada42-2589-5f63-83f8-fa663afb46da"
         },
         "sourceRange": []
       },
@@ -26711,7 +26711,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "7eeada42-2589-5f63-83f8-fa663afb46da"
         },
         "sourceRange": []
       },
@@ -28175,7 +28175,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -28332,7 +28332,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "cb0ba5d5-f6ce-59d3-860f-10a1dd759b60"
               }
             ]
           },
@@ -28362,7 +28362,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "20582bfb-22a0-560e-9b43-a34b1414aa73"
           }
         },
         "sourceRange": []
@@ -28372,7 +28372,7 @@ description: Operations executed cpu-cooler.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "ee893902-c0c3-5722-aae7-7921b145ff0a"
             }
           },
           "sourceRange": []
@@ -28517,7 +28517,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "5022678e-7264-5832-93d9-fcfb2a73852a"
               }
             ]
           },
@@ -28547,7 +28547,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "9143d8ca-fdca-5a4a-a285-7da5f6998518"
           }
         },
         "sourceRange": []
@@ -28557,7 +28557,7 @@ description: Operations executed cpu-cooler.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "829d15c9-09c0-57a3-8678-b19bb7006613"
             }
           },
           "sourceRange": []
@@ -28585,7 +28585,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -29316,7 +29316,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "350b5dee-65d1-5774-b955-608c4e28244b"
         },
         "sourceRange": []
       },
@@ -30047,7 +30047,7 @@ description: Operations executed cpu-cooler.kcl
       "unlabeledArg": {
         "value": {
           "type": "Plane",
-          "artifact_id": "[uuid]"
+          "artifact_id": "73ed8331-439e-58d0-9be5-b690ed472ea6"
         },
         "sourceRange": []
       },
@@ -30204,7 +30204,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "88f1a003-ea18-51e5-ba07-f54f2f132e32"
               }
             ]
           },
@@ -30234,7 +30234,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "0dbb6a71-6a78-5b97-ba31-db7c29452d97"
           }
         },
         "sourceRange": []
@@ -30244,7 +30244,7 @@ description: Operations executed cpu-cooler.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "8bf27780-3473-5b78-943b-2619a6949d8c"
             }
           },
           "sourceRange": []
@@ -30389,7 +30389,7 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f4aa2baf-f051-5a45-b040-8dd46b8f1333"
               }
             ]
           },
@@ -30419,7 +30419,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "b6f2ba85-569c-53ae-9557-8079b730ecd5"
           }
         },
         "sourceRange": []
@@ -30429,7 +30429,7 @@ description: Operations executed cpu-cooler.kcl
           "value": {
             "type": "Sketch",
             "value": {
-              "artifactId": "[uuid]"
+              "artifactId": "83fb9b60-ca50-534f-8639-7ffb1642f87a"
             }
           },
           "sourceRange": []
@@ -30458,7 +30458,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ee893902-c0c3-5722-aae7-7921b145ff0a"
           }
         },
         "sourceRange": []
@@ -30484,7 +30484,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "829d15c9-09c0-57a3-8678-b19bb7006613"
           }
         },
         "sourceRange": []
@@ -30510,7 +30510,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "8bf27780-3473-5b78-943b-2619a6949d8c"
           }
         },
         "sourceRange": []
@@ -30536,7 +30536,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "83fb9b60-ca50-534f-8639-7ffb1642f87a"
           }
         },
         "sourceRange": []
@@ -30562,7 +30562,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "572d9429-a3a2-5f9a-9c35-6dfb98006c57"
           }
         },
         "sourceRange": []
@@ -30588,7 +30588,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "ab660262-540c-5320-97c4-5c0d855c9854"
           }
         },
         "sourceRange": []
@@ -30614,7 +30614,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "03ecf4ac-0ab0-507e-b6fe-ec809dca1fe7"
           }
         },
         "sourceRange": []
@@ -30640,7 +30640,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "cd01b402-645f-509f-bfa9-346f2387ba3c"
           }
         },
         "sourceRange": []
@@ -30669,25 +30669,25 @@ description: Operations executed cpu-cooler.kcl
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "21cd947a-c374-51f7-8fea-79f3ead80d48"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "b6f4405a-0bce-58a5-867a-b34908d6f690"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "f23e1e23-7317-55dc-bcbe-59e0da825e5f"
               }
             },
             {
               "type": "Solid",
               "value": {
-                "artifactId": "[uuid]"
+                "artifactId": "6236029a-42a2-5e7f-87ab-e5a763f088ab"
               }
             }
           ]
@@ -31443,11 +31443,11 @@ description: Operations executed cpu-cooler.kcl
             "value": [
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "60b8d67e-245f-5c67-8117-46c5483151e6"
               },
               {
                 "type": "Segment",
-                "artifact_id": "[uuid]"
+                "artifact_id": "f302063b-ef5e-57ee-a7ee-a13fe23ef5c9"
               }
             ]
           },
@@ -31477,7 +31477,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "34b03585-086e-580a-b581-8abf1b28217a"
           }
         },
         "sourceRange": []
@@ -31523,7 +31523,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "be212836-6c17-5119-8c12-9eccbf4ff668"
           }
         },
         "sourceRange": []
@@ -31564,7 +31564,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Solid",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "be212836-6c17-5119-8c12-9eccbf4ff668"
           }
         },
         "sourceRange": []
@@ -31583,12 +31583,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "126498f1-2635-5500-bf0d-757df8fb0e18"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line2",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "f69a0dde-4b48-50a4-9149-3a22fc1728a3"
                       }
                     ]
                   }
@@ -31603,12 +31603,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line2",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "f69a0dde-4b48-50a4-9149-3a22fc1728a3"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line3",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "2df777f3-9d1a-57aa-bab0-2c12c3121490"
                       }
                     ]
                   }
@@ -31623,12 +31623,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line3",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "2df777f3-9d1a-57aa-bab0-2c12c3121490"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line4",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "bc451185-b0ef-5ce1-9c08-46bf9b850559"
                       }
                     ]
                   }
@@ -31643,12 +31643,12 @@ description: Operations executed cpu-cooler.kcl
                       {
                         "type": "TagIdentifier",
                         "value": "line4",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "bc451185-b0ef-5ce1-9c08-46bf9b850559"
                       },
                       {
                         "type": "TagIdentifier",
                         "value": "line1",
-                        "artifact_id": "[uuid]"
+                        "artifact_id": "126498f1-2635-5500-bf0d-757df8fb0e18"
                       }
                     ]
                   }
@@ -31698,7 +31698,7 @@ description: Operations executed cpu-cooler.kcl
         "value": {
           "type": "Sketch",
           "value": {
-            "artifactId": "[uuid]"
+            "artifactId": "24d5c871-664e-5be6-8af3-935191872d65"
           }
         },
         "sourceRange": []

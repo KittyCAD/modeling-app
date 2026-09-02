@@ -88,19 +88,19 @@ description: Variables in memory after executing poop_chute.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "artifactId": "e00e9caf-6e9e-5221-8545-b199546c367f",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "c238fd69-fff2-5055-aebf-47ee94ba14a0",
+          "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bd2b0773-d542-57d8-9b13-1a5eac48c0a0",
+          "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
           "sourceRange": [],
           "tag": {
             "commentStart": 358,
@@ -113,78 +113,78 @@ description: Variables in memory after executing poop_chute.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "71fcb00d-cf45-5acd-9c92-522060837254",
+          "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "ec3b813b-0c0b-5a53-9856-c0a162f0e73f",
+          "id": "41c630c9-9d44-581b-98af-caee575bea48",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a6c0345d-7806-5e52-b7ba-4b8a8069fbc6",
+          "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "78841269-0e86-5b5f-bb97-aef145759241",
+          "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "85f2cacd-120d-5a67-8efe-ebf3c9de87ad",
+          "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "a07c4b8c-d63f-5764-b000-f6d7e5b071e5",
+          "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "b4cf9092-d225-5d28-b0a6-d7647abe8aad",
+          "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "be50eaa2-e6a1-5213-a55c-a962041b6469",
+          "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "117e01f9-a35d-583c-aeae-ef43ca8909f3",
+          "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "13a1daff-5a9f-52ab-b9dc-a18291f1e9de",
+          "id": "7b681387-29ea-57f1-8713-d63280827139",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "99d7b748-ecca-511c-8255-52c1a646a5f9",
+          "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -193,11 +193,11 @@ description: Variables in memory after executing poop_chute.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "91226189-7e64-5690-9203-67ee33a6eb03",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
               "sourceRange": []
             },
             "from": [
@@ -214,7 +214,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
               "sourceRange": []
             },
             "from": [
@@ -238,7 +238,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
               "sourceRange": []
             },
             "from": [
@@ -255,7 +255,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "41c630c9-9d44-581b-98af-caee575bea48",
               "sourceRange": []
             },
             "from": [
@@ -272,7 +272,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
               "sourceRange": []
             },
             "from": [
@@ -289,7 +289,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
               "sourceRange": []
             },
             "from": [
@@ -306,7 +306,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
               "sourceRange": []
             },
             "from": [
@@ -323,7 +323,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
               "sourceRange": []
             },
             "from": [
@@ -340,7 +340,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
               "sourceRange": []
             },
             "from": [
@@ -357,7 +357,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
               "sourceRange": []
             },
             "from": [
@@ -374,7 +374,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
               "sourceRange": []
             },
             "from": [
@@ -391,7 +391,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "7b681387-29ea-57f1-8713-d63280827139",
               "sourceRange": []
             },
             "from": [
@@ -408,7 +408,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
               "sourceRange": []
             },
             "from": [
@@ -425,8 +425,8 @@ description: Variables in memory after executing poop_chute.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+          "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
           "kind": "YZ",
           "objectId": 0,
           "origin": {
@@ -467,7 +467,7 @@ description: Variables in memory after executing poop_chute.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
             "sourceRange": []
           }
         },
@@ -477,12 +477,12 @@ description: Variables in memory after executing poop_chute.kcl
             "value": "seg01"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03",
+        "originalId": "91226189-7e64-5690-9203-67ee33a6eb03",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "53c74f78-b8c4-5ce0-a38e-086bded0d7cd",
+      "endCapId": "6066a330-10b9-530f-a571-3748028b5a84",
       "units": "mm",
       "sectional": false
     }
@@ -501,11 +501,11 @@ description: Variables in memory after executing poop_chute.kcl
     "type": "Sketch",
     "value": {
       "type": "Sketch",
-      "id": "[uuid]",
+      "id": "91226189-7e64-5690-9203-67ee33a6eb03",
       "paths": [
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "89316223-2ea1-5731-9c72-0492bc30fbe2",
             "sourceRange": []
           },
           "from": [
@@ -522,7 +522,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "daa2fbb0-8c3a-525f-bc28-3b5a77c8094b",
             "sourceRange": []
           },
           "from": [
@@ -546,7 +546,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "523b9fc1-d681-5ef3-b407-128525533bfe",
             "sourceRange": []
           },
           "from": [
@@ -563,7 +563,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "41c630c9-9d44-581b-98af-caee575bea48",
             "sourceRange": []
           },
           "from": [
@@ -580,7 +580,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "ef8bf6bd-dce6-5443-b5a0-3d60dbd57f79",
             "sourceRange": []
           },
           "from": [
@@ -597,7 +597,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fc1035ae-3877-5cf6-9e94-7e1f3b755966",
             "sourceRange": []
           },
           "from": [
@@ -614,7 +614,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "f5cca6d8-813c-5e62-81d9-e4e8e17ede93",
             "sourceRange": []
           },
           "from": [
@@ -631,7 +631,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "2fb0a795-692e-5806-9d7e-a6d1b5ee79b7",
             "sourceRange": []
           },
           "from": [
@@ -648,7 +648,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "38f0111a-8034-5e85-9ec1-07dbc9646b06",
             "sourceRange": []
           },
           "from": [
@@ -665,7 +665,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "fe76cc2a-18a1-5937-82e8-b2572a7c2149",
             "sourceRange": []
           },
           "from": [
@@ -682,7 +682,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "dbfb7312-0d20-502d-9d41-6a13c5e4a8c9",
             "sourceRange": []
           },
           "from": [
@@ -699,7 +699,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "7b681387-29ea-57f1-8713-d63280827139",
             "sourceRange": []
           },
           "from": [
@@ -716,7 +716,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         {
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "19fe8534-2bed-5e2a-afe9-63f57b621004",
             "sourceRange": []
           },
           "from": [
@@ -733,8 +733,8 @@ description: Variables in memory after executing poop_chute.kcl
         }
       ],
       "on": {
-        "artifactId": "[uuid]",
-        "id": "[uuid]",
+        "artifactId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "id": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
         "kind": "YZ",
         "objectId": 0,
         "origin": {
@@ -775,7 +775,7 @@ description: Variables in memory after executing poop_chute.kcl
         "units": "mm",
         "tag": null,
         "__geoMeta": {
-          "id": "[uuid]",
+          "id": "efd1e3b2-5268-50fd-858e-26540f8146e5",
           "sourceRange": []
         }
       },
@@ -785,8 +785,8 @@ description: Variables in memory after executing poop_chute.kcl
           "value": "seg01"
         }
       },
-      "artifactId": "[uuid]",
-      "originalId": "[uuid]",
+      "artifactId": "91226189-7e64-5690-9203-67ee33a6eb03",
+      "originalId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "units": "mm"
     }
   },
@@ -794,19 +794,19 @@ description: Variables in memory after executing poop_chute.kcl
     "type": "Solid",
     "value": {
       "type": "Solid",
-      "id": "[uuid]",
-      "artifactId": "[uuid]",
+      "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+      "artifactId": "e342814e-d7c1-537b-959c-f7fd92c90294",
       "value": [
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "0335082f-807e-5003-ba05-da19841041b5",
+          "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "121e873e-b825-584a-ab60-427fca9c5318",
+          "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
           "sourceRange": [],
           "tag": {
             "commentStart": 1152,
@@ -819,78 +819,78 @@ description: Variables in memory after executing poop_chute.kcl
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "3bffafca-cd14-55e2-a053-e49b59dad5bb",
+          "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "dbbc35ae-31e4-5f31-9776-9fb22f56e33e",
+          "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "13b0dcdd-2cf8-5df1-b729-32564f109531",
+          "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "49acdf96-17c5-5611-b250-a7fe492d1b65",
+          "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "d21740f0-09d0-5bcc-b43c-51db24132719",
+          "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e50e3dac-83ef-504b-8e72-6922b4a536fa",
+          "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "e551aafa-4285-5c96-b7b7-79d111f9c490",
+          "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "bc0a5ac6-8052-54d3-bba4-8a04d8689610",
+          "id": "deb86259-17a0-5782-a352-d25992246cc0",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "43c5d00c-ce86-58b2-baa1-dacfc22fd497",
+          "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "cf2ff688-6916-516e-849f-dd20bbab5491",
+          "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
+          "faceId": "206157eb-d3e9-543a-b4fa-f97269742078",
+          "id": "907cac50-3701-5367-b35c-4ec2132c824f",
           "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
@@ -899,11 +899,11 @@ description: Variables in memory after executing poop_chute.kcl
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
-        "id": "[uuid]",
+        "id": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "paths": [
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "037b0f2d-13ef-58af-b918-43b89e77393e",
               "sourceRange": []
             },
             "from": [
@@ -920,7 +920,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "eb15cf8e-a943-5fe0-8d78-046893de64b7",
               "sourceRange": []
             },
             "from": [
@@ -944,7 +944,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "1173902c-36a4-51e4-ba62-e51739ec2a5c",
               "sourceRange": []
             },
             "from": [
@@ -961,7 +961,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cc141785-f204-5d03-bdf3-aa7163368c30",
               "sourceRange": []
             },
             "from": [
@@ -978,7 +978,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "5b7e9cc5-005c-5005-bc98-32d1ba6bf697",
               "sourceRange": []
             },
             "from": [
@@ -995,7 +995,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "53a9149e-1246-5c44-9e3c-558201ff438c",
               "sourceRange": []
             },
             "from": [
@@ -1012,7 +1012,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "b680fe3e-a804-583c-99d9-1693b2432aeb",
               "sourceRange": []
             },
             "from": [
@@ -1029,7 +1029,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "2c522d90-5fef-5750-b489-b008732bd2c3",
               "sourceRange": []
             },
             "from": [
@@ -1046,7 +1046,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
               "sourceRange": []
             },
             "from": [
@@ -1063,7 +1063,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "deb86259-17a0-5782-a352-d25992246cc0",
               "sourceRange": []
             },
             "from": [
@@ -1080,7 +1080,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
               "sourceRange": []
             },
             "from": [
@@ -1097,7 +1097,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "6023bee8-3980-5182-88ac-ac06420ce00f",
               "sourceRange": []
             },
             "from": [
@@ -1114,7 +1114,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           {
             "__geoMeta": {
-              "id": "[uuid]",
+              "id": "907cac50-3701-5367-b35c-4ec2132c824f",
               "sourceRange": []
             },
             "from": [
@@ -1131,8 +1131,8 @@ description: Variables in memory after executing poop_chute.kcl
           }
         ],
         "on": {
-          "artifactId": "[uuid]",
-          "id": "[uuid]",
+          "artifactId": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
+          "id": "837bc8b4-ea00-5674-8e14-4dd0cf97b3b3",
           "kind": "YZ",
           "objectId": 1,
           "origin": {
@@ -1173,7 +1173,7 @@ description: Variables in memory after executing poop_chute.kcl
           "units": "mm",
           "tag": null,
           "__geoMeta": {
-            "id": "[uuid]",
+            "id": "5173c024-ac32-59f6-acbe-69ddbf68893d",
             "sourceRange": []
           }
         },
@@ -1183,12 +1183,12 @@ description: Variables in memory after executing poop_chute.kcl
             "value": "seg02"
           }
         },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
+        "artifactId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
+        "originalId": "90a5d279-3b15-5070-b2fd-a30474df87a6",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "startCapId": "a04ca17d-ef25-5fe0-87cf-d9e5fb1049cf",
+      "endCapId": "5c52fc8d-05c7-53a3-9952-e1c21fe31144",
       "units": "mm",
       "sectional": false
     }

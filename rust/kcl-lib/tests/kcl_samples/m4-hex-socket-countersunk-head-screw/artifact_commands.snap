@@ -5,7 +5,7 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
 {
   "public/kcl-samples/m4-hex-socket-countersunk-head-screw/main.kcl": [
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f7696437-0c54-515c-9a57-315967ca9a9d",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -30,20 +30,20 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b680fe3e-a804-583c-99d9-1693b2432aeb",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2c522d90-5fef-5750-b489-b008732bd2c3",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "f7696437-0c54-515c-9a57-315967ca9a9d",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -55,18 +55,18 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "cc87388f-5797-5adb-95fb-8f68e65f73c1",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "to": {
           "x": -0.00000000006000000151636728,
           "y": -20.0,
@@ -75,18 +75,18 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "deb86259-17a0-5782-a352-d25992246cc0",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "segment": {
           "type": "line",
           "end": {
@@ -99,11 +99,11 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "91226189-7e64-5690-9203-67ee33a6eb03",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "segment": {
           "type": "line",
           "end": {
@@ -116,11 +116,11 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "efd1e3b2-5268-50fd-858e-26540f8146e5",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "segment": {
           "type": "line",
           "end": {
@@ -133,11 +133,11 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "89316223-2ea1-5731-9c72-0492bc30fbe2",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "segment": {
           "type": "line",
           "end": {
@@ -150,11 +150,11 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "523b9fc1-d681-5ef3-b407-128525533bfe",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "segment": {
           "type": "line",
           "end": {
@@ -167,7 +167,7 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "8accf664-7097-5b74-b4cf-22cfff115a4f",
       "range": [],
       "command": {
         "type": "make_plane",
@@ -192,20 +192,20 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1a0ade6f-d355-5121-9adb-351976a78284",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1cca8d80-f404-5b33-b6e0-cca169c4da48",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -217,18 +217,18 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
       "range": [],
       "command": {
         "type": "start_path"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "14d4f28b-98bf-5f5d-9542-446598cbea13",
       "range": [],
       "command": {
         "type": "move_path_pen",
-        "path": "[uuid]",
+        "path": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "to": {
           "x": 1.4500000000000024,
           "y": 0.00000000000000039038701976569743,
@@ -237,18 +237,18 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d5eaf678-0440-563f-ac19-e473850b9270",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "segment": {
           "type": "line",
           "end": {
@@ -261,11 +261,11 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "2f481fd4-203e-57d7-b5d6-b16289577621",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "segment": {
           "type": "line",
           "end": {
@@ -278,11 +278,11 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "72dddee3-1330-5c4f-b767-659f762ad674",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "segment": {
           "type": "line",
           "end": {
@@ -295,11 +295,11 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "149e62f8-f213-51a7-9a7f-ea3dc117615d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "segment": {
           "type": "line",
           "end": {
@@ -312,11 +312,11 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "25999981-b7b8-57e2-8ac5-655907dfffdc",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "segment": {
           "type": "line",
           "end": {
@@ -329,11 +329,11 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f0c740f1-5055-5cce-95b9-6f1fba47290d",
       "range": [],
       "command": {
         "type": "extend_path",
-        "path": "[uuid]",
+        "path": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "segment": {
           "type": "line",
           "end": {
@@ -346,24 +346,24 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
+        "segment": "8868de97-0e2a-52f7-8e1a-8f0671a194e3",
+        "intersection_segment": "91226189-7e64-5690-9203-67ee33a6eb03",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "d005938d-7477-557a-bef2-28dfc45d0fce",
       "range": [],
       "command": {
         "type": "revolve",
-        "target": "[uuid]",
+        "target": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -385,50 +385,50 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e7a8a6a2-61b2-5306-be83-76bb37bcaecf",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "7d8da150-b7c1-5e35-95ff-877c868e6b01",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "edge_id": "5803fcb4-e0b7-5b5f-9302-d122c1603383"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0f805c0b-b523-5978-a0dd-c17f7ac70690",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "4af1ad3f-3b75-5b4f-bc50-687a353931be",
+        "edge_id": "5803fcb4-e0b7-5b5f-9302-d122c1603383"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "5288de96-84bb-518a-848b-5092b5d33e48",
       "range": [],
       "command": {
         "type": "create_region",
-        "object_id": "[uuid]",
-        "segment": "[uuid]",
-        "intersection_segment": "[uuid]",
+        "object_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
+        "segment": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
+        "intersection_segment": "faa6bc39-f12d-53bf-bb63-4db4813c0f44",
         "intersection_index": -1,
         "curve_clockwise": false,
         "version": "V1"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1da187cf-4f25-596d-a170-2007a75f41c6",
       "range": [],
       "command": {
         "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
+        "entity_id": "8accf664-7097-5b74-b4cf-22cfff115a4f",
         "ortho": false,
         "animated": false,
         "adjust_camera": false,
@@ -440,11 +440,11 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "9be00e59-09ca-5d92-b815-256daf9fc98e",
       "range": [],
       "command": {
         "type": "extrude",
-        "target": "[uuid]",
+        "target": "5288de96-84bb-518a-848b-5092b5d33e48",
         "distance": 2.2,
         "faces": null,
         "opposite": "None",
@@ -453,59 +453,59 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "4e2356a5-d19d-5536-bce9-94192c5d96fb",
       "range": [],
       "command": {
         "type": "sketch_mode_disable"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "f88ee97f-bd8d-58c2-8a13-430790ee61a8",
       "range": [],
       "command": {
         "type": "object_bring_to_front",
-        "object_id": "[uuid]"
+        "object_id": "5288de96-84bb-518a-848b-5092b5d33e48"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e8637a6d-00c2-5b87-831e-2db8c2223948",
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5288de96-84bb-518a-848b-5092b5d33e48",
+        "edge_id": "e787d545-0147-5453-be42-479d7cb8fd0d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "0919e597-7112-50da-97bb-e5ba198e1dcd",
       "range": [],
       "command": {
         "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "object_id": "5288de96-84bb-518a-848b-5092b5d33e48",
+        "edge_id": "e787d545-0147-5453-be42-479d7cb8fd0d"
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
       "range": [],
       "command": {
         "type": "boolean_subtract",
         "target_ids": [
-          "[uuid]"
+          "4af1ad3f-3b75-5b4f-bc50-687a353931be"
         ],
         "tool_ids": [
-          "[uuid]"
+          "5288de96-84bb-518a-848b-5092b5d33e48"
         ],
         "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "b1c16b58-be5f-5c43-aab8-81b97df08cbc",
       "range": [],
       "command": {
         "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
+        "object_id": "e442b4e0-3e58-50e0-9ed6-85e63a7afccf",
         "color": {
           "r": 0.6745098,
           "g": 0.69411767,
@@ -518,20 +518,20 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "abebac7f-994f-53ad-bdfb-5f1e6cb19596",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "2ca0f7fa-0a31-5abe-bba1-1db6bf5cc493",
         "hidden": true
       }
     },
     {
-      "cmdId": "[uuid]",
+      "cmdId": "1233ad6c-ef2a-5cf0-a663-cc9dd7ccebcd",
       "range": [],
       "command": {
         "type": "object_visible",
-        "object_id": "[uuid]",
+        "object_id": "92f30fc6-0b46-5a71-948c-66f8df3d30c0",
         "hidden": true
       }
     }
