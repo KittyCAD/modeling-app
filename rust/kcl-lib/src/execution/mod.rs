@@ -5021,6 +5021,57 @@ startSketchOn(XY)
         }
     }
 
+    /// Mock execution applies the KCL 3.0 semantics -- early return and
+    /// if-arm scoping -- since it records the entry point's kclVersion via
+    /// `inner_run` rather than `run_concurrent`.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_applies_v3_semantics() {
+        use futures::FutureExt;
+
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let fresh_memory = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        let program = crate::Program::parse_no_errs(
+            r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  return 1
+  assert(1, isEqualTo = 2, error = "code after return ran")
+}
+x = f()
+outer = 1
+y = if true {
+  outer = 2
+  outer + 10
+} else {
+  0
+}
+"#,
+        )
+        .unwrap();
+
+        // Close the context and clear the cache even if an assertion panics,
+        // then let the panic continue.
+        let test_result = std::panic::AssertUnwindSafe(async {
+            let (exec_state, env) = ctx.run_mock_returning_state(&program, &fresh_memory).await.unwrap();
+            let var = |name: &str| mem_get_json(exec_state.stack(), env, name).as_f64().unwrap();
+            assert_eq!(var("x"), 1.0, "early return produces the function's value");
+            assert_eq!(var("y"), 12.0, "the branch sees its own shadowing binding");
+            assert_eq!(var("outer"), 1.0, "the outer binding is unchanged after the if");
+        })
+        .catch_unwind()
+        .await;
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        if let Err(panic) = test_result {
+            std::panic::resume_unwind(panic);
+        }
+    }
+
     /// All fillet algorithm versions sent to the engine during the run,
     /// across the root module and every imported module. The version emitted
     /// is the observable for which kclVersion governed the filleting code;
@@ -5530,6 +5581,607 @@ assert(1, isEqualTo = 2, error = "code after exit ran")
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_bindings_do_not_leak_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if true {
+  y = 1
+  y
+} else {
+  0
+}
+z = y
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`y` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_bindings_leak_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: arm bodies share the enclosing
+        // environment, so arm bindings are visible after the if.
+        for header in ["", "@settings(kclVersion = 2.0)\n"] {
+            let code = format!(
+                r#"{header}x = if true {{
+  y = 1
+  y
+}} else {{
+  0
+}}
+z = y
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            assert_eq!(variable_f64(&result, "z"), 1.0);
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_shadowing_allowed_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+y = 1
+x = if true {
+  y = 2
+  y + 10
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 12.0);
+        assert_eq!(variable_f64(&result, "y"), 1.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_shadowing_still_errors_without_v3() {
+        // Pins the pre-KCL-3.0 behavior: the arm shares the enclosing
+        // environment, so redeclaring an outer name is an error.
+        for header in ["", "@settings(kclVersion = 2.0)\n"] {
+            let code = format!(
+                r#"{header}y = 1
+x = if true {{
+  y = 2
+  y
+}} else {{
+  0
+}}
+"#
+            );
+            let err = parse_execute(&code).await.expect_err("should error");
+            assert!(
+                err.message().contains("Cannot redefine `y`"),
+                "unexpected message: {}",
+                err.message()
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_closure_escape_in_v3() {
+        // A closure declared in an arm captures arm-locals and stays valid
+        // after the arm's scope is popped.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+n = 1
+f = if true {
+  m = 41
+  g = fn() {
+    return m + n
+  }
+  g
+} else {
+  g = fn() {
+    return 0
+  }
+  g
+}
+x = f()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 42.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn recursive_if_arm_closure_keeps_enclosing_function_frame_alive_in_v3() {
+        // A named recursive closure takes a different snapshot path from an
+        // anonymous closure. Escaping through an arm must retain both the arm
+        // and its enclosing call frame.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn makeCounter() {
+  outer = 40
+  selected = if true {
+    inner = 2
+    fn count(@n) {
+      return if n == 0 {
+        outer + inner
+      } else {
+        count(n - 1) + 1
+      }
+    }
+    count
+  } else {
+    fn fallback(@n) {
+      return n
+    }
+    fallback
+  }
+  return selected
+}
+counter = makeCounter()
+x = counter(3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 45.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn return_inside_scoped_if_arm_in_v3() {
+        // Early return from inside a scoped arm pops the arm environment on
+        // the way out.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f(@b) {
+  local = if b {
+    w = 1
+    return w + 9
+    0
+  } else {
+    0
+  }
+  return local
+}
+x = f(true)
+y = f(false)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 10.0);
+        assert_eq!(variable_f64(&result, "y"), 0.0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn else_if_and_nested_if_scoping_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if false {
+  0
+} else if true {
+  a = 1
+  b = if true {
+    c = 2
+    a + c
+  } else {
+    0
+  }
+  a + b
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 4.0);
+
+        // A nested arm's binding is not visible in the enclosing arm.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if true {
+  b = if true {
+    c = 2
+    c
+  } else {
+    0
+  }
+  b + c
+} else {
+  0
+}
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`c` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    /// Else-if and final-else arms are isolated exactly like then-arms:
+    /// their bindings are invisible after the if, and they may shadow outer
+    /// bindings without changing them. Pinned per arm kind so a refactor of
+    /// the shared arm dispatch can't silently drop one.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn else_if_and_final_else_arms_are_isolated_in_v3() {
+        // A taken else-if arm's binding doesn't leak.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if false {
+  0
+} else if true {
+  y = 1
+  y
+} else {
+  0
+}
+z = y
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`y` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // A taken final-else arm's binding doesn't leak.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+x = if false {
+  0
+} else if false {
+  0
+} else {
+  y = 1
+  y
+}
+z = y
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(
+            err.message().contains("`y` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // A taken else-if arm can shadow an outer binding without changing it.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+outer = 1
+x = if false {
+  0
+} else if true {
+  outer = 2
+  outer + 10
+} else {
+  0
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 12.0);
+        assert_eq!(variable_f64(&result, "outer"), 1.0);
+
+        // Same from the final-else arm.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+outer = 1
+x = if false {
+  0
+} else if false {
+  0
+} else {
+  outer = 2
+  outer + 10
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 12.0);
+        assert_eq!(variable_f64(&result, "outer"), 1.0);
+    }
+
+    /// Pins the pre-KCL-3.0 behavior for else-if and final-else arms: their
+    /// bindings leak into the enclosing environment, and shadowing an outer
+    /// name is a redefinition error, matching then-arms.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn else_if_and_final_else_arm_bindings_leak_without_v3() {
+        for header in ["", "@settings(kclVersion = 2.0)\n"] {
+            let code = format!(
+                r#"{header}x = if false {{
+  0
+}} else if true {{
+  y = 1
+  y
+}} else {{
+  0
+}}
+z = y
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            assert_eq!(variable_f64(&result, "z"), 1.0, "code={code}");
+
+            let code = format!(
+                r#"{header}x = if false {{
+  0
+}} else if false {{
+  0
+}} else {{
+  y = 1
+  y
+}}
+z = y
+"#
+            );
+            let result = parse_execute(&code).await.unwrap();
+            assert_eq!(variable_f64(&result, "z"), 1.0, "code={code}");
+
+            let code = format!(
+                r#"{header}outer = 1
+x = if false {{
+  0
+}} else if true {{
+  outer = 2
+  outer
+}} else {{
+  0
+}}
+"#
+            );
+            let err = parse_execute(&code).await.expect_err("should error");
+            assert!(
+                err.message().contains("Cannot redefine `outer`"),
+                "unexpected message: {}",
+                err.message()
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn error_inside_if_arm_unwinds_balanced_in_v3() {
+        // The user's error surfaces (not an internal environment-imbalance
+        // error), on both executors.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  dummy = if true {
+    assert(1, isEqualTo = 2, error = "boom")
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+"#;
+        let err = parse_execute(code).await.expect_err("should error");
+        assert!(err.message().contains("boom"), "unexpected message: {}", err.message());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exit_inside_scoped_if_arm_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn f() {
+  dummy = if true {
+    exit()
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+    }
+
+    /// If-arm scoping is gated on the entry point's kclVersion, not the
+    /// defining module's.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_scoping_gated_on_entry_point_not_module() {
+        // A 2.0 entry point keeps leaking arms everywhere, even inside an
+        // imported KCL 3.0 module.
+        let dep = r#"@settings(kclVersion = "3.0-preview")
+ignored = if true {
+  leaked = 1
+  leaked
+} else {
+  0
+}
+export leakCheck = leaked
+"#;
+        let main = r#"@settings(kclVersion = 2.0)
+import leakCheck from "dep.kcl"
+x = leakCheck
+"#;
+        let result = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap();
+        assert_eq!(variable_f64(&result, "x"), 1.0);
+
+        // A KCL 3.0 entry point applies arm scoping everywhere,
+        // including inside an imported 2.0 module.
+        let dep = r#"@settings(kclVersion = 2.0)
+ignored = if true {
+  arm = 1
+  arm
+} else {
+  0
+}
+export fn leakCheck() {
+  return arm
+}
+"#;
+        let main = r#"@settings(kclVersion = "3.0-preview")
+import leakCheck from "dep.kcl"
+x = leakCheck()
+"#;
+        let err = execute_with_modules(main, &[("dep.kcl", dep)]).await.unwrap_err();
+        assert!(
+            err.message().contains("`arm` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    /// Unwinding out of a sketch block nested inside a scoped if-arm must
+    /// run the sketch cleanup and then pop the arm's scope environment, in
+    /// that order, on all three unwind paths: error, exit(), and early
+    /// return.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unwind_through_sketch_block_inside_scoped_if_arm_in_v3() {
+        // Error: the user's error surfaces, not an internal
+        // environment-imbalance error.
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn f() {
+  dummy = if true {
+    s = sketch(on = XY) {
+      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      q = notDefinedAnywhere
+    }
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+"#;
+        let err = parse_execute(code).await.unwrap_err();
+        assert!(
+            err.message().contains("`notDefinedAnywhere` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // exit() terminates the program; nothing after it runs.
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn f() {
+  dummy = if true {
+    s = sketch(on = XY) {
+      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      e = exit()
+    }
+    0
+  } else {
+    0
+  }
+  return dummy
+}
+x = f()
+assert(1, isEqualTo = 2, error = "code after exit ran")
+"#;
+        parse_execute(code).await.unwrap();
+
+        // Early return terminates the enclosing function with its value.
+        let code = r#"@settings(kclVersion = "3.0-preview", experimentalFeatures = allow)
+fn g() {
+  dummy = if true {
+    s = sketch(on = XY) {
+      l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+      return 42
+    }
+    0
+  } else {
+    0
+  }
+  return 0
+}
+y = g()
+"#;
+        let result = parse_execute(code).await.unwrap();
+        assert_eq!(variable_f64(&result, "y"), 42.0);
+    }
+
+    /// A tag declared inside an if-arm is bound like any arm-local: usable
+    /// within its arm, and under KCL 3.0 not visible after the if. Without
+    /// KCL 3.0 it leaks like other arm bindings.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tag_declared_inside_if_arm_is_arm_local_in_v3() {
+        let arm_body = r#"p = if true {
+  profile = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 0], tag = $edge)
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+  inArmLen = segLen(edge)
+  assert(inArmLen, isEqualTo = 10, error = "tag is usable within its arm")
+  profile
+} else {
+  startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 0])
+    |> line(end = [0, 5])
+    |> line(end = [-5, 0])
+    |> close()
+}
+len = segLen(edge)
+"#;
+
+        let code = format!("@settings(kclVersion = \"3.0-preview\")\n{arm_body}");
+        let err = parse_execute(&code).await.unwrap_err();
+        assert!(
+            err.message().contains("`edge` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+
+        // Pins the pre-KCL-3.0 behavior: the tag leaks out of the arm.
+        let result = parse_execute(arm_body).await.unwrap();
+        assert_eq!(variable_f64(&result, "len"), 10.0);
+    }
+
+    /// Repeated calls to a function whose body evaluates an if-expression must
+    /// not accumulate retained call frames when nothing escapes the arms: the
+    /// arm's scope environment defers pinning its parent until it is itself
+    /// referenced. Before deferred pinning, each of the 100 calls below
+    /// permanently retained its frame.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_scopes_do_not_retain_function_frames_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+fn pick(@i) {
+  r = if i > 50 {
+    a = i * 2
+    a
+  } else {
+    b = i + 1
+    b
+  }
+  return r
+}
+results = map([1..100], f = fn(@i) { return pick(i) })
+assert(results[0], isEqualTo = 2, error = "pick(1) = 2")
+assert(results[99], isEqualTo = 200, error = "pick(100) = 200")
+"#;
+        let result = parse_execute(code).await.unwrap();
+        // Long-lived environments (std prelude modules, the root env, ...) are
+        // a small constant independent of the call count.
+        let retained = result.exec_state.stack().memory.envs_with_bindings();
+        assert!(retained < 20, "retained environments: {retained}");
+    }
+
+    /// An if-expression used as a pipe element gets arm scoping without
+    /// disturbing the ambient pipe value: the arm's result feeds the next
+    /// element's `%` (the parser doesn't accept `%` anywhere inside the if
+    /// element itself), and arm-locals don't leak.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn if_arm_scoping_inside_pipe_in_v3() {
+        let code = r#"@settings(kclVersion = "3.0-preview")
+cond = true
+result = 5
+  |> if cond {
+    a = 20
+    a
+  } else {
+    0
+  }
+  |> max([%, 1])
+"#;
+        let result = parse_execute(code).await.unwrap();
+        // The then-arm's 20 must flow through the pipe into max's `%`. If
+        // the arm's scope push/pop corrupted the ambient pipe value, this
+        // would not be 20.
+        assert_eq!(variable_f64(&result, "result"), 20.0);
+
+        // Arm-locals of a pipe element are invisible after the pipe.
+        let code = r#"@settings(kclVersion = "3.0-preview")
+cond = true
+result = 5
+  |> if cond {
+    a = 20
+    a
+  } else {
+    0
+  }
+leaked = a
+"#;
+        let err = parse_execute(code).await.unwrap_err();
+        assert!(
+            err.message().contains("`a` is not defined"),
+            "unexpected message: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn experimental_parameter() {
         let code = r#"
 fn inc(@x, @(experimental = true) amount? = 1) {
@@ -5936,7 +6588,7 @@ type Empty { | }
         // one file would collide. The parser and formatter accept this shape, so
         // execution is the only thing that can reject it.
         //
-        // The rule is about nesting, not about one kind of block, so both routes
+        // The rule is about nesting, not about one kind of block, so all routes
         // to `BodyType::Block` are covered here.
         let allow = "@settings(experimentalFeatures = allow)\n";
         for (case, code) in [
@@ -5949,6 +6601,10 @@ type Empty { | }
                 format!(
                     "{allow}sketch(on = XY) {{\n  type Color {{ | Red }}\n  l1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])\n}}\n"
                 ),
+            ),
+            (
+                "if arm",
+                format!("{allow}x = if true {{\n  type Color {{ | Red }}\n  0\n}} else {{\n  0\n}}\n"),
             ),
         ] {
             assert_eq!(

@@ -86,6 +86,8 @@ export type FileFilter = {
 }
 export type FiltersConfig = FileFilter[]
 
+export type CommandScopes = readonly [string, ...string[]]
+
 export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
   [EventType in EventFrom<T>['type']]: Record<string, any>
 }>
@@ -143,6 +145,8 @@ export type Command<
   icon?: Icon
   hide?: TARGET[number]
   hideFromSearch?: boolean
+  /** App contexts where the command may be exposed and invoked. */
+  scopes?: CommandScopes
   disabled?: boolean
   status?: CommandStatus
 }

@@ -12,6 +12,9 @@ interface IRowCollapse {
   keyIndex: number
 }
 
+const REPLAY_ATTACHMENT_ERROR_KEY = 'zoo_replay_error'
+const REPLAY_ATTACHMENT_UNAVAILABLE = 'attachment_unavailable'
+
 export const Generic = (props: { content: string }) => {
   return <div>{props.content}</div>
 }
@@ -383,6 +386,38 @@ export const isExportDownloadFile = (file: MlCopilotFile): boolean => {
 }
 
 /**
+ * If attachment is unavailable, backend api sends an empty file placeholder
+ * with an error label in the metadata as "zoo_replay_error: attachment_unavailable"
+ */
+const isReplayAttachmentUnavailable = (file: MlCopilotFile): boolean => {
+  return (
+    file.metadata?.[REPLAY_ATTACHMENT_ERROR_KEY] ===
+    REPLAY_ATTACHMENT_UNAVAILABLE
+  )
+}
+
+/**
+ * Component for displaying an empty attachment, which is what backend returns
+ * when an attachment is unavailable
+ */
+const UnavailableFileItem = (props: { file: MlCopilotFile }) => {
+  return (
+    <div
+      role="status"
+      className="flex w-full flex-row items-center gap-2 rounded p-2 text-left text-chalkboard-70 dark:text-chalkboard-40"
+      aria-label={`${props.file.name}: Attachment unavailable`}
+    >
+      <CustomIcon
+        name="triangleExclamation"
+        className="h-5 w-5 flex-shrink-0"
+      />
+      <span className="min-w-0 flex-1 truncate text-sm">{props.file.name}</span>
+      <span className="flex-shrink-0 text-xs">Attachment unavailable</span>
+    </div>
+  )
+}
+
+/**
  * Component for displaying an image file with error handling
  */
 const ImageFileItem = (props: {
@@ -431,18 +466,24 @@ const ImageFileItem = (props: {
 }
 
 const FileList = (props: { files: MlCopilotFile[] }) => {
-  const [objectUrls, setObjectUrls] = useState<string[]>([])
+  const [objectUrls, setObjectUrls] = useState<Array<string | undefined>>([])
 
   useEffect(() => {
     // Create object URLs for all files
     const urls = props.files.map((file) =>
-      bytesToDataUrl(file.data, file.mimetype)
+      isReplayAttachmentUnavailable(file)
+        ? undefined
+        : bytesToDataUrl(file.data, file.mimetype)
     )
     setObjectUrls(urls)
 
     // Cleanup object URLs when component unmounts
     return () => {
-      urls.forEach((url) => URL.revokeObjectURL(url))
+      urls.forEach((url) => {
+        if (url) {
+          URL.revokeObjectURL(url)
+        }
+      })
     }
   }, [props.files])
 
@@ -465,6 +506,11 @@ const FileList = (props: { files: MlCopilotFile[] }) => {
   return (
     <div className="flex max-w-full min-w-0 flex-col gap-3">
       {imageFiles.map((file, index) => {
+        if (isReplayAttachmentUnavailable(file)) {
+          return (
+            <UnavailableFileItem key={`${file.name}-${index}`} file={file} />
+          )
+        }
         const fileIndex = props.files.indexOf(file)
         const url = objectUrls[fileIndex]
         return (
@@ -477,6 +523,11 @@ const FileList = (props: { files: MlCopilotFile[] }) => {
         )
       })}
       {otherFiles.map((file, index) => {
+        if (isReplayAttachmentUnavailable(file)) {
+          return (
+            <UnavailableFileItem key={`${file.name}-${index}`} file={file} />
+          )
+        }
         const fileIndex = props.files.indexOf(file)
         const url = objectUrls[fileIndex]
         return (

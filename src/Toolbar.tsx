@@ -991,7 +991,7 @@ const ToolbarItemTooltipRichContent = memo(
           </p>
         )}
         {itemConfig.disabled && itemConfig.disabledReason && (
-          <p className="px-2 my-2 text-ch font-sans text-destroy-80 dark:text-destroy-20">
+          <p className="mx-2 my-2 rounded border px-2 py-1.5 text-ch font-sans border-destroy-40 bg-destroy-10/50 text-destroy-80 dark:border-destroy-80 dark:bg-destroy-80/20 dark:text-destroy-20">
             {typeof itemConfig.disabledReason === 'function'
               ? itemConfig.disabledReason(state)
               : itemConfig.disabledReason}

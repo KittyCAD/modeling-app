@@ -6,6 +6,8 @@ import {
 } from '@kittycad/registry'
 import {
   type CommandSystemService,
+  commandScopeService,
+  commandScopesValueSpec,
   commandSystemService,
 } from '@src/registry/contracts/commands'
 import {
@@ -15,6 +17,8 @@ import {
   MODE_SKETCHING_KEYMAP_SCOPE,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   type PersistedKeymap,
+  keymapContract,
+  keymapScopesValueSpec,
   keymapService,
   provideKeymapDocument,
   provideKeymapItem,
@@ -50,6 +54,28 @@ describe('keymap extension', () => {
     ).toBe('Base')
 
     registry[Symbol.dispose]()
+  })
+
+  it('shares active scope state with the command scope service', () => {
+    const registry = createRegistryWithKeymapItems([])
+    const commandScopes = registry.get(commandScopeService)
+    const keymap = registry.get(keymapService)
+
+    commandScopes.applyScope('test.command-scope')
+    expect(keymap.getCurrentScopes()).toContain('test.command-scope')
+
+    keymap.applyScope('test.keymap-scope')
+    expect(commandScopes.activeScopes.value).toContain('test.keymap-scope')
+
+    keymap.removeScope('test.command-scope')
+    expect(commandScopes.getCurrentScopes()).not.toContain('test.command-scope')
+
+    registry[Symbol.dispose]()
+  })
+
+  it('keeps the keymap scope ValueSpec as a command scope alias', () => {
+    expect(keymapScopesValueSpec).toBe(commandScopesValueSpec)
+    expect(keymapContract.keymapScopesValueSpec).toBe(commandScopesValueSpec)
   })
 
   it('uses Shift+Escape to exit sketch across desktop and web', () => {
@@ -91,6 +117,26 @@ describe('keymap extension', () => {
     )
     expect(sketchLine?.command).toBe('zds.toolbar.sketch.line')
     expect(sketchLine?.hidden).toBeUndefined()
+  })
+
+  it('uses P for the hovered tool picker while preserving sketch shortcuts', () => {
+    const toolPicker = defaultKeymap.bindings.find(
+      (binding) => binding.id === 'toolbar.sketch.tool-picker'
+    )
+    expect(toolPicker?.keystrokes).toEqual(['p'])
+    expect(toolPicker?.command).toBe('zds.toolbar.sketch.toolPicker')
+
+    const spline = defaultKeymap.bindings.find(
+      (binding) => binding.id === 'toolbar.sketch.spline'
+    )
+    expect(spline?.keystrokes).toEqual(['s'])
+    expect(spline?.command).toBe('zds.toolbar.sketch.spline')
+
+    const construction = defaultKeymap.bindings.find(
+      (binding) => binding.id === 'toolbar.sketch.construction'
+    )
+    expect(construction?.keystrokes).toEqual(['q'])
+    expect(construction?.command).toBe('zds.toolbar.sketch.construction')
   })
 
   it('marks a partial match and awaits more input', () => {

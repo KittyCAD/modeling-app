@@ -6,18 +6,41 @@ import {
 } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
 import { type Platform, isArray } from '@src/lib/utils'
+import {
+  BASE_COMMAND_SCOPE,
+  CODE_EDITOR_FOCUSED_COMMAND_SCOPE,
+  CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE,
+  DEFAULT_COMMAND_SCOPES,
+  HOME_COMMAND_SCOPE,
+  MODE_MODELING_COMMAND_SCOPE,
+  MODE_SKETCHING_COMMAND_SCOPE,
+  MODE_SKETCH_NO_FACE_COMMAND_SCOPE,
+  MODE_SKETCH_SOLVE_COMMAND_SCOPE,
+  PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE,
+  PROJECT_EXPLORER_RENAMING_COMMAND_SCOPE,
+  commandScopesValueSpec,
+  getCommandScopePriority,
+  getEffectiveCommandScopes,
+  provideCommandScope,
+  type CommandScope,
+} from '@src/registry/contracts/commands'
 
-export const BASE_KEYMAP_SCOPE = 'base'
-export const CODE_EDITOR_FOCUSED_KEYMAP_SCOPE = 'code-editor-focused'
-export const CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE = 'code-editor-not-focused'
-export const MODE_MODELING_KEYMAP_SCOPE = 'mode-modeling'
-export const MODE_SKETCHING_KEYMAP_SCOPE = 'mode-sketching'
-export const MODE_SKETCH_NO_FACE_KEYMAP_SCOPE = 'mode-sketch-no-face'
-export const MODE_SKETCH_SOLVE_KEYMAP_SCOPE = 'mode-sketch-solve'
-export const HOME_KEYMAP_SCOPE = 'home'
-export const PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE = 'project-explorer.focused'
+export const BASE_KEYMAP_SCOPE = BASE_COMMAND_SCOPE
+export const CODE_EDITOR_FOCUSED_KEYMAP_SCOPE =
+  CODE_EDITOR_FOCUSED_COMMAND_SCOPE
+export const CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE =
+  CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE
+export const MODE_MODELING_KEYMAP_SCOPE = MODE_MODELING_COMMAND_SCOPE
+export const MODE_SKETCHING_KEYMAP_SCOPE = MODE_SKETCHING_COMMAND_SCOPE
+export const MODE_SKETCH_NO_FACE_KEYMAP_SCOPE =
+  MODE_SKETCH_NO_FACE_COMMAND_SCOPE
+export const MODE_SKETCH_SOLVE_KEYMAP_SCOPE = MODE_SKETCH_SOLVE_COMMAND_SCOPE
+export const HOME_KEYMAP_SCOPE = HOME_COMMAND_SCOPE
+export const PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE =
+  PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE
 export const PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE =
-  'project-explorer.renaming'
+  PROJECT_EXPLORER_RENAMING_COMMAND_SCOPE
+export const DEFAULT_KEYMAP_SCOPES = DEFAULT_COMMAND_SCOPES
 export const KEYMAP_SCHEMA_VERSION = 1
 export const USER_KEYMAP_SOURCE = 'User'
 
@@ -29,13 +52,7 @@ export type KeymapArguments =
   | readonly KeymapArguments[]
   | { readonly [key: string]: KeymapArguments }
 
-export type KeymapScope = {
-  id: string
-  displayName: string
-  priority?: number
-  group?: string
-  userEditable?: boolean
-}
+export type KeymapScope = CommandScope
 
 export type KeymapBinding = {
   command: string
@@ -553,90 +570,8 @@ export function areKeymapArgumentsEqual(
   return false
 }
 
-const DEFAULT_KEYMAP_SCOPE_PRIORITY = 0
-
-type IndexedKeymapScope = {
-  scope: string
-  metadata: KeymapScope | undefined
-  index: number
-}
-
-export function getKeymapScopePriority(scope: KeymapScope | undefined) {
-  return scope?.priority ?? DEFAULT_KEYMAP_SCOPE_PRIORITY
-}
-
-export function getEffectiveKeymapScopes(
-  scopes: readonly string[],
-  keymapScopes: readonly KeymapScope[] = []
-) {
-  const keymapScopesById = new Map(
-    keymapScopes.map((scope) => [scope.id, scope])
-  )
-  const normalizedActiveScopes = new Map<string, IndexedKeymapScope>()
-
-  for (const [index, rawScope] of [BASE_KEYMAP_SCOPE, ...scopes].entries()) {
-    const scope = rawScope.trim()
-    if (!scope) {
-      continue
-    }
-
-    normalizedActiveScopes.set(scope, {
-      scope,
-      metadata: keymapScopesById.get(scope),
-      index,
-    })
-  }
-
-  const ungroupedScopes: IndexedKeymapScope[] = []
-  const groupedScopes = new Map<string, IndexedKeymapScope>()
-
-  for (const activeScope of normalizedActiveScopes.values()) {
-    const group = activeScope.metadata?.group?.trim()
-    if (!group) {
-      ungroupedScopes.push(activeScope)
-      continue
-    }
-
-    const currentScope = groupedScopes.get(group)
-    if (!currentScope || compareEffectiveScope(activeScope, currentScope) > 0) {
-      groupedScopes.set(group, activeScope)
-    }
-  }
-
-  return [...ungroupedScopes, ...groupedScopes.values()]
-    .toSorted(compareActiveScopeOrder)
-    .map((activeScope) => activeScope.scope)
-}
-
-function compareEffectiveScope(a: IndexedKeymapScope, b: IndexedKeymapScope) {
-  const priorityDifference =
-    getKeymapScopePriority(a.metadata) - getKeymapScopePriority(b.metadata)
-  if (priorityDifference !== 0) {
-    return priorityDifference
-  }
-
-  return a.index - b.index
-}
-
-function compareActiveScopeOrder(a: IndexedKeymapScope, b: IndexedKeymapScope) {
-  if (a.scope === BASE_KEYMAP_SCOPE && b.scope !== BASE_KEYMAP_SCOPE) {
-    return -1
-  }
-  if (b.scope === BASE_KEYMAP_SCOPE && a.scope !== BASE_KEYMAP_SCOPE) {
-    return 1
-  }
-
-  const priorityDifference =
-    getKeymapScopePriority(a.metadata) - getKeymapScopePriority(b.metadata)
-  if (priorityDifference !== 0) {
-    return priorityDifference
-  }
-
-  const indexDifference = a.index - b.index
-  return indexDifference !== 0
-    ? indexDifference
-    : a.scope.localeCompare(b.scope)
-}
+export const getKeymapScopePriority = getCommandScopePriority
+export const getEffectiveKeymapScopes = getEffectiveCommandScopes
 
 export function areKeymapKeystrokesEqual(
   a: readonly string[],
@@ -746,11 +681,7 @@ export const keymapContract = defineContract({
     defaultValue: createKeymapTree([]),
     combine: createKeymapTreeFromContributions,
   }),
-  keymapScopesValueSpec: defineValueSpec<KeymapScope, KeymapScope[]>({
-    name: 'keymap.scopes',
-    defaultValue: [],
-    combine: combineKeymapScopes,
-  }),
+  keymapScopesValueSpec: commandScopesValueSpec,
 })
 
 export const { keymapService, keymapValueSpec, keymapScopesValueSpec } =
@@ -765,24 +696,7 @@ export function provideKeymapDocument(document: KeymapDocument) {
 }
 
 export function provideKeymapScope(scope: KeymapScope) {
-  return provide(keymapScopesValueSpec, scope, { key: scope.id })
-}
-
-function combineKeymapScopes(scopes: readonly KeymapScope[]) {
-  return [
-    ...new Map(scopes.map((scope) => [scope.id, scope])).values(),
-  ].toSorted(compareKeymapScopeDisplayOrder)
-}
-
-function compareKeymapScopeDisplayOrder(a: KeymapScope, b: KeymapScope) {
-  const priorityDifference =
-    getKeymapScopePriority(b) - getKeymapScopePriority(a)
-  if (priorityDifference !== 0) {
-    return priorityDifference
-  }
-
-  const nameDifference = a.displayName.localeCompare(b.displayName)
-  return nameDifference !== 0 ? nameDifference : a.id.localeCompare(b.id)
+  return provideCommandScope(scope)
 }
 
 function isKeymapDocument(

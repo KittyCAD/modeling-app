@@ -259,6 +259,7 @@ export async function deleteFromSelection(
     selection.artifact?.type === 'pattern' ||
     selection.artifact?.type === 'helix' ||
     selection.artifact?.type === 'planeOfFace' ||
+    selection.artifact?.type === 'namedView' ||
     !selection.artifact // aka expected to be a shell at this point
   ) {
     let extrudeNameToDelete = ''
@@ -271,7 +272,8 @@ export async function deleteFromSelection(
       selection.artifact.type !== 'pattern' &&
       selection.artifact.type !== 'helix' &&
       selection.artifact.type !== 'path' &&
-      selection.artifact.type !== 'planeOfFace'
+      selection.artifact.type !== 'planeOfFace' &&
+      selection.artifact.type !== 'namedView'
     ) {
       if (!varDecNode) return new Error('Could not find sketch variable')
       const varDecName = varDecNode.id.name

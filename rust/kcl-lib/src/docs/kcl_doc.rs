@@ -1807,7 +1807,7 @@ mod test {
             }
             eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
-            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
+            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None, !eg.1.no3d).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     panic!(
                         "Error testing example {NAME} for {owner_name} in {}: {}",
@@ -1837,8 +1837,8 @@ mod test {
                     source_path.display()
                 );
             }
-            // Doc generation omits the model viewer for a `no3d` example, so
-            // writing its glTF would produce a file no page can ever link to.
+            // Doc generation omits the model viewer for a `no3d` example. Its
+            // glTF export was already skipped by `execute_and_snapshot_3d`.
             // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
             if !eg.1.no3d {
                 for gltf_file in result.gltf {
