@@ -82,6 +82,9 @@ type AmbientOcclusionPipeline = {
   scenePass: ReturnType<typeof pass>
   aoPass: AmbientOcclusionPass
 }
+type DisposableGpuDevice = {
+  destroy: () => void
+}
 export interface LocalRendererProps {
   backgroundColor: string
   enableSSAO: boolean
@@ -104,6 +107,7 @@ export class LocalRenderer {
   private onExportReady: LocalRendererProps['onExportReady']
   private isVisible = false
   private renderer: WebGPURenderer | null = null
+  private device: DisposableGpuDevice | null = null
   private scene: Scene | null = null
   private envMapLoader: EnvMapLoader | null = null
   private edgeRenderer: EdgeRenderer | null = null
@@ -255,6 +259,8 @@ export class LocalRenderer {
     this.renderer?.domElement.remove()
     this.renderer?.dispose()
     this.renderer = null
+    this.device?.destroy()
+    this.device = null
     this.scene = null
     this.previewCamera = null
     this.parserState = null
@@ -1071,6 +1077,10 @@ export class LocalRenderer {
     logLocalWebGpuPreview('device request completed', {
       label: device.label,
     })
+    if (this.disposed) {
+      device.destroy()
+      return
+    }
 
     logLocalWebGpuPreview('creating WebGPU renderer')
     const renderer = new WebGPURenderer({
@@ -1086,6 +1096,7 @@ export class LocalRenderer {
         'preview disposed before renderer backend initialization completed'
       )
       renderer.dispose()
+      device.destroy()
       return
     }
     logLocalWebGpuPreview('renderer backend initialized')
@@ -1125,6 +1136,7 @@ export class LocalRenderer {
       envMapLoader.dispose()
       renderer.domElement.remove()
       renderer.dispose()
+      device.destroy()
       this.scene = null
       return
     }
@@ -1162,6 +1174,7 @@ export class LocalRenderer {
       )
 
     this.renderer = renderer
+    this.device = device
     this.envMapLoader = envMapLoader
 
     this.unregisterLocalSelectionProvider =
