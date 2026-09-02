@@ -42,7 +42,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
     // KCL 3.0: the version parameter is removed. The newest edge cut algorithm
     // is always used, and all edges are cut at once in a single engine command.
-    let edge_cut_version: EdgeCutVersion = if exec_state.use_kcl_v3_control_flow() {
+    let edge_cut_version: EdgeCutVersion = if exec_state.entry_point_version_is_v3_or_higher() {
         if edge_cut_number.is_some() {
             let source_range = args
                 .labeled

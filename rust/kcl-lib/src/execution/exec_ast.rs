@@ -1215,7 +1215,7 @@ impl ExecutorContext {
                         break;
                     }
                     let value = value_cf.into_value();
-                    if exec_state.use_kcl_v3_control_flow() {
+                    if exec_state.entry_point_version_is_v3_or_higher() {
                         // KCL 3.0: early return. The value unwinds as control
                         // flow to the nearest function-call boundary, which
                         // absorbs it; see call_finish.
@@ -6858,7 +6858,7 @@ impl Node<IfExpression> {
 /// environment was pushed; the caller must pop it on every path. Shared by
 /// both executors.
 pub(super) fn if_arm_scope_begin(exec_state: &mut ExecState) -> Result<bool, KclError> {
-    if !exec_state.use_kcl_v3_control_flow() {
+    if !exec_state.entry_point_version_is_v3_or_higher() {
         return Ok(false);
     }
     exec_state.mut_stack().push_new_env_for_block()?;
