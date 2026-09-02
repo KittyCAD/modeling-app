@@ -1,12 +1,18 @@
 import JSZip from 'jszip'
 import toast from 'react-hot-toast'
 
-import { browserSaveFile } from '@src/lib/browserSaveFile'
+import {
+  browserSaveFileWithResult,
+  type FileSaveResult,
+} from '@src/lib/browserSaveFile'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 
-const save_ = async (file: ModelingAppFile, toastId: string) => {
+const save_ = async (
+  file: ModelingAppFile,
+  toastId: string
+): Promise<FileSaveResult> => {
   try {
     if (window.electron) {
       const extension = file.name.split('.').pop() || null
@@ -33,7 +39,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
           id: toastId,
           duration: 10_000,
         })
-        return
+        return { status: 'saved' }
       }
 
       // Open a dialog to save the file.
@@ -51,7 +57,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
       // Return early.
       if (filePathMeta.canceled) {
         toast.dismiss(toastId)
-        return
+        return { status: 'cancelled' }
       }
 
       // Write the file.
@@ -60,6 +66,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
         new Uint8Array(file.contents)
       )
       toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
+      return { status: 'saved' }
     } else {
       // Download the file to the user's computer.
       // Now we need to download the files to the user's downloads folder.
@@ -68,12 +75,16 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
       // Create a new blob.
       const blob = new Blob([new Uint8Array(file.contents)])
       // Save the file.
-      await browserSaveFile(blob, file.name, toastId)
+      return await browserSaveFileWithResult(blob, file.name, toastId)
     }
   } catch (e) {
     // TODO: do something real with the error.
     console.error('export error', e)
     toast.error(EXPORT_TOAST_MESSAGES.FAILED, { id: toastId })
+    return {
+      status: 'failed',
+      error: e instanceof Error ? e : new Error(String(e)),
+    }
   }
 }
 
@@ -87,7 +98,7 @@ export async function exportSave({
   files: ModelingAppFile[]
   fileName: string
   toastId: string
-}) {
+}): Promise<FileSaveResult> {
   if (files.length > 1) {
     let zip = new JSZip()
     for (const file of files) {

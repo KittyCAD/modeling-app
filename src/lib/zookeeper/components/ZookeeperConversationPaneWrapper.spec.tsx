@@ -8,6 +8,13 @@ const mocks = vi.hoisted(() => {
   const systemIOSend = vi.fn()
   const useWatchForNewFileRequestsFromZookeeper = vi.fn()
   const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
+  const zookeeperSnapshot = {
+    context: {
+      clientCommandsEnabled: false,
+      clientCommandQueue: [],
+      activeClientCommandRequestId: undefined,
+    },
+  }
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
       doc: { toString: () => 'initial code' },
@@ -23,6 +30,7 @@ const mocks = vi.hoisted(() => {
 
   return {
     kclManager,
+    zookeeperSnapshot,
     zookeeperSubscribe,
     systemIOSend,
     useWatchForNewFileRequestsFromZookeeper,
@@ -80,6 +88,10 @@ vi.mock('@src/lib/boot', () => ({
       executingPath: '/workspace/demo/main.kcl',
       executingFileEntry: { value: { name: 'main.kcl' } },
     },
+    registry: {
+      signal: () => ({ value: [] }),
+      optional: () => undefined,
+    },
     settings: {
       actor: { send: vi.fn() },
       useSettings: () => ({ meta: { id: { current: 'project-id' } } }),
@@ -113,13 +125,13 @@ vi.mock('@src/lib/zookeeper/zookeeperManagerMachine', () => ({
   ZookeeperConversationToMarkdown: vi.fn(() => ''),
   ZookeeperManagerTransitions: {
     AuthTokenChanged: 'auth-token-changed',
+    ClientCommandFinished: 'client-command-finished',
+    ClientCommandStarted: 'client-command-started',
   },
   ZookeeperManagerReactContext: {
     Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     useActorRef: () => ({
-      getSnapshot: () => ({
-        context: {},
-      }),
+      getSnapshot: () => mocks.zookeeperSnapshot,
       send: vi.fn(),
       subscribe: mocks.zookeeperSubscribe,
     }),

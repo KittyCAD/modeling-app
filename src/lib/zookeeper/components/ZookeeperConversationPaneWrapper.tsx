@@ -9,13 +9,17 @@ import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { isCodeTheSame } from '@src/lib/codeEditor'
+import type { Command } from '@src/lib/commandTypes'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
   type ClientCommandResponse,
+  createClientCommandSchemaUpdate,
   type ExecuteClientCommandDependencies,
   executeClientCommand,
+  getClientCommandTitle,
+  isClientCommandAvailable,
   ZOOKEEPER_CLIENT_COMMANDS_FEATURE,
 } from '@src/lib/zookeeper/clientCommands'
 import { ZookeeperConversationPane } from '@src/lib/zookeeper/components/ZookeeperConversationPane'
@@ -48,7 +52,14 @@ import {
   SystemIOMachineEvents,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
+import {
+  type CommandScope,
+  commandScopeService,
+  commandScopesValueSpec,
+  commandsValueSpec,
+} from '@src/registry/contracts/commands'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { useSelector } from '@xstate/react'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
 
@@ -99,11 +110,15 @@ function getZookeeperChangedFilePreviousCode(
 export function ZookeeperConversationPaneWrapper(
   props: AreaTypeComponentProps
 ) {
-  const { auth, userFeatures } = useApp()
+  useSignals()
+  const { auth, registry, userFeatures } = useApp()
   const token = auth.useToken()
   const clientCommandsEnabled = userFeatures.useHas(
     ZOOKEEPER_CLIENT_COMMANDS_FEATURE,
     false
+  )
+  const clientCommandSchemaUpdate = createClientCommandSchemaUpdate(
+    registry.signal(commandsValueSpec).value
   )
 
   return (
@@ -113,6 +128,7 @@ export function ZookeeperConversationPaneWrapper(
         input: {
           apiToken: token,
           clientCommandsEnabled,
+          clientCommandSchemaUpdate,
         },
       }}
     >
@@ -127,31 +143,38 @@ function useHandleZookeeperClientCommandRequests({
   kclManager,
   defaultUnit,
   systemIOActor,
+  commands,
+  activeScopes,
+  commandScopes,
 }: {
   enabled: boolean
   zookeeperManagerActor: ZookeeperManagerActor
   kclManager: KclManager
   defaultUnit: ExecuteClientCommandDependencies['defaultUnit']
   systemIOActor: SystemIOActor
+  commands: readonly Command[]
+  activeScopes: readonly string[]
+  commandScopes: readonly CommandScope[]
 }) {
-  const handledRequestIds = useRef(new Set<string>())
+  const acknowledgedRequestIds = useRef(new Set<string>())
+  const processingRequestId = useRef<string | undefined>(undefined)
+  const pumpQueue = useRef<() => void>(() => undefined)
+  const runtimeState = useRef({ commands, activeScopes, commandScopes })
+  runtimeState.current = { commands, activeScopes, commandScopes }
 
   useEffect(() => {
     let disposed = false
+    let currentWebSocket: WebSocket | undefined
 
     const handleSnapshot = (
       snapshot: ReturnType<typeof zookeeperManagerActor.getSnapshot>
     ) => {
-      const request = snapshot.context.pendingClientCommandRequest
-      if (
-        request === undefined ||
-        handledRequestIds.current.has(request.request_id)
-      ) {
-        return
-      }
-      handledRequestIds.current.add(request.request_id)
-
       const ws = snapshot.context.ws
+      if (ws !== currentWebSocket) {
+        currentWebSocket = ws
+        acknowledgedRequestIds.current.clear()
+      }
+
       const sendResponse = (response: ClientCommandResponse) => {
         if (
           disposed ||
@@ -164,26 +187,67 @@ function useHandleZookeeperClientCommandRequests({
         ws.send(JSON.stringify(response))
       }
 
-      if (!enabled) {
+      if (ws === undefined || ws.readyState !== WebSocket.OPEN) {
+        return
+      }
+
+      const schema = snapshot.context.clientCommandSchemaUpdate
+      for (const request of snapshot.context.clientCommandQueue) {
+        if (acknowledgedRequestIds.current.has(request.request_id)) continue
+
+        acknowledgedRequestIds.current.add(request.request_id)
+        const rejection = !enabled
+          ? 'Experimental Zookeeper client commands are disabled.'
+          : request.catalog_revision !== schema?.revision
+            ? `The request used stale command schema revision ${request.catalog_revision}.`
+            : !schema.commands.some(
+                  (command) => command.id === request.command_id
+                )
+              ? `Client command ${request.command_id} is not available.`
+              : undefined
+
+        if (rejection) {
+          sendResponse({
+            type: 'client_command_response',
+            request_id: request.request_id,
+            catalog_revision: request.catalog_revision,
+            status: 'rejected',
+            error: rejection,
+          })
+          zookeeperManagerActor.send({
+            type: ZookeeperManagerTransitions.ClientCommandFinished,
+            requestId: request.request_id,
+          })
+          return
+        }
+
         sendResponse({
           type: 'client_command_response',
           request_id: request.request_id,
           catalog_revision: request.catalog_revision,
-          status: 'rejected',
-          error: 'Experimental Zookeeper client commands are disabled.',
+          status: 'accepted',
         })
-        zookeeperManagerActor.send({
-          type: ZookeeperManagerTransitions.ClientCommandFinished,
-          requestId: request.request_id,
-        })
+      }
+
+      const request = snapshot.context.clientCommandQueue[0]
+      if (
+        request === undefined ||
+        processingRequestId.current !== undefined ||
+        snapshot.context.activeClientCommandRequestId !== undefined ||
+        !isClientCommandAvailable(
+          request,
+          runtimeState.current.commands,
+          runtimeState.current.activeScopes,
+          runtimeState.current.commandScopes
+        )
+      ) {
         return
       }
 
-      sendResponse({
-        type: 'client_command_response',
-        request_id: request.request_id,
-        catalog_revision: request.catalog_revision,
-        status: 'accepted',
+      processingRequestId.current = request.request_id
+      zookeeperManagerActor.send({
+        type: ZookeeperManagerTransitions.ClientCommandStarted,
+        requestId: request.request_id,
       })
 
       void executeClientCommand(request, {
@@ -204,6 +268,7 @@ function useHandleZookeeperClientCommandRequests({
           })
         })
         .finally(() => {
+          processingRequestId.current = undefined
           zookeeperManagerActor.send({
             type: ZookeeperManagerTransitions.ClientCommandFinished,
             requestId: request.request_id,
@@ -211,13 +276,51 @@ function useHandleZookeeperClientCommandRequests({
         })
     }
 
+    pumpQueue.current = () =>
+      handleSnapshot(zookeeperManagerActor.getSnapshot())
     handleSnapshot(zookeeperManagerActor.getSnapshot())
     const subscription = zookeeperManagerActor.subscribe(handleSnapshot)
     return () => {
       disposed = true
+      pumpQueue.current = () => undefined
       subscription.unsubscribe()
     }
   }, [defaultUnit, enabled, kclManager, systemIOActor, zookeeperManagerActor])
+
+  useEffect(() => {
+    pumpQueue.current()
+  }, [activeScopes, commands, commandScopes])
+
+  const cancelQueuedRequest = useCallback(
+    (requestId: string) => {
+      const snapshot = zookeeperManagerActor.getSnapshot()
+      if (snapshot.context.activeClientCommandRequestId === requestId) return
+
+      const request = snapshot.context.clientCommandQueue.find(
+        (candidate) => candidate.request_id === requestId
+      )
+      const ws = snapshot.context.ws
+      if (!request || ws === undefined || ws.readyState !== WebSocket.OPEN) {
+        return
+      }
+
+      ws.send(
+        JSON.stringify({
+          type: 'client_command_response',
+          request_id: request.request_id,
+          catalog_revision: request.catalog_revision,
+          status: 'cancelled',
+        } satisfies ClientCommandResponse)
+      )
+      zookeeperManagerActor.send({
+        type: ZookeeperManagerTransitions.ClientCommandFinished,
+        requestId,
+      })
+    },
+    [zookeeperManagerActor]
+  )
+
+  return { cancelQueuedRequest }
 }
 
 function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
@@ -235,14 +338,46 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
   } = useModelingContext()
   const loaderFile = project?.executingFileEntry.value
   const zookeeperManagerActor = ZookeeperManagerReactContext.useActorRef()
+  const commands = app.registry.signal(commandsValueSpec).value
+  const commandScopes = app.registry.signal(commandScopesValueSpec).value
+  const activeScopes =
+    app.registry.optional(commandScopeService)?.activeScopes.value ?? []
+  const clientCommandQueue = useSelector(
+    zookeeperManagerActor,
+    (snapshot) => snapshot.context.clientCommandQueue
+  )
+  const activeClientCommandRequestId = useSelector(
+    zookeeperManagerActor,
+    (snapshot) => snapshot.context.activeClientCommandRequestId
+  )
 
-  useHandleZookeeperClientCommandRequests({
+  const { cancelQueuedRequest } = useHandleZookeeperClientCommandRequests({
     enabled: zookeeperManagerActor.getSnapshot().context.clientCommandsEnabled,
     zookeeperManagerActor,
     kclManager,
     defaultUnit: contextModeling.store.defaultUnit?.current,
     systemIOActor,
+    commands,
+    activeScopes,
+    commandScopes,
   })
+  const clientCommandQueueItems = clientCommandQueue.map((request, index) => ({
+    requestId: request.request_id,
+    commandId: request.command_id,
+    title: getClientCommandTitle(request.command_id, commands),
+    status:
+      activeClientCommandRequestId === request.request_id
+        ? ('executing' as const)
+        : index === 0 &&
+            !isClientCommandAvailable(
+              request,
+              commands,
+              activeScopes,
+              commandScopes
+            )
+          ? ('waiting' as const)
+          : ('queued' as const),
+  }))
 
   useEffect(() => {
     zookeeperManagerActor.send({
@@ -560,6 +695,8 @@ function ZookeeperConversationPaneInner(props: AreaTypeComponentProps) {
           loaderFile,
           settings: settingsValues,
           user,
+          clientCommandQueue: clientCommandQueueItems,
+          onCancelClientCommand: cancelQueuedRequest,
           showMakeathonAnnouncement,
           onMlCopilotModeChange: (mode) => {
             settings.actor.send({
