@@ -40,13 +40,23 @@ export function NavigationRouterBridge() {
     const router = app.registry.get(routerService)
     const navigation = app.registry.get(navigationService)
 
+    let seeded = false
+
     return router.location.subscribe((location) => {
-      // Verbatim, with the leading '?' stripped. Round-tripping this through
-      // URLSearchParams would re-encode characters that were legal unencoded
-      // and change the URL for no reason.
-      const incoming = location.search.replace(/^\?/, '')
-      if (incoming !== navigation.opaqueSearch.peek()) {
-        navigation.setOpaqueSearch(incoming)
+      /*
+       * Seeded once, on the way in, and never re-adopted.
+       *
+       * Re-reading it on every location change looks harmless and is not: the
+       * app could set the carried parameters and the next commit would overrule
+       * it, so a parameter could never be *removed*. Ownership has to sit on
+       * one side, and this is the side that can express intent.
+       *
+       * Verbatim, with the leading '?' stripped: round-tripping through
+       * URLSearchParams re-encodes characters that were legal unencoded.
+       */
+      if (!seeded) {
+        seeded = true
+        navigation.setOpaqueSearch(location.search.replace(/^\?/, ''))
       }
 
       const actual = `${location.pathname}${location.search}`

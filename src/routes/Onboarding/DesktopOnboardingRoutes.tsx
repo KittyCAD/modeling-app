@@ -1,3 +1,4 @@
+import { useOwnedSearchParams } from '@src/hooks/useOwnedSearchParams'
 import { Spinner } from '@src/components/Spinner'
 import { useApp } from '@src/lib/boot'
 import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
@@ -23,7 +24,7 @@ import {
   useOnboardingPanes,
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
-import { type RouteObject, useSearchParams } from 'react-router-dom'
+import { type RouteObject } from 'react-router-dom'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -210,7 +211,7 @@ function Zookeeper() {
 function ZookeeperPrompt() {
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/zookeeper-prompt'
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useOwnedSearchParams()
   const prompt =
     'Design a cold plate with a serpentine copper coolant tube and recessed channels for thermal management'
 
@@ -441,7 +442,7 @@ function PromptToEditPrompt() {
   )
 
   // Fill in the prompt if available
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useOwnedSearchParams()
   useEffect(() => {
     searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
     setSearchParams(searchParams, { replace: true })

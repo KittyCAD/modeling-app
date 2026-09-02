@@ -1,5 +1,5 @@
+import { useOwnedSearchParams } from '@src/hooks/useOwnedSearchParams'
 import { Transition } from '@headlessui/react'
-import { useSearchParams } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { Logo } from '@src/components/Logo'
@@ -21,7 +21,7 @@ import toast from 'react-hot-toast'
 export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
   const buttonClasses =
     'bg-transparent flex-0 hover:bg-primary/10 dark:hover:bg-primary/10'
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useOwnedSearchParams()
   // We also ignore this param on desktop, as it is redundant
   const hasAskToOpenParam =
     !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
