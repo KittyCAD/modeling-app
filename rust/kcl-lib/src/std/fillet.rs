@@ -399,6 +399,7 @@ async fn inner_fillet_with_engine_refs(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::execution::ExecTestResults;
     use crate::execution::parse_execute;
 
     /// Test what version of fillet each KCL version uses by default.
@@ -416,15 +417,34 @@ mod tests {
     /// and not use that KCL version's default fillet algorithm version.
     #[tokio::test(flavor = "multi_thread")]
     async fn explicit_fillet_version_overrides_kcl_default() {
-        assert_eq!(
-            emitted_fillet_version("\"3.0-preview\"", Some(1)).await,
-            EdgeCutVersion::V1
+        assert_eq!(emitted_fillet_version("2.0", Some(2)).await, EdgeCutVersion::V2);
+    }
+
+    /// KCL 3.0 removed `fillet(version = )`. Passing it is reported like any
+    /// other unknown argument, and the default algorithm is used.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fillet_version_is_removed_in_kcl_3() {
+        let result = run_fillet("\"3.0-preview\"", Some(1)).await;
+        assert!(
+            result
+                .issues()
+                .iter()
+                .any(|issue| issue.message == "`version` is not an argument of `fillet`"),
+            "issues: {:#?}",
+            result.issues()
         );
+        assert_eq!(emitted_cut_edges_version(&result), EdgeCutVersion::V2);
     }
 
     /// For a given KCL version, and optional `fillet(version = )` version,
     /// show what fillet algorithm version the runtime sent to the engine.
     async fn emitted_fillet_version(kcl_version: &str, explicit_version: Option<u32>) -> EdgeCutVersion {
+        emitted_cut_edges_version(&run_fillet(kcl_version, explicit_version).await)
+    }
+
+    /// Fillet one edge of a box under the given KCL version, optionally
+    /// passing `fillet(version = )`.
+    async fn run_fillet(kcl_version: &str, explicit_version: Option<u32>) -> ExecTestResults {
         let version_arg = explicit_version
             .map(|version| format!(", version = {version}"))
             .unwrap_or_default();
@@ -441,8 +461,11 @@ solid = extrude(profile, length = 10)
 fillet(solid, tags = [edge], radius = 1{version_arg})
 "#
         );
+        parse_execute(&code).await.unwrap()
+    }
 
-        let result = parse_execute(&code).await.unwrap();
+    /// The fillet algorithm version the runtime sent to the engine.
+    fn emitted_cut_edges_version(result: &ExecTestResults) -> EdgeCutVersion {
         result
             .root_module_artifact_commands()
             .iter()
