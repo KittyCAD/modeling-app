@@ -331,6 +331,42 @@ describe('ProjectCard', () => {
     )
   })
 
+  test('warns when another local project folder has the same project id', () => {
+    renderProjectCard({
+      showCloudSyncUi: false,
+      project: {
+        ...cloudProject,
+        status: 'local',
+        remoteProjectId: undefined,
+        duplicateProjectIdPaths: ['/projects/copied-project'],
+      },
+    })
+
+    const badge = screen.getByTestId('project-duplicate-id-badge')
+    const tooltip = screen.getByRole('tooltip', { hidden: true })
+    expect(badge).toHaveTextContent('Project copy detected')
+    expect(badge).toHaveClass('pointer-events-auto')
+    expect(tooltip).toHaveTextContent(
+      'These folders may share Zookeeper conversation history'
+    )
+    expect(tooltip).toHaveTextContent('/projects/copied-project')
+    expect(tooltip.firstElementChild).toHaveClass(
+      '!max-w-72',
+      '!whitespace-normal',
+      'break-all'
+    )
+    const showTooltip = vi.fn()
+    Object.defineProperty(tooltip, 'showPopover', { value: showTooltip })
+    fireEvent.mouseEnter(badge)
+    expect(showTooltip).toHaveBeenCalledOnce()
+    expect(screen.getByTestId('project-link')).toHaveAccessibleName(
+      /These folders may share Zookeeper conversation history/
+    )
+    expect(screen.getByTestId('project-copy-warning')).toHaveTextContent(
+      'Copied folders may share Zookeeper history. Use Duplicate project to make copies.'
+    )
+  })
+
   test.each([
     ['pending_review', 'Pending Review', 'pending-review-badge'],
     ['published', 'Published', 'published-badge'],

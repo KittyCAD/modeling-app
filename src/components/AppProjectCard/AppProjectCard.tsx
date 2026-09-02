@@ -2,11 +2,11 @@ import {
   type ProjectCardClassNames,
   ProjectCard as UiProjectCard,
 } from '@kittycad/ui-components'
+import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import {
   AquariumStatusBadge,
   getAquariumStatusBadge,
 } from '@src/components/AquariumStatusBadge'
-import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
@@ -62,6 +62,16 @@ function getCloudSyncFailureTooltip(project: HomeProjectEntry) {
     project.syncFailure?.message ||
     'Cloud sync cannot upload local changes right now.'
   )
+}
+
+function getProjectCopyWarning(project: HomeProjectEntry) {
+  const duplicatePaths = project.duplicateProjectIdPaths ?? []
+  const copyLocation =
+    duplicatePaths.length === 1
+      ? `Another folder appears to be a copy of this project: ${duplicatePaths[0]}.`
+      : `Other folders appear to be copies of this project: ${duplicatePaths.join(', ')}.`
+
+  return `${copyLocation} These folders may share Zookeeper conversation history. Use Duplicate project in Zoo Design Studio when creating a copy.`
 }
 
 function getDisplayedTime(dateTimeMs: number) {
@@ -253,6 +263,10 @@ function AppProjectCard({
   const duplicateRealizations = project.duplicateRealizations ?? []
   const hasDuplicateRealizations =
     showCloudSyncUi && duplicateRealizations.length > 0
+  const hasDuplicateProjectId = Boolean(project.duplicateProjectIdPaths?.length)
+  const projectCopyWarning = hasDuplicateProjectId
+    ? getProjectCopyWarning(project)
+    : undefined
   const canMoveToLibrary = Boolean(
     onMoveToLibrary && projectActions.canMoveToLibrary(project)
   )
@@ -279,7 +293,8 @@ function AppProjectCard({
     hasCloudConflict ||
     hasCloudSyncFailure ||
     aquariumStatusBadge ||
-    hasDuplicateRealizations) && (
+    hasDuplicateRealizations ||
+    hasDuplicateProjectId) && (
     <>
       {statusBadgeLabel && (
         <span
@@ -320,11 +335,32 @@ function AppProjectCard({
           Duplicate copies
         </span>
       )}
+      {hasDuplicateProjectId && (
+        <span
+          className="pointer-events-auto rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-90 dark:bg-warn-80 dark:text-warn-10"
+          data-testid="project-duplicate-id-badge"
+        >
+          Project copy detected
+          <span className="sr-only">. {projectCopyWarning}</span>
+          <Tooltip contentClassName="!max-w-72 !whitespace-normal break-all">
+            {projectCopyWarning}
+          </Tooltip>
+        </span>
+      )}
     </>
   )
 
   const details = showDetails ? (
     <>
+      {hasDuplicateProjectId && (
+        <span
+          className="px-2 text-warn-80 text-xs dark:text-warn-30"
+          data-testid="project-copy-warning"
+        >
+          Copied folders may share Zookeeper history. Use Duplicate project to
+          make copies.
+        </span>
+      )}
       {project.kclFileCount !== undefined && (
         <span className="px-2 text-chalkboard-60 text-xs">
           <span data-testid="project-file-count">{project.kclFileCount}</span>{' '}

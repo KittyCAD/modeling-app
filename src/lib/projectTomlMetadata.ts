@@ -136,6 +136,19 @@ export function getProjectTitleFromProjectTomlContents(contents: string) {
   return getNonEmptyString(table.title)
 }
 
+export function getProjectIdFromProjectTomlContents(contents: string) {
+  const table = parseProjectToml(contents)
+  if (
+    !table ||
+    !isTomlTable(table.settings) ||
+    !isTomlTable(table.settings.meta)
+  ) {
+    return undefined
+  }
+
+  return getNonEmptyString(table.settings.meta.id)
+}
+
 export function setProjectTitleInProjectTomlContents(
   contents: string,
   title: string

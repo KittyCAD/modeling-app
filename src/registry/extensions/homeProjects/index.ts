@@ -43,6 +43,7 @@ import {
 import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
+import { NIL as uuidNIL } from 'uuid'
 
 function homeProjectDisplayNameExists({
   entries,
@@ -96,7 +97,8 @@ function realizationDeletesRemoteOnDelete(
  * realization are not enough for Home to infer relationship identity.
  */
 function homeProjectEntryFromRealization(
-  realization: ProjectLibraryRealization
+  realization: ProjectLibraryRealization,
+  duplicateProjectIdPaths: readonly string[] | undefined
 ): HomeProjectEntryContribution {
   return {
     source: 'local',
@@ -116,7 +118,40 @@ function homeProjectEntryFromRealization(
     thumbnail: realization.thumbnail,
     conflict: realization.conflict,
     syncFailure: realization.syncFailure,
+    duplicateProjectIdPaths,
   }
+}
+
+function duplicateProjectIdPathsByLocalPath(
+  realizations: readonly ProjectLibraryRealization[]
+) {
+  const projectPathsById = new Map<string, Set<string>>()
+
+  for (const realization of realizations) {
+    if (!realization.projectId || realization.projectId === uuidNIL) {
+      continue
+    }
+    const projectPaths =
+      projectPathsById.get(realization.projectId) ?? new Set()
+    projectPaths.add(realization.localProjectPath)
+    projectPathsById.set(realization.projectId, projectPaths)
+  }
+
+  const duplicatePathsByLocalPath = new Map<string, string[]>()
+  for (const projectPathSet of projectPathsById.values()) {
+    if (projectPathSet.size < 2) {
+      continue
+    }
+    const projectPaths = Array.from(projectPathSet)
+    for (const projectPath of projectPaths) {
+      duplicatePathsByLocalPath.set(
+        projectPath,
+        projectPaths.filter((candidatePath) => candidatePath !== projectPath)
+      )
+    }
+  }
+
+  return duplicatePathsByLocalPath
 }
 
 /** Local library membership is copied from relationship realizations. */
@@ -179,7 +214,8 @@ function homeProjectDuplicateRealizationFromRelationship(
  * merge arbitrary provider entries or decide which local folders are duplicates.
  */
 function homeProjectEntryFromCloudRelationship(
-  relationship: CloudProjectRelationship
+  relationship: CloudProjectRelationship,
+  duplicateProjectIdPaths: readonly string[] | undefined
 ): HomeProjectEntryContribution {
   const canonical = relationship.canonicalRealization?.realization
   const duplicateRealizations = relationship.duplicateRealizations.map(
@@ -229,6 +265,7 @@ function homeProjectEntryFromCloudRelationship(
     syncFailure: relationship.syncFailure ?? canonical?.syncFailure,
     duplicateRealizations:
       duplicateRealizations.length > 0 ? duplicateRealizations : undefined,
+    duplicateProjectIdPaths,
   }
 }
 
@@ -244,6 +281,8 @@ export function deriveHomeProjectEntryContributions({
   realizations: readonly ProjectLibraryRealization[]
   cloudRelationships: readonly CloudProjectRelationship[]
 }): HomeProjectEntryContribution[] {
+  const duplicateProjectIdPaths =
+    duplicateProjectIdPathsByLocalPath(realizations)
   const relationshipLocalPaths = new Set(
     cloudRelationships.flatMap((relationship) =>
       relationship.localRealizations.map(
@@ -251,14 +290,24 @@ export function deriveHomeProjectEntryContributions({
       )
     )
   )
-  const relationshipEntries = cloudRelationships.map(
-    homeProjectEntryFromCloudRelationship
-  )
+  const relationshipEntries = cloudRelationships.map((relationship) => {
+    const canonicalPath =
+      relationship.canonicalRealization?.realization.localProjectPath
+    return homeProjectEntryFromCloudRelationship(
+      relationship,
+      canonicalPath ? duplicateProjectIdPaths.get(canonicalPath) : undefined
+    )
+  })
   const localOnlyEntries = realizations
     .filter(
       (realization) => !relationshipLocalPaths.has(realization.localProjectPath)
     )
-    .map(homeProjectEntryFromRealization)
+    .map((realization) =>
+      homeProjectEntryFromRealization(
+        realization,
+        duplicateProjectIdPaths.get(realization.localProjectPath)
+      )
+    )
 
   return [...relationshipEntries, ...localOnlyEntries]
 }

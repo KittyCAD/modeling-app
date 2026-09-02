@@ -1,5 +1,6 @@
 import {
   getCloudProjectIdFromProjectTomlContents,
+  getProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
   normalizeProjectTomlContents,
   prepareProjectTomlForDuplication,
@@ -20,6 +21,22 @@ function expectOrdered(contents: string, markers: string[]) {
 }
 
 describe('projectTomlMetadata', () => {
+  it('reads the local project id from settings metadata', () => {
+    expect(
+      getProjectIdFromProjectTomlContents(
+        'title = "Some demo"\n\n[settings.meta]\nid = "project-123"\n'
+      )
+    ).toBe('project-123')
+  })
+
+  it('does not read project ids from unrelated metadata', () => {
+    expect(
+      getProjectIdFromProjectTomlContents(
+        'id = "root-id"\n\n[cloud."zoo.dev"]\nproject_id = "cloud-id"\n'
+      )
+    ).toBeUndefined()
+  })
+
   it('reads project title from the root title field', () => {
     expect(
       getProjectTitleFromProjectTomlContents(

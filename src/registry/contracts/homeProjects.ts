@@ -77,6 +77,8 @@ export interface HomeProjectEntry {
   syncFailure?: HomeProjectSyncFailure
   cloudRelationshipId?: string
   duplicateRealizations?: readonly HomeProjectDuplicateRealization[]
+  /** Other local folders discovered with this project's project.toml ID. */
+  duplicateProjectIdPaths?: readonly string[]
 }
 
 export type HomeProjectEntryContribution = Omit<
