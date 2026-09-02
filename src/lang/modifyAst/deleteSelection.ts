@@ -111,33 +111,23 @@ export async function deleteSelectionPromise({
   // different version, this can diverge; accepted for now.)
   const useV3ArmScoping = programUsesKclV3(ast, wasmInstance)
   const rewiredAst = rewireAfterDelete(ast, modifiedAst, { useV3ArmScoping })
-  let astToApply = rewiredAst
+  if (err(rewiredAst)) {
+    // A reference to the deleted feature has no safe replacement. The
+    // un-rewired AST would carry that same dangling reference, and mock
+    // execution only validates code it runs, so reject the delete outright.
+    return new Error(deletionErrorMessage)
+  }
 
   const rewiredExecute = await executeAstMock({
     ast: rewiredAst,
     rustContext: systemDeps.rustContext,
   })
-
-  if (
-    rewiredExecute.errors.length &&
-    rewiredAst !== modifiedAst // Rewire pass changed the AST, so try the pre-rewire result before failing.
-  ) {
-    const baselineExecute = await executeAstMock({
-      ast: modifiedAst,
-      rustContext: systemDeps.rustContext,
-    })
-
-    if (baselineExecute.errors.length) {
-      return new Error(deletionErrorMessage)
-    }
-
-    astToApply = modifiedAst
-  } else if (rewiredExecute.errors.length) {
+  if (rewiredExecute.errors.length) {
     return new Error(deletionErrorMessage)
   }
 
   await updateModelingState(
-    astToApply,
+    rewiredAst,
     EXECUTION_TYPE_REAL,
     systemDeps.kclManager,
     {

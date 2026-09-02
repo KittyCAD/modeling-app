@@ -44,10 +44,17 @@ const getFirstParentReference = (
   return parent
 }
 
-const buildDeletedToParentMap = (
+type Deletions = {
+  // Every top-level declaration removed by the delete.
+  deletedNames: Set<string>
+  // The subset whose initializer referenced another feature, mapped to it.
+  deletedToParentMap: Map<string, string>
+}
+
+const collectDeletions = (
   beforeDeleteAst: Node<Program>,
   afterDeleteAst: Node<Program>
-): Map<string, string> => {
+): Deletions => {
   const beforeDeclarationsByName = new Map<string, Node<VariableDeclaration>>()
   const afterDeclarationNames = new Set<string>()
 
@@ -63,11 +70,13 @@ const buildDeletedToParentMap = (
     }
   }
 
+  const deletedNames = new Set<string>()
   const deletedToParentMap = new Map<string, string>()
   for (const [deletedName, declaration] of beforeDeclarationsByName) {
     if (afterDeclarationNames.has(deletedName)) {
       continue
     }
+    deletedNames.add(deletedName)
     const parentName = getFirstParentReference(declaration)
     if (!parentName || parentName === deletedName) {
       continue
@@ -75,7 +84,7 @@ const buildDeletedToParentMap = (
     deletedToParentMap.set(deletedName, parentName)
   }
 
-  return deletedToParentMap
+  return { deletedNames, deletedToParentMap }
 }
 
 // Scopes whose bindings may shadow a deleted feature's name. traverse fires
@@ -124,18 +133,21 @@ export function rewireAfterDelete(
   beforeDeleteAst: Node<Program>,
   afterDeleteAst: Node<Program>,
   options: { useV3ArmScoping: boolean } = { useV3ArmScoping: false }
-): Node<Program> {
+): Node<Program> | Error {
   const { useV3ArmScoping } = options
-  const deletedToParentMap = buildDeletedToParentMap(
+  const { deletedNames, deletedToParentMap } = collectDeletions(
     beforeDeleteAst,
     afterDeleteAst
   )
-  if (deletedToParentMap.size === 0) {
+  if (deletedNames.size === 0) {
     return afterDeleteAst
   }
 
   const rewiredAst = structuredClone(afterDeleteAst)
   let didRewire = false
+  // Deleted features still referenced somewhere they cannot be rewired. Any
+  // entry makes the delete unsafe to apply.
+  const unresolvedNames = new Set<string>()
   const scopeFrames: ScopeFrame[] = []
   // Declarations whose binding takes effect on leave. See below.
   const pendingBindings: {
@@ -148,7 +160,8 @@ export function rewireAfterDelete(
 
   // First pass is intentionally generic: if a deleted feature had a parent
   // reference, every unshadowed downstream reference gets rebound through that
-  // parent chain.
+  // parent chain. A reference that cannot be rebound makes the whole delete
+  // unsafe, reported as an Error.
   traverse(rewiredAst, {
     enter: (node, pathToNode) => {
       if (node.type === 'FunctionExpression') {
@@ -208,22 +221,22 @@ export function rewireAfterDelete(
       if (pathToNode[pathToNode.length - 1]?.[0] === 'callee') {
         return
       }
-      if (isShadowed(node.name.name)) {
+      const name = node.name.name
+      // A locally bound name was never a reference to the deleted feature.
+      if (!deletedNames.has(name) || isShadowed(name)) {
         return
       }
 
-      const replacement = resolveRewireTarget(
-        node.name.name,
-        deletedToParentMap
-      )
-      if (!replacement || replacement === node.name.name) {
-        return
-      }
-      // The replacement must resolve to the surviving top-level declaration
-      // at this site. If an enclosing scope binds the same name, writing it
-      // here would capture that local value and silently change the model,
-      // so leave the reference alone and let execution report the problem.
-      if (isShadowed(replacement)) {
+      // This reference would dangle once the delete is applied, so it must be
+      // rebound to the deleted feature's surviving ancestor. That is
+      // impossible when there is no ancestor, and unsafe when an enclosing
+      // scope binds the ancestor's name: writing it here would capture the
+      // local value and silently change the model. Mock execution cannot be
+      // relied on to catch the dangling reference later, since it only
+      // validates code it runs, so report it instead.
+      const replacement = resolveRewireTarget(name, deletedToParentMap)
+      if (!replacement || isShadowed(replacement)) {
+        unresolvedNames.add(name)
         return
       }
 
@@ -250,6 +263,12 @@ export function rewireAfterDelete(
       }
     },
   })
+
+  if (unresolvedNames.size > 0) {
+    return new Error(
+      `References to deleted ${[...unresolvedNames].join(', ')} cannot be safely rewired`
+    )
+  }
 
   return didRewire ? rewiredAst : afterDeleteAst
 }
