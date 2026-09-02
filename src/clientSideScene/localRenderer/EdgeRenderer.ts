@@ -14,7 +14,7 @@ export type EdgeSegmentRange = {
 }
 
 export type EdgeSelectionTarget = {
-  edge: LocalRenderPacketEdge
+  packetIndex: number
   object: Object3D
 }
 
@@ -43,7 +43,6 @@ export class EdgeRenderer {
     this.lines = new LineSegments2(this.geometry, this.material)
     this.lines.name = 'edges'
     this.lines.renderOrder = 2
-    this.lines.userData.kittycadEdgeBatch = true
     this.group.name = 'edge_batch'
     this.group.visible = visible
   }
@@ -52,9 +51,11 @@ export class EdgeRenderer {
     this.geometry.dispose()
     this.group.clear()
 
-    const renderableEdges = edges.filter((edge) => edge.positions.length >= 6)
+    const renderableEdges = edges
+      .map((edge, packetIndex) => ({ edge, packetIndex }))
+      .filter(({ edge }) => edge.positions.length >= 6)
     const segmentCount = renderableEdges.reduce(
-      (count, edge) => count + Math.floor(edge.positions.length / 3) - 1,
+      (count, { edge }) => count + Math.floor(edge.positions.length / 3) - 1,
       0
     )
     const segmentPositions = new Float32Array(segmentCount * 6)
@@ -64,7 +65,7 @@ export class EdgeRenderer {
     const selectionTargets: EdgeSelectionTarget[] = []
 
     let segmentOffset = 0
-    renderableEdges.forEach((edge, edgeOffset) => {
+    renderableEdges.forEach(({ edge, packetIndex }, edgeOffset) => {
       const firstSegment = segmentOffset
       const pointCount = Math.floor(edge.positions.length / 3)
       for (let pointOffset = 0; pointOffset < pointCount - 1; pointOffset++) {
@@ -84,14 +85,8 @@ export class EdgeRenderer {
 
       const edgeObject = new Object3D()
       edgeObject.name = `edge_${edge.edgeIndex}`
-      edgeObject.userData.kittycadEdgeExtras = {
-        object_id: edge.objectId,
-        body_id: edge.bodyId,
-        edge_id: edge.edgeId,
-        edge_index: edge.edgeIndex,
-      }
       this.edgeObjects.push(edgeObject)
-      selectionTargets.push({ edge, object: edgeObject })
+      selectionTargets.push({ packetIndex, object: edgeObject })
       this.group.add(edgeObject)
     })
 

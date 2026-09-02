@@ -2,6 +2,12 @@ import type { GetSketchModePlane } from '@kittycad/lib'
 import { LOCAL_WEBGPU_RENDERING_ENABLED } from '@src/clientSideScene/localRenderer/config'
 import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
+import {
+  IntegerIdPicker,
+  type IntegerIdPickerGeometryStats,
+  type IntegerIdPickSource,
+  type IntegerIdPickTarget,
+} from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import {
   decodeRenderPacket,
@@ -18,7 +24,7 @@ import {
 import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
-import type { ArtifactGraph, PathToNode, SourceRange } from '@src/lang/wasm'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import { pathToNodeFromRustNodePath } from '@src/lang/wasm'
 import {
   SKETCH_HIGHLIGHT_COLOR,
@@ -47,7 +53,6 @@ import {
   type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
-  Raycaster,
   Scene,
   ShapeUtils,
   Vector2,
@@ -66,8 +71,6 @@ const ENGINE_DEFAULT_SURFACE_COLOR = new Color(0.9, 0.9, 0.9)
 const HOVER_COLOR = new Color(SKETCH_HIGHLIGHT_COLOR)
 const SELECTED_COLOR = new Color(SKETCH_SELECTION_COLOR)
 const previewMaterialBaseColors = new WeakMap<Material, Color>()
-const NATIVE_LINE_RAYCAST_THRESHOLD_GLTF_METERS = 0.001
-const EDGE_RAYCAST_THRESHOLD_PX = 2
 
 type AoFactory = typeof ao
 type AmbientOcclusionPass = ReturnType<AoFactory> & { dispose: () => void }
@@ -84,6 +87,19 @@ type AmbientOcclusionPipeline = {
 }
 type DisposableGpuDevice = {
   destroy: () => void
+}
+type RenderPacketSelectionSource = IntegerIdPickSource
+type RenderPacketSelectionEntry = IntegerIdPickTarget
+type RenderPacketModelIndex = {
+  packet: LocalRenderPacket
+  selectionEntries: RenderPacketSelectionEntry[]
+  previewObjects: WeakSet<Object3D>
+  regionObjects: WeakSet<Object3D>
+  surfaceObjects: Mesh[]
+  pickingGeometryStats: IntegerIdPickerGeometryStats
+}
+type SelectionTarget = RenderPacketSelectionEntry & {
+  entity: ResolvedSelectionEntity
 }
 export interface LocalRendererProps {
   backgroundColor: string
@@ -111,6 +127,7 @@ export class LocalRenderer {
   private scene: Scene | null = null
   private envMapLoader: EnvMapLoader | null = null
   private edgeRenderer: EdgeRenderer | null = null
+  private integerIdPicker: IntegerIdPicker | null = null
   private resizeObserver: ResizeObserver | null = null
   private animationFrameId = -1
   private currentModel: Object3D | null = null
@@ -122,11 +139,9 @@ export class LocalRenderer {
   private readonly convertedSharedUp = new Vector3()
   private hoveredObject: Object3D | null = null
   private selectedObjects = new Set<Object3D>()
-  private selectionEntityIdToObject = new Map<string, Object3D>()
-  private parserState: GltfParserState | RenderPacketParserState | null = null
+  private selectionTargetByEntityId = new Map<string, SelectionTarget>()
+  private modelIndex: RenderPacketModelIndex | null = null
   private activeSketchModePlane: GetSketchModePlane | null = null
-  private readonly raycaster = new Raycaster()
-  private readonly pointer = new Vector2()
   private unregisterLocalSelectionProvider: (() => void) | null = null
   private unregisterSharedCameraListener: (() => void) | null = null
   private ambientOcclusionRadius = 0.01
@@ -188,6 +203,7 @@ export class LocalRenderer {
 
     this.highlightEdges = highlightEdges
     this.edgeRenderer?.setVisible(highlightEdges)
+    this.integerIdPicker?.setEdgesVisible(highlightEdges)
     this.scheduleRender()
   }
 
@@ -246,6 +262,8 @@ export class LocalRenderer {
     this.clearModel()
     this.edgeRenderer?.dispose()
     this.edgeRenderer = null
+    this.integerIdPicker?.dispose()
+    this.integerIdPicker = null
     this.resizeObserver?.disconnect()
     this.resizeObserver = null
     if (this.animationFrameId !== -1) {
@@ -262,52 +280,21 @@ export class LocalRenderer {
     this.device = null
     this.scene = null
     this.previewCamera = null
-    this.parserState = null
+    this.modelIndex = null
     this.activeSketchModePlane = null
   }
 
-  private getResolvedSelectionEntity(object: Object3D | null) {
-    if (!object) {
+  private getSelectionTarget(target: IntegerIdPickTarget | null | undefined) {
+    if (!target || !this.modelIndex) {
       return null
     }
 
-    const metadata = getPickedObjectMetadata(object, this.parserState)
-    const extras = isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)
-      ? metadata.kittycadPrimitiveExtras
-      : null
-    if (extras) {
-      return resolveSelectionEntityFromPrimitiveExtras(
-        extras,
-        this.kclManager.artifactGraph
-      )
-    }
-
-    const edgeExtras = isKittycadEdgeExtras(metadata.kittycadEdgeExtras)
-      ? metadata.kittycadEdgeExtras
-      : null
-    if (edgeExtras) {
-      return resolveSelectionEntityFromEdgeExtras(
-        edgeExtras,
-        this.kclManager.artifactGraph
-      )
-    }
-
-    const sketchExtras = isKittycadSketchExtras(metadata.kittycadSketchExtras)
-      ? metadata.kittycadSketchExtras
-      : null
-    if (sketchExtras) {
-      return resolveSelectionEntityFromSketchExtras(
-        sketchExtras,
-        this.kclManager.artifactGraph
-      )
-    }
-
-    const regionExtras = isKittycadRegionExtras(metadata.kittycadRegionExtras)
-      ? metadata.kittycadRegionExtras
-      : null
-    return regionExtras
-      ? resolveSelectionEntityFromRegionExtras(regionExtras)
-      : null
+    const entity = resolveSelectionEntity(
+      target.source,
+      this.modelIndex.packet,
+      this.kclManager.artifactGraph
+    )
+    return entity ? { ...target, entity } : null
   }
 
   private setVisible(nextVisible: boolean) {
@@ -395,6 +382,7 @@ export class LocalRenderer {
     this.previewCamera.lookAt(this.previewTarget)
     this.previewCamera.updateProjectionMatrix()
     this.previewCamera.updateMatrixWorld(true)
+    this.integerIdPicker?.invalidate()
     this.scheduleRender()
   }
 
@@ -409,7 +397,11 @@ export class LocalRenderer {
         ? 'hover'
         : 'base'
     if (object instanceof Mesh) {
-      setMeshHighlight(object, mode)
+      setMeshHighlight(
+        object,
+        mode,
+        this.modelIndex?.regionObjects.has(object) ?? false
+      )
     } else if (object instanceof Line) {
       setLineHighlight(object, mode)
     }
@@ -426,7 +418,7 @@ export class LocalRenderer {
     this.applyObjectState(previousHoveredObject)
   }
 
-  private pickRenderableFromWindowCoordinates({
+  private async pickRenderableFromWindowCoordinates({
     x,
     y,
     streamWidth,
@@ -441,69 +433,26 @@ export class LocalRenderer {
       !this.isVisible ||
       !this.previewCamera ||
       !this.currentModel ||
+      !this.integerIdPicker ||
       streamWidth <= 0 ||
       streamHeight <= 0
     ) {
       return null
     }
 
-    this.pointer.x = (x / streamWidth) * 2 - 1
-    this.pointer.y = -(y / streamHeight) * 2 + 1
-    this.raycaster.setFromCamera(this.pointer, this.previewCamera)
-    this.raycaster.params.Line = {
-      ...(this.raycaster.params.Line ?? {}),
-      threshold: NATIVE_LINE_RAYCAST_THRESHOLD_GLTF_METERS,
-    }
-    this.raycaster.params.Line2 = {
-      threshold: EDGE_RAYCAST_THRESHOLD_PX,
-    }
-
-    const intersection = this.raycaster
-      .intersectObject(this.currentModel, true)
-      .find((candidate) => {
-        if (this.edgeRenderer?.isLineObject(candidate.object)) {
-          return this.highlightEdges
-        }
-        if (candidate.object instanceof Line) {
-          return true
-        }
-        if (!(candidate.object instanceof Mesh)) {
-          return false
-        }
-        if (!WEBGPU_TRIMMING_ENABLED) {
-          return true
-        }
-
-        const primitive =
-          this.parserState && 'primitiveByObject' in this.parserState
-            ? (this.parserState.primitiveByObject.get(candidate.object) ?? null)
-            : null
-        return isUvInsideTrimLoops(
-          candidate.uv ? { x: candidate.uv.x, y: candidate.uv.y } : null,
-          primitive?.trimLoops ?? null
-        )
-      })
-
-    if (!intersection || intersection.faceIndex == null) {
-      return intersection
-    }
-    if (!this.edgeRenderer?.isLineObject(intersection.object)) {
-      return intersection
-    }
-
-    const edgeObject = this.edgeRenderer.getEdgeObjectForSegment(
-      intersection.faceIndex
-    )
-    return edgeObject ? { ...intersection, object: edgeObject } : intersection
+    return this.integerIdPicker.pick({
+      x,
+      y,
+      streamWidth,
+      streamHeight,
+      camera: this.previewCamera,
+    })
   }
 
-  private updateHoverFromIntersection(
-    intersection:
-      | { distance?: number; point?: Vector3; object?: Object3D }
-      | null
-      | undefined
+  private updateHoverFromTarget(
+    target: IntegerIdPickTarget | null | undefined
   ) {
-    const nextHoveredObject = intersection?.object ?? null
+    const nextHoveredObject = target?.object ?? null
     if (nextHoveredObject === this.hoveredObject) {
       return
     }
@@ -553,46 +502,32 @@ export class LocalRenderer {
     }
 
     const modelToExport = this.currentModel
-    const trimStates = new Map<Object3D, unknown>()
-    modelToExport.traverse((object) => {
-      if ('kittycadTrimState' in object.userData) {
-        trimStates.set(object, object.userData.kittycadTrimState)
-        delete object.userData.kittycadTrimState
-      }
+    modelToExport.updateMatrixWorld(true)
+    const { GLTFExporter } = await import(
+      'three/examples/jsm/exporters/GLTFExporter.js'
+    )
+    const exporter = new GLTFExporter()
+    const result = await exporter.parseAsync(modelToExport, {
+      binary: true,
+      onlyVisible: true,
     })
-
-    try {
-      modelToExport.updateMatrixWorld(true)
-      const { GLTFExporter } = await import(
-        'three/examples/jsm/exporters/GLTFExporter.js'
+    if (!(result instanceof ArrayBuffer)) {
+      return Promise.reject(
+        new Error('GLTFExporter did not produce a binary GLB')
       )
-      const exporter = new GLTFExporter()
-      const result = await exporter.parseAsync(modelToExport, {
-        binary: true,
-        onlyVisible: true,
-      })
-      if (!(result instanceof ArrayBuffer)) {
-        return Promise.reject(
-          new Error('GLTFExporter did not produce a binary GLB')
-        )
-      }
-
-      const blob = new Blob([result], { type: 'model/gltf-binary' })
-      const downloadUrl = URL.createObjectURL(blob)
-      const downloadLink = document.createElement('a')
-      const timestamp = new Date().toISOString().replaceAll(':', '-')
-      downloadLink.href = downloadUrl
-      downloadLink.download = `render-packet-scene-${timestamp}.glb`
-      downloadLink.style.display = 'none'
-      document.body.appendChild(downloadLink)
-      downloadLink.click()
-      downloadLink.remove()
-      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000)
-    } finally {
-      trimStates.forEach((trimState, object) => {
-        object.userData.kittycadTrimState = trimState
-      })
     }
+
+    const blob = new Blob([result], { type: 'model/gltf-binary' })
+    const downloadUrl = URL.createObjectURL(blob)
+    const downloadLink = document.createElement('a')
+    const timestamp = new Date().toISOString().replaceAll(':', '-')
+    downloadLink.href = downloadUrl
+    downloadLink.download = `render-packet-scene-${timestamp}.glb`
+    downloadLink.style.display = 'none'
+    document.body.appendChild(downloadLink)
+    downloadLink.click()
+    downloadLink.remove()
+    window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000)
   }
 
   private readonly handleInitializationError = (error: unknown) => {
@@ -713,10 +648,12 @@ export class LocalRenderer {
     } else {
       this.syncPreviewCameraFromShared()
     }
+    this.integerIdPicker?.invalidate()
     this.scheduleRender()
   }
 
   private clearModel() {
+    this.integerIdPicker?.clearModel()
     if (this.currentModel) {
       this.scene?.remove(this.currentModel)
       this.edgeRenderer?.removeFromParent()
@@ -728,122 +665,40 @@ export class LocalRenderer {
       this.currentSurfaceResources.dispose(this.renderer)
     }
     this.currentSurfaceResources = null
-    this.selectionEntityIdToObject.clear()
+    this.modelIndex = null
+    this.selectionTargetByEntityId.clear()
     this.scheduleRender()
   }
 
-  private hydrateCurrentModelMetadata() {
-    if (!this.currentModel) {
-      this.selectionEntityIdToObject.clear()
+  private indexCurrentModelForSelection() {
+    const modelIndex = this.modelIndex
+    if (!this.currentModel || !modelIndex) {
+      this.selectionTargetByEntityId.clear()
       return
     }
 
-    this.selectionEntityIdToObject = new Map<string, Object3D>()
+    this.selectionTargetByEntityId = new Map<string, SelectionTarget>()
     this.currentModel.traverse((object) => {
       object.layers.mask = this.previewCamera?.layers.mask ?? object.layers.mask
-
-      const metadata = getPickedObjectMetadata(object, this.parserState)
-      if (
-        !(object instanceof Mesh) &&
-        !(object instanceof Line) &&
-        !metadata.kittycadEdgeExtras
-      ) {
-        return
-      }
-
-      if (object instanceof Mesh && metadata.primitiveExtras) {
-        object.userData.gltfPrimitiveExtras = metadata.primitiveExtras
-      }
-      if (object instanceof Mesh && metadata.kittycadPrimitiveExtras) {
-        object.userData.kittycadPrimitiveExtras =
-          metadata.kittycadPrimitiveExtras
-        if (isKittycadPrimitiveExtras(metadata.kittycadPrimitiveExtras)) {
-          const resolvedSelectionEntity =
-            resolveSelectionEntityFromPrimitiveExtras(
-              metadata.kittycadPrimitiveExtras,
-              this.kclManager.artifactGraph
-            )
-          object.userData.kittycadSelectionEntityId =
-            resolvedSelectionEntity.entityId
-          object.userData.kittycadParentEntityId =
-            resolvedSelectionEntity.parentEntityId
-          object.userData.kittycadPrimitiveIndex =
-            resolvedSelectionEntity.primitiveIndex
-          this.selectionEntityIdToObject.set(
-            resolvedSelectionEntity.entityId,
-            object
-          )
-          this.selectionEntityIdToObject.set(
-            metadata.kittycadPrimitiveExtras.face_id,
-            object
-          )
-        }
-      }
-      if (metadata.kittycadEdgeExtras) {
-        object.userData.kittycadEdgeExtras = metadata.kittycadEdgeExtras
-        if (isKittycadEdgeExtras(metadata.kittycadEdgeExtras)) {
-          const resolvedSelectionEntity = resolveSelectionEntityFromEdgeExtras(
-            metadata.kittycadEdgeExtras,
-            this.kclManager.artifactGraph
-          )
-          object.userData.kittycadSelectionEntityId =
-            resolvedSelectionEntity.entityId
-          object.userData.kittycadParentEntityId =
-            resolvedSelectionEntity.parentEntityId
-          object.userData.kittycadPrimitiveIndex =
-            resolvedSelectionEntity.primitiveIndex
-          this.selectionEntityIdToObject.set(
-            resolvedSelectionEntity.entityId,
-            object
-          )
-          this.selectionEntityIdToObject.set(
-            metadata.kittycadEdgeExtras.edge_id,
-            object
-          )
-        }
-      }
-      if (object instanceof Line && metadata.kittycadSketchExtras) {
-        object.userData.kittycadSketchExtras = metadata.kittycadSketchExtras
-        if (isKittycadSketchExtras(metadata.kittycadSketchExtras)) {
-          const resolvedSelectionEntity =
-            resolveSelectionEntityFromSketchExtras(
-              metadata.kittycadSketchExtras,
-              this.kclManager.artifactGraph
-            )
-          if (resolvedSelectionEntity) {
-            object.userData.kittycadSelectionEntityId =
-              resolvedSelectionEntity.entityId
-            object.userData.kittycadParentEntityId =
-              resolvedSelectionEntity.parentEntityId
-            object.userData.kittycadPrimitiveIndex =
-              resolvedSelectionEntity.primitiveIndex
-            this.selectionEntityIdToObject.set(
-              resolvedSelectionEntity.entityId,
-              object
-            )
-          }
-        }
-      }
-      if (object instanceof Mesh && metadata.kittycadRegionExtras) {
-        object.userData.kittycadRegionExtras = metadata.kittycadRegionExtras
-        if (isKittycadRegionExtras(metadata.kittycadRegionExtras)) {
-          const resolvedSelectionEntity =
-            resolveSelectionEntityFromRegionExtras(
-              metadata.kittycadRegionExtras
-            )
-          object.userData.kittycadSelectionEntityId =
-            resolvedSelectionEntity.entityId
-          object.userData.kittycadParentEntityId =
-            resolvedSelectionEntity.parentEntityId
-          object.userData.kittycadPrimitiveIndex =
-            resolvedSelectionEntity.primitiveIndex
-          this.selectionEntityIdToObject.set(
-            resolvedSelectionEntity.entityId,
-            object
-          )
-        }
-      }
     })
+
+    for (const entry of modelIndex.selectionEntries) {
+      const entity = resolveSelectionEntity(
+        entry.source,
+        modelIndex.packet,
+        this.kclManager.artifactGraph
+      )
+      if (!entity) {
+        continue
+      }
+
+      const target = { ...entry, entity }
+      this.selectionTargetByEntityId.set(entity.entityId, target)
+      const packetEntityId = getPacketEntityId(entry.source, modelIndex.packet)
+      if (packetEntityId) {
+        this.selectionTargetByEntityId.set(packetEntityId, target)
+      }
+    }
   }
 
   private async refreshModel() {
@@ -932,10 +787,20 @@ export class LocalRenderer {
       )
       this.currentModel = packetModel.model
       this.updateAmbientOcclusionScale(packetModel.modelBounds)
-      this.parserState = packetModel.parserState
-      this.hydrateCurrentModelMetadata()
+      this.modelIndex = packetModel.modelIndex
+      this.indexCurrentModelForSelection()
       scene.add(this.currentModel)
-      const loadedModelStats = prepareLoadedModelForPreview(this.currentModel)
+      this.integerIdPicker?.setModel({
+        packet: renderPacket,
+        targets: packetModel.modelIndex.selectionEntries,
+        surfaceObjects: packetModel.modelIndex.surfaceObjects,
+        edgeLines: edgeRenderer.lines,
+        geometryStats: packetModel.modelIndex.pickingGeometryStats,
+      })
+      const loadedModelStats = prepareLoadedModelForPreview(
+        this.currentModel,
+        packetModel.modelIndex
+      )
       console.info(
         `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet trim stats`,
         summarizeRenderPacketTrimModes(renderPacket.primitives)
@@ -1055,6 +920,8 @@ export class LocalRenderer {
       this.highlightEdges
     )
     this.edgeRenderer = edgeRenderer
+    this.integerIdPicker = new IntegerIdPicker(renderer)
+    this.integerIdPicker.setEdgesVisible(this.highlightEdges)
 
     this.onExportReady?.(this.exportCurrentScene)
 
@@ -1094,21 +961,32 @@ export class LocalRenderer {
               if (!this.commandProxyEnabled) {
                 return null
               }
-              const intersection = this.pickRenderableFromWindowCoordinates({
-                x: cmd.selected_at_window.x,
-                y: cmd.selected_at_window.y,
-                streamWidth: streamDimensions.width,
-                streamHeight: streamDimensions.height,
-              })
-              this.updateHoverFromIntersection(intersection)
-              const object = intersection?.object ?? null
-              const resolvedSelectionEntity =
-                this.getResolvedSelectionEntity(object)
+              const pickStartedAt = performance.now()
+              const pickResult = await this.pickRenderableFromWindowCoordinates(
+                {
+                  x: cmd.selected_at_window.x,
+                  y: cmd.selected_at_window.y,
+                  streamWidth: streamDimensions.width,
+                  streamHeight: streamDimensions.height,
+                }
+              )
+              const pickDurationMs = performance.now() - pickStartedAt
+              const pickTarget = pickResult?.target ?? null
+              this.updateHoverFromTarget(pickTarget)
+              const selectionTarget = this.getSelectionTarget(pickTarget)
+              console.info(
+                `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] hover ID pick`,
+                {
+                  entity: selectionTarget?.entity ?? null,
+                  pickDurationMs,
+                  ...(pickResult?.diagnostics ?? {}),
+                }
+              )
               return {
                 unreliableModelingResponse: {
                   type: 'highlight_set_entity',
                   data: {
-                    entity_id: resolvedSelectionEntity?.entityId ?? '',
+                    entity_id: selectionTarget?.entity.entityId ?? '',
                     sequence: 'sequence' in cmd ? cmd.sequence : undefined,
                   },
                 },
@@ -1118,19 +996,30 @@ export class LocalRenderer {
               if (!this.commandProxyEnabled) {
                 return null
               }
-              const intersection = this.pickRenderableFromWindowCoordinates({
-                x: cmd.selected_at_window.x,
-                y: cmd.selected_at_window.y,
-                streamWidth: streamDimensions.width,
-                streamHeight: streamDimensions.height,
-              })
-              const object = intersection?.object ?? null
-              const resolvedSelectionEntity =
-                this.getResolvedSelectionEntity(object)
+              const pickStartedAt = performance.now()
+              const pickResult = await this.pickRenderableFromWindowCoordinates(
+                {
+                  x: cmd.selected_at_window.x,
+                  y: cmd.selected_at_window.y,
+                  streamWidth: streamDimensions.width,
+                  streamHeight: streamDimensions.height,
+                }
+              )
+              const pickDurationMs = performance.now() - pickStartedAt
+              const pickTarget = pickResult?.target ?? null
+              const selectionTarget = this.getSelectionTarget(pickTarget)
+              console.info(
+                `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] selection ID pick`,
+                {
+                  entity: selectionTarget?.entity ?? null,
+                  pickDurationMs,
+                  ...(pickResult?.diagnostics ?? {}),
+                }
+              )
               const modelingResponse = {
                 type: 'select_with_point',
                 data: {
-                  entity_id: resolvedSelectionEntity?.entityId ?? '',
+                  entity_id: selectionTarget?.entity.entityId ?? '',
                 },
               }
               return {
@@ -1151,31 +1040,13 @@ export class LocalRenderer {
               if (!this.commandProxyEnabled) {
                 return null
               }
-              const object =
-                this.selectionEntityIdToObject.get(cmd.entity_id) ?? null
-              const metadata = object
-                ? getPickedObjectMetadata(object, this.parserState)
-                : null
-              const primitiveExtras = isKittycadPrimitiveExtras(
-                metadata?.kittycadPrimitiveExtras
+              const selectionTarget = this.selectionTargetByEntityId.get(
+                cmd.entity_id
               )
-                ? metadata.kittycadPrimitiveExtras
-                : null
-              const edgeExtras = isKittycadEdgeExtras(
-                metadata?.kittycadEdgeExtras
-              )
-                ? metadata.kittycadEdgeExtras
-                : null
-              const resolvedSelectionEntity =
-                this.getResolvedSelectionEntity(object)
               const modelingResponse = {
                 type: 'entity_get_parent_id',
                 data: {
-                  entity_id:
-                    resolvedSelectionEntity?.parentEntityId ??
-                    primitiveExtras?.object_id ??
-                    edgeExtras?.object_id ??
-                    '',
+                  entity_id: selectionTarget?.entity.parentEntityId ?? '',
                 },
               }
               return {
@@ -1195,32 +1066,14 @@ export class LocalRenderer {
               if (!this.commandProxyEnabled) {
                 return null
               }
-              const object =
-                this.selectionEntityIdToObject.get(cmd.entity_id) ?? null
-              const metadata = object
-                ? getPickedObjectMetadata(object, this.parserState)
-                : null
-              const primitiveExtras = isKittycadPrimitiveExtras(
-                metadata?.kittycadPrimitiveExtras
+              const selectionTarget = this.selectionTargetByEntityId.get(
+                cmd.entity_id
               )
-                ? metadata.kittycadPrimitiveExtras
-                : null
-              const edgeExtras = isKittycadEdgeExtras(
-                metadata?.kittycadEdgeExtras
-              )
-                ? metadata.kittycadEdgeExtras
-                : null
-              const resolvedSelectionEntity =
-                this.getResolvedSelectionEntity(object)
               const modelingResponse = {
                 type: 'entity_get_primitive_index',
                 data: {
-                  entity_type: resolvedSelectionEntity?.entityType ?? 'face',
-                  primitive_index:
-                    resolvedSelectionEntity?.primitiveIndex ??
-                    primitiveExtras?.primitive_index ??
-                    edgeExtras?.edge_index ??
-                    -1,
+                  entity_type: selectionTarget?.entity.entityType ?? 'face',
+                  primitive_index: selectionTarget?.entity.primitiveIndex ?? -1,
                 },
               }
               return {
@@ -1240,20 +1093,19 @@ export class LocalRenderer {
               if (!this.commandProxyEnabled) {
                 return null
               }
-              const object =
-                this.selectionEntityIdToObject.get(cmd.region_id) ?? null
-              const metadata = object
-                ? getPickedObjectMetadata(object, this.parserState)
-                : null
-              const regionExtras = isKittycadRegionExtras(
-                metadata?.kittycadRegionExtras
+              const selectionTarget = this.selectionTargetByEntityId.get(
+                cmd.region_id
               )
-                ? metadata.kittycadRegionExtras
-                : null
+              const region =
+                selectionTarget?.source.type === 'region' && this.modelIndex
+                  ? this.modelIndex.packet.regions[
+                      selectionTarget.source.packetIndex
+                    ]
+                  : null
               const modelingResponse = {
                 type: 'region_get_query_point',
                 data: {
-                  query_point: regionExtras?.query_point ?? { x: 0, y: 0 },
+                  query_point: region?.queryPoint ?? { x: 0, y: 0 },
                 },
               }
               return {
@@ -1284,37 +1136,32 @@ export class LocalRenderer {
                 return null
               }
               const nextSelectedMeshes = new Set<Object3D>()
+              let firstSelectionTarget: SelectionTarget | null = null
               for (const entityId of cmd.entities) {
-                const object = this.selectionEntityIdToObject.get(entityId)
-                if (object) {
-                  nextSelectedMeshes.add(object)
+                const selectionTarget =
+                  this.selectionTargetByEntityId.get(entityId)
+                if (selectionTarget) {
+                  firstSelectionTarget ??= selectionTarget
+                  nextSelectedMeshes.add(selectionTarget.object)
                 }
               }
-              const firstSelectedMesh =
-                nextSelectedMeshes.values().next().value ?? null
-              const resolvedSelectionEntity =
-                this.getResolvedSelectionEntity(firstSelectedMesh)
-              const selectionSummary = firstSelectedMesh
-                ? summarizePickedObject(
-                    firstSelectedMesh,
-                    this.parserState,
-                    resolvedSelectionEntity
-                  )
-                : null
               this.updateSelectedMeshes({
                 nextSelectedMeshes,
-                selectionSummary,
+                selectionSummary: firstSelectionTarget
+                  ? summarizeSelectionTarget(firstSelectionTarget)
+                  : null,
               })
               return { websocketResponse: null }
             }
             case 'enable_sketch_mode': {
-              const mesh =
-                this.selectionEntityIdToObject.get(cmd.entity_id) ?? null
+              const selectionTarget =
+                this.selectionTargetByEntityId.get(cmd.entity_id) ?? null
+              const mesh = selectionTarget?.object ?? null
               if (!mesh) {
                 logLocalWebGpuPreview('local sketch mode plane mesh missing', {
                   entityId: cmd.entity_id,
                   knownSelectionEntityIds: Array.from(
-                    this.selectionEntityIdToObject.keys()
+                    this.selectionTargetByEntityId.keys()
                   ).slice(0, 20),
                 })
                 return null
@@ -1333,7 +1180,12 @@ export class LocalRenderer {
               }
               this.activeSketchModePlane = deriveSketchModePlaneFromMesh(
                 mesh,
-                kclManager.sceneInfra.camControls.camera
+                kclManager.sceneInfra.camControls.camera,
+                selectionTarget?.source.type === 'primitive' && this.modelIndex
+                  ? this.modelIndex.packet.primitives[
+                      selectionTarget.source.packetIndex
+                    ]
+                  : null
               )
               if (!this.activeSketchModePlane) {
                 logLocalWebGpuPreview(
@@ -1342,11 +1194,9 @@ export class LocalRenderer {
                     entityId: cmd.entity_id,
                     meshName: mesh.name || null,
                     meshType: mesh.type,
-                    metadata: summarizePickedObject(
-                      mesh,
-                      this.parserState,
-                      this.getResolvedSelectionEntity(mesh)
-                    ),
+                    selectionTarget: selectionTarget
+                      ? summarizeSelectionTarget(selectionTarget)
+                      : null,
                   }
                 )
                 return null
@@ -1521,10 +1371,11 @@ function buildRenderPacketModel(
   edgeRenderer: EdgeRenderer
 ) {
   const root = new Group()
-  const primitiveByObject = new WeakMap<Object3D, LocalRenderPacketPrimitive>()
-  const edgeByObject = new WeakMap<Object3D, LocalRenderPacketEdge>()
-  const sketchByObject = new WeakMap<Object3D, LocalRenderPacketSketchSegment>()
-  const regionByObject = new WeakMap<Object3D, LocalRenderPacketRegion>()
+  const selectionEntries: RenderPacketSelectionEntry[] = []
+  const previewObjects = new WeakSet<Object3D>()
+  const regionObjects = new WeakSet<Object3D>()
+  const surfaceObjects: Mesh[] = []
+  let regionTriangleCount = 0
 
   const vertexStride =
     packet.vertexLayout.stride / Float32Array.BYTES_PER_ELEMENT
@@ -1597,25 +1448,6 @@ function buildRenderPacketModel(
     return geometry
   }
 
-  const setPrimitiveMetadata = (
-    mesh: Mesh,
-    primitive: LocalRenderPacketPrimitive
-  ) => {
-    mesh.userData.gltfPrimitiveExtras = {
-      KITTYCAD: {
-        object_id: primitive.objectId,
-        body_id: primitive.bodyId,
-        face_id: primitive.faceId,
-        face_index: primitive.faceIndex,
-        primitive_index: primitive.primitiveIndex,
-      } satisfies PacketPrimitiveUserData['KITTYCAD'],
-    } satisfies PacketPrimitiveUserData
-    mesh.userData.kittycadPrimitiveExtras =
-      mesh.userData.gltfPrimitiveExtras.KITTYCAD
-    mesh.userData.kittycadTrimLoops = primitive.trimLoops
-    primitiveByObject.set(mesh, primitive)
-  }
-
   surfaceResources.batches.forEach((batch, batchIndex) => {
     if (batch.primitiveOffsets.length === 0) {
       return
@@ -1626,8 +1458,15 @@ function buildRenderPacketModel(
       batch.material
     )
     mesh.name = `surface_batch_${batchIndex}`
-    mesh.userData.kittycadSurfaceBatch = true
     mesh.renderOrder = batch.transparent ? 1 : 0
+    surfaceObjects.push(mesh)
+    previewObjects.add(mesh)
+    for (const packetIndex of batch.primitiveOffsets) {
+      selectionEntries.push({
+        object: mesh,
+        source: { type: 'primitive', packetIndex },
+      })
+    }
     root.add(mesh)
   })
 
@@ -1638,18 +1477,24 @@ function buildRenderPacketModel(
       surface.material
     )
     mesh.name = `complex_surface_${primitive.primitiveIndex}`
-    mesh.userData.kittycadSurfaceBatch = true
-    setPrimitiveMetadata(mesh, primitive)
     mesh.renderOrder = surface.material.transparent ? 1 : 0
+    surfaceObjects.push(mesh)
+    previewObjects.add(mesh)
+    selectionEntries.push({
+      object: mesh,
+      source: { type: 'primitive', packetIndex: surface.primitiveOffset },
+    })
     root.add(mesh)
   })
 
-  for (const { edge, object } of edgeRenderer.setEdges(packet.edges)) {
-    edgeByObject.set(object, edge)
+  for (const { packetIndex, object } of edgeRenderer.setEdges(packet.edges)) {
+    const source = { type: 'edge', packetIndex } as const
+    selectionEntries.push({ object, source })
   }
   edgeRenderer.addTo(root)
+  previewObjects.add(edgeRenderer.lines)
 
-  packet.sketches.forEach((segment) => {
+  packet.sketches.forEach((segment, packetIndex) => {
     if (segment.positions.length < 6) {
       return
     }
@@ -1666,19 +1511,9 @@ function buildRenderPacketModel(
       })
     )
     line.name = `sketch_${segment.sketchId}_${segment.holeIndex ?? 'path'}_${segment.segmentIndex}`
-    line.userData.kittycadSketchExtras = {
-      sketch_id: segment.sketchId,
-      segment_id: segment.segmentId ?? null,
-      segment_index: segment.segmentIndex,
-      hole_index: segment.holeIndex ?? null,
-      closed: segment.closed,
-      source_range: segment.sourceRange ?? null,
-      node_path: segment.nodePath
-        ? pathToNodeFromRustNodePath(segment.nodePath)
-        : null,
-    } satisfies KittycadSketchExtras
     line.renderOrder = 3
-    sketchByObject.set(line, segment)
+    const source = { type: 'sketch', packetIndex } as const
+    selectionEntries.push({ object: line, source })
     root.add(line)
   })
 
@@ -1699,25 +1534,72 @@ function buildRenderPacketModel(
       })
     )
     mesh.name = `region_${region.regionId}_${regionIndex}`
-    mesh.userData.kittycadRegionExtras = {
-      sketch_id: region.sketchId,
-      region_id: region.regionId,
-      parent_id: region.parentId,
-      query_point: region.queryPoint,
-    } satisfies KittycadRegionExtras
     mesh.renderOrder = 3
-    regionByObject.set(mesh, region)
+    const source = { type: 'region', packetIndex: regionIndex } as const
+    selectionEntries.push({ object: mesh, source })
+    previewObjects.add(mesh)
+    regionObjects.add(mesh)
+    regionTriangleCount += geometry.index?.count
+      ? geometry.index.count / 3
+      : geometry.getAttribute('position').count / 3
     root.add(mesh)
   })
 
+  const edgeSegmentCount = packet.edges.reduce(
+    (count, edge) =>
+      count + Math.max(0, Math.floor(edge.positions.length / 3) - 1),
+    0
+  )
+  const trimLoops = packet.primitives.flatMap((primitive) =>
+    primitive.trimLoops.filter((loop) => loop.positions.length >= 6)
+  )
+
   return {
     model: root,
-    parserState: {
-      primitiveByObject,
-      edgeByObject,
-      sketchByObject,
-      regionByObject,
-    } satisfies RenderPacketParserState,
+    modelIndex: {
+      packet,
+      selectionEntries,
+      previewObjects,
+      regionObjects,
+      surfaceObjects,
+      pickingGeometryStats: {
+        vertexCount: packet.vertices.byteLength / packet.vertexLayout.stride,
+        faceCount: packet.primitives.length,
+        faceTriangleCount:
+          packet.primitives.reduce(
+            (count, primitive) => count + primitive.indexCount,
+            0
+          ) / 3,
+        surfaceMeshCount: surfaceObjects.length,
+        edgeCount: packet.edges.length,
+        edgeSegmentCount,
+        sketchCount: packet.sketches.length,
+        sketchSegmentCount: packet.sketches.reduce(
+          (count, sketch) =>
+            count + Math.max(0, Math.floor(sketch.positions.length / 3) - 1),
+          0
+        ),
+        regionCount: packet.regions.length,
+        regionTriangleCount,
+        trimmedFaceCount: packet.primitives.filter(
+          (primitive) => primitive.trimLoops.length > 0
+        ).length,
+        trimLoopCount: trimLoops.length,
+        trimPointCount: trimLoops.reduce(
+          (count, loop) => count + loop.positions.length / 2,
+          0
+        ),
+        vertexBufferBytes: packet.vertices.byteLength,
+        indexBufferBytes: packet.indices.byteLength,
+        primitiveIndexBufferBytes: packet.primitiveIndices.byteLength,
+        edgeSegmentBufferBytes:
+          edgeSegmentCount * 2 * 3 * Float32Array.BYTES_PER_ELEMENT,
+        trimPointBufferBytes: trimLoops.reduce(
+          (bytes, loop) => bytes + loop.positions.byteLength,
+          0
+        ),
+      },
+    } satisfies RenderPacketModelIndex,
     modelBounds,
   }
 }
@@ -1752,7 +1634,10 @@ function disposeObject3D(root: Object3D) {
   })
 }
 
-function prepareLoadedModelForPreview(root: Object3D) {
+function prepareLoadedModelForPreview(
+  root: Object3D,
+  modelIndex: RenderPacketModelIndex
+) {
   let meshCount = 0
   let materialCount = 0
   const materialTypes = new Set<string>()
@@ -1766,11 +1651,7 @@ function prepareLoadedModelForPreview(root: Object3D) {
     }
 
     meshCount += 1
-    if (
-      object.userData?.kittycadSurfaceBatch ||
-      object.userData?.kittycadEdgeBatch ||
-      object.userData?.kittycadRegionExtras
-    ) {
+    if (modelIndex.previewObjects.has(object)) {
       const materials = (
         isArray(object.material) ? object.material : [object.material]
       ) as Material[]
@@ -1801,127 +1682,6 @@ function getPreviewMaterials(mesh: Mesh): PreviewSurfaceMaterial[] {
     (material): material is PreviewSurfaceMaterial =>
       'color' in material && material.color instanceof Color
   )
-}
-
-type PreviewAssociation = {
-  type?: string
-  index?: number
-  [key: string]: unknown
-}
-
-type GltfParserJson = {
-  meshes?: Array<{
-    extras?: unknown
-    primitives?: Array<{
-      extras?: unknown
-    }>
-  }>
-  nodes?: Array<{
-    extras?: unknown
-    mesh?: number
-    name?: string
-  }>
-}
-
-type GltfParserState = {
-  associations: Map<unknown, unknown> | null
-  json: GltfParserJson | null
-}
-
-type RenderPacketParserState = {
-  primitiveByObject: WeakMap<Object3D, LocalRenderPacketPrimitive>
-  edgeByObject: WeakMap<Object3D, LocalRenderPacketEdge>
-  sketchByObject: WeakMap<Object3D, LocalRenderPacketSketchSegment>
-  regionByObject: WeakMap<Object3D, LocalRenderPacketRegion>
-}
-
-type KittycadPrimitiveExtras = {
-  object_id: string
-  body_id: string
-  face_id: string
-  face_index: number
-  primitive_index: number
-}
-
-type KittycadEdgeExtras = {
-  object_id: string
-  body_id: string
-  edge_id: string
-  edge_index: number
-}
-
-type KittycadSketchExtras = {
-  sketch_id: string
-  segment_id: string | null
-  segment_index: number
-  hole_index: number | null
-  closed: boolean
-  source_range: SourceRange | null
-  node_path: PathToNode | null
-}
-
-type KittycadRegionExtras = {
-  sketch_id: string
-  region_id: string
-  parent_id: string
-  query_point: { x: number; y: number }
-}
-
-type RenderPacketTrimLoopSummary = {
-  positions: ArrayLike<number>
-}
-
-function pointInTrimLoop(
-  point: { x: number; y: number },
-  loop: RenderPacketTrimLoopSummary
-) {
-  const { positions } = loop
-  if (positions.length < 6) {
-    return false
-  }
-
-  let inside = false
-  let previousIndex = positions.length - 2
-  for (
-    let currentIndex = 0;
-    currentIndex < positions.length;
-    currentIndex += 2
-  ) {
-    const xi = positions[currentIndex]
-    const yi = positions[currentIndex + 1]
-    const xj = positions[previousIndex]
-    const yj = positions[previousIndex + 1]
-
-    const intersects =
-      yi > point.y !== yj > point.y &&
-      point.x < ((xj - xi) * (point.y - yi)) / (yj - yi || 1e-12) + xi
-
-    if (intersects) {
-      inside = !inside
-    }
-
-    previousIndex = currentIndex
-  }
-
-  return inside
-}
-
-function isUvInsideTrimLoops(
-  uv: { x: number; y: number } | null | undefined,
-  trimLoops: RenderPacketTrimLoopSummary[] | null | undefined
-) {
-  if (!uv || !trimLoops || trimLoops.length === 0) {
-    return true
-  }
-
-  let inside = false
-  for (const loop of trimLoops) {
-    if (pointInTrimLoop(uv, loop)) {
-      inside = !inside
-    }
-  }
-
-  return inside
 }
 
 function unpackRegionLoop(loop: { positions: ArrayLike<number> }) {
@@ -2005,10 +1765,6 @@ type ResolvedSelectionEntity = {
   entityType: 'face' | 'edge' | 'region'
 }
 
-type PacketPrimitiveUserData = {
-  KITTYCAD: KittycadPrimitiveExtras
-}
-
 function toPoint3d(vector: Vector3) {
   return {
     x: vector.x,
@@ -2034,7 +1790,8 @@ function scalePoint3d(point: GetSketchModePlane['origin'], scale: number) {
 
 function deriveSketchModePlaneFromMesh(
   mesh: Mesh,
-  camera: PerspectiveCamera | OrthographicCamera | null
+  camera: PerspectiveCamera | OrthographicCamera | null,
+  primitive: LocalRenderPacketPrimitive | null
 ): GetSketchModePlane | null {
   mesh.updateWorldMatrix(true, false)
 
@@ -2043,6 +1800,10 @@ function deriveSketchModePlaneFromMesh(
     return null
   }
   const indexAttribute = mesh.geometry.index
+  const primitiveIndexAttribute = mesh.geometry.getAttribute('primitiveIndex')
+  if (primitive && !primitiveIndexAttribute) {
+    return null
+  }
 
   const centroid = new Vector3()
   const first = new Vector3()
@@ -2056,7 +1817,7 @@ function deriveSketchModePlaneFromMesh(
   const viewDirection = new Vector3()
   const epsilon = 1e-10
 
-  const referencedVertexIndices = indexAttribute
+  const allReferencedVertexIndices = indexAttribute
     ? Array.from({ length: indexAttribute.count }, (_, arrayIndex) =>
         indexAttribute.getX(arrayIndex)
       )
@@ -2064,6 +1825,13 @@ function deriveSketchModePlaneFromMesh(
         { length: positionAttribute.count },
         (_, arrayIndex) => arrayIndex
       )
+  const referencedVertexIndices = primitive
+    ? allReferencedVertexIndices.filter(
+        (vertexIndex) =>
+          primitiveIndexAttribute?.getX(vertexIndex) ===
+          primitive.primitiveIndex
+      )
+    : allReferencedVertexIndices
 
   if (referencedVertexIndices.length < 3) {
     return null
@@ -2153,206 +1921,62 @@ function deriveSketchModePlaneFromMesh(
   }
 }
 
-function summarizeAssociation(association: unknown) {
-  if (!association || typeof association !== 'object') {
-    return null
-  }
-
-  return Object.fromEntries(
-    Object.entries(association as Record<string, unknown>).filter(
-      ([, value]) =>
-        typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean'
-    )
-  )
-}
-
-function getNumericAssociationIndex(
-  association: PreviewAssociation | null,
-  key: 'meshes' | 'nodes' | 'primitives'
+function getPacketEntityId(
+  source: RenderPacketSelectionSource,
+  packet: LocalRenderPacket
 ) {
-  const value = association?.[key]
-  return typeof value === 'number' ? value : null
-}
-
-function summarizeExtras(extras: unknown) {
-  if (!extras || typeof extras !== 'object') {
-    return null
+  switch (source.type) {
+    case 'primitive':
+      return packet.primitives[source.packetIndex]?.faceId ?? null
+    case 'edge':
+      return packet.edges[source.packetIndex]?.edgeId ?? null
+    case 'sketch':
+      return packet.sketches[source.packetIndex]?.segmentId ?? null
+    case 'region':
+      return packet.regions[source.packetIndex]?.regionId ?? null
   }
-
-  return extras
 }
 
-function getPickedObjectMetadata(
-  object: Object3D,
-  parserState: GltfParserState | RenderPacketParserState | null
+function resolveSelectionEntity(
+  source: RenderPacketSelectionSource,
+  packet: LocalRenderPacket,
+  artifactGraph: ArtifactGraph
 ) {
-  const primitiveExtrasFromUserData =
-    object.userData?.gltfPrimitiveExtras &&
-    typeof object.userData.gltfPrimitiveExtras === 'object' &&
-    'KITTYCAD' in object.userData.gltfPrimitiveExtras
-      ? object.userData.gltfPrimitiveExtras
-      : null
-  const kittycadPrimitiveExtrasFromUserData = isKittycadPrimitiveExtras(
-    object.userData?.kittycadPrimitiveExtras
-  )
-    ? object.userData.kittycadPrimitiveExtras
-    : null
-
-  if (parserState && 'primitiveByObject' in parserState) {
-    const primitive = parserState.primitiveByObject.get(object) ?? null
-    const edge = parserState.edgeByObject.get(object) ?? null
-    const sketch = parserState.sketchByObject.get(object) ?? null
-    const region = parserState.regionByObject.get(object) ?? null
-    return {
-      association: primitive
-        ? {
-            meshes: 0,
-            primitives: primitive.primitiveIndex,
-          }
-        : edge
-          ? {
-              edges: edge.edgeIndex,
-            }
-          : sketch
-            ? {
-                sketches: sketch.segmentIndex,
-              }
-            : region
-              ? {
-                  regions: region.regionId,
-                }
-              : null,
-      primitiveExtras: primitiveExtrasFromUserData,
-      meshExtras: null,
-      nodeExtras: null,
-      nodeIndex: null,
-      kittycadPrimitiveExtras: kittycadPrimitiveExtrasFromUserData,
-      kittycadEdgeExtras: isKittycadEdgeExtras(
-        object.userData?.kittycadEdgeExtras
-      )
-        ? object.userData.kittycadEdgeExtras
-        : edge
-          ? {
-              object_id: edge.objectId,
-              body_id: edge.bodyId,
-              edge_id: edge.edgeId,
-              edge_index: edge.edgeIndex,
-            }
-          : null,
-      kittycadSketchExtras: object.userData?.kittycadSketchExtras ?? null,
-      kittycadRegionExtras: object.userData?.kittycadRegionExtras ?? null,
+  switch (source.type) {
+    case 'primitive': {
+      const primitive = packet.primitives[source.packetIndex]
+      return primitive
+        ? resolveSelectionEntityFromPrimitive(primitive, artifactGraph)
+        : null
+    }
+    case 'edge': {
+      const edge = packet.edges[source.packetIndex]
+      return edge ? resolveSelectionEntityFromEdge(edge, artifactGraph) : null
+    }
+    case 'sketch': {
+      const sketch = packet.sketches[source.packetIndex]
+      return sketch
+        ? resolveSelectionEntityFromSketch(sketch, artifactGraph)
+        : null
+    }
+    case 'region': {
+      const region = packet.regions[source.packetIndex]
+      return region ? resolveSelectionEntityFromRegion(region) : null
     }
   }
-
-  const association = summarizeAssociation(
-    parserState?.associations?.get(object) ?? null
-  )
-  const meshIndex = getNumericAssociationIndex(association, 'meshes')
-  const primitiveIndex = getNumericAssociationIndex(association, 'primitives')
-  const primitiveExtras =
-    meshIndex !== null && primitiveIndex !== null
-      ? summarizeExtras(
-          parserState?.json?.meshes?.[meshIndex]?.primitives?.[primitiveIndex]
-            ?.extras ?? null
-        )
-      : null
-  const meshExtras =
-    meshIndex !== null
-      ? summarizeExtras(parserState?.json?.meshes?.[meshIndex]?.extras ?? null)
-      : null
-
-  let nodeExtras: unknown = null
-  let nodeIndex: number | null = null
-  let current: Object3D | null = object
-  while (current && nodeExtras === null) {
-    const currentAssociation = summarizeAssociation(
-      parserState?.associations?.get(current) ?? null
-    )
-    nodeIndex = getNumericAssociationIndex(currentAssociation, 'nodes')
-    if (nodeIndex !== null) {
-      nodeExtras = summarizeExtras(
-        parserState?.json?.nodes?.[nodeIndex]?.extras
-      )
-    }
-    current = current.parent
-  }
-
-  const kittycadPrimitiveExtras =
-    kittycadPrimitiveExtrasFromUserData ??
-    (primitiveExtras &&
-    typeof primitiveExtras === 'object' &&
-    'KITTYCAD' in primitiveExtras
-      ? (primitiveExtras as Record<string, unknown>).KITTYCAD
-      : null)
-
-  return {
-    association,
-    primitiveExtras: primitiveExtras ?? primitiveExtrasFromUserData,
-    meshExtras,
-    nodeExtras,
-    nodeIndex,
-    kittycadPrimitiveExtras,
-    kittycadEdgeExtras: isKittycadEdgeExtras(
-      object.userData?.kittycadEdgeExtras
-    )
-      ? object.userData.kittycadEdgeExtras
-      : null,
-    kittycadSketchExtras: object.userData?.kittycadSketchExtras ?? null,
-    kittycadRegionExtras: object.userData?.kittycadRegionExtras ?? null,
-  }
 }
 
-function isKittycadPrimitiveExtras(
-  value: unknown
-): value is KittycadPrimitiveExtras {
-  return (
-    !!value &&
-    typeof value === 'object' &&
-    typeof (value as KittycadPrimitiveExtras).object_id === 'string' &&
-    typeof (value as KittycadPrimitiveExtras).body_id === 'string' &&
-    typeof (value as KittycadPrimitiveExtras).face_id === 'string' &&
-    typeof (value as KittycadPrimitiveExtras).face_index === 'number' &&
-    typeof (value as KittycadPrimitiveExtras).primitive_index === 'number'
-  )
-}
-
-function isKittycadEdgeExtras(value: unknown): value is KittycadEdgeExtras {
-  return (
-    !!value &&
-    typeof value === 'object' &&
-    typeof (value as KittycadEdgeExtras).object_id === 'string' &&
-    typeof (value as KittycadEdgeExtras).body_id === 'string' &&
-    typeof (value as KittycadEdgeExtras).edge_id === 'string' &&
-    typeof (value as KittycadEdgeExtras).edge_index === 'number'
-  )
-}
-
-function isKittycadRegionExtras(value: unknown): value is KittycadRegionExtras {
-  return (
-    !!value &&
-    typeof value === 'object' &&
-    typeof (value as KittycadRegionExtras).sketch_id === 'string' &&
-    typeof (value as KittycadRegionExtras).region_id === 'string' &&
-    typeof (value as KittycadRegionExtras).parent_id === 'string' &&
-    !!(value as KittycadRegionExtras).query_point &&
-    typeof (value as KittycadRegionExtras).query_point.x === 'number' &&
-    typeof (value as KittycadRegionExtras).query_point.y === 'number'
-  )
-}
-
-function resolveSelectionEntityFromPrimitiveExtras(
-  extras: KittycadPrimitiveExtras,
+function resolveSelectionEntityFromPrimitive(
+  primitive: LocalRenderPacketPrimitive,
   artifactGraph: ArtifactGraph
 ): ResolvedSelectionEntity {
-  const directArtifact = artifactGraph.get(extras.face_id)
+  const directArtifact = artifactGraph.get(primitive.faceId)
   if (directArtifact) {
     if (directArtifact.type === 'primitiveFace') {
       return {
         entityId: directArtifact.id,
         parentEntityId: directArtifact.solidId,
-        primitiveIndex: extras.primitive_index,
+        primitiveIndex: primitive.primitiveIndex,
         entityType: 'face',
       }
     }
@@ -2368,21 +1992,21 @@ function resolveSelectionEntityFromPrimitiveExtras(
           'sweepId' in directArtifact &&
           typeof directArtifact.sweepId === 'string'
             ? directArtifact.sweepId
-            : extras.object_id,
-        primitiveIndex: extras.primitive_index,
+            : primitive.objectId,
+        primitiveIndex: primitive.primitiveIndex,
         entityType: 'face',
       }
     }
 
     return {
       entityId: directArtifact.id,
-      parentEntityId: extras.object_id,
-      primitiveIndex: extras.primitive_index,
+      parentEntityId: primitive.objectId,
+      primitiveIndex: primitive.primitiveIndex,
       entityType: 'face',
     }
   }
 
-  const objectArtifact = artifactGraph.get(extras.object_id)
+  const objectArtifact = artifactGraph.get(primitive.objectId)
   const sweepArtifact =
     objectArtifact?.type === 'sweep'
       ? objectArtifact
@@ -2392,31 +2016,31 @@ function resolveSelectionEntityFromPrimitiveExtras(
 
   if (sweepArtifact?.type === 'sweep') {
     const surfaceEntityId =
-      sweepArtifact.surfaceIds[extras.primitive_index] ??
-      sweepArtifact.surfaceIds[extras.face_index]
+      sweepArtifact.surfaceIds[primitive.primitiveIndex] ??
+      sweepArtifact.surfaceIds[primitive.faceIndex]
     if (surfaceEntityId) {
       return {
         entityId: surfaceEntityId,
         parentEntityId: sweepArtifact.id,
-        primitiveIndex: extras.primitive_index,
+        primitiveIndex: primitive.primitiveIndex,
         entityType: 'face',
       }
     }
   }
 
   return {
-    entityId: extras.face_id,
-    parentEntityId: extras.object_id,
-    primitiveIndex: extras.primitive_index,
+    entityId: primitive.faceId,
+    parentEntityId: primitive.objectId,
+    primitiveIndex: primitive.primitiveIndex,
     entityType: 'face',
   }
 }
 
-function resolveSelectionEntityFromEdgeExtras(
-  extras: KittycadEdgeExtras,
+function resolveSelectionEntityFromEdge(
+  edge: LocalRenderPacketEdge,
   artifactGraph: ArtifactGraph
 ): ResolvedSelectionEntity {
-  const directArtifact = artifactGraph.get(extras.edge_id)
+  const directArtifact = artifactGraph.get(edge.edgeId)
   if (
     directArtifact?.type === 'primitiveEdge' ||
     directArtifact?.type === 'sweepEdge'
@@ -2427,47 +2051,31 @@ function resolveSelectionEntityFromEdgeExtras(
         directArtifact.type === 'primitiveEdge'
           ? directArtifact.solidId
           : directArtifact.sweepId,
-      primitiveIndex: extras.edge_index,
+      primitiveIndex: edge.edgeIndex,
       entityType: 'edge',
     }
   }
 
   return {
-    entityId: extras.edge_id,
-    parentEntityId: extras.object_id,
-    primitiveIndex: extras.edge_index,
+    entityId: edge.edgeId,
+    parentEntityId: edge.objectId,
+    primitiveIndex: edge.edgeIndex,
     entityType: 'edge',
   }
 }
 
-function isKittycadSketchExtras(value: unknown): value is KittycadSketchExtras {
-  return (
-    !!value &&
-    typeof value === 'object' &&
-    typeof (value as KittycadSketchExtras).sketch_id === 'string' &&
-    ((value as KittycadSketchExtras).segment_id === null ||
-      typeof (value as KittycadSketchExtras).segment_id === 'string') &&
-    typeof (value as KittycadSketchExtras).segment_index === 'number' &&
-    ((value as KittycadSketchExtras).hole_index === null ||
-      typeof (value as KittycadSketchExtras).hole_index === 'number') &&
-    typeof (value as KittycadSketchExtras).closed === 'boolean' &&
-    ((value as KittycadSketchExtras).source_range === null ||
-      isArray((value as KittycadSketchExtras).source_range)) &&
-    ((value as KittycadSketchExtras).node_path === null ||
-      isArray((value as KittycadSketchExtras).node_path))
-  )
-}
-
-function resolveSelectionEntityFromSketchExtras(
-  extras: KittycadSketchExtras,
+function resolveSelectionEntityFromSketch(
+  sketch: LocalRenderPacketSketchSegment,
   artifactGraph: ArtifactGraph
 ): ResolvedSelectionEntity | null {
-  if (extras.node_path) {
+  const nodePath = sketch.nodePath
+    ? pathToNodeFromRustNodePath(sketch.nodePath)
+    : null
+  if (nodePath) {
     const artifactEntry = [...artifactGraph].find(([, artifact]) => {
       return (
         artifact.type === 'segment' &&
-        JSON.stringify(artifact.codeRef.pathToNode) ===
-          JSON.stringify(extras.node_path)
+        JSON.stringify(artifact.codeRef.pathToNode) === JSON.stringify(nodePath)
       )
     })
     if (artifactEntry?.[1].type === 'segment') {
@@ -2475,19 +2083,19 @@ function resolveSelectionEntityFromSketchExtras(
       return {
         entityId: artifact.id,
         parentEntityId: artifact.pathId,
-        primitiveIndex: extras.segment_index,
+        primitiveIndex: sketch.segmentIndex,
         entityType: 'edge',
       }
     }
   }
 
-  if (extras.segment_id) {
-    const artifact = artifactGraph.get(extras.segment_id)
+  if (sketch.segmentId) {
+    const artifact = artifactGraph.get(sketch.segmentId)
     if (artifact?.type === 'segment') {
       return {
         entityId: artifact.id,
         parentEntityId: artifact.pathId,
-        primitiveIndex: extras.segment_index,
+        primitiveIndex: sketch.segmentIndex,
         entityType: 'edge',
       }
     }
@@ -2496,12 +2104,12 @@ function resolveSelectionEntityFromSketchExtras(
   return null
 }
 
-function resolveSelectionEntityFromRegionExtras(
-  extras: KittycadRegionExtras
+function resolveSelectionEntityFromRegion(
+  region: LocalRenderPacketRegion
 ): ResolvedSelectionEntity {
   return {
-    entityId: extras.region_id,
-    parentEntityId: extras.parent_id,
+    entityId: region.regionId,
+    parentEntityId: region.parentId,
     primitiveIndex: -1,
     entityType: 'region',
   }
@@ -2509,18 +2117,14 @@ function resolveSelectionEntityFromRegionExtras(
 
 function setMeshHighlight(
   mesh: Mesh | null,
-  mode: 'base' | 'hover' | 'selected'
+  mode: 'base' | 'hover' | 'selected',
+  isRegion: boolean
 ) {
   if (!mesh) {
     return
   }
 
-  const regionExtras = isKittycadRegionExtras(
-    mesh.userData?.kittycadRegionExtras
-  )
-    ? mesh.userData.kittycadRegionExtras
-    : null
-  if (regionExtras) {
+  if (isRegion) {
     const material =
       mesh.material instanceof MeshBasicMaterial ? mesh.material : null
     if (!material) {
@@ -2573,49 +2177,19 @@ function setLineHighlight(
   line.material.opacity = mode === 'base' ? 0.95 : 1
 }
 
-function summarizePickedObject(
-  object: Object3D,
-  parserState: GltfParserState | RenderPacketParserState | null,
-  resolvedSelectionEntity: ResolvedSelectionEntity | null = null
-) {
+function summarizeSelectionTarget(target: SelectionTarget) {
   const parentChain: string[] = []
-  const associationChain: Array<PreviewAssociation | null> = []
-  const associations =
-    parserState && 'associations' in parserState
-      ? parserState.associations
-      : null
-  let current: Object3D | null = object
+  let current: Object3D | null = target.object
   while (current && parentChain.length < 4) {
     parentChain.push(current.name || current.type)
-    associationChain.push(
-      summarizeAssociation(associations?.get(current) ?? null)
-    )
     current = current.parent
   }
 
-  const metadata = getPickedObjectMetadata(object, parserState)
-  const userDataEntries = Object.entries(object.userData ?? {}).filter(
-    ([, value]) =>
-      typeof value === 'string' ||
-      typeof value === 'number' ||
-      typeof value === 'boolean'
-  )
-
   return {
-    type: object.type,
-    name: object.name || null,
+    type: target.object.type,
+    name: target.object.name || null,
     parentChain,
-    association: metadata.association,
-    associationChain,
-    primitiveExtras: metadata.primitiveExtras,
-    meshExtras: metadata.meshExtras,
-    nodeExtras: metadata.nodeExtras,
-    nodeIndex: metadata.nodeIndex,
-    kittycadPrimitiveExtras: metadata.kittycadPrimitiveExtras,
-    kittycadEdgeExtras: metadata.kittycadEdgeExtras,
-    kittycadRegionExtras: metadata.kittycadRegionExtras,
-    resolvedSelectionEntity,
-    userData: Object.fromEntries(userDataEntries),
-    userDataKeys: Object.keys(object.userData ?? {}),
+    source: target.source,
+    entity: target.entity,
   }
 }

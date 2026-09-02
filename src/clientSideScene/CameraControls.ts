@@ -258,11 +258,12 @@ export class CameraControls {
     this.update(true)
   }
 
-  throttledEngCmd = throttle((cmd: EngineCommand) => {
-    if (this.localCameraMode) return
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.engineCommandManager.sendSceneCommand(cmd)
-  }, 1000 / 30)
+  private readonly throttledHighlightCommand = throttle(
+    (cmd: EngineCommand) => {
+      void this.engineCommandManager.sendSceneCommand(cmd)
+    },
+    1000 / 30
+  )
 
   throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
     if (this.localCameraMode) return
@@ -608,7 +609,10 @@ export class CameraControls {
 
       // Clear any previous drag state
       this.wasDragging = false
-      if (this.effectiveCameraMode === 'engineToClient') {
+      if (
+        this.effectiveCameraMode === 'engineToClient' ||
+        this.effectiveCameraMode === 'local'
+      ) {
         const newCmdId = uuidv4()
 
         // You can use raw JS to fetch the element from the DOM. We do not need to proxy a ref of a ref element on the DOM element
@@ -624,7 +628,7 @@ export class CameraControls {
           videoElement,
           this.engineCommandManager.streamDimensions
         )
-        this.throttledEngCmd({
+        this.throttledHighlightCommand({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'highlight_set_entity',
