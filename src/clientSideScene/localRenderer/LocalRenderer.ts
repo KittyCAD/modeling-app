@@ -11,11 +11,11 @@ import {
   type LocalRenderPacketRegion,
   type LocalRenderPacketSketchSegment,
 } from '@src/clientSideScene/localRenderer/renderPacketBinary'
-import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import {
   createWebGpuSurfaceResources,
   type WebGpuSurfaceResources,
 } from '@src/clientSideScene/localRenderer/webgpuTrim'
+import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import type { ArtifactGraph, PathToNode, SourceRange } from '@src/lang/wasm'
@@ -1031,8 +1031,10 @@ export class LocalRenderer {
       return
     }
 
-    const adapter = await navigator.gpu.requestAdapter()
-    logLocalWebGpuPreview('default adapter request completed', {
+    const adapter = await navigator.gpu.requestAdapter({
+      powerPreference: 'high-performance',
+    })
+    logLocalWebGpuPreview('high-performance adapter request completed', {
       adapterFound: Boolean(adapter),
       adapterInfo: adapter?.info
         ? {
@@ -1043,14 +1045,6 @@ export class LocalRenderer {
         : null,
     })
     if (!adapter) {
-      const [highPerformanceAdapter, lowPowerAdapter] = await Promise.all([
-        navigator.gpu.requestAdapter({ powerPreference: 'high-performance' }),
-        navigator.gpu.requestAdapter({ powerPreference: 'low-power' }),
-      ])
-      logLocalWebGpuPreview('fallback adapter requests completed', {
-        highPerformanceAdapterFound: Boolean(highPerformanceAdapter),
-        lowPowerAdapterFound: Boolean(lowPowerAdapter),
-      })
       this.setVisible(false)
       return
     }
