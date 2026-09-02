@@ -46,7 +46,7 @@ Canonical selection prefers a clean cloud-library realization, then the newest c
 
 ### Moving projects between libraries
 
-- Directory -> Cloud: move the local project directory into the Personal Cloud storage directory. If cloud sync is enabled, explicitly enroll the moved project with `startProjectSync`. If the project already has a valid cloud project ID, the engine may bind to that remote project; otherwise the next sync creates one.
+- Directory -> Cloud: move the local project directory into the Personal Cloud storage directory. If cloud sync is enabled, explicitly enroll the moved project with `startProjectSync`. Workflows that need a cloud identity before continuing should enroll the project and then await `syncNow`. Otherwise, an existing cloud ID may be bound from project settings or the next sync creates the remote project.
 - Cloud -> Directory: treat this as "make local-only." Before the filesystem move, run the user-initiated disconnect flow: remove the local `project.toml` cloud project ID, clear pending cloud sync work, mark the local project `syncExcluded` with `reason: "user-disconnected"`, delete the remote cloud project, and update the remote project index. If remote deletion fails, the disconnect restores the local cloud link and the move should fail rather than leaving a half-detached project.
 - Cloud -> Cloud: if we add multiple cloud-type libraries, moving between them should preserve the cloud binding. Do not disconnect unless the target library type is not cloud.
 - Directory -> Directory: leave existing project metadata alone, but do not auto-enroll local-only projects. Directory-type libraries may discover projects that already carry cloud metadata, but they do not own cloud sync enrollment.
@@ -185,5 +185,7 @@ If a remote project disappears from the cloud index, the local mirror is removed
 Remote hydration is only allowed to replace OPFS when the local project is clean relative to `baseManifest`, or when the caller explicitly materializes a remote-only project into a local library. If both local and remote changed since the base, the engine may auto-reconcile changes that touch independent file paths. Same-path divergent changes keep the local project primary and fetch the remote archive live when the user inspects or resolves the conflict.
 
 This implementation is whole-project archive based. It can auto-reconcile independent file-level changes by comparing local and remote manifests to `baseManifest`, but it does not attempt same-file line or syntax merges because the base stores file fingerprints instead of file contents. A remote revision must therefore change on every successful project archive update; otherwise a remote change can be missed.
+
+Whole-project updates include `deleted_paths`, derived from acknowledged files removed by observed local filesystem mutations. The outbox preserves this intent while writes coalesce, and the upload filters out paths that were recreated before synchronization. This lets the API distinguish an intentional background deletion from an incomplete or stale replacement archive.
 
 When a cloud title changes, the title is written into `project.toml` only when that can be done without overwriting local edits. The local project directory name is treated as an implementation detail and may differ from the cloud title when uniqueness requires it.

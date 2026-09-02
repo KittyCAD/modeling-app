@@ -7922,7 +7922,7 @@ description: Result of parsing desk-edge-stopper.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Maker",
+            "value": "Categories: Home & Lifestyle; 3D Printable; Parametric",
             "style": "line"
           }
         },

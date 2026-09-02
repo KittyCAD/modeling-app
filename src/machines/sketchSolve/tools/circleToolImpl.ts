@@ -87,8 +87,17 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
         return
       }
 
-      const dx = twoD.x - context.centerPoint[0]
-      const dy = twoD.y - context.centerPoint[1]
+      const mousePosition = [twoD.x, twoD.y] as Coords2d
+      const snappingCandidate = getBestSnappingCandidate({
+        self,
+        sceneInfra: context.sceneInfra,
+        sketchId: context.sketchId,
+        mousePosition,
+        mouseEvent: args.mouseEvent,
+      })
+      const [x, y] = snappingCandidate?.position ?? mousePosition
+      const dx = x - context.centerPoint[0]
+      const dy = y - context.centerPoint[1]
       const radius = Math.sqrt(dx * dx + dy * dy)
       segmentUtilsMap.ArcSegment.updatePreviewCircle({
         sceneInfra: context.sceneInfra,
@@ -96,13 +105,6 @@ export function showRadiusPreviewListener({ self, context }: ToolActionArgs) {
         radius,
       })
 
-      const snappingCandidate = getBestSnappingCandidate({
-        self,
-        sceneInfra: context.sceneInfra,
-        sketchId: context.sketchId,
-        mousePosition: [twoD.x, twoD.y],
-        mouseEvent: args.mouseEvent,
-      })
       sendHoveredSnappingCandidate(self, snappingCandidate)
       updateToolSnappingPreview({
         sceneInfra: context.sceneInfra,

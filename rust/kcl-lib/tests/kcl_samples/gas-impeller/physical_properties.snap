@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties gas-impeller.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 3.051813831676114,
+      "y": -0.8034746997554123,
+      "z": 32.5
+    },
+    "dimensions": {
+      "x": 211.17766992120457,
+      "y": 213.98030644582428,
+      "z": 65.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 125592.16387864684
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 266.45495286736764
+  }
+}

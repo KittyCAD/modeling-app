@@ -177,10 +177,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5237,
-            "end": 5242,
+            "commentStart": 5269,
+            "end": 5274,
             "moduleId": 0,
-            "start": 5237,
+            "start": 5269,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -191,10 +191,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5308,
-            "end": 5313,
+            "commentStart": 5340,
+            "end": 5345,
             "moduleId": 0,
-            "start": 5308,
+            "start": 5340,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -205,10 +205,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5379,
-            "end": 5384,
+            "commentStart": 5411,
+            "end": 5416,
             "moduleId": 0,
-            "start": 5379,
+            "start": 5411,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -219,10 +219,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5450,
-            "end": 5455,
+            "commentStart": 5482,
+            "end": 5487,
             "moduleId": 0,
-            "start": 5450,
+            "start": 5482,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -244,10 +244,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "tag": {
-              "commentStart": 5237,
-              "end": 5242,
+              "commentStart": 5269,
+              "end": 5274,
               "moduleId": 0,
-              "start": 5237,
+              "start": 5269,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -268,10 +268,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               4.0
             ],
             "tag": {
-              "commentStart": 5308,
-              "end": 5313,
+              "commentStart": 5340,
+              "end": 5345,
               "moduleId": 0,
-              "start": 5308,
+              "start": 5340,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -292,10 +292,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               4.0
             ],
             "tag": {
-              "commentStart": 5379,
-              "end": 5384,
+              "commentStart": 5411,
+              "end": 5416,
               "moduleId": 0,
-              "start": 5379,
+              "start": 5411,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -316,10 +316,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "tag": {
-              "commentStart": 5450,
-              "end": 5455,
+              "commentStart": 5482,
+              "end": 5487,
               "moduleId": 0,
-              "start": 5450,
+              "start": 5482,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -909,10 +909,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5237,
-                    "end": 5242,
+                    "commentStart": 5269,
+                    "end": 5274,
                     "moduleId": 0,
-                    "start": 5237,
+                    "start": 5269,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -933,10 +933,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     4.0
                   ],
                   "tag": {
-                    "commentStart": 5308,
-                    "end": 5313,
+                    "commentStart": 5340,
+                    "end": 5345,
                     "moduleId": 0,
-                    "start": 5308,
+                    "start": 5340,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -957,10 +957,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     4.0
                   ],
                   "tag": {
-                    "commentStart": 5379,
-                    "end": 5384,
+                    "commentStart": 5411,
+                    "end": 5416,
                     "moduleId": 0,
-                    "start": 5379,
+                    "start": 5411,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -981,10 +981,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 5450,
-                    "end": 5455,
+                    "commentStart": 5482,
+                    "end": 5487,
                     "moduleId": 0,
-                    "start": 5450,
+                    "start": 5482,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1085,10 +1085,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 562,
-            "end": 567,
+            "commentStart": 594,
+            "end": 599,
             "moduleId": 0,
-            "start": 562,
+            "start": 594,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1099,10 +1099,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 637,
-            "end": 642,
+            "commentStart": 669,
+            "end": 674,
             "moduleId": 0,
-            "start": 637,
+            "start": 669,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1113,10 +1113,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 711,
-            "end": 716,
+            "commentStart": 743,
+            "end": 748,
             "moduleId": 0,
-            "start": 711,
+            "start": 743,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1127,10 +1127,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 784,
-            "end": 789,
+            "commentStart": 816,
+            "end": 821,
             "moduleId": 0,
-            "start": 784,
+            "start": 816,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1141,10 +1141,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 862,
+            "commentStart": 889,
+            "end": 894,
             "moduleId": 0,
-            "start": 857,
+            "start": 889,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1155,10 +1155,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 929,
-            "end": 934,
+            "commentStart": 961,
+            "end": 966,
             "moduleId": 0,
-            "start": 929,
+            "start": 961,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1169,10 +1169,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1001,
-            "end": 1006,
+            "commentStart": 1033,
+            "end": 1038,
             "moduleId": 0,
-            "start": 1001,
+            "start": 1033,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -1183,10 +1183,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1075,
-            "end": 1080,
+            "commentStart": 1107,
+            "end": 1112,
             "moduleId": 0,
-            "start": 1075,
+            "start": 1107,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -1208,10 +1208,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 562,
-              "end": 567,
+              "commentStart": 594,
+              "end": 599,
               "moduleId": 0,
-              "start": 562,
+              "start": 594,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1232,10 +1232,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               -4.0
             ],
             "tag": {
-              "commentStart": 637,
-              "end": 642,
+              "commentStart": 669,
+              "end": 674,
               "moduleId": 0,
-              "start": 637,
+              "start": 669,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1256,10 +1256,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               -4.0
             ],
             "tag": {
-              "commentStart": 711,
-              "end": 716,
+              "commentStart": 743,
+              "end": 748,
               "moduleId": 0,
-              "start": 711,
+              "start": 743,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1280,10 +1280,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 784,
-              "end": 789,
+              "commentStart": 816,
+              "end": 821,
               "moduleId": 0,
-              "start": 784,
+              "start": 816,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1304,10 +1304,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 862,
+              "commentStart": 889,
+              "end": 894,
               "moduleId": 0,
-              "start": 857,
+              "start": 889,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -1328,10 +1328,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "tag": {
-              "commentStart": 929,
-              "end": 934,
+              "commentStart": 961,
+              "end": 966,
               "moduleId": 0,
-              "start": 929,
+              "start": 961,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -1352,10 +1352,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "tag": {
-              "commentStart": 1001,
-              "end": 1006,
+              "commentStart": 1033,
+              "end": 1038,
               "moduleId": 0,
-              "start": 1001,
+              "start": 1033,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -1376,10 +1376,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 1075,
-              "end": 1080,
+              "commentStart": 1107,
+              "end": 1112,
               "moduleId": 0,
-              "start": 1075,
+              "start": 1107,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -1499,10 +1499,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "tag": {
-            "commentStart": 562,
-            "end": 567,
+            "commentStart": 594,
+            "end": 599,
             "moduleId": 0,
-            "start": 562,
+            "start": 594,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1523,10 +1523,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             -4.0
           ],
           "tag": {
-            "commentStart": 637,
-            "end": 642,
+            "commentStart": 669,
+            "end": 674,
             "moduleId": 0,
-            "start": 637,
+            "start": 669,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1547,10 +1547,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             -4.0
           ],
           "tag": {
-            "commentStart": 711,
-            "end": 716,
+            "commentStart": 743,
+            "end": 748,
             "moduleId": 0,
-            "start": 711,
+            "start": 743,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1571,10 +1571,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "tag": {
-            "commentStart": 784,
-            "end": 789,
+            "commentStart": 816,
+            "end": 821,
             "moduleId": 0,
-            "start": 784,
+            "start": 816,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1595,10 +1595,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "tag": {
-            "commentStart": 857,
-            "end": 862,
+            "commentStart": 889,
+            "end": 894,
             "moduleId": 0,
-            "start": 857,
+            "start": 889,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1619,10 +1619,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             0.0
           ],
           "tag": {
-            "commentStart": 929,
-            "end": 934,
+            "commentStart": 961,
+            "end": 966,
             "moduleId": 0,
-            "start": 929,
+            "start": 961,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1643,10 +1643,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             0.0
           ],
           "tag": {
-            "commentStart": 1001,
-            "end": 1006,
+            "commentStart": 1033,
+            "end": 1038,
             "moduleId": 0,
-            "start": 1001,
+            "start": 1033,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -1667,10 +1667,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             49.0
           ],
           "tag": {
-            "commentStart": 1075,
-            "end": 1080,
+            "commentStart": 1107,
+            "end": 1112,
             "moduleId": 0,
-            "start": 1075,
+            "start": 1107,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -2751,10 +2751,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     49.0
                   ],
                   "tag": {
-                    "commentStart": 562,
-                    "end": 567,
+                    "commentStart": 594,
+                    "end": 599,
                     "moduleId": 0,
-                    "start": 562,
+                    "start": 594,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2775,10 +2775,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     -4.0
                   ],
                   "tag": {
-                    "commentStart": 637,
-                    "end": 642,
+                    "commentStart": 669,
+                    "end": 674,
                     "moduleId": 0,
-                    "start": 637,
+                    "start": 669,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2799,10 +2799,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     -4.0
                   ],
                   "tag": {
-                    "commentStart": 711,
-                    "end": 716,
+                    "commentStart": 743,
+                    "end": 748,
                     "moduleId": 0,
-                    "start": 711,
+                    "start": 743,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2823,10 +2823,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     49.0
                   ],
                   "tag": {
-                    "commentStart": 784,
-                    "end": 789,
+                    "commentStart": 816,
+                    "end": 821,
                     "moduleId": 0,
-                    "start": 784,
+                    "start": 816,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2847,10 +2847,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     49.0
                   ],
                   "tag": {
-                    "commentStart": 857,
-                    "end": 862,
+                    "commentStart": 889,
+                    "end": 894,
                     "moduleId": 0,
-                    "start": 857,
+                    "start": 889,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -2871,10 +2871,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 929,
-                    "end": 934,
+                    "commentStart": 961,
+                    "end": 966,
                     "moduleId": 0,
-                    "start": 929,
+                    "start": 961,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -2895,10 +2895,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1001,
-                    "end": 1006,
+                    "commentStart": 1033,
+                    "end": 1038,
                     "moduleId": 0,
-                    "start": 1001,
+                    "start": 1033,
                     "type": "TagDeclarator",
                     "value": "line7"
                   },
@@ -2919,10 +2919,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     49.0
                   ],
                   "tag": {
-                    "commentStart": 1075,
-                    "end": 1080,
+                    "commentStart": 1107,
+                    "end": 1112,
                     "moduleId": 0,
-                    "start": 1075,
+                    "start": 1107,
                     "type": "TagDeclarator",
                     "value": "line8"
                   },
@@ -3039,10 +3039,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 562,
-            "end": 567,
+            "commentStart": 594,
+            "end": 599,
             "moduleId": 0,
-            "start": 562,
+            "start": 594,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3053,10 +3053,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 637,
-            "end": 642,
+            "commentStart": 669,
+            "end": 674,
             "moduleId": 0,
-            "start": 637,
+            "start": 669,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3067,10 +3067,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 711,
-            "end": 716,
+            "commentStart": 743,
+            "end": 748,
             "moduleId": 0,
-            "start": 711,
+            "start": 743,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3081,10 +3081,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 784,
-            "end": 789,
+            "commentStart": 816,
+            "end": 821,
             "moduleId": 0,
-            "start": 784,
+            "start": 816,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3095,10 +3095,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 857,
-            "end": 862,
+            "commentStart": 889,
+            "end": 894,
             "moduleId": 0,
-            "start": 857,
+            "start": 889,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3109,10 +3109,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 929,
-            "end": 934,
+            "commentStart": 961,
+            "end": 966,
             "moduleId": 0,
-            "start": 929,
+            "start": 961,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -3123,10 +3123,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1001,
-            "end": 1006,
+            "commentStart": 1033,
+            "end": 1038,
             "moduleId": 0,
-            "start": 1001,
+            "start": 1033,
             "type": "TagDeclarator",
             "value": "line7"
           },
@@ -3137,10 +3137,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1075,
-            "end": 1080,
+            "commentStart": 1107,
+            "end": 1112,
             "moduleId": 0,
-            "start": 1075,
+            "start": 1107,
             "type": "TagDeclarator",
             "value": "line8"
           },
@@ -3162,10 +3162,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 562,
-              "end": 567,
+              "commentStart": 594,
+              "end": 599,
               "moduleId": 0,
-              "start": 562,
+              "start": 594,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3186,10 +3186,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               -4.0
             ],
             "tag": {
-              "commentStart": 637,
-              "end": 642,
+              "commentStart": 669,
+              "end": 674,
               "moduleId": 0,
-              "start": 637,
+              "start": 669,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3210,10 +3210,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               -4.0
             ],
             "tag": {
-              "commentStart": 711,
-              "end": 716,
+              "commentStart": 743,
+              "end": 748,
               "moduleId": 0,
-              "start": 711,
+              "start": 743,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3234,10 +3234,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 784,
-              "end": 789,
+              "commentStart": 816,
+              "end": 821,
               "moduleId": 0,
-              "start": 784,
+              "start": 816,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3258,10 +3258,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 857,
-              "end": 862,
+              "commentStart": 889,
+              "end": 894,
               "moduleId": 0,
-              "start": 857,
+              "start": 889,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -3282,10 +3282,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "tag": {
-              "commentStart": 929,
-              "end": 934,
+              "commentStart": 961,
+              "end": 966,
               "moduleId": 0,
-              "start": 929,
+              "start": 961,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -3306,10 +3306,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "tag": {
-              "commentStart": 1001,
-              "end": 1006,
+              "commentStart": 1033,
+              "end": 1038,
               "moduleId": 0,
-              "start": 1001,
+              "start": 1033,
               "type": "TagDeclarator",
               "value": "line7"
             },
@@ -3330,10 +3330,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               49.0
             ],
             "tag": {
-              "commentStart": 1075,
-              "end": 1080,
+              "commentStart": 1107,
+              "end": 1112,
               "moduleId": 0,
-              "start": 1075,
+              "start": 1107,
               "type": "TagDeclarator",
               "value": "line8"
             },
@@ -3516,10 +3516,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4710,
-            "end": 4715,
+            "commentStart": 4742,
+            "end": 4747,
             "moduleId": 0,
-            "start": 4710,
+            "start": 4742,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3530,10 +3530,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4783,
-            "end": 4788,
+            "commentStart": 4815,
+            "end": 4820,
             "moduleId": 0,
-            "start": 4783,
+            "start": 4815,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3544,10 +3544,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4856,
-            "end": 4861,
+            "commentStart": 4888,
+            "end": 4893,
             "moduleId": 0,
-            "start": 4856,
+            "start": 4888,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3569,10 +3569,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "tag": {
-              "commentStart": 4710,
-              "end": 4715,
+              "commentStart": 4742,
+              "end": 4747,
               "moduleId": 0,
-              "start": 4710,
+              "start": 4742,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3593,10 +3593,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               4.0
             ],
             "tag": {
-              "commentStart": 4783,
-              "end": 4788,
+              "commentStart": 4815,
+              "end": 4820,
               "moduleId": 0,
-              "start": 4783,
+              "start": 4815,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3617,10 +3617,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               0.0
             ],
             "tag": {
-              "commentStart": 4856,
-              "end": 4861,
+              "commentStart": 4888,
+              "end": 4893,
               "moduleId": 0,
-              "start": 4856,
+              "start": 4888,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -4086,10 +4086,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 4710,
-                    "end": 4715,
+                    "commentStart": 4742,
+                    "end": 4747,
                     "moduleId": 0,
-                    "start": 4710,
+                    "start": 4742,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -4110,10 +4110,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     4.0
                   ],
                   "tag": {
-                    "commentStart": 4783,
-                    "end": 4788,
+                    "commentStart": 4815,
+                    "end": 4820,
                     "moduleId": 0,
-                    "start": 4783,
+                    "start": 4815,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -4134,10 +4134,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 4856,
-                    "end": 4861,
+                    "commentStart": 4888,
+                    "end": 4893,
                     "moduleId": 0,
-                    "start": 4856,
+                    "start": 4888,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -4246,10 +4246,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3339,
-                "end": 3344,
+                "commentStart": 3371,
+                "end": 3376,
                 "moduleId": 0,
-                "start": 3339,
+                "start": 3371,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -4260,10 +4260,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3424,
-                "end": 3429,
+                "commentStart": 3456,
+                "end": 3461,
                 "moduleId": 0,
-                "start": 3424,
+                "start": 3456,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -4274,10 +4274,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3509,
-                "end": 3514,
+                "commentStart": 3541,
+                "end": 3546,
                 "moduleId": 0,
-                "start": 3509,
+                "start": 3541,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -4288,10 +4288,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3594,
-                "end": 3599,
+                "commentStart": 3626,
+                "end": 3631,
                 "moduleId": 0,
-                "start": 3594,
+                "start": 3626,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -4302,10 +4302,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3835,
-                "end": 3847,
+                "commentStart": 3867,
+                "end": 3879,
                 "moduleId": 0,
-                "start": 3835,
+                "start": 3867,
                 "type": "TagDeclarator",
                 "value": "mountingHole"
               },
@@ -4327,10 +4327,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "tag": {
-                  "commentStart": 3339,
-                  "end": 3344,
+                  "commentStart": 3371,
+                  "end": 3376,
                   "moduleId": 0,
-                  "start": 3339,
+                  "start": 3371,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4351,10 +4351,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.666666667
                 ],
                 "tag": {
-                  "commentStart": 3424,
-                  "end": 3429,
+                  "commentStart": 3456,
+                  "end": 3461,
                   "moduleId": 0,
-                  "start": 3424,
+                  "start": 3456,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -4375,10 +4375,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   19.0
                 ],
                 "tag": {
-                  "commentStart": 3509,
-                  "end": 3514,
+                  "commentStart": 3541,
+                  "end": 3546,
                   "moduleId": 0,
-                  "start": 3509,
+                  "start": 3541,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -4399,10 +4399,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.666666667
                 ],
                 "tag": {
-                  "commentStart": 3594,
-                  "end": 3599,
+                  "commentStart": 3626,
+                  "end": 3631,
                   "moduleId": 0,
-                  "start": 3594,
+                  "start": 3626,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -4429,10 +4429,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 ],
                 "radius": 2.5,
                 "tag": {
-                  "commentStart": 3835,
-                  "end": 3847,
+                  "commentStart": 3867,
+                  "end": 3879,
                   "moduleId": 0,
-                  "start": 3835,
+                  "start": 3867,
                   "type": "TagDeclarator",
                   "value": "mountingHole"
                 },
@@ -4566,10 +4566,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3339,
-                "end": 3344,
+                "commentStart": 3371,
+                "end": 3376,
                 "moduleId": 0,
-                "start": 3339,
+                "start": 3371,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -4580,10 +4580,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3424,
-                "end": 3429,
+                "commentStart": 3456,
+                "end": 3461,
                 "moduleId": 0,
-                "start": 3424,
+                "start": 3456,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -4594,10 +4594,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3509,
-                "end": 3514,
+                "commentStart": 3541,
+                "end": 3546,
                 "moduleId": 0,
-                "start": 3509,
+                "start": 3541,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -4608,10 +4608,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3594,
-                "end": 3599,
+                "commentStart": 3626,
+                "end": 3631,
                 "moduleId": 0,
-                "start": 3594,
+                "start": 3626,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -4622,10 +4622,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3835,
-                "end": 3847,
+                "commentStart": 3867,
+                "end": 3879,
                 "moduleId": 0,
-                "start": 3835,
+                "start": 3867,
                 "type": "TagDeclarator",
                 "value": "mountingHole"
               },
@@ -4647,10 +4647,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "tag": {
-                  "commentStart": 3339,
-                  "end": 3344,
+                  "commentStart": 3371,
+                  "end": 3376,
                   "moduleId": 0,
-                  "start": 3339,
+                  "start": 3371,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -4671,10 +4671,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.666666667
                 ],
                 "tag": {
-                  "commentStart": 3424,
-                  "end": 3429,
+                  "commentStart": 3456,
+                  "end": 3461,
                   "moduleId": 0,
-                  "start": 3424,
+                  "start": 3456,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -4695,10 +4695,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   19.0
                 ],
                 "tag": {
-                  "commentStart": 3509,
-                  "end": 3514,
+                  "commentStart": 3541,
+                  "end": 3546,
                   "moduleId": 0,
-                  "start": 3509,
+                  "start": 3541,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -4719,10 +4719,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.666666667
                 ],
                 "tag": {
-                  "commentStart": 3594,
-                  "end": 3599,
+                  "commentStart": 3626,
+                  "end": 3631,
                   "moduleId": 0,
-                  "start": 3594,
+                  "start": 3626,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -4749,10 +4749,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 ],
                 "radius": 2.5,
                 "tag": {
-                  "commentStart": 3835,
-                  "end": 3847,
+                  "commentStart": 3867,
+                  "end": 3879,
                   "moduleId": 0,
-                  "start": 3835,
+                  "start": 3867,
                   "type": "TagDeclarator",
                   "value": "mountingHole"
                 },
@@ -4888,10 +4888,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3339,
-            "end": 3344,
+            "commentStart": 3371,
+            "end": 3376,
             "moduleId": 0,
-            "start": 3339,
+            "start": 3371,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -4902,10 +4902,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3424,
-            "end": 3429,
+            "commentStart": 3456,
+            "end": 3461,
             "moduleId": 0,
-            "start": 3424,
+            "start": 3456,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -4916,10 +4916,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3509,
-            "end": 3514,
+            "commentStart": 3541,
+            "end": 3546,
             "moduleId": 0,
-            "start": 3509,
+            "start": 3541,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -4930,10 +4930,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3594,
-            "end": 3599,
+            "commentStart": 3626,
+            "end": 3631,
             "moduleId": 0,
-            "start": 3594,
+            "start": 3626,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -4944,10 +4944,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3835,
-            "end": 3847,
+            "commentStart": 3867,
+            "end": 3879,
             "moduleId": 0,
-            "start": 3835,
+            "start": 3867,
             "type": "TagDeclarator",
             "value": "mountingHole"
           },
@@ -4969,10 +4969,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               44.0
             ],
             "tag": {
-              "commentStart": 3339,
-              "end": 3344,
+              "commentStart": 3371,
+              "end": 3376,
               "moduleId": 0,
-              "start": 3339,
+              "start": 3371,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -4993,10 +4993,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               35.666666667
             ],
             "tag": {
-              "commentStart": 3424,
-              "end": 3429,
+              "commentStart": 3456,
+              "end": 3461,
               "moduleId": 0,
-              "start": 3424,
+              "start": 3456,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -5017,10 +5017,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               19.0
             ],
             "tag": {
-              "commentStart": 3509,
-              "end": 3514,
+              "commentStart": 3541,
+              "end": 3546,
               "moduleId": 0,
-              "start": 3509,
+              "start": 3541,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -5041,10 +5041,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               10.666666667
             ],
             "tag": {
-              "commentStart": 3594,
-              "end": 3599,
+              "commentStart": 3626,
+              "end": 3631,
               "moduleId": 0,
-              "start": 3594,
+              "start": 3626,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -5071,10 +5071,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             ],
             "radius": 2.5,
             "tag": {
-              "commentStart": 3835,
-              "end": 3847,
+              "commentStart": 3867,
+              "end": 3879,
               "moduleId": 0,
-              "start": 3835,
+              "start": 3867,
               "type": "TagDeclarator",
               "value": "mountingHole"
             },
@@ -5182,10 +5182,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             44.0
           ],
           "tag": {
-            "commentStart": 3339,
-            "end": 3344,
+            "commentStart": 3371,
+            "end": 3376,
             "moduleId": 0,
-            "start": 3339,
+            "start": 3371,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -5206,10 +5206,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             35.666666667
           ],
           "tag": {
-            "commentStart": 3424,
-            "end": 3429,
+            "commentStart": 3456,
+            "end": 3461,
             "moduleId": 0,
-            "start": 3424,
+            "start": 3456,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -5230,10 +5230,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             19.0
           ],
           "tag": {
-            "commentStart": 3509,
-            "end": 3514,
+            "commentStart": 3541,
+            "end": 3546,
             "moduleId": 0,
-            "start": 3509,
+            "start": 3541,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -5254,10 +5254,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             10.666666667
           ],
           "tag": {
-            "commentStart": 3594,
-            "end": 3599,
+            "commentStart": 3626,
+            "end": 3631,
             "moduleId": 0,
-            "start": 3594,
+            "start": 3626,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -5284,10 +5284,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           ],
           "radius": 2.5,
           "tag": {
-            "commentStart": 3835,
-            "end": 3847,
+            "commentStart": 3867,
+            "end": 3879,
             "moduleId": 0,
-            "start": 3835,
+            "start": 3867,
             "type": "TagDeclarator",
             "value": "mountingHole"
           },
@@ -5876,10 +5876,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     44.0
                   ],
                   "tag": {
-                    "commentStart": 3339,
-                    "end": 3344,
+                    "commentStart": 3371,
+                    "end": 3376,
                     "moduleId": 0,
-                    "start": 3339,
+                    "start": 3371,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -5900,10 +5900,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     35.666666667
                   ],
                   "tag": {
-                    "commentStart": 3424,
-                    "end": 3429,
+                    "commentStart": 3456,
+                    "end": 3461,
                     "moduleId": 0,
-                    "start": 3424,
+                    "start": 3456,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -5924,10 +5924,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     19.0
                   ],
                   "tag": {
-                    "commentStart": 3509,
-                    "end": 3514,
+                    "commentStart": 3541,
+                    "end": 3546,
                     "moduleId": 0,
-                    "start": 3509,
+                    "start": 3541,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -5948,10 +5948,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     10.666666667
                   ],
                   "tag": {
-                    "commentStart": 3594,
-                    "end": 3599,
+                    "commentStart": 3626,
+                    "end": 3631,
                     "moduleId": 0,
-                    "start": 3594,
+                    "start": 3626,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -5995,10 +5995,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   ],
                   "radius": 2.5,
                   "tag": {
-                    "commentStart": 3835,
-                    "end": 3847,
+                    "commentStart": 3867,
+                    "end": 3879,
                     "moduleId": 0,
-                    "start": 3835,
+                    "start": 3867,
                     "type": "TagDeclarator",
                     "value": "mountingHole"
                   },
@@ -6427,10 +6427,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2145,
-                "end": 2150,
+                "commentStart": 2177,
+                "end": 2182,
                 "moduleId": 0,
-                "start": 2145,
+                "start": 2177,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -6441,10 +6441,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2228,
-                "end": 2233,
+                "commentStart": 2260,
+                "end": 2265,
                 "moduleId": 0,
-                "start": 2228,
+                "start": 2260,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -6455,10 +6455,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2311,
-                "end": 2316,
+                "commentStart": 2343,
+                "end": 2348,
                 "moduleId": 0,
-                "start": 2311,
+                "start": 2343,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -6469,10 +6469,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2394,
-                "end": 2399,
+                "commentStart": 2426,
+                "end": 2431,
                 "moduleId": 0,
-                "start": 2394,
+                "start": 2426,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -6483,10 +6483,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2633,
-                "end": 2645,
+                "commentStart": 2665,
+                "end": 2677,
                 "moduleId": 0,
-                "start": 2633,
+                "start": 2665,
                 "type": "TagDeclarator",
                 "value": "mountingHole"
               },
@@ -6508,10 +6508,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "tag": {
-                  "commentStart": 2145,
-                  "end": 2150,
+                  "commentStart": 2177,
+                  "end": 2182,
                   "moduleId": 0,
-                  "start": 2145,
+                  "start": 2177,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -6532,10 +6532,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.666666667
                 ],
                 "tag": {
-                  "commentStart": 2228,
-                  "end": 2233,
+                  "commentStart": 2260,
+                  "end": 2265,
                   "moduleId": 0,
-                  "start": 2228,
+                  "start": 2260,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -6556,10 +6556,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   19.0
                 ],
                 "tag": {
-                  "commentStart": 2311,
-                  "end": 2316,
+                  "commentStart": 2343,
+                  "end": 2348,
                   "moduleId": 0,
-                  "start": 2311,
+                  "start": 2343,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -6580,10 +6580,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.666666667
                 ],
                 "tag": {
-                  "commentStart": 2394,
-                  "end": 2399,
+                  "commentStart": 2426,
+                  "end": 2431,
                   "moduleId": 0,
-                  "start": 2394,
+                  "start": 2426,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -6610,10 +6610,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 ],
                 "radius": 2.5,
                 "tag": {
-                  "commentStart": 2633,
-                  "end": 2645,
+                  "commentStart": 2665,
+                  "end": 2677,
                   "moduleId": 0,
-                  "start": 2633,
+                  "start": 2665,
                   "type": "TagDeclarator",
                   "value": "mountingHole"
                 },
@@ -6747,10 +6747,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2145,
-                "end": 2150,
+                "commentStart": 2177,
+                "end": 2182,
                 "moduleId": 0,
-                "start": 2145,
+                "start": 2177,
                 "type": "TagDeclarator",
                 "value": "line1"
               },
@@ -6761,10 +6761,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2228,
-                "end": 2233,
+                "commentStart": 2260,
+                "end": 2265,
                 "moduleId": 0,
-                "start": 2228,
+                "start": 2260,
                 "type": "TagDeclarator",
                 "value": "line2"
               },
@@ -6775,10 +6775,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2311,
-                "end": 2316,
+                "commentStart": 2343,
+                "end": 2348,
                 "moduleId": 0,
-                "start": 2311,
+                "start": 2343,
                 "type": "TagDeclarator",
                 "value": "line3"
               },
@@ -6789,10 +6789,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2394,
-                "end": 2399,
+                "commentStart": 2426,
+                "end": 2431,
                 "moduleId": 0,
-                "start": 2394,
+                "start": 2426,
                 "type": "TagDeclarator",
                 "value": "line4"
               },
@@ -6803,10 +6803,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2633,
-                "end": 2645,
+                "commentStart": 2665,
+                "end": 2677,
                 "moduleId": 0,
-                "start": 2633,
+                "start": 2665,
                 "type": "TagDeclarator",
                 "value": "mountingHole"
               },
@@ -6828,10 +6828,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   44.0
                 ],
                 "tag": {
-                  "commentStart": 2145,
-                  "end": 2150,
+                  "commentStart": 2177,
+                  "end": 2182,
                   "moduleId": 0,
-                  "start": 2145,
+                  "start": 2177,
                   "type": "TagDeclarator",
                   "value": "line1"
                 },
@@ -6852,10 +6852,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   35.666666667
                 ],
                 "tag": {
-                  "commentStart": 2228,
-                  "end": 2233,
+                  "commentStart": 2260,
+                  "end": 2265,
                   "moduleId": 0,
-                  "start": 2228,
+                  "start": 2260,
                   "type": "TagDeclarator",
                   "value": "line2"
                 },
@@ -6876,10 +6876,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   19.0
                 ],
                 "tag": {
-                  "commentStart": 2311,
-                  "end": 2316,
+                  "commentStart": 2343,
+                  "end": 2348,
                   "moduleId": 0,
-                  "start": 2311,
+                  "start": 2343,
                   "type": "TagDeclarator",
                   "value": "line3"
                 },
@@ -6900,10 +6900,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   10.666666667
                 ],
                 "tag": {
-                  "commentStart": 2394,
-                  "end": 2399,
+                  "commentStart": 2426,
+                  "end": 2431,
                   "moduleId": 0,
-                  "start": 2394,
+                  "start": 2426,
                   "type": "TagDeclarator",
                   "value": "line4"
                 },
@@ -6930,10 +6930,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 ],
                 "radius": 2.5,
                 "tag": {
-                  "commentStart": 2633,
-                  "end": 2645,
+                  "commentStart": 2665,
+                  "end": 2677,
                   "moduleId": 0,
-                  "start": 2633,
+                  "start": 2665,
                   "type": "TagDeclarator",
                   "value": "mountingHole"
                 },
@@ -7069,10 +7069,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2145,
-            "end": 2150,
+            "commentStart": 2177,
+            "end": 2182,
             "moduleId": 0,
-            "start": 2145,
+            "start": 2177,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7083,10 +7083,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2228,
-            "end": 2233,
+            "commentStart": 2260,
+            "end": 2265,
             "moduleId": 0,
-            "start": 2228,
+            "start": 2260,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7097,10 +7097,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2311,
-            "end": 2316,
+            "commentStart": 2343,
+            "end": 2348,
             "moduleId": 0,
-            "start": 2311,
+            "start": 2343,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7111,10 +7111,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2394,
-            "end": 2399,
+            "commentStart": 2426,
+            "end": 2431,
             "moduleId": 0,
-            "start": 2394,
+            "start": 2426,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7125,10 +7125,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2633,
-            "end": 2645,
+            "commentStart": 2665,
+            "end": 2677,
             "moduleId": 0,
-            "start": 2633,
+            "start": 2665,
             "type": "TagDeclarator",
             "value": "mountingHole"
           },
@@ -7150,10 +7150,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               44.0
             ],
             "tag": {
-              "commentStart": 2145,
-              "end": 2150,
+              "commentStart": 2177,
+              "end": 2182,
               "moduleId": 0,
-              "start": 2145,
+              "start": 2177,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -7174,10 +7174,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               35.666666667
             ],
             "tag": {
-              "commentStart": 2228,
-              "end": 2233,
+              "commentStart": 2260,
+              "end": 2265,
               "moduleId": 0,
-              "start": 2228,
+              "start": 2260,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -7198,10 +7198,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               19.0
             ],
             "tag": {
-              "commentStart": 2311,
-              "end": 2316,
+              "commentStart": 2343,
+              "end": 2348,
               "moduleId": 0,
-              "start": 2311,
+              "start": 2343,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -7222,10 +7222,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               10.666666667
             ],
             "tag": {
-              "commentStart": 2394,
-              "end": 2399,
+              "commentStart": 2426,
+              "end": 2431,
               "moduleId": 0,
-              "start": 2394,
+              "start": 2426,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -7252,10 +7252,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             ],
             "radius": 2.5,
             "tag": {
-              "commentStart": 2633,
-              "end": 2645,
+              "commentStart": 2665,
+              "end": 2677,
               "moduleId": 0,
-              "start": 2633,
+              "start": 2665,
               "type": "TagDeclarator",
               "value": "mountingHole"
             },
@@ -7363,10 +7363,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             44.0
           ],
           "tag": {
-            "commentStart": 2145,
-            "end": 2150,
+            "commentStart": 2177,
+            "end": 2182,
             "moduleId": 0,
-            "start": 2145,
+            "start": 2177,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -7387,10 +7387,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             35.666666667
           ],
           "tag": {
-            "commentStart": 2228,
-            "end": 2233,
+            "commentStart": 2260,
+            "end": 2265,
             "moduleId": 0,
-            "start": 2228,
+            "start": 2260,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -7411,10 +7411,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             19.0
           ],
           "tag": {
-            "commentStart": 2311,
-            "end": 2316,
+            "commentStart": 2343,
+            "end": 2348,
             "moduleId": 0,
-            "start": 2311,
+            "start": 2343,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -7435,10 +7435,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             10.666666667
           ],
           "tag": {
-            "commentStart": 2394,
-            "end": 2399,
+            "commentStart": 2426,
+            "end": 2431,
             "moduleId": 0,
-            "start": 2394,
+            "start": 2426,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -7465,10 +7465,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           ],
           "radius": 2.5,
           "tag": {
-            "commentStart": 2633,
-            "end": 2645,
+            "commentStart": 2665,
+            "end": 2677,
             "moduleId": 0,
-            "start": 2633,
+            "start": 2665,
             "type": "TagDeclarator",
             "value": "mountingHole"
           },
@@ -8057,10 +8057,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     44.0
                   ],
                   "tag": {
-                    "commentStart": 2145,
-                    "end": 2150,
+                    "commentStart": 2177,
+                    "end": 2182,
                     "moduleId": 0,
-                    "start": 2145,
+                    "start": 2177,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -8081,10 +8081,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     35.666666667
                   ],
                   "tag": {
-                    "commentStart": 2228,
-                    "end": 2233,
+                    "commentStart": 2260,
+                    "end": 2265,
                     "moduleId": 0,
-                    "start": 2228,
+                    "start": 2260,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -8105,10 +8105,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     19.0
                   ],
                   "tag": {
-                    "commentStart": 2311,
-                    "end": 2316,
+                    "commentStart": 2343,
+                    "end": 2348,
                     "moduleId": 0,
-                    "start": 2311,
+                    "start": 2343,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -8129,10 +8129,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                     10.666666667
                   ],
                   "tag": {
-                    "commentStart": 2394,
-                    "end": 2399,
+                    "commentStart": 2426,
+                    "end": 2431,
                     "moduleId": 0,
-                    "start": 2394,
+                    "start": 2426,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -8176,10 +8176,10 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   ],
                   "radius": 2.5,
                   "tag": {
-                    "commentStart": 2633,
-                    "end": 2645,
+                    "commentStart": 2665,
+                    "end": 2677,
                     "moduleId": 0,
-                    "start": 2633,
+                    "start": 2665,
                     "type": "TagDeclarator",
                     "value": "mountingHole"
                   },

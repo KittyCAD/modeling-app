@@ -3952,7 +3952,7 @@ description: Result of parsing gdt-tutorial.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "Categories: Manufacturing",
+            "value": "Categories: Science & Education; Industrial & Manufacturing",
             "style": "line"
           }
         },

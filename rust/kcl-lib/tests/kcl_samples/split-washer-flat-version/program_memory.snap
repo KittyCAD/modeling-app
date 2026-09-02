@@ -119,10 +119,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           ],
           "radius": 4.0,
           "tag": {
-            "commentStart": 349,
-            "end": 360,
+            "commentStart": 361,
+            "end": 372,
             "moduleId": 0,
-            "start": 349,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -149,10 +149,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           ],
           "radius": 2.0,
           "tag": {
-            "commentStart": 429,
-            "end": 440,
+            "commentStart": 441,
+            "end": 452,
             "moduleId": 0,
-            "start": 429,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -244,10 +244,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 349,
-            "end": 360,
+            "commentStart": 361,
+            "end": 372,
             "moduleId": 0,
-            "start": 349,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -258,10 +258,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 429,
-            "end": 440,
+            "commentStart": 441,
+            "end": 452,
             "moduleId": 0,
-            "start": 429,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -289,10 +289,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 349,
-              "end": 360,
+              "commentStart": 361,
+              "end": 372,
               "moduleId": 0,
-              "start": 349,
+              "start": 361,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -319,10 +319,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             ],
             "radius": 2.0,
             "tag": {
-              "commentStart": 429,
-              "end": 440,
+              "commentStart": 441,
+              "end": 452,
               "moduleId": 0,
-              "start": 429,
+              "start": 441,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -437,10 +437,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 349,
-            "end": 360,
+            "commentStart": 361,
+            "end": 372,
             "moduleId": 0,
-            "start": 349,
+            "start": 361,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -451,10 +451,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 429,
-            "end": 440,
+            "commentStart": 441,
+            "end": 452,
             "moduleId": 0,
-            "start": 429,
+            "start": 441,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -482,10 +482,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             ],
             "radius": 4.0,
             "tag": {
-              "commentStart": 349,
-              "end": 360,
+              "commentStart": 361,
+              "end": 372,
               "moduleId": 0,
-              "start": 349,
+              "start": 361,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -512,10 +512,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             ],
             "radius": 2.0,
             "tag": {
-              "commentStart": 429,
-              "end": 440,
+              "commentStart": 441,
+              "end": 452,
               "moduleId": 0,
-              "start": 429,
+              "start": 441,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -743,10 +743,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   ],
                   "radius": 4.0,
                   "tag": {
-                    "commentStart": 349,
-                    "end": 360,
+                    "commentStart": 361,
+                    "end": 372,
                     "moduleId": 0,
-                    "start": 349,
+                    "start": 361,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -790,10 +790,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                   ],
                   "radius": 2.0,
                   "tag": {
-                    "commentStart": 429,
-                    "end": 440,
+                    "commentStart": 441,
+                    "end": 452,
                     "moduleId": 0,
-                    "start": 429,
+                    "start": 441,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },
@@ -1024,10 +1024,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1115,
-            "end": 1123,
+            "commentStart": 1127,
+            "end": 1135,
             "moduleId": 0,
-            "start": 1115,
+            "start": 1127,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -1038,10 +1038,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1192,
-            "end": 1199,
+            "commentStart": 1204,
+            "end": 1211,
             "moduleId": 0,
-            "start": 1192,
+            "start": 1204,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -1052,10 +1052,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1269,
-            "end": 1278,
+            "commentStart": 1281,
+            "end": 1290,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1281,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -1066,10 +1066,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1351,
-            "end": 1361,
+            "commentStart": 1363,
+            "end": 1373,
             "moduleId": 0,
-            "start": 1351,
+            "start": 1363,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -1091,10 +1091,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
               -0.5
             ],
             "tag": {
-              "commentStart": 1115,
-              "end": 1123,
+              "commentStart": 1127,
+              "end": 1135,
               "moduleId": 0,
-              "start": 1115,
+              "start": 1127,
               "type": "TagDeclarator",
               "value": "leftEdge"
             },
@@ -1115,10 +1115,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
               0.5
             ],
             "tag": {
-              "commentStart": 1192,
-              "end": 1199,
+              "commentStart": 1204,
+              "end": 1211,
               "moduleId": 0,
-              "start": 1192,
+              "start": 1204,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -1139,10 +1139,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
               0.5
             ],
             "tag": {
-              "commentStart": 1269,
-              "end": 1278,
+              "commentStart": 1281,
+              "end": 1290,
               "moduleId": 0,
-              "start": 1269,
+              "start": 1281,
               "type": "TagDeclarator",
               "value": "rightEdge"
             },
@@ -1163,10 +1163,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
               -0.5
             ],
             "tag": {
-              "commentStart": 1351,
-              "end": 1361,
+              "commentStart": 1363,
+              "end": 1373,
               "moduleId": 0,
-              "start": 1351,
+              "start": 1363,
               "type": "TagDeclarator",
               "value": "bottomEdge"
             },
@@ -1288,10 +1288,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             -0.5
           ],
           "tag": {
-            "commentStart": 1115,
-            "end": 1123,
+            "commentStart": 1127,
+            "end": 1135,
             "moduleId": 0,
-            "start": 1115,
+            "start": 1127,
             "type": "TagDeclarator",
             "value": "leftEdge"
           },
@@ -1312,10 +1312,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             0.5
           ],
           "tag": {
-            "commentStart": 1192,
-            "end": 1199,
+            "commentStart": 1204,
+            "end": 1211,
             "moduleId": 0,
-            "start": 1192,
+            "start": 1204,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -1336,10 +1336,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             0.5
           ],
           "tag": {
-            "commentStart": 1269,
-            "end": 1278,
+            "commentStart": 1281,
+            "end": 1290,
             "moduleId": 0,
-            "start": 1269,
+            "start": 1281,
             "type": "TagDeclarator",
             "value": "rightEdge"
           },
@@ -1360,10 +1360,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             -0.5
           ],
           "tag": {
-            "commentStart": 1351,
-            "end": 1361,
+            "commentStart": 1363,
+            "end": 1373,
             "moduleId": 0,
-            "start": 1351,
+            "start": 1363,
             "type": "TagDeclarator",
             "value": "bottomEdge"
           },
@@ -1708,10 +1708,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     -0.5
                   ],
                   "tag": {
-                    "commentStart": 1115,
-                    "end": 1123,
+                    "commentStart": 1127,
+                    "end": 1135,
                     "moduleId": 0,
-                    "start": 1115,
+                    "start": 1127,
                     "type": "TagDeclarator",
                     "value": "leftEdge"
                   },
@@ -1732,10 +1732,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     0.5
                   ],
                   "tag": {
-                    "commentStart": 1192,
-                    "end": 1199,
+                    "commentStart": 1204,
+                    "end": 1211,
                     "moduleId": 0,
-                    "start": 1192,
+                    "start": 1204,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -1756,10 +1756,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     0.5
                   ],
                   "tag": {
-                    "commentStart": 1269,
-                    "end": 1278,
+                    "commentStart": 1281,
+                    "end": 1290,
                     "moduleId": 0,
-                    "start": 1269,
+                    "start": 1281,
                     "type": "TagDeclarator",
                     "value": "rightEdge"
                   },
@@ -1780,10 +1780,10 @@ description: Variables in memory after executing split-washer-flat-version.kcl
                     -0.5
                   ],
                   "tag": {
-                    "commentStart": 1351,
-                    "end": 1361,
+                    "commentStart": 1363,
+                    "end": 1373,
                     "moduleId": 0,
-                    "start": 1351,
+                    "start": 1363,
                     "type": "TagDeclarator",
                     "value": "bottomEdge"
                   },

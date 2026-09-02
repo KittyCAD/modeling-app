@@ -192,10 +192,10 @@ description: Variables in memory after executing torus.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 293,
-                    "end": 300,
+                    "commentStart": 319,
+                    "end": 326,
                     "moduleId": 0,
-                    "start": 293,
+                    "start": 319,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -294,10 +294,10 @@ description: Variables in memory after executing torus.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 293,
-            "end": 300,
+            "commentStart": 319,
+            "end": 326,
             "moduleId": 0,
-            "start": 293,
+            "start": 319,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -380,10 +380,10 @@ description: Variables in memory after executing torus.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 293,
-            "end": 300,
+            "commentStart": 319,
+            "end": 326,
             "moduleId": 0,
-            "start": 293,
+            "start": 319,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -411,10 +411,10 @@ description: Variables in memory after executing torus.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 293,
-              "end": 300,
+              "commentStart": 319,
+              "end": 326,
               "moduleId": 0,
-              "start": 293,
+              "start": 319,
               "type": "TagDeclarator",
               "value": "circle1"
             },

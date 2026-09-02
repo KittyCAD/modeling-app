@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties end-effector-gripper-fingers.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -9.201885317730728,
+      "y": -17.22834996325288,
+      "z": 115.07883155176437
+    },
+    "dimensions": {
+      "x": 259.1291730063341,
+      "y": 254.046429285034,
+      "z": 330.1576631035287
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 379034.66695646994
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1865.5233504914631
+  }
+}

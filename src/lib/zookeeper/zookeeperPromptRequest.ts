@@ -11,17 +11,15 @@ import { parentPathRelativeToProject, toWebSafePath } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import {
   getSelectionReferences,
+  getUnresolvedEnginePrimitiveSelections,
   isEnginePrimitiveSelection,
+  isReferenceableEnginePrimitiveSelection,
   type SelectionReference,
 } from '@src/lib/selections'
 import type { FileMeta } from '@src/lib/types'
 import { isErr, reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type {
-  EnginePrimitiveSelection,
-  Selection,
-  Selections,
-} from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type KittyCadLibFile = { name: string; data: Blob }
 
@@ -404,14 +402,6 @@ export function buildZookeeperSourceRangePromptsForSelection({
   return prompts
 }
 
-function isReferenceableEnginePrimitiveSelection(
-  selection: EnginePrimitiveSelection
-): boolean {
-  return (
-    selection.primitiveType === 'face' || selection.primitiveType === 'edge'
-  )
-}
-
 function formatSelectionReferencePrompt(
   references: SelectionReference[]
 ): string | null {
@@ -477,12 +467,9 @@ async function buildSelectionReferencePrompt({
     wasmInstance,
   })
 
-  const unresolvedSelections = referenceableEnginePrimitives.filter(
-    (selection) =>
-      !references.some(
-        (reference) =>
-          reference.enginePrimitiveSelection?.entityId === selection.entityId
-      )
+  const unresolvedSelections = getUnresolvedEnginePrimitiveSelections(
+    referenceableEnginePrimitives,
+    references
   )
   if (unresolvedSelections.length > 0) {
     return new Error(

@@ -182,10 +182,10 @@ description: Variables in memory after executing camshaft.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4642,
-            "end": 4647,
+            "commentStart": 4682,
+            "end": 4687,
             "moduleId": 0,
-            "start": 4642,
+            "start": 4682,
             "type": "TagDeclarator",
             "value": "shaft"
           },
@@ -213,10 +213,10 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "radius": 0.485,
             "tag": {
-              "commentStart": 4642,
-              "end": 4647,
+              "commentStart": 4682,
+              "end": 4687,
               "moduleId": 0,
-              "start": 4642,
+              "start": 4682,
               "type": "TagDeclarator",
               "value": "shaft"
             },
@@ -316,10 +316,10 @@ description: Variables in memory after executing camshaft.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2359,
-            "end": 2366,
+            "commentStart": 2399,
+            "end": 2406,
             "moduleId": 0,
-            "start": 2359,
+            "start": 2399,
             "type": "TagDeclarator",
             "value": "baseArc"
           },
@@ -330,10 +330,10 @@ description: Variables in memory after executing camshaft.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2564,
-            "end": 2574,
+            "commentStart": 2604,
+            "end": 2614,
             "moduleId": 0,
-            "start": 2564,
+            "start": 2604,
             "type": "TagDeclarator",
             "value": "rightFlank"
           },
@@ -344,10 +344,10 @@ description: Variables in memory after executing camshaft.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2863,
-            "end": 2870,
+            "commentStart": 2903,
+            "end": 2910,
             "moduleId": 0,
-            "start": 2863,
+            "start": 2903,
             "type": "TagDeclarator",
             "value": "noseArc"
           },
@@ -358,10 +358,10 @@ description: Variables in memory after executing camshaft.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3127,
-            "end": 3136,
+            "commentStart": 3167,
+            "end": 3176,
             "moduleId": 0,
-            "start": 3127,
+            "start": 3167,
             "type": "TagDeclarator",
             "value": "leftFlank"
           },
@@ -389,10 +389,10 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "radius": 0.6700000000004543,
             "tag": {
-              "commentStart": 2359,
-              "end": 2366,
+              "commentStart": 2399,
+              "end": 2406,
               "moduleId": 0,
-              "start": 2359,
+              "start": 2399,
               "type": "TagDeclarator",
               "value": "baseArc"
             },
@@ -419,10 +419,10 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "radius": 1.7871475088982942,
             "tag": {
-              "commentStart": 2564,
-              "end": 2574,
+              "commentStart": 2604,
+              "end": 2614,
               "moduleId": 0,
-              "start": 2564,
+              "start": 2604,
               "type": "TagDeclarator",
               "value": "rightFlank"
             },
@@ -449,10 +449,10 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "radius": 0.21533989909916185,
             "tag": {
-              "commentStart": 2863,
-              "end": 2870,
+              "commentStart": 2903,
+              "end": 2910,
               "moduleId": 0,
-              "start": 2863,
+              "start": 2903,
               "type": "TagDeclarator",
               "value": "noseArc"
             },
@@ -479,10 +479,10 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "radius": 1.7871475088979398,
             "tag": {
-              "commentStart": 3127,
-              "end": 3136,
+              "commentStart": 3167,
+              "end": 3176,
               "moduleId": 0,
-              "start": 3127,
+              "start": 3167,
               "type": "TagDeclarator",
               "value": "leftFlank"
             },
@@ -920,10 +920,10 @@ description: Variables in memory after executing camshaft.kcl
                   ],
                   "radius": 0.6700000000004543,
                   "tag": {
-                    "commentStart": 2359,
-                    "end": 2366,
+                    "commentStart": 2399,
+                    "end": 2406,
                     "moduleId": 0,
-                    "start": 2359,
+                    "start": 2399,
                     "type": "TagDeclarator",
                     "value": "baseArc"
                   },
@@ -950,10 +950,10 @@ description: Variables in memory after executing camshaft.kcl
                   ],
                   "radius": 1.7871475088982942,
                   "tag": {
-                    "commentStart": 2564,
-                    "end": 2574,
+                    "commentStart": 2604,
+                    "end": 2614,
                     "moduleId": 0,
-                    "start": 2564,
+                    "start": 2604,
                     "type": "TagDeclarator",
                     "value": "rightFlank"
                   },
@@ -980,10 +980,10 @@ description: Variables in memory after executing camshaft.kcl
                   ],
                   "radius": 0.21533989909916185,
                   "tag": {
-                    "commentStart": 2863,
-                    "end": 2870,
+                    "commentStart": 2903,
+                    "end": 2910,
                     "moduleId": 0,
-                    "start": 2863,
+                    "start": 2903,
                     "type": "TagDeclarator",
                     "value": "noseArc"
                   },
@@ -1010,10 +1010,10 @@ description: Variables in memory after executing camshaft.kcl
                   ],
                   "radius": 1.7871475088979398,
                   "tag": {
-                    "commentStart": 3127,
-                    "end": 3136,
+                    "commentStart": 3167,
+                    "end": 3176,
                     "moduleId": 0,
-                    "start": 3127,
+                    "start": 3167,
                     "type": "TagDeclarator",
                     "value": "leftFlank"
                   },
@@ -1418,10 +1418,10 @@ description: Variables in memory after executing camshaft.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 874,
-            "end": 881,
+            "commentStart": 914,
+            "end": 921,
             "moduleId": 0,
-            "start": 874,
+            "start": 914,
             "type": "TagDeclarator",
             "value": "baseArc"
           },
@@ -1432,10 +1432,10 @@ description: Variables in memory after executing camshaft.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1079,
-            "end": 1089,
+            "commentStart": 1119,
+            "end": 1129,
             "moduleId": 0,
-            "start": 1079,
+            "start": 1119,
             "type": "TagDeclarator",
             "value": "rightFlank"
           },
@@ -1446,10 +1446,10 @@ description: Variables in memory after executing camshaft.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1378,
-            "end": 1385,
+            "commentStart": 1418,
+            "end": 1425,
             "moduleId": 0,
-            "start": 1378,
+            "start": 1418,
             "type": "TagDeclarator",
             "value": "noseArc"
           },
@@ -1460,10 +1460,10 @@ description: Variables in memory after executing camshaft.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1642,
-            "end": 1651,
+            "commentStart": 1682,
+            "end": 1691,
             "moduleId": 0,
-            "start": 1642,
+            "start": 1682,
             "type": "TagDeclarator",
             "value": "leftFlank"
           },
@@ -1491,10 +1491,10 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "radius": 0.6700000000000735,
             "tag": {
-              "commentStart": 874,
-              "end": 881,
+              "commentStart": 914,
+              "end": 921,
               "moduleId": 0,
-              "start": 874,
+              "start": 914,
               "type": "TagDeclarator",
               "value": "baseArc"
             },
@@ -1521,10 +1521,10 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "radius": 1.8919925250534801,
             "tag": {
-              "commentStart": 1079,
-              "end": 1089,
+              "commentStart": 1119,
+              "end": 1129,
               "moduleId": 0,
-              "start": 1079,
+              "start": 1119,
               "type": "TagDeclarator",
               "value": "rightFlank"
             },
@@ -1551,10 +1551,10 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "radius": 0.2124079178300427,
             "tag": {
-              "commentStart": 1378,
-              "end": 1385,
+              "commentStart": 1418,
+              "end": 1425,
               "moduleId": 0,
-              "start": 1378,
+              "start": 1418,
               "type": "TagDeclarator",
               "value": "noseArc"
             },
@@ -1581,10 +1581,10 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "radius": 1.8919925250535232,
             "tag": {
-              "commentStart": 1642,
-              "end": 1651,
+              "commentStart": 1682,
+              "end": 1691,
               "moduleId": 0,
-              "start": 1642,
+              "start": 1682,
               "type": "TagDeclarator",
               "value": "leftFlank"
             },
@@ -2031,10 +2031,10 @@ description: Variables in memory after executing camshaft.kcl
                   ],
                   "radius": 0.6700000000000735,
                   "tag": {
-                    "commentStart": 874,
-                    "end": 881,
+                    "commentStart": 914,
+                    "end": 921,
                     "moduleId": 0,
-                    "start": 874,
+                    "start": 914,
                     "type": "TagDeclarator",
                     "value": "baseArc"
                   },
@@ -2061,10 +2061,10 @@ description: Variables in memory after executing camshaft.kcl
                   ],
                   "radius": 1.8919925250534801,
                   "tag": {
-                    "commentStart": 1079,
-                    "end": 1089,
+                    "commentStart": 1119,
+                    "end": 1129,
                     "moduleId": 0,
-                    "start": 1079,
+                    "start": 1119,
                     "type": "TagDeclarator",
                     "value": "rightFlank"
                   },
@@ -2091,10 +2091,10 @@ description: Variables in memory after executing camshaft.kcl
                   ],
                   "radius": 0.2124079178300427,
                   "tag": {
-                    "commentStart": 1378,
-                    "end": 1385,
+                    "commentStart": 1418,
+                    "end": 1425,
                     "moduleId": 0,
-                    "start": 1378,
+                    "start": 1418,
                     "type": "TagDeclarator",
                     "value": "noseArc"
                   },
@@ -2121,10 +2121,10 @@ description: Variables in memory after executing camshaft.kcl
                   ],
                   "radius": 1.8919925250535232,
                   "tag": {
-                    "commentStart": 1642,
-                    "end": 1651,
+                    "commentStart": 1682,
+                    "end": 1691,
                     "moduleId": 0,
-                    "start": 1642,
+                    "start": 1682,
                     "type": "TagDeclarator",
                     "value": "leftFlank"
                   },
@@ -2597,10 +2597,10 @@ description: Variables in memory after executing camshaft.kcl
                   ],
                   "radius": 0.485,
                   "tag": {
-                    "commentStart": 4642,
-                    "end": 4647,
+                    "commentStart": 4682,
+                    "end": 4687,
                     "moduleId": 0,
-                    "start": 4642,
+                    "start": 4682,
                     "type": "TagDeclarator",
                     "value": "shaft"
                   },
@@ -3226,10 +3226,10 @@ description: Variables in memory after executing camshaft.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4983,
-            "end": 4987,
+            "commentStart": 5023,
+            "end": 5027,
             "moduleId": 0,
-            "start": 4983,
+            "start": 5023,
             "type": "TagDeclarator",
             "value": "bore"
           },
@@ -3257,10 +3257,10 @@ description: Variables in memory after executing camshaft.kcl
             ],
             "radius": 0.485,
             "tag": {
-              "commentStart": 4983,
-              "end": 4987,
+              "commentStart": 5023,
+              "end": 5027,
               "moduleId": 0,
-              "start": 4983,
+              "start": 5023,
               "type": "TagDeclarator",
               "value": "bore"
             },
@@ -3484,10 +3484,10 @@ description: Variables in memory after executing camshaft.kcl
                   ],
                   "radius": 0.485,
                   "tag": {
-                    "commentStart": 4983,
-                    "end": 4987,
+                    "commentStart": 5023,
+                    "end": 5027,
                     "moduleId": 0,
-                    "start": 4983,
+                    "start": 5023,
                     "type": "TagDeclarator",
                     "value": "bore"
                   },
