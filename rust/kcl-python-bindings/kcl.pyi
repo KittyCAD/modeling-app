@@ -199,13 +199,7 @@ class ExecOutcome:
         Analyze all sketches from this execution and group them by constraint
         status.
         """
-    def render_sketch_png(
-        self,
-        sketch_name: builtins.str,
-        *,
-        highlighted_segments: builtins.list[builtins.str] | None = None,
-        resolved_region: builtins.str | None = None,
-    ) -> builtins.list[builtins.int]:
+    def render_sketch_png(self, sketch_name: builtins.str, *, highlighted_segments: typing.Optional[typing.Sequence[builtins.str]] = None, resolved_region: typing.Optional[builtins.str] = None) -> builtins.list[builtins.int]:
         r"""
         Render one sketch from this execution as a PNG, colored by solver
         freedom, with optional highlighted segments and a resolved region.
