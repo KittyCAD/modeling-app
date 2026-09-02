@@ -37,6 +37,118 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
+type VariableExprsOptions = NonNullable<
+  Parameters<typeof getVariableExprsFromSelection>[5]
+>
+
+type TransformSelectionRecord = {
+  exprs: Expr[]
+  pathIfPipe?: PathToNode
+  pipeBodyIndex?: number
+}
+
+function getTransformVariableExprsFromSelection(
+  selection: Selections,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode,
+  options: VariableExprsOptions = {}
+): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
+  const vars = getVariableExprsFromSelection(
+    selection,
+    artifactGraph,
+    ast,
+    wasmInstance,
+    nodeToEdit,
+    options
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  if (selection.graphSelections.length < 2) {
+    return vars
+  }
+
+  const records: TransformSelectionRecord[] = []
+  const pipeBodyIndexes = new Set<number>()
+
+  for (const graphSelection of selection.graphSelections) {
+    const singleSelectionVars = getVariableExprsFromSelection(
+      {
+        graphSelections: [graphSelection],
+        otherSelections: [],
+      },
+      artifactGraph,
+      ast,
+      wasmInstance,
+      nodeToEdit,
+      options
+    )
+    if (err(singleSelectionVars)) {
+      return singleSelectionVars
+    }
+
+    let pipeBodyIndex: number | undefined
+    if (singleSelectionVars.pathIfPipe) {
+      const expression = getNodeFromPath<ExpressionStatement>(
+        ast,
+        singleSelectionVars.pathIfPipe,
+        wasmInstance,
+        'ExpressionStatement'
+      )
+      if (!err(expression) && expression.node.type === 'ExpressionStatement') {
+        const bodyIndex = getBodyIndex(expression.shallowPath)
+        if (err(bodyIndex)) {
+          return bodyIndex
+        }
+        pipeBodyIndex = bodyIndex
+        pipeBodyIndexes.add(bodyIndex)
+      }
+    }
+
+    records.push({ ...singleSelectionVars, pipeBodyIndex })
+  }
+
+  if (pipeBodyIndexes.size <= 1) {
+    return vars
+  }
+
+  const variableByBodyIndex = new Map<number, string>()
+  for (const bodyIndex of pipeBodyIndexes) {
+    const statement = ast.body[bodyIndex]
+    if (!statement || statement.type !== 'ExpressionStatement') {
+      return new Error('Expected a variable-less transform source pipe')
+    }
+
+    const variableName = findUniqueName(
+      ast,
+      KCL_DEFAULT_CONSTANT_PREFIXES.SOLID
+    )
+    const declaration = createVariableDeclaration(
+      variableName,
+      statement.expression
+    )
+    declaration.preComments = statement.preComments
+    ast.body[bodyIndex] = declaration
+    variableByBodyIndex.set(bodyIndex, variableName)
+  }
+
+  return {
+    exprs: records.flatMap(({ exprs, pathIfPipe, pipeBodyIndex }) => {
+      if (!pathIfPipe) {
+        return exprs
+      }
+      if (pipeBodyIndex === undefined) {
+        return []
+      }
+      const variableName = variableByBodyIndex.get(pipeBodyIndex)
+      return variableName ? [createLocalName(variableName)] : []
+    }),
+  }
+}
+
 export function addTranslate({
   ast,
   artifactGraph,
@@ -66,7 +178,7 @@ export function addTranslate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
+  const vars = getTransformVariableExprsFromSelection(
     objects,
     artifactGraph,
     modifiedAst,
@@ -161,7 +273,7 @@ export function addRotate({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
+  const vars = getTransformVariableExprsFromSelection(
     objects,
     artifactGraph,
     modifiedAst,
@@ -266,7 +378,7 @@ export function addScale({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
+  const vars = getTransformVariableExprsFromSelection(
     objects,
     artifactGraph,
     modifiedAst,
@@ -417,7 +529,7 @@ export function addAppearance({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
+  const vars = getTransformVariableExprsFromSelection(
     objects,
     artifactGraph,
     modifiedAst,
@@ -716,7 +828,7 @@ export function addMirror3D({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  const vars = getVariableExprsFromSelection(
+  const vars = getTransformVariableExprsFromSelection(
     bodies,
     artifactGraph,
     modifiedAst,
