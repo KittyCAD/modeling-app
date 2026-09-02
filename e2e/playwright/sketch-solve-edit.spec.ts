@@ -2124,7 +2124,8 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   horizontal(line1)
   line2 = line(start = [var 6.79mm, var 3.56mm], end = [var 6.5mm, var -2.56mm])
   coincident([line2.start, line1.end])
-}`
+}
+hidden001 = hide(sketch001)`
       await context.addInitScript(async (code) => {
         localStorage.setItem('persistCode', code)
       }, code)
@@ -2172,6 +2173,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await toolbar.removeFeatureTreeOperation(op)
       await scene.settled()
       await editor.expectEditor.not.toContain('sketch(on')
+      await editor.expectEditor.not.toContain('hide(sketch001)')
     })
   })
 
