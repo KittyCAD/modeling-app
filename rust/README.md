@@ -17,11 +17,7 @@
 5. Check out main, to the commit from your merged PR.
 6. Publish the crates:
     ```bash
-    just publish-kcl-part1
-    ```
-    Follow the instructions for updating the old crate versions.
-    ```bash
-    just publish-kcl-part2 {version}
+    just publish-kcl {version}
     ```
     - This will publish the relevant crates and push a new tag with the prefix
     `kcl-`. DO NOT SET THE PREFIX TO `kcl-` when you run the command. The `just`
