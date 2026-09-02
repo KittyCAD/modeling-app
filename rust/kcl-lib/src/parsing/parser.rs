@@ -42,6 +42,7 @@ use crate::errors::Tag;
 use crate::execution::annotations::DEPRECATED;
 use crate::execution::annotations::DEPRECATED_SINCE;
 use crate::execution::annotations::EXPERIMENTAL;
+use crate::execution::annotations::REMOVED_SINCE;
 use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
@@ -4072,6 +4073,7 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                 let mut experimental = false;
                 let mut deprecated = false;
                 let mut deprecated_since = None;
+                let mut removed_since = None;
                 if let Some(attr) = attr {
                     if let Some(property) = attr.property(EXPERIMENTAL)
                         && let Some(value) = property.value.literal_bool()
@@ -4103,6 +4105,28 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                             format!("A parameter cannot set both `{DEPRECATED}` and `{DEPRECATED_SINCE}`; only one may be specified"),
                         ));
                     }
+                    if let Some(property) = attr.property(REMOVED_SINCE) {
+                        if let Some(s) = property.value.literal_str()
+                            && let Some(version) = VersionConstraint::parse(s)
+                        {
+                            removed_since = Some(version);
+                        } else {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "Invalid value for `{REMOVED_SINCE}`; expected a dotted integer version string, e.g., \"3.0\"",
+                                ),
+                            ));
+                        }
+                        if !labeled {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&attr),
+                                format!(
+                                    "`{REMOVED_SINCE}` cannot be used on the unlabeled parameter; only labeled parameters can be removed"
+                                ),
+                            ));
+                        }
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
@@ -4110,6 +4134,7 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     experimental,
                     deprecated,
                     deprecated_since,
+                    removed_since,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -5914,6 +5939,56 @@ height = [obj["a"] -1, 0]"#;
     }
 
     #[test]
+    fn test_param_removed_since_annotation() {
+        let tokens = crate::parsing::token::lex(
+            r#"fn foo(
+  @(deprecated_since = "2.0", removed_since = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+            ModuleId::default(),
+        )
+        .unwrap();
+        let mut body = in_ctx(|| program.parse(tokens.as_slice())).unwrap().inner.body;
+        let BodyItem::VariableDeclaration(item) = body.remove(0) else {
+            panic!("expected function declaration");
+        };
+        let Expr::FunctionExpression(func) = item.into_node().inner.declaration.inner.init else {
+            panic!("expected function expression");
+        };
+        let param = &func.params[0];
+        assert_eq!(param.deprecated_since, VersionConstraint::parse("2.0"));
+        assert_eq!(param.removed_since, VersionConstraint::parse("3.0"));
+    }
+
+    #[test]
+    fn test_param_removed_since_invalid_value() {
+        assert_err_contains(
+            r#"fn foo(
+  @(removed_since = "3.x")
+  x?: number,
+) {
+  return x
+}"#,
+            "Invalid value for `removed_since`",
+        );
+    }
+
+    #[test]
+    fn test_param_removed_since_on_unlabeled_param() {
+        assert_err_contains(
+            r#"fn foo(
+  @(removed_since = "3.0")
+  @x: number,
+) {
+  return x
+}"#,
+            "`removed_since` cannot be used on the unlabeled parameter",
+        );
+    }
+
+    #[test]
     fn test_anon_fn_no_fn() {
         assert_err_contains("foo(42, (x) { return x + 1 })", "Anonymous function requires `fn`");
     }
@@ -6036,6 +6111,7 @@ e
                     experimental: Default::default(),
                     deprecated: false,
                     deprecated_since: None,
+                    removed_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -6052,6 +6128,7 @@ e
                     experimental: Default::default(),
                     deprecated: false,
                     deprecated_since: None,
+                    removed_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -6069,6 +6146,7 @@ e
                         experimental: Default::default(),
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -6082,6 +6160,7 @@ e
                         experimental: Default::default(),
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -6100,6 +6179,7 @@ e
                         experimental: Default::default(),
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -6113,6 +6193,7 @@ e
                         experimental: Default::default(),
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,

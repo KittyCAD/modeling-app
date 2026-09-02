@@ -239,7 +239,7 @@ export fn fillet(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
   /// What version of the fillet algorithm to use.
   /// 0 means "let the Zoo engine choose whichever version is best",
@@ -444,7 +444,7 @@ export fn chamfer(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
   /// What version of the fillet algorithm to use.
   /// 0 means "let the Zoo engine choose whichever version is best",
@@ -1164,7 +1164,7 @@ export fn union(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
 ): [Solid; 1+] {}
 
@@ -1232,7 +1232,7 @@ export fn intersect(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
 ): [Solid; 1+] {}
 
@@ -1327,7 +1327,7 @@ export fn subtract(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
 ): [Solid] {}
 
@@ -1742,7 +1742,7 @@ export fn split(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
-  @(deprecated_since = "2.0")
+  @(deprecated_since = "2.0", removed_since = "3.0")
   legacyMethod?: bool,
 ): [Solid; 1+] {}
 
