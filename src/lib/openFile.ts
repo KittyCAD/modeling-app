@@ -156,9 +156,28 @@ export async function openProjectFile(
     }
   }
 
-  // Set the file system manager to the project path
-  // So that WASM gets an updated path for operations
-  projectFsManager.dir = projectPath
+  /**
+   * Asking for what is already open changes nothing.
+   *
+   * This is load-bearing rather than an optimisation. Re-opening reassigns
+   * `projectSignal`, and once the URL is derived from that signal, a navigation
+   * whose loader re-opens the project changes the very state the URL is
+   * computed from — so the writer fires again, supersedes the navigation before
+   * React Router can commit it, and the app livelocks with the URL pinned to
+   * where it started. Making this a no-op is what breaks that loop.
+   *
+   * The notifications below still run: SystemIO is waiting to hear that its
+   * requested file arrived, and it does not care whether work was needed.
+   */
+  const alreadyOpen =
+    app.project?.projectIORefSignal.value.path === projectPath &&
+    app.project?.executingPathSignal.value?.value === currentFilePath
+
+  if (!alreadyOpen) {
+    // Set the file system manager to the project path
+    // So that WASM gets an updated path for operations
+    projectFsManager.dir = projectPath
+  }
 
   const defaultProjectData = {
     name: projectName || 'unnamed',
@@ -175,25 +194,35 @@ export async function openProjectFile(
 
   const project = maybeProjectInfo ?? defaultProjectData
 
-  // Fire off the event to load the project settings
-  // once we know it's idle.
-  await waitFor(settingsActor, (state) => state.matches('idle'))
-  settingsActor.send({
-    type: 'load.project',
-    project,
-  })
-  await waitFor(settingsActor, (state) => state.matches('idle'))
+  let code = kclManager.code
+  let projectRef = app.project
 
-  const projectRef = await app.openProject(project)
-  const editor = await projectRef.openEditor(
-    currentFilePath || PROJECT_ENTRYPOINT,
-    app.singletons.kclManager,
-    // If persistCode in localStorage is present, it'll persist that code
-    // through *anything*. INTENDED FOR TESTS.
-    window.electron?.process.env.NODE_ENV === 'test'
-      ? kclManager.localStoragePersistCode()
-      : undefined
-  )
+  if (!alreadyOpen) {
+    // Fire off the event to load the project settings
+    // once we know it's idle.
+    await waitFor(settingsActor, (state) => state.matches('idle'))
+    settingsActor.send({
+      type: 'load.project',
+      project,
+    })
+    await waitFor(settingsActor, (state) => state.matches('idle'))
+
+    projectRef = await app.openProject(project)
+    const editor = await projectRef.openEditor(
+      currentFilePath || PROJECT_ENTRYPOINT,
+      app.singletons.kclManager,
+      // If persistCode in localStorage is present, it'll persist that code
+      // through *anything*. INTENDED FOR TESTS.
+      window.electron?.process.env.NODE_ENV === 'test'
+        ? kclManager.localStoragePersistCode()
+        : undefined
+    )
+    code = editor.code
+  }
+
+  if (!projectRef) {
+    return Promise.reject(new Error('bug: no project after opening one'))
+  }
 
   const requestedFileName =
     app.systemIOActor.getSnapshot().context.requestedFileName
@@ -224,7 +253,7 @@ export async function openProjectFile(
   return {
     kind: 'opened',
     data: {
-      code: editor.code,
+      code,
       project,
       file: {
         name: currentFileName || '',
