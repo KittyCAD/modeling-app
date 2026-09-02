@@ -1582,7 +1582,7 @@ async fn step_block(
                         Vec::new(),
                     )));
                 };
-                if exec_state.use_kcl_v3_control_flow() {
+                if exec_state.entry_point_version_is_v3_or_higher() {
                     // KCL 3.0: early return. The rest of this block is
                     // abandoned (this continuation is already popped and holds
                     // no ambient state); unwind_return absorbs the value at the

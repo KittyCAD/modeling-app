@@ -4936,7 +4936,7 @@ startSketchOn(XY)
             result.exec_state.global.entry_point_kcl_version,
             Some(KclVersion::V3Preview)
         );
-        assert!(result.exec_state.use_kcl_v3_control_flow());
+        assert!(result.exec_state.entry_point_version_is_v3_or_higher());
 
         for code in [
             "x = 1\n",
@@ -4945,7 +4945,7 @@ startSketchOn(XY)
         ] {
             let result = parse_execute(code).await.unwrap();
             assert_eq!(result.exec_state.global.entry_point_kcl_version, None, "code={code}");
-            assert!(!result.exec_state.use_kcl_v3_control_flow(), "code={code}");
+            assert!(!result.exec_state.entry_point_version_is_v3_or_higher(), "code={code}");
         }
     }
 
@@ -4995,7 +4995,7 @@ startSketchOn(XY)
                 Some(KclVersion::V3Preview),
                 "mock execution should record a 3.0-preview entry point"
             );
-            assert!(exec_state.use_kcl_v3_control_flow());
+            assert!(exec_state.entry_point_version_is_v3_or_higher());
 
             // Populate the preserved mock memory with a 3.0-preview run, then
             // check that a 2.0 run restoring that memory isn't pinned to
@@ -5003,7 +5003,7 @@ startSketchOn(XY)
             ctx.run_mock(&v3_program, &fresh_memory).await.unwrap();
             let (exec_state, _) = ctx.run_mock_returning_state(&v2_program, &prev_memory).await.unwrap();
             assert_eq!(exec_state.global.entry_point_kcl_version, None);
-            assert!(!exec_state.use_kcl_v3_control_flow());
+            assert!(!exec_state.entry_point_version_is_v3_or_higher());
 
             // ...and that a 3.0-preview run restoring a 2.0 run's memory
             // records 3.0-preview.
