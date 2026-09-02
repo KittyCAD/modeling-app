@@ -112,11 +112,9 @@ export class LocalRenderer {
   private onVisibilityChange: LocalRendererProps['onVisibilityChange']
   private onExportReady: LocalRendererProps['onExportReady']
   private isVisible = false
-  private requestRender: (() => void) | null = null
   private renderer: WebGPURenderer | null = null
   private scene: Scene | null = null
   private envMapLoader: EnvMapLoader | null = null
-  private exportScene: (() => Promise<void>) | null = null
   private edgeRenderer: EdgeRenderer | null = null
   private runtimeModules: WebGpuRuntimeModules | null = null
   private resizeObserver: ResizeObserver | null = null
@@ -141,7 +139,6 @@ export class LocalRenderer {
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private currentRefreshId = 0
   private pendingRefreshRequest = false
-  private refreshModel: (() => Promise<void>) | null = null
   private disposed = false
 
   constructor(
@@ -182,13 +179,13 @@ export class LocalRenderer {
     if (this.scene) {
       this.scene.background = new Color(backgroundColor)
       this.edgeRenderer?.setBackgroundColor(backgroundColor)
-      this.requestRender?.()
+      this.scheduleRender()
     }
   }
 
   setEnableSSAO(enableSSAO: boolean) {
     this.enableSSAO = enableSSAO
-    this.requestRender?.()
+    this.scheduleRender()
   }
 
   setHighlightEdges(highlightEdges: boolean) {
@@ -198,13 +195,13 @@ export class LocalRenderer {
 
     this.highlightEdges = highlightEdges
     this.edgeRenderer?.setVisible(highlightEdges)
-    this.requestRender?.()
+    this.scheduleRender()
   }
 
   setForceHide(forceHide: boolean) {
     this.forceHide = forceHide
     this.container.style.opacity = this.isVisible && !this.forceHide ? '1' : '0'
-    this.requestRender?.()
+    this.scheduleRender()
   }
 
   setCommandProxyEnabled(commandProxyEnabled: boolean) {
@@ -224,8 +221,8 @@ export class LocalRenderer {
 
     this.onExportReady?.(null)
     this.onExportReady = onExportReady
-    if (this.exportScene) {
-      this.onExportReady?.(this.exportScene)
+    if (this.renderer && !this.disposed) {
+      this.onExportReady?.(this.exportCurrentScene)
     }
   }
 
@@ -236,14 +233,12 @@ export class LocalRenderer {
 
     this.disposed = true
     this.currentRefreshId += 1
-    this.refreshModel = null
     this.kclManager.removeEventListener(
       KclManagerEvents.ExecutionDone,
       this.onExecutionDone
     )
     this.container.style.opacity = '0'
     this.isVisible = false
-    this.exportScene = null
     this.onExportReady?.(null)
     this.unregisterLocalSelectionProvider?.()
     this.unregisterLocalSelectionProvider = null
@@ -252,7 +247,9 @@ export class LocalRenderer {
     this.clearHover()
     const previousSelectedObjects = [...this.selectedObjects]
     this.selectedObjects.clear()
-    previousSelectedObjects.forEach(this.applyObjectState)
+    for (const object of previousSelectedObjects) {
+      this.applyObjectState(object)
+    }
     this.clearModel()
     this.edgeRenderer?.dispose()
     this.edgeRenderer = null
@@ -262,7 +259,6 @@ export class LocalRenderer {
       cancelAnimationFrame(this.animationFrameId)
       this.animationFrameId = -1
     }
-    this.requestRender = null
     this.disposeAmbientOcclusionPipeline()
     this.envMapLoader?.dispose()
     this.envMapLoader = null
@@ -276,7 +272,7 @@ export class LocalRenderer {
     this.activeSketchModePlane = null
   }
 
-  private readonly getResolvedSelectionEntity = (object: Object3D | null) => {
+  private getResolvedSelectionEntity(object: Object3D | null) {
     if (!object) {
       return null
     }
@@ -320,7 +316,7 @@ export class LocalRenderer {
       : null
   }
 
-  private readonly setVisible = (nextVisible: boolean) => {
+  private setVisible(nextVisible: boolean) {
     if (this.isVisible === nextVisible) {
       return
     }
@@ -331,7 +327,7 @@ export class LocalRenderer {
       isVisible: nextVisible,
     })
     this.onVisibilityChange(nextVisible)
-    this.requestRender?.()
+    this.scheduleRender()
   }
 
   private readonly syncPreviewCameraFromShared = () => {
@@ -408,10 +404,10 @@ export class LocalRenderer {
     this.previewCamera.lookAt(this.previewTarget)
     this.previewCamera.updateProjectionMatrix()
     this.previewCamera.updateMatrixWorld(true)
-    this.requestRender?.()
+    this.scheduleRender()
   }
 
-  private readonly applyObjectState = (object: Object3D | null) => {
+  private applyObjectState(object: Object3D | null) {
     if (!object) {
       return
     }
@@ -426,10 +422,10 @@ export class LocalRenderer {
     } else if (object instanceof Line) {
       setLineHighlight(object, mode)
     }
-    this.requestRender?.()
+    this.scheduleRender()
   }
 
-  private readonly clearHover = () => {
+  private clearHover() {
     if (!this.hoveredObject) {
       return
     }
@@ -439,7 +435,7 @@ export class LocalRenderer {
     this.applyObjectState(previousHoveredObject)
   }
 
-  private readonly pickRenderableFromWindowCoordinates = ({
+  private pickRenderableFromWindowCoordinates({
     x,
     y,
     streamWidth,
@@ -449,7 +445,7 @@ export class LocalRenderer {
     y: number
     streamWidth: number
     streamHeight: number
-  }) => {
+  }) {
     if (
       !this.isVisible ||
       !this.previewCamera ||
@@ -510,12 +506,12 @@ export class LocalRenderer {
     return edgeObject ? { ...intersection, object: edgeObject } : intersection
   }
 
-  private readonly updateHoverFromIntersection = (
+  private updateHoverFromIntersection(
     intersection:
       | { distance?: number; point?: Vector3; object?: Object3D }
       | null
       | undefined
-  ) => {
+  ) {
     const nextHoveredObject = intersection?.object ?? null
     if (nextHoveredObject === this.hoveredObject) {
       return
@@ -543,13 +539,13 @@ export class LocalRenderer {
     })
   }
 
-  private readonly updateSelectedMeshes = ({
+  private updateSelectedMeshes({
     nextSelectedMeshes,
     selectionSummary,
   }: {
     nextSelectedMeshes: Set<Object3D>
     selectionSummary: unknown
-  }) => {
+  }) {
     if (
       nextSelectedMeshes.size === this.selectedObjects.size &&
       [...nextSelectedMeshes].every((mesh) => this.selectedObjects.has(mesh))
@@ -559,9 +555,13 @@ export class LocalRenderer {
 
     const previousSelectedMeshes = [...this.selectedObjects]
     this.selectedObjects = nextSelectedMeshes
-    previousSelectedMeshes.forEach(this.applyObjectState)
+    for (const object of previousSelectedMeshes) {
+      this.applyObjectState(object)
+    }
     this.applyObjectState(this.hoveredObject)
-    this.selectedObjects.forEach(this.applyObjectState)
+    for (const object of this.selectedObjects) {
+      this.applyObjectState(object)
+    }
     ;(
       window as typeof window & { __WEBGPU_POC_SELECTION__?: unknown }
     ).__WEBGPU_POC_SELECTION__ = selectionSummary
@@ -715,7 +715,7 @@ export class LocalRenderer {
     this.ambientOcclusionPipeline.pipeline.render()
   }
 
-  private readonly scheduleRender = () => {
+  private scheduleRender() {
     if (this.disposed || !this.previewCamera || this.animationFrameId !== -1) {
       return
     }
@@ -745,7 +745,7 @@ export class LocalRenderer {
     } else {
       this.syncPreviewCameraFromShared()
     }
-    this.requestRender?.()
+    this.scheduleRender()
   }
 
   private clearModel() {
@@ -761,7 +761,7 @@ export class LocalRenderer {
     }
     this.currentSurfaceResources = null
     this.selectionEntityIdToObject.clear()
-    this.requestRender?.()
+    this.scheduleRender()
   }
 
   private hydrateCurrentModelMetadata() {
@@ -876,6 +876,159 @@ export class LocalRenderer {
         }
       }
     })
+  }
+
+  private async refreshModel() {
+    if (this.disposed) {
+      return
+    }
+
+    const edgeRenderer = this.edgeRenderer
+    const runtimeModules = this.runtimeModules
+    const scene = this.scene
+    if (!edgeRenderer || !runtimeModules || !scene) {
+      this.pendingRefreshRequest = true
+      logLocalWebGpuPreview('refresh requested before renderer initialization')
+      return
+    }
+
+    this.pendingRefreshRequest = false
+    const refreshId = ++this.currentRefreshId
+    logLocalWebGpuPreview('starting model refresh', {
+      refreshId,
+      hasLastSuccessfulCode: Boolean(this.kclManager.lastSuccessfulCode),
+    })
+    await this.kclManager.rustContext.waitForAllEngineModelingCommands()
+
+    if (this.disposed || refreshId !== this.currentRefreshId) {
+      logLocalWebGpuPreview('dropping stale refresh after engine wait', {
+        disposed: this.disposed,
+        refreshId,
+        currentRefreshId: this.currentRefreshId,
+      })
+      return
+    }
+
+    const exportSettings = jsAppSettings(
+      this.kclManager.rustContext.settingsActor
+    )
+    let renderPacket: LocalRenderPacket | undefined
+    const maxRenderPacketAttempts = 3
+    for (let attempt = 1; attempt <= maxRenderPacketAttempts; attempt++) {
+      renderPacket = undefined
+      const encodedRenderPacket: RenderPacket | undefined =
+        await this.kclManager.rustContext.exportRenderPacket(exportSettings)
+
+      console.info(
+        `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet received`,
+        encodedRenderPacket
+      )
+
+      if (encodedRenderPacket) {
+        const decodedRenderPacket = decodeRenderPacket(encodedRenderPacket)
+        if (decodedRenderPacket instanceof Error) {
+          logLocalWebGpuPreview('render packet decoding failed', {
+            refreshId,
+            attempt,
+            error: decodedRenderPacket.message,
+          })
+        } else {
+          renderPacket = decodedRenderPacket
+        }
+      }
+
+      if (this.disposed || refreshId !== this.currentRefreshId) {
+        logLocalWebGpuPreview('dropping stale refresh result', {
+          disposed: this.disposed,
+          refreshId,
+          currentRefreshId: this.currentRefreshId,
+        })
+        return
+      }
+
+      if (
+        renderPacket &&
+        (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
+      ) {
+        break
+      }
+
+      if (attempt < maxRenderPacketAttempts) {
+        logLocalWebGpuPreview('render packet unavailable, retrying', {
+          refreshId,
+          attempt,
+          maxRenderPacketAttempts,
+        })
+        await new Promise((resolve) => window.setTimeout(resolve, 150))
+      }
+    }
+
+    if (this.disposed || refreshId !== this.currentRefreshId) {
+      logLocalWebGpuPreview('dropping stale refresh result', {
+        disposed: this.disposed,
+        refreshId,
+        currentRefreshId: this.currentRefreshId,
+      })
+      return
+    }
+
+    if (
+      renderPacket &&
+      (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
+    ) {
+      this.clearModel()
+      const surfaceResources = runtimeModules.createWebGpuSurfaceResources(
+        renderPacket.primitives,
+        renderPacket.bodyMaterials ?? [],
+        WEBGPU_TRIMMING_ENABLED
+      )
+      this.currentSurfaceResources = surfaceResources
+      const packetModel = buildRenderPacketModel(
+        renderPacket,
+        surfaceResources,
+        edgeRenderer
+      )
+      this.currentModel = packetModel.model
+      this.updateAmbientOcclusionScale(packetModel.modelBounds)
+      this.parserState = packetModel.parserState
+      this.hydrateCurrentModelMetadata()
+      scene.add(this.currentModel)
+      const loadedModelStats = prepareLoadedModelForPreview(this.currentModel)
+      console.info(
+        `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet trim stats`,
+        summarizeRenderPacketTrimModes(renderPacket.primitives)
+      )
+      if (loadedModelStats.meshCount === 0) {
+        this.clearModel()
+        this.setVisible(false)
+        return
+      }
+      logLocalWebGpuPreview('render packet applied to scene', {
+        refreshId,
+        primitiveCount: renderPacket.primitives.length,
+        edgeCount: renderPacket.edges.length,
+        bodyMaterialCount: renderPacket.bodyMaterials?.length ?? 0,
+        meshCount: loadedModelStats.meshCount,
+        surfaceDrawCount:
+          surfaceResources.batches.length +
+          surfaceResources.complexSurfaces.length,
+        trimmingEnabled: WEBGPU_TRIMMING_ENABLED,
+        trimTriangleCount: surfaceResources.triangleCount,
+        hybridMaskLayerCount: surfaceResources.hybridMaskLayerCount,
+        complexMaskCount: surfaceResources.complexMaskCount,
+      })
+      this.syncPreviewCameraFromShared()
+      this.setVisible(true)
+      this.scheduleRender()
+      return
+    }
+
+    logLocalWebGpuPreview('render packet unavailable; keeping stream active', {
+      refreshId,
+    })
+    this.clearModel()
+    this.setVisible(false)
+    this.scheduleRender()
   }
 
   private async initialize() {
@@ -1022,7 +1175,6 @@ export class LocalRenderer {
     )
     this.edgeRenderer = edgeRenderer
 
-    this.exportScene = this.exportCurrentScene
     this.onExportReady?.(this.exportCurrentScene)
 
     const sharedCamera = kclManager.sceneInfra.camControls.camera
@@ -1045,9 +1197,9 @@ export class LocalRenderer {
       layerMask: this.previewCamera.layers.mask,
     })
     this.unregisterSharedCameraListener =
-      kclManager.sceneInfra.camControls.cameraChange.add(() => {
-        this.syncPreviewCameraFromShared()
-      })
+      kclManager.sceneInfra.camControls.cameraChange.add(
+        this.syncPreviewCameraFromShared
+      )
 
     this.runtimeModules = {
       RenderPipeline,
@@ -1059,7 +1211,6 @@ export class LocalRenderer {
     }
     this.renderer = renderer
     this.envMapLoader = envMapLoader
-    this.requestRender = this.scheduleRender
 
     this.unregisterLocalSelectionProvider =
       registerLocalSelectionCommandProvider({
@@ -1425,148 +1576,8 @@ export class LocalRenderer {
     this.resizeObserver = new ResizeObserver(this.resize)
     this.resizeObserver.observe(container)
 
-    this.requestRender?.()
+    this.scheduleRender()
     logLocalWebGpuPreview('render mode set to on-demand')
-
-    this.refreshModel = async () => {
-      const refreshId = ++this.currentRefreshId
-      logLocalWebGpuPreview('starting model refresh', {
-        refreshId,
-        hasLastSuccessfulCode: Boolean(kclManager.lastSuccessfulCode),
-      })
-      await kclManager.rustContext.waitForAllEngineModelingCommands()
-
-      if (this.disposed || refreshId !== this.currentRefreshId) {
-        logLocalWebGpuPreview('dropping stale refresh after engine wait', {
-          disposed: this.disposed,
-          refreshId,
-          currentRefreshId: this.currentRefreshId,
-        })
-        return
-      }
-
-      const exportSettings = jsAppSettings(kclManager.rustContext.settingsActor)
-      let renderPacket: LocalRenderPacket | undefined
-      const maxRenderPacketAttempts = 3
-      for (let attempt = 1; attempt <= maxRenderPacketAttempts; attempt++) {
-        renderPacket = undefined
-        const encodedRenderPacket: RenderPacket | undefined =
-          await kclManager.rustContext.exportRenderPacket(exportSettings)
-
-        console.info(
-          `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet received`,
-          encodedRenderPacket
-        )
-
-        if (encodedRenderPacket) {
-          const decodedRenderPacket = decodeRenderPacket(encodedRenderPacket)
-          if (decodedRenderPacket instanceof Error) {
-            logLocalWebGpuPreview('render packet decoding failed', {
-              refreshId,
-              attempt,
-              error: decodedRenderPacket.message,
-            })
-          } else {
-            renderPacket = decodedRenderPacket
-          }
-        }
-
-        if (this.disposed || refreshId !== this.currentRefreshId) {
-          logLocalWebGpuPreview('dropping stale refresh result', {
-            disposed: this.disposed,
-            refreshId,
-            currentRefreshId: this.currentRefreshId,
-          })
-          return
-        }
-
-        if (
-          renderPacket &&
-          (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
-        ) {
-          break
-        }
-
-        if (attempt < maxRenderPacketAttempts) {
-          logLocalWebGpuPreview('render packet unavailable, retrying', {
-            refreshId,
-            attempt,
-            maxRenderPacketAttempts,
-          })
-          await new Promise((resolve) => window.setTimeout(resolve, 150))
-        }
-      }
-
-      if (this.disposed || refreshId !== this.currentRefreshId) {
-        logLocalWebGpuPreview('dropping stale refresh result', {
-          disposed: this.disposed,
-          refreshId,
-          currentRefreshId: this.currentRefreshId,
-        })
-        return
-      }
-
-      if (
-        renderPacket &&
-        (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
-      ) {
-        this.clearModel()
-        this.currentSurfaceResources = createWebGpuSurfaceResources(
-          renderPacket.primitives,
-          renderPacket.bodyMaterials ?? [],
-          WEBGPU_TRIMMING_ENABLED
-        )
-        const packetModel = buildRenderPacketModel(
-          renderPacket,
-          this.currentSurfaceResources,
-          edgeRenderer
-        )
-        this.currentModel = packetModel.model
-        this.updateAmbientOcclusionScale(packetModel.modelBounds)
-        this.parserState = packetModel.parserState
-        this.hydrateCurrentModelMetadata()
-        scene.add(this.currentModel)
-        const loadedModelStats = prepareLoadedModelForPreview(this.currentModel)
-        console.info(
-          `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene] render packet trim stats`,
-          summarizeRenderPacketTrimModes(renderPacket.primitives)
-        )
-        if (loadedModelStats.meshCount === 0) {
-          this.clearModel()
-          this.setVisible(false)
-          return
-        }
-        logLocalWebGpuPreview('render packet applied to scene', {
-          refreshId,
-          primitiveCount: renderPacket.primitives.length,
-          edgeCount: renderPacket.edges.length,
-          bodyMaterialCount: renderPacket.bodyMaterials?.length ?? 0,
-          meshCount: loadedModelStats.meshCount,
-          surfaceDrawCount:
-            this.currentSurfaceResources.batches.length +
-            this.currentSurfaceResources.complexSurfaces.length,
-          trimmingEnabled: WEBGPU_TRIMMING_ENABLED,
-          trimTriangleCount: this.currentSurfaceResources.triangleCount,
-          hybridMaskLayerCount:
-            this.currentSurfaceResources.hybridMaskLayerCount,
-          complexMaskCount: this.currentSurfaceResources.complexMaskCount,
-        })
-        this.syncPreviewCameraFromShared()
-        this.setVisible(true)
-        this.requestRender?.()
-        return
-      }
-
-      logLocalWebGpuPreview(
-        'render packet unavailable; keeping stream active',
-        {
-          refreshId,
-        }
-      )
-      this.clearModel()
-      this.setVisible(false)
-      this.requestRender?.()
-    }
 
     if (kclManager.lastSuccessfulCode) {
       await this.refreshModel()
@@ -1583,13 +1594,7 @@ export class LocalRenderer {
       return
     }
 
-    if (this.refreshModel) {
-      void this.refreshModel()
-      return
-    }
-
-    this.pendingRefreshRequest = true
-    logLocalWebGpuPreview('refresh requested before renderer initialization')
+    void this.refreshModel()
   }
 }
 
