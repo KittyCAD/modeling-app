@@ -1,4 +1,4 @@
-import { packTrimTriangles } from '@src/clientSideScene/webgpuTrim'
+import { packTrimTriangles } from '@src/clientSideScene/localRenderer/webgpuTrim'
 import { describe, expect, it } from 'vitest'
 
 describe('packTrimTriangles', () => {

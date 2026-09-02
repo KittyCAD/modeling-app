@@ -15,7 +15,7 @@ import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/loca
 import {
   createWebGpuSurfaceResources,
   type WebGpuSurfaceResources,
-} from '@src/clientSideScene/webgpuTrim'
+} from '@src/clientSideScene/localRenderer/webgpuTrim'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import type { ArtifactGraph, PathToNode, SourceRange } from '@src/lang/wasm'
