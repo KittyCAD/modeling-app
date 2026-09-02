@@ -2302,7 +2302,7 @@ name = "kcl-api"
 version = "0.2.181"
 dependencies = [
  "indexmap 2.14.0",
- "kcl-error",
+ "kcl-error 0.2.181",
  "kittycad-measurements",
  "kittycad-unit-conversion-derive",
  "parse-display",
@@ -2312,6 +2312,24 @@ dependencies = [
  "schemars 0.8.22",
  "serde",
  "serde_json",
+ "ts-rs",
+ "uuid",
+]
+
+[[package]]
+name = "kcl-api"
+version = "0.2.181"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f797644772cf1385c99451de0664ac08e087dbcefe8796629ac5b67381c59eac"
+dependencies = [
+ "indexmap 2.14.0",
+ "kcl-error 0.2.181 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kittycad-measurements",
+ "kittycad-unit-conversion-derive",
+ "parse-display",
+ "parse-display-derive",
+ "schemars 0.8.22",
+ "serde",
  "ts-rs",
  "uuid",
 ]
@@ -2361,6 +2379,20 @@ version = "0.2.181"
 dependencies = [
  "miette",
  "pyo3",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.20",
+ "ts-rs",
+]
+
+[[package]]
+name = "kcl-error"
+version = "0.2.181"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "190e5f72cbebb447611d79cd01b57c0467b6d9c21975f5644245cdddc859632f"
+dependencies = [
+ "miette",
  "schemars 0.8.22",
  "serde",
  "serde_json",
@@ -2452,11 +2484,11 @@ dependencies = [
  "insta",
  "itertools 0.15.0",
  "js-sys",
- "kcl-api",
+ "kcl-api 0.2.181",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-engine-codec",
- "kcl-error",
+ "kcl-error 0.2.181",
  "kcl-syntax",
  "kittycad",
  "kittycad-modeling-cmds",
@@ -2506,7 +2538,7 @@ name = "kcl-python-bindings"
 version = "0.3.181"
 dependencies = [
  "anyhow",
- "kcl-api",
+ "kcl-api 0.2.181",
  "kcl-lib",
  "kittycad-modeling-cmds",
  "miette",
@@ -2617,9 +2649,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.224"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85eaa800375ae686cca00b3d916d3712108411de18665bff360e0ec7947b21b6"
+version = "0.2.225"
+source = "git+https://github.com/KittyCAD/modeling-api#00de8923b8a0092545be8fce1a1a840544a67d51"
 dependencies = [
  "anyhow",
  "bon",
@@ -2629,6 +2660,8 @@ dependencies = [
  "enum-iterator-derive",
  "euler",
  "http 1.5.0",
+ "kcl-api 0.2.181 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kcl-error 0.2.181 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-unit-conversion-derive",
@@ -2649,24 +2682,22 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb4ba190f74f6d32f4607ecac4bdebd4a935d4943b8ca8369305e6e7a59b5976"
+source = "git+https://github.com/KittyCAD/modeling-api#00de8923b8a0092545be8fce1a1a840544a67d51"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
  "quote",
- "syn 2.0.119",
+ "syn 3.0.4",
 ]
 
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "743b6533d1848de67e3455a28614a2b7896807ab0d3358ccd3ea1863de3c4e6b"
+source = "git+https://github.com/KittyCAD/modeling-api#00de8923b8a0092545be8fce1a1a840544a67d51"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.119",
+ "syn 3.0.4",
 ]
 
 [[package]]

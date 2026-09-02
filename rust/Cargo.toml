@@ -30,7 +30,8 @@ kittycad = { version = "0.5.0", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.223", features = [
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", version = "0.2.223", features = [
+  "exec-kcl",
   "ts-rs",
   "websocket",
 ] }
