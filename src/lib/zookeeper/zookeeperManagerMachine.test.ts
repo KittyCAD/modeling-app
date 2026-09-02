@@ -1,7 +1,7 @@
 import type { ClientErrorReport } from '@kittycad/lib'
 import { resetReportedClientErrorsForTests } from '@src/lib/clientErrors'
 import type { FileMeta } from '@src/lib/types'
-import { CLIENT_COMMAND_SCHEMA_UPDATE } from '@src/lib/zookeeper/clientCommands'
+import type { ClientCommandSchemaUpdate } from '@src/lib/zookeeper/clientCommands'
 import {
   type Conversation,
   createZookeeperCorrelation,
@@ -26,6 +26,25 @@ import {
 import { S } from '@src/machines/utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
+
+const CLIENT_COMMAND_SCHEMA_UPDATE: ClientCommandSchemaUpdate = {
+  type: 'update_client_command_schema',
+  protocol_version: 1,
+  revision: 1,
+  commands: [
+    {
+      id: 'modeling.export',
+      title: 'Export',
+      description: 'Export the active part.',
+      input_schema: {
+        type: 'object',
+        properties: {},
+        required: ['format'],
+        additionalProperties: false,
+      },
+    },
+  ],
+}
 
 function stubClientErrorFetch() {
   resetReportedClientErrorsForTests()
@@ -408,6 +427,7 @@ describe('zookeeperManagerMachine', () => {
         input: {
           apiToken: 'token',
           clientCommandsEnabled: true,
+          clientCommandSchemaUpdate: CLIENT_COMMAND_SCHEMA_UPDATE,
         },
       }).start()
 
@@ -434,15 +454,82 @@ describe('zookeeperManagerMachine', () => {
       })
 
       await vi.waitFor(() => {
-        expect(actor.getSnapshot().context.pendingClientCommandRequest).toEqual(
+        expect(actor.getSnapshot().context.clientCommandQueue).toEqual([
           {
             request_id: 'request-1',
             catalog_revision: 1,
             command_id: 'modeling.export',
             arguments: { format: 'step' },
-          }
-        )
+          },
+        ])
       })
+
+      actor.stop()
+    })
+
+    it('keeps client commands in FIFO order and only starts the head', () => {
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+      const request = (requestId: string) => ({
+        request_id: requestId,
+        catalog_revision: 1,
+        command_id: 'modeling.export',
+        arguments: { format: 'step' },
+      })
+
+      for (const requestId of ['request-1', 'request-2', 'request-3']) {
+        actor.send({
+          type: ZookeeperManagerTransitions.ClientCommandRequested,
+          request: request(requestId),
+        })
+      }
+      actor.send({
+        type: ZookeeperManagerTransitions.ClientCommandStarted,
+        requestId: 'request-2',
+      })
+
+      expect(
+        actor
+          .getSnapshot()
+          .context.clientCommandQueue.map((item) => item.request_id)
+      ).toEqual(['request-1', 'request-2', 'request-3'])
+      expect(
+        actor.getSnapshot().context.activeClientCommandRequestId
+      ).toBeUndefined()
+
+      actor.send({
+        type: ZookeeperManagerTransitions.ClientCommandStarted,
+        requestId: 'request-1',
+      })
+      actor.send({
+        type: ZookeeperManagerTransitions.ClientCommandFinished,
+        requestId: 'request-1',
+      })
+      actor.send({
+        type: ZookeeperManagerTransitions.ClientCommandStarted,
+        requestId: 'request-2',
+      })
+
+      expect(actor.getSnapshot().context.activeClientCommandRequestId).toBe(
+        'request-2'
+      )
+      expect(
+        actor
+          .getSnapshot()
+          .context.clientCommandQueue.map((item) => item.request_id)
+      ).toEqual(['request-2', 'request-3'])
+
+      // A completed ID remains deduplicated until the connection is reset.
+      actor.send({
+        type: ZookeeperManagerTransitions.ClientCommandRequested,
+        request: request('request-1'),
+      })
+      expect(
+        actor
+          .getSnapshot()
+          .context.clientCommandQueue.map((item) => item.request_id)
+      ).toEqual(['request-2', 'request-3'])
 
       actor.stop()
     })

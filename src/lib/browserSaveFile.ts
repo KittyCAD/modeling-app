@@ -1,8 +1,15 @@
 // Saves a file through the File System Access API when possible, then falls
 // back to a normal browser download link.
+
 import toast from 'react-hot-toast'
 
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
+
+/** The observable outcome of a browser or desktop-style file save flow. */
+export type FileSaveResult =
+  | { status: 'saved' }
+  | { status: 'cancelled' }
+  | { status: 'failed'; error: Error }
 
 const getSuggestedExtension = (suggestedName: string): `.${string}` | null => {
   const finalDotIndex = suggestedName.lastIndexOf('.')
@@ -53,7 +60,7 @@ const saveWithDownloadLink = (
   blob: Blob,
   suggestedName: string,
   toastId: string
-) => {
+): FileSaveResult => {
   const blobURL = URL.createObjectURL(blob)
   const a = document.createElement('a')
 
@@ -68,14 +75,15 @@ const saveWithDownloadLink = (
     a.remove()
   }, 1000)
   toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
+  return { status: 'saved' }
 }
 
 // user will get a file save dialog where they can choose where the file should be saved.
-export const browserSaveFile = async (
+export const browserSaveFileWithResult = async (
   blob: Blob,
   suggestedName: string,
   toastId: string
-) => {
+): Promise<FileSaveResult> => {
   // Feature detection. The API needs to be supported
   // and the app not run in an iframe.
   const supportsFileSystemAccess =
@@ -103,22 +111,35 @@ export const browserSaveFile = async (
       await writable.write(blob)
       await writable.close()
       toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
-      return
+      return { status: 'saved' }
     } catch (err: unknown) {
       const name = errorName(err)
 
       // Fail silently if the user has simply canceled the dialog.
       if (name === 'AbortError') {
         toast.dismiss(toastId)
+        return { status: 'cancelled' }
       } else if (name === 'NotAllowedError') {
-        saveWithDownloadLink(blob, suggestedName, toastId)
+        return saveWithDownloadLink(blob, suggestedName, toastId)
       } else {
         console.error(name, err)
         toast.error(EXPORT_TOAST_MESSAGES.FAILED, { id: toastId })
+        return {
+          status: 'failed',
+          error: err instanceof Error ? err : new Error(String(err)),
+        }
       }
-      return
     }
   }
   // Fallback if the File System Access API is not supported…
-  saveWithDownloadLink(blob, suggestedName, toastId)
+  return saveWithDownloadLink(blob, suggestedName, toastId)
+}
+
+/** Save a browser file while preserving the legacy fire-and-forget contract. */
+export const browserSaveFile = async (
+  blob: Blob,
+  suggestedName: string,
+  toastId: string
+): Promise<void> => {
+  await browserSaveFileWithResult(blob, suggestedName, toastId)
 }

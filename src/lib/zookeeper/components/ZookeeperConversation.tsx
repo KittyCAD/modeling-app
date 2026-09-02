@@ -40,6 +40,14 @@ export interface QueuedMessage {
   attachments: File[]
 }
 
+/** A transient client command shown while Zookeeper waits for ZDS to run it. */
+export interface ClientCommandQueueItem {
+  requestId: string
+  commandId: string
+  title: string
+  status: 'queued' | 'waiting' | 'executing'
+}
+
 export interface ZookeeperConversationProps {
   isLoading: boolean
   conversation?: Conversation
@@ -78,6 +86,8 @@ export interface ZookeeperConversationProps {
   isProcessing: boolean
   isLoadingAttachments?: boolean
   queue: QueuedMessage[]
+  clientCommandQueue?: readonly ClientCommandQueueItem[]
+  onCancelClientCommand?: (requestId: string) => void
   onRemoveFromQueue: (id: string) => void
   onSteer: (id: string) => void
   modeOptions?: MlCopilotModeOption[]
@@ -822,6 +832,51 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   >
                     <CustomIcon name="close" className="w-4 h-4" />
                   </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {(props.clientCommandQueue?.length ?? 0) > 0 && (
+            <div
+              className="border-t b-4 px-4 py-2 flex flex-col gap-1"
+              aria-label="Zookeeper client command queue"
+            >
+              <span className="text-xs text-3">Zookeeper commands</span>
+              {props.clientCommandQueue?.map((command, index) => (
+                <div
+                  key={command.requestId}
+                  className="flex items-center gap-2 rounded bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 px-2 py-1 text-xs"
+                  role="status"
+                >
+                  <span className="text-3 shrink-0">{index + 1}.</span>
+                  <span className="min-w-0 flex-1">
+                    {command.status === 'executing' ? (
+                      <>Running command </>
+                    ) : command.status === 'waiting' ? (
+                      <>Waiting for command </>
+                    ) : (
+                      <>Queued command </>
+                    )}
+                    <code>{command.commandId}</code>
+                    {command.status === 'waiting'
+                      ? ' to become available...'
+                      : command.status === 'executing'
+                        ? '...'
+                        : '.'}
+                  </span>
+                  {command.status !== 'executing' &&
+                  props.onCancelClientCommand ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        props.onCancelClientCommand?.(command.requestId)
+                      }
+                      className="shrink-0 text-3 hover:text-chalkboard-100 dark:hover:text-chalkboard-20 px-1 py-0.5 m-0 border-none bg-transparent"
+                      aria-label={`Cancel queued command ${command.title}`}
+                    >
+                      Cancel
+                    </button>
+                  ) : null}
                 </div>
               ))}
             </div>
