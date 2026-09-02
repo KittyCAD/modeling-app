@@ -305,9 +305,21 @@ impl ExecOutcome {
     }
 
     /// Render one sketch from this execution as a PNG, colored by solver
-    /// freedom.
-    fn render_sketch_png(&self, sketch_name: &str) -> PyResult<Vec<u8>> {
-        self.inner.render_sketch_png(sketch_name).map_err(to_py_exception)
+    /// freedom, with optional highlighted segments and a resolved region.
+    #[pyo3(signature = (sketch_name, *, highlighted_segments = None, resolved_region = None))]
+    fn render_sketch_png(
+        &self,
+        sketch_name: &str,
+        highlighted_segments: Option<Vec<String>>,
+        resolved_region: Option<&str>,
+    ) -> PyResult<Vec<u8>> {
+        self.inner
+            .render_sketch_png_with_overlays(
+                sketch_name,
+                highlighted_segments.as_deref().unwrap_or_default(),
+                resolved_region,
+            )
+            .map_err(to_py_exception)
     }
 
     fn report_all(&self) -> Vec<String> {

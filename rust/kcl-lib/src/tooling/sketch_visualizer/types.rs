@@ -24,6 +24,18 @@ pub enum SketchVisualizationError {
     SketchNotFound { name: String },
     #[error("found {count} sketches named `{name}` in the execution outcome")]
     AmbiguousSketchName { name: String, count: usize },
+    #[error("sketch `{sketch_name}` has no segment named `{segment_name}`")]
+    SegmentNotFound { sketch_name: String, segment_name: String },
+    #[error("segment `{segment_name}` in sketch `{sketch_name}` was not solved")]
+    SegmentNotSolved { sketch_name: String, segment_name: String },
+    #[error("no region named `{name}` was found in the execution outcome")]
+    RegionNotFound { name: String },
+    #[error("`{name}` is not a resolved region")]
+    NotARegion { name: String },
+    #[error("region `{region_name}` was resolved from a different sketch than `{sketch_name}`")]
+    RegionSketchMismatch { sketch_name: String, region_name: String },
+    #[error("region `{region_name}` has no resolved boundary segments in the artifact graph")]
+    RegionBoundaryNotFound { region_name: String },
     #[error("object id {id} was missing from the execution scene objects")]
     MissingObject { id: usize },
     #[error("failed to encode sketch visualization PNG: {0}")]

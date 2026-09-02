@@ -30,6 +30,54 @@ async fn exec_outcome_renders_sketch_png_separately_from_constraint_report() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn exec_outcome_highlights_named_segments() {
+    let outcome = execute_visualizer_kcl(&sketch_visualizer_test_root().join("connected_profile/input.kcl")).await;
+    let png = outcome
+        .render_sketch_png_with_overlays("profile", &["bottom".to_owned(), "right".to_owned()], None)
+        .expect("the named segments should be highlighted");
+
+    assert!(png_contains_color(&png, [0xff, 0x4f, 0xd8, 0xff]));
+    assert!(!png_contains_color(&png, [0x75, 0xff, 0x5a, 0xff]));
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn exec_outcome_rejects_unknown_overlay_names() {
+    let outcome = execute_visualizer_kcl(&sketch_visualizer_test_root().join("connected_profile/input.kcl")).await;
+
+    let segment_error = outcome
+        .render_sketch_png_with_overlays("profile", &["missing".to_owned()], None)
+        .expect_err("an unknown segment should fail");
+    assert!(matches!(
+        segment_error,
+        crate::tooling::sketch_visualizer::SketchVisualizationError::SegmentNotFound { .. }
+    ));
+
+    let region_error = outcome
+        .render_sketch_png_with_overlays("profile", &[], Some("missing"))
+        .expect_err("an unknown region should fail");
+    assert!(matches!(
+        region_error,
+        crate::tooling::sketch_visualizer::SketchVisualizationError::RegionNotFound { .. }
+    ));
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn exec_outcome_renders_engine_resolved_region_boundary() {
+    let outcome =
+        execute_visualizer_kcl_with_engine(&sketch_visualizer_test_root().join("region_overlay/input.kcl")).await;
+    let png = outcome
+        .render_sketch_png_with_overlays(
+            "profile",
+            &["bottom".to_owned(), "right".to_owned()],
+            Some("selectedRegion"),
+        )
+        .expect("the named segments and resolved region should be highlighted");
+
+    assert!(png_contains_color(&png, [0xff, 0x4f, 0xd8, 0xff]));
+    assert!(png_contains_color(&png, [0x75, 0xff, 0x5a, 0xff]));
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn snapshots_kcl_visualizer_pngs() {
     let manifest = sketch_visualizer_snapshot_manifest();
 
@@ -49,6 +97,14 @@ fn assert_png_snapshot(case_name: &str, png: &[u8]) {
     twenty_twenty::assert_image(output_dir.join("dof.png"), &image, 1.0);
 }
 
+fn png_contains_color(png: &[u8], expected: [u8; 4]) -> bool {
+    image::load_from_memory(png)
+        .expect("the renderer should return a valid PNG")
+        .into_rgba8()
+        .pixels()
+        .any(|pixel| pixel.0 == expected)
+}
+
 async fn execute_visualizer_kcl(input_path: &Path) -> ExecOutcome {
     let source = std::fs::read_to_string(input_path)
         .unwrap_or_else(|err| panic!("failed to read `{}`: {err}", input_path.display()));
@@ -66,6 +122,25 @@ async fn execute_visualizer_kcl(input_path: &Path) -> ExecOutcome {
                 ..Default::default()
             },
         )
+        .await
+        .unwrap_or_else(|err| panic!("failed to execute `{}`: {err:?}", input_path.display()));
+    ctx.close().await;
+    outcome
+}
+
+async fn execute_visualizer_kcl_with_engine(input_path: &Path) -> ExecOutcome {
+    let source = std::fs::read_to_string(input_path)
+        .unwrap_or_else(|err| panic!("failed to read `{}`: {err}", input_path.display()));
+    let program = Program::parse_no_errs(&source)
+        .unwrap_or_else(|err| panic!("failed to parse `{}`: {err:?}", input_path.display()));
+    let mut settings = ExecutorSettings::default();
+    settings.with_current_file(TypedPath(input_path.to_path_buf()));
+    settings.project_directory = input_path.parent().map(|path| TypedPath(path.to_path_buf()));
+    let ctx = ExecutorContext::new_with_client(settings, None, None)
+        .await
+        .expect("the engine context should connect");
+    let outcome = ctx
+        .run_with_caching(program)
         .await
         .unwrap_or_else(|err| panic!("failed to execute `{}`: {err:?}", input_path.display()));
     ctx.close().await;

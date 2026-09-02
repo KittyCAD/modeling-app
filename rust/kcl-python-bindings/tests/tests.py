@@ -654,6 +654,22 @@ s2 = sketch(on = XZ) {
 }
 """
 
+region_overlay_code = """
+profile = sketch(on = XY) {
+  bottom = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])
+  right = line(start = [var 40mm, var 0mm], end = [var 40mm, var 24mm])
+  top = line(start = [var 40mm, var 24mm], end = [var 0mm, var 24mm])
+  left = line(start = [var 0mm, var 24mm], end = [var 0mm, var 0mm])
+
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+
+selectedRegion = region(segments = [profile.bottom, profile.right])
+"""
+
 named_sketches_all_statuses_code = """
 @settings(experimentalFeatures = allow)
 
@@ -776,6 +792,21 @@ async def test_sketch_constraint_status_mixed():
     assert report.under_constrained[0].name == "s2"
     assert bytes(outcome.render_sketch_png("s1")).startswith(b"\x89PNG\r\n\x1a\n")
     assert bytes(outcome.render_sketch_png("s2")).startswith(b"\x89PNG\r\n\x1a\n")
+    assert bytes(
+        outcome.render_sketch_png("s1", highlighted_segments=["line1"])
+    ).startswith(b"\x89PNG\r\n\x1a\n")
+
+
+@requires_engine
+@pytest.mark.asyncio
+async def test_sketch_png_region_overlays():
+    outcome = await execute_with_retries(kcl.execute_code, region_overlay_code)
+    png = outcome.render_sketch_png(
+        "profile",
+        highlighted_segments=["bottom", "right"],
+        resolved_region="selectedRegion",
+    )
+    assert bytes(png).startswith(b"\x89PNG\r\n\x1a\n")
 
 
 @requires_engine
