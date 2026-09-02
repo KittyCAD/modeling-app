@@ -304,8 +304,7 @@ describe('Testing addSketchTo', () => {
 })
 
 describe('Testing addModuleImport', () => {
-  const emptyProgram = () =>
-    assertParse('@settings(experimentalFeatures = allow)\n', instanceInThisFile)
+  const emptyProgram = () => assertParse('', instanceInThisFile)
 
   it.each(['mesh', 'brep'] as const)(
     'adds the %s STEP representation annotation',
@@ -318,7 +317,7 @@ describe('Testing addModuleImport', () => {
       })
 
       expect(recast(result.modifiedAst, instanceInThisFile)).toBe(
-        `@settings(experimentalFeatures = allow)\n\n@(targetRepresentation = ${representation})\nimport "cube.step" as cube\n`
+        `@(targetRepresentation = ${representation})\nimport "cube.step" as cube\n`
       )
     }
   )

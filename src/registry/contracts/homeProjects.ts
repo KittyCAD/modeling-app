@@ -94,6 +94,11 @@ export type HomeProjectEntryContributionGroup =
 
 export type HomeProjectOpenResult = {
   defaultFile: string
+  localProjectPath?: string
+}
+
+export type HomeProjectRenameOptions = {
+  notify?: boolean
 }
 
 export interface HomeProjectMoveToLibraryTarget {
@@ -112,7 +117,11 @@ export interface HomeProjectActionsService {
     project: HomeProjectEntry
   ) => Promise<HomeProjectOpenResult | undefined>
   duplicate: (project: HomeProjectEntry) => Promise<void>
-  rename: (project: HomeProjectEntry, requestedName: string) => Promise<void>
+  rename: (
+    project: HomeProjectEntry,
+    requestedName: string,
+    options?: HomeProjectRenameOptions
+  ) => Promise<void>
   delete: (project: HomeProjectEntry) => Promise<void>
   getMoveToLibraryTargets: (
     project: HomeProjectEntry

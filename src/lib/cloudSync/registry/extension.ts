@@ -22,6 +22,7 @@ import {
   retryCloudSync,
   setCloudSyncOpenedProject,
   startCloudSyncProject,
+  syncCloudSyncProjectNow,
 } from '@src/lib/cloudSync'
 import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import { CLOUD_SYNC_PLUGIN_ID } from '@src/lib/cloudSync/registry/constants'
@@ -283,6 +284,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     retry: retryCloudSync,
     setOpenedProject: setCloudSyncOpenedProject,
     startProjectSync: startCloudSyncProject,
+    syncNow: syncCloudSyncProjectNow,
     disconnectProjectSync: disconnectCloudSyncProject,
     deleteRemoteProject: deleteRemoteCloudProject,
     deleteLocalProjectRealizations: deleteCloudSyncLocalProjectRealizations,
