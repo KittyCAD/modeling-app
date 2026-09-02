@@ -10,6 +10,10 @@ import {
 } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
 import {
+  type LocalRendererFrameMetrics,
+  LocalRendererPerformanceMonitor,
+} from '@src/clientSideScene/localRenderer/PerformanceMonitor'
+import {
   decodeRenderPacket,
   type LocalRenderPacket,
   type LocalRenderPacketEdge,
@@ -36,7 +40,6 @@ import {
   Box3,
   BufferAttribute,
   BufferGeometry,
-  Color,
   DoubleSide,
   Group,
   InterleavedBuffer,
@@ -121,8 +124,10 @@ export class LocalRenderer {
   private edgeRenderer: EdgeRenderer | null = null
   private integerIdPicker: IntegerIdPicker | null = null
   private selectionHighlightRenderer: SelectionHighlightRenderer | null = null
+  private performanceMonitor: LocalRendererPerformanceMonitor | null = null
   private resizeObserver: ResizeObserver | null = null
   private animationFrameId = -1
+  private scheduledRenderAt = 0
   private currentModel: Object3D | null = null
   private currentSurfaceResources: WebGpuSurfaceResources | null = null
   private previewCamera: PerspectiveCamera | OrthographicCamera | null = null
@@ -130,6 +135,7 @@ export class LocalRenderer {
   private readonly convertedSharedPosition = new Vector3()
   private readonly convertedSharedTarget = new Vector3()
   private readonly convertedSharedUp = new Vector3()
+  private readonly performanceDrawingBufferSize = new Vector2()
   private hoveredTarget: IntegerIdPickTarget | null = null
   private selectedTargets = new Map<string, IntegerIdPickTarget>()
   private selectionTargetByEntityId = new Map<string, SelectionTarget>()
@@ -141,6 +147,7 @@ export class LocalRenderer {
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private currentRefreshId = 0
   private pendingRefreshRequest = false
+  private baseRenderDirty = true
   private disposed = false
 
   constructor(
@@ -178,15 +185,19 @@ export class LocalRenderer {
 
     this.backgroundColor = backgroundColor
     if (this.scene) {
-      this.scene.background = new Color(backgroundColor)
+      this.selectionHighlightRenderer?.setBackgroundColor(backgroundColor)
       this.edgeRenderer?.setBackgroundColor(backgroundColor)
-      this.scheduleRender()
+      this.invalidateBaseRender()
     }
   }
 
   setEnableSSAO(enableSSAO: boolean) {
+    if (this.enableSSAO === enableSSAO) {
+      return
+    }
+
     this.enableSSAO = enableSSAO
-    this.scheduleRender()
+    this.invalidateBaseRender()
   }
 
   setHighlightEdges(highlightEdges: boolean) {
@@ -197,13 +208,17 @@ export class LocalRenderer {
     this.highlightEdges = highlightEdges
     this.edgeRenderer?.setVisible(highlightEdges)
     this.integerIdPicker?.setEdgesVisible(highlightEdges)
-    this.scheduleRender()
+    this.invalidateBaseRender()
   }
 
   setForceHide(forceHide: boolean) {
+    if (this.forceHide === forceHide) {
+      return
+    }
+
     this.forceHide = forceHide
     this.container.style.opacity = this.isVisible && !this.forceHide ? '1' : '0'
-    this.scheduleRender()
+    this.invalidateBaseRender()
   }
 
   setCommandProxyEnabled(commandProxyEnabled: boolean) {
@@ -255,6 +270,7 @@ export class LocalRenderer {
     this.integerIdPicker = null
     this.selectionHighlightRenderer?.dispose()
     this.selectionHighlightRenderer = null
+    this.performanceMonitor = null
     this.resizeObserver?.disconnect()
     this.resizeObserver = null
     if (this.animationFrameId !== -1) {
@@ -374,7 +390,7 @@ export class LocalRenderer {
     this.previewCamera.updateProjectionMatrix()
     this.previewCamera.updateMatrixWorld(true)
     this.integerIdPicker?.invalidate()
-    this.scheduleRender()
+    this.invalidateBaseRender()
   }
 
   private clearHover() {
@@ -532,7 +548,7 @@ export class LocalRenderer {
     }
   }
 
-  private renderPreview() {
+  private renderPreview(requestAnimationFrameDelayMs: number) {
     const previewCamera = this.previewCamera
     const renderer = this.renderer
     const scene = this.scene
@@ -540,51 +556,104 @@ export class LocalRenderer {
       return
     }
 
-    this.selectionHighlightRenderer?.beginFrame()
+    const frameStartedAt = performance.now()
+    const renderInfoBefore = captureRendererWork(renderer)
+    const frameSetupStartedAt = performance.now()
+    const baseRendered =
+      this.selectionHighlightRenderer?.beginFrame(this.baseRenderDirty) ?? true
+    const frameSetupCpuMs = performance.now() - frameSetupStartedAt
 
-    if (!this.enableSSAO || this.forceHide) {
-      renderer.render(scene, previewCamera)
-    } else {
-      if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
-        this.disposeAmbientOcclusionPipeline()
+    let sceneCpuSubmissionMs = 0
+    let baseCacheCpuSubmissionMs = 0
+    if (baseRendered) {
+      const sceneStartedAt = performance.now()
+      if (!this.enableSSAO || this.forceHide) {
+        renderer.render(scene, previewCamera)
+      } else {
+        if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
+          this.disposeAmbientOcclusionPipeline()
 
-        // GTAO expects a regular depth texture. The renderer itself can keep
-        // using MSAA, but this intermediate pass must be single-sampled.
-        const scenePass = pass(scene, previewCamera, {
-          samples: 0,
-        })
-        const scenePassColor = scenePass.getTextureNode()
-        const scenePassDepth = scenePass.getTextureNode('depth')
-        const aoPass = (ao as CreateAmbientOcclusion)(
-          scenePassDepth,
-          null,
-          previewCamera
-        )
-        aoPass.resolutionScale = 0.5
-        this.configureAmbientOcclusion(aoPass)
+          // GTAO expects a regular depth texture. The renderer itself can keep
+          // using MSAA, but this intermediate pass must be single-sampled.
+          const scenePass = pass(scene, previewCamera, {
+            samples: 0,
+          })
+          const scenePassColor = scenePass.getTextureNode()
+          const scenePassDepth = scenePass.getTextureNode('depth')
+          const aoPass = (ao as CreateAmbientOcclusion)(
+            scenePassDepth,
+            null,
+            previewCamera
+          )
+          aoPass.resolutionScale = 0.5
+          this.configureAmbientOcclusion(aoPass)
 
-        const pipeline = new RenderPipeline(renderer)
-        pipeline.outputColorTransform = false
-        const aoOutput = aoPass.getTextureNode()
-        // Preserve some indirect light even at maximum occlusion while leaving
-        // enough contrast to make the setting visibly effective.
-        const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
-        pipeline.outputNode = scenePassColor.mul(
-          vec4(vec3(ambientOcclusion), 1)
-        )
+          const pipeline = new RenderPipeline(renderer)
+          pipeline.outputColorTransform = false
+          const aoOutput = aoPass.getTextureNode()
+          // Preserve some indirect light even at maximum occlusion while leaving
+          // enough contrast to make the setting visibly effective.
+          const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
+          pipeline.outputNode = scenePassColor.mul(
+            vec4(vec3(ambientOcclusion), 1)
+          )
 
-        this.ambientOcclusionPipeline = {
-          camera: previewCamera,
-          pipeline,
-          scenePass,
-          aoPass,
+          this.ambientOcclusionPipeline = {
+            camera: previewCamera,
+            pipeline,
+            scenePass,
+            aoPass,
+          }
         }
-      }
 
-      this.ambientOcclusionPipeline.pipeline.render()
+        this.ambientOcclusionPipeline.pipeline.render()
+      }
+      sceneCpuSubmissionMs = performance.now() - sceneStartedAt
+
+      const baseCacheStartedAt = performance.now()
+      this.selectionHighlightRenderer?.cacheBaseFrame()
+      baseCacheCpuSubmissionMs = performance.now() - baseCacheStartedAt
+      this.baseRenderDirty = false
     }
 
-    this.selectionHighlightRenderer?.render(previewCamera)
+    const highlightMetrics = this.selectionHighlightRenderer?.render(
+      previewCamera
+    ) ?? {
+      compositionCpuSubmissionMs: 0,
+      highlightCpuSubmissionMs: 0,
+      presentationCpuSubmissionMs: 0,
+      maskPasses: 0,
+      linePasses: 0,
+    }
+    const renderInfoAfter = captureRendererWork(renderer)
+    const drawingBufferSize = renderer.getDrawingBufferSize(
+      this.performanceDrawingBufferSize
+    )
+    this.performanceMonitor?.recordFrame({
+      requestAnimationFrameDelayMs,
+      frameSetupCpuMs,
+      sceneCpuSubmissionMs,
+      baseCacheCpuSubmissionMs,
+      compositionCpuSubmissionMs: highlightMetrics.compositionCpuSubmissionMs,
+      highlightCpuSubmissionMs: highlightMetrics.highlightCpuSubmissionMs,
+      presentationCpuSubmissionMs: highlightMetrics.presentationCpuSubmissionMs,
+      totalCpuSubmissionMs: performance.now() - frameStartedAt,
+      rendererRenderCalls:
+        renderInfoAfter.rendererRenderCalls -
+        renderInfoBefore.rendererRenderCalls,
+      drawCalls: renderInfoAfter.drawCalls - renderInfoBefore.drawCalls,
+      triangles: renderInfoAfter.triangles - renderInfoBefore.triangles,
+      lines: renderInfoAfter.lines - renderInfoBefore.lines,
+      maskPasses: highlightMetrics.maskPasses,
+      highlightLinePasses: highlightMetrics.linePasses,
+      viewportWidth: drawingBufferSize.x,
+      viewportHeight: drawingBufferSize.y,
+      pixelRatio: renderer.getPixelRatio(),
+      ssaoEnabled: this.enableSSAO && !this.forceHide,
+      baseRendered,
+      hoverActive: this.hoveredTarget !== null,
+      selectionCount: this.selectedTargets.size,
+    } satisfies LocalRendererFrameMetrics)
   }
 
   private scheduleRender() {
@@ -592,14 +661,23 @@ export class LocalRenderer {
       return
     }
 
+    this.scheduledRenderAt = performance.now()
     this.animationFrameId = requestAnimationFrame(() => {
+      const requestAnimationFrameDelayMs =
+        performance.now() - this.scheduledRenderAt
       this.animationFrameId = -1
+      this.scheduledRenderAt = 0
       if (this.disposed || !this.previewCamera) {
         return
       }
 
-      this.renderPreview()
+      this.renderPreview(requestAnimationFrameDelayMs)
     })
+  }
+
+  private invalidateBaseRender() {
+    this.baseRenderDirty = true
+    this.scheduleRender()
   }
 
   private readonly resize = () => {
@@ -618,7 +696,7 @@ export class LocalRenderer {
       this.syncPreviewCameraFromShared()
     }
     this.integerIdPicker?.invalidate()
-    this.scheduleRender()
+    this.invalidateBaseRender()
   }
 
   private clearModel() {
@@ -638,8 +716,9 @@ export class LocalRenderer {
     }
     this.currentSurfaceResources = null
     this.modelIndex = null
+    this.performanceMonitor?.setGeometry(null)
     this.selectionTargetByEntityId.clear()
-    this.scheduleRender()
+    this.invalidateBaseRender()
   }
 
   private indexCurrentModelForSelection() {
@@ -760,6 +839,9 @@ export class LocalRenderer {
       this.currentModel = packetModel.model
       this.updateAmbientOcclusionScale(packetModel.modelBounds)
       this.modelIndex = packetModel.modelIndex
+      this.performanceMonitor?.setGeometry(
+        packetModel.modelIndex.pickingGeometryStats
+      )
       this.indexCurrentModelForSelection()
       scene.add(this.currentModel)
       this.integerIdPicker?.setModel({
@@ -866,7 +948,7 @@ export class LocalRenderer {
 
     const scene = new Scene()
     this.scene = scene
-    scene.background = new Color(this.backgroundColor)
+    scene.background = null
     const envMapLoader = new EnvMapLoader(renderer, device)
     const hdrEnvMapUrl = HDR_ENV_MAP_URL?.trim()
     if (hdrEnvMapUrl) {
@@ -898,7 +980,11 @@ export class LocalRenderer {
     this.edgeRenderer = edgeRenderer
     this.integerIdPicker = new IntegerIdPicker(renderer)
     this.integerIdPicker.setEdgesVisible(this.highlightEdges)
-    this.selectionHighlightRenderer = new SelectionHighlightRenderer(renderer)
+    this.selectionHighlightRenderer = new SelectionHighlightRenderer(
+      renderer,
+      this.backgroundColor
+    )
+    this.performanceMonitor = new LocalRendererPerformanceMonitor(renderer)
 
     this.onExportReady?.(this.exportCurrentScene)
 
@@ -959,6 +1045,11 @@ export class LocalRenderer {
                   ...(pickResult?.diagnostics ?? {}),
                 }
               )
+              this.performanceMonitor?.recordPick(
+                'hover',
+                pickDurationMs,
+                pickResult?.diagnostics
+              )
               return {
                 unreliableModelingResponse: {
                   type: 'highlight_set_entity',
@@ -992,6 +1083,11 @@ export class LocalRenderer {
                   pickDurationMs,
                   ...(pickResult?.diagnostics ?? {}),
                 }
+              )
+              this.performanceMonitor?.recordPick(
+                'selection',
+                pickDurationMs,
+                pickResult?.diagnostics
               )
               const modelingResponse = {
                 type: 'select_with_point',
@@ -1302,6 +1398,15 @@ function logLocalWebGpuPreview(message: string, metadata?: unknown) {
       message,
       metadata ?? ''
     )
+  }
+}
+
+function captureRendererWork(renderer: WebGPURenderer) {
+  return {
+    rendererRenderCalls: renderer.info.render.calls,
+    drawCalls: renderer.info.render.drawCalls,
+    triangles: renderer.info.render.triangles,
+    lines: renderer.info.render.lines,
   }
 }
 

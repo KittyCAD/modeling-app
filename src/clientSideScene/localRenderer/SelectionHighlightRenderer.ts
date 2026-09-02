@@ -15,14 +15,27 @@ import {
   Mesh,
   NearestFilter,
   NoBlending,
+  NoColorSpace,
   NormalBlending,
+  NoToneMapping,
   type Object3D,
   Scene,
+  UnsignedByteType,
   Vector2,
 } from 'three'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
-import { max, min, screenUV, texture, uniform, vec2, vec4 } from 'three/tsl'
+import {
+  max,
+  min,
+  mix,
+  renderOutput,
+  screenUV,
+  texture,
+  uniform,
+  vec2,
+  vec4,
+} from 'three/tsl'
 import {
   Line2NodeMaterial,
   MeshBasicNodeMaterial,
@@ -37,13 +50,25 @@ import {
 const HIGHLIGHT_INTERIOR_OPACITY = 0.2
 const HIGHLIGHT_LINE_WIDTH_PX = 2
 
+export type SelectionHighlightRenderMetrics = {
+  compositionCpuSubmissionMs: number
+  highlightCpuSubmissionMs: number
+  presentationCpuSubmissionMs: number
+  maskPasses: number
+  linePasses: number
+}
+
 type NodeMaterialWithMask = Material & {
   maskNode?: Node<'bool'> | null
 }
 
 export class SelectionHighlightRenderer {
   private readonly renderer: WebGPURenderer
+  private readonly baseHdrTarget: RenderTarget
+  private readonly baseLdrTarget: RenderTarget
   private readonly frameTarget: RenderTarget
+  private readonly cacheBasePipeline: RenderPipeline
+  private readonly copyBasePipeline: RenderPipeline
   private readonly presentPipeline: RenderPipeline
   private readonly hoverMaskScene = new Scene()
   private readonly selectionMaskScene = new Scene()
@@ -52,29 +77,20 @@ export class SelectionHighlightRenderer {
   private readonly drawingBufferSize = new Vector2()
   private readonly texelSize = new Vector2(1, 1)
   private readonly savedClearColor = new Color()
+  private readonly backgroundColorNode = uniform(new Color())
   private readonly maskTarget = new RenderTarget(1, 1, {
+    type: UnsignedByteType,
+    colorSpace: NoColorSpace,
     minFilter: NearestFilter,
     magFilter: NearestFilter,
     depthBuffer: true,
     stencilBuffer: false,
     samples: 0,
   })
-  private readonly hoverCompositeMaterial = createCompositeMaterial(
-    this.maskTarget,
-    this.texelSize,
-    SKETCH_HIGHLIGHT_COLOR
-  )
-  private readonly selectionCompositeMaterial = createCompositeMaterial(
-    this.maskTarget,
-    this.texelSize,
-    SKETCH_SELECTION_COLOR
-  )
-  private readonly hoverLineMaterial = createLineMaterial(
-    SKETCH_HIGHLIGHT_COLOR
-  )
-  private readonly selectionLineMaterial = createLineMaterial(
-    SKETCH_SELECTION_COLOR
-  )
+  private readonly hoverCompositeMaterial: NodeMaterial
+  private readonly selectionCompositeMaterial: NodeMaterial
+  private readonly hoverLineMaterial: Line2NodeMaterial
+  private readonly selectionLineMaterial: Line2NodeMaterial
   private readonly compositeQuad = new QuadMesh()
   private readonly overlayByKey = new Map<string, Object3D>()
   private readonly maskMaterialBySource = new Map<
@@ -88,31 +104,119 @@ export class SelectionHighlightRenderer {
   private hoveredKey: string | null = null
   private frameOutputTarget: RenderTarget | null = null
   private frameAutoClear = true
+  private frameClearAlpha = 1
 
-  constructor(renderer: WebGPURenderer) {
+  constructor(renderer: WebGPURenderer, backgroundColor: string) {
     this.renderer = renderer
-    this.frameTarget = new RenderTarget(1, 1, {
+    this.backgroundColorNode.value.set(backgroundColor)
+    this.baseHdrTarget = new RenderTarget(1, 1, {
       type: renderer.getOutputBufferType(),
       colorSpace: LinearSRGBColorSpace,
       depthBuffer: true,
       stencilBuffer: false,
       samples: renderer.samples,
     })
-    this.frameTarget.texture.name = 'local-renderer-frame'
+    this.baseHdrTarget.texture.name = 'local-renderer-base-hdr'
+    this.baseLdrTarget = new RenderTarget(1, 1, {
+      type: UnsignedByteType,
+      colorSpace: NoColorSpace,
+      minFilter: NearestFilter,
+      magFilter: NearestFilter,
+      depthBuffer: false,
+      stencilBuffer: false,
+      samples: 0,
+    })
+    this.baseLdrTarget.texture.name = 'local-renderer-base-ldr'
+    this.frameTarget = new RenderTarget(1, 1, {
+      type: UnsignedByteType,
+      colorSpace: NoColorSpace,
+      depthBuffer: false,
+      stencilBuffer: false,
+      samples: renderer.samples,
+    })
+    this.frameTarget.texture.name = 'local-renderer-composited-frame'
+
+    const resolvedBase = texture(this.baseHdrTarget.texture)
+    const coverage = resolvedBase.a.clamp(0, 1)
+    const straightBaseColor = resolvedBase.rgb.div(max(coverage, 0.00001))
+    const toneMappedBase = renderOutput(
+      vec4(straightBaseColor, 1),
+      renderer.toneMapping,
+      LinearSRGBColorSpace
+    )
+    const compositedBase = vec4(
+      mix(this.backgroundColorNode, toneMappedBase.rgb, coverage),
+      1
+    )
+    this.cacheBasePipeline = new RenderPipeline(
+      renderer,
+      renderOutput(compositedBase, NoToneMapping, renderer.outputColorSpace)
+    )
+    this.cacheBasePipeline.outputColorTransform = false
+
+    this.copyBasePipeline = new RenderPipeline(
+      renderer,
+      texture(this.baseLdrTarget.texture)
+    )
+    this.copyBasePipeline.outputColorTransform = false
     this.presentPipeline = new RenderPipeline(
       renderer,
       texture(this.frameTarget.texture)
     )
+    this.presentPipeline.outputColorTransform = false
+
+    this.hoverCompositeMaterial = createCompositeMaterial(
+      this.maskTarget,
+      this.texelSize,
+      SKETCH_HIGHLIGHT_COLOR,
+      renderer.outputColorSpace
+    )
+    this.selectionCompositeMaterial = createCompositeMaterial(
+      this.maskTarget,
+      this.texelSize,
+      SKETCH_SELECTION_COLOR,
+      renderer.outputColorSpace
+    )
+    this.hoverLineMaterial = createLineMaterial(
+      SKETCH_HIGHLIGHT_COLOR,
+      renderer.outputColorSpace
+    )
+    this.selectionLineMaterial = createLineMaterial(
+      SKETCH_SELECTION_COLOR,
+      renderer.outputColorSpace
+    )
+
     this.maskTarget.texture.name = 'local-renderer-highlight-mask'
     this.maskTarget.texture.generateMipmaps = false
   }
 
-  beginFrame() {
-    this.ensureTargetSize()
+  beginFrame(rebuildBase: boolean) {
+    const targetsResized = this.ensureTargetSize()
     this.frameOutputTarget = this.renderer.getRenderTarget()
     this.frameAutoClear = this.renderer.autoClear
-    this.renderer.setRenderTarget(this.frameTarget)
+    this.frameClearAlpha = this.renderer.getClearAlpha()
+    this.renderer.getClearColor(
+      this.savedClearColor as Parameters<WebGPURenderer['getClearColor']>[0]
+    )
+
+    const shouldRebuildBase = rebuildBase || targetsResized
+    if (shouldRebuildBase) {
+      this.renderer.setClearColor(0x000000, 0)
+      this.renderer.setRenderTarget(this.baseHdrTarget)
+      this.renderer.autoClear = true
+    }
+
+    return shouldRebuildBase
+  }
+
+  cacheBaseFrame() {
+    this.renderer.setRenderTarget(this.baseLdrTarget)
     this.renderer.autoClear = true
+    this.cacheBasePipeline.render()
+  }
+
+  setBackgroundColor(backgroundColor: string) {
+    this.backgroundColorNode.value.set(backgroundColor)
   }
 
   setModel(packet: LocalRenderPacket, targets: IntegerIdPickTarget[]) {
@@ -144,13 +248,19 @@ export class SelectionHighlightRenderer {
 
   render(camera: Parameters<WebGPURenderer['render']>[1]) {
     this.ensureTargetSize()
-    const previousClearAlpha = this.renderer.getClearAlpha()
-    this.renderer.getClearColor(
-      this.savedClearColor as Parameters<WebGPURenderer['getClearColor']>[0]
-    )
+    this.renderer.setRenderTarget(this.frameTarget)
+    this.renderer.autoClear = true
+    const compositionStartedAt = performance.now()
+    this.copyBasePipeline.render()
+    const compositionCpuSubmissionMs = performance.now() - compositionStartedAt
+
+    const highlightStartedAt = performance.now()
+    let maskPasses = 0
+    let linePasses = 0
     this.renderer.setClearColor(0x000000, 0)
 
     if (this.hoverMaskScene.children.length > 0) {
+      maskPasses += 1
       this.renderSceneOverlay(
         this.hoverMaskScene,
         camera,
@@ -158,8 +268,12 @@ export class SelectionHighlightRenderer {
         this.hoverCompositeMaterial
       )
     }
+    if (this.hoverLineScene.children.length > 0) {
+      linePasses += 1
+    }
     this.renderLines(this.hoverLineScene, camera, this.frameTarget)
     if (this.selectionMaskScene.children.length > 0) {
+      maskPasses += 1
       this.renderSceneOverlay(
         this.selectionMaskScene,
         camera,
@@ -167,14 +281,30 @@ export class SelectionHighlightRenderer {
         this.selectionCompositeMaterial
       )
     }
+    if (this.selectionLineScene.children.length > 0) {
+      linePasses += 1
+    }
     this.renderLines(this.selectionLineScene, camera, this.frameTarget)
 
-    this.renderer.setClearColor(this.savedClearColor, previousClearAlpha)
+    const highlightCpuSubmissionMs = performance.now() - highlightStartedAt
+
+    this.renderer.setClearColor(this.savedClearColor, this.frameClearAlpha)
     this.renderer.setRenderTarget(this.frameOutputTarget)
     this.renderer.autoClear = true
+    const presentationStartedAt = performance.now()
     this.presentPipeline.render()
+    const presentationCpuSubmissionMs =
+      performance.now() - presentationStartedAt
     this.renderer.setRenderTarget(this.frameOutputTarget)
     this.renderer.autoClear = this.frameAutoClear
+
+    return {
+      compositionCpuSubmissionMs,
+      highlightCpuSubmissionMs,
+      presentationCpuSubmissionMs,
+      maskPasses,
+      linePasses,
+    } satisfies SelectionHighlightRenderMetrics
   }
 
   clearModel() {
@@ -199,8 +329,12 @@ export class SelectionHighlightRenderer {
 
   dispose() {
     this.clearModel()
+    this.baseHdrTarget.dispose()
+    this.baseLdrTarget.dispose()
     this.frameTarget.dispose()
     this.maskTarget.dispose()
+    this.cacheBasePipeline.dispose()
+    this.copyBasePipeline.dispose()
     this.presentPipeline.dispose()
     this.hoverLineMaterial.dispose()
     this.selectionLineMaterial.dispose()
@@ -339,16 +473,23 @@ export class SelectionHighlightRenderer {
     this.renderer.getDrawingBufferSize(this.drawingBufferSize)
     const width = Math.max(1, Math.floor(this.drawingBufferSize.x))
     const height = Math.max(1, Math.floor(this.drawingBufferSize.y))
+    let resized = false
     if (this.maskTarget.width !== width || this.maskTarget.height !== height) {
       this.maskTarget.setSize(width, height)
+      resized = true
     }
-    if (
-      this.frameTarget.width !== width ||
-      this.frameTarget.height !== height
-    ) {
-      this.frameTarget.setSize(width, height)
+    for (const target of [
+      this.baseHdrTarget,
+      this.baseLdrTarget,
+      this.frameTarget,
+    ]) {
+      if (target.width !== width || target.height !== height) {
+        target.setSize(width, height)
+        resized = true
+      }
     }
     this.texelSize.set(1 / width, 1 / height)
+    return resized
   }
 
   private renderSceneOverlay(
@@ -401,11 +542,16 @@ function createMaskMaterial(
   return material
 }
 
-function createLineMaterial(color: number) {
+function createLineMaterial(color: number, outputColorSpace: string) {
   const material = new Line2NodeMaterial({
-    color,
+    color: 0xffffff,
     linewidth: HIGHLIGHT_LINE_WIDTH_PX,
   })
+  material.lineColorNode = renderOutput(
+    vec4(uniform(new Color(color)), 1),
+    NoToneMapping,
+    outputColorSpace
+  ).rgb
   material.worldUnits = false
   material.alphaToCoverage = false
   material.depthTest = false
@@ -420,7 +566,8 @@ function createLineMaterial(color: number) {
 function createCompositeMaterial(
   maskTarget: RenderTarget,
   texelSize: Vector2,
-  color: number
+  color: number,
+  outputColorSpace: string
 ) {
   const mask = texture(maskTarget.texture)
   const texel = uniform(texelSize)
@@ -460,7 +607,11 @@ function createCompositeMaterial(
   const boundary = highest.sub(lowest).greaterThan(0.01)
   const alpha = boundary.select(1, center.mul(HIGHLIGHT_INTERIOR_OPACITY))
   const material = new NodeMaterial()
-  material.fragmentNode = vec4(uniform(new Color(color)), alpha)
+  material.fragmentNode = renderOutput(
+    vec4(uniform(new Color(color)), alpha),
+    NoToneMapping,
+    outputColorSpace
+  )
   material.transparent = true
   material.blending = NormalBlending
   material.depthTest = false
