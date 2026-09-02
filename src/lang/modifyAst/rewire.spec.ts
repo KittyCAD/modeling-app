@@ -163,6 +163,23 @@ keep001 = deleted001 + 1`)
     )
   })
 
+  it('rewires a reference inside a return statement', () => {
+    const beforeDeleteAst = parseProgram(`parent001 = 1
+deleted001 = parent001 + 1
+fn build() {
+  return deleted001
+}`)
+
+    const afterDeleteAst = parseProgram(`parent001 = 1
+fn build() {
+  return deleted001
+}`)
+
+    const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+
+    expect(recast(rewiredAst, getInstance())).toContain('return parent001')
+  })
+
   // Sketch-block bodies are their own scope at runtime in every KCL version,
   // so these frames are not gated on the language version. Bare blocks share
   // the same path shape and are covered by the same rule.

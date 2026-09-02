@@ -417,6 +417,8 @@ export function traverse(
     _node.items.forEach((item, index) =>
       _traverse(item, [...pathToNode, ['items', 'Block'], [index, 'index']])
     )
+  } else if (_node.type === 'ReturnStatement') {
+    _traverse(_node.argument, [...pathToNode, ['argument', 'ReturnStatement']])
   } else if (_node.type === 'ImportStatement') {
     // Do nothing.
   } else if ('body' in _node && isArray(_node.body)) {
