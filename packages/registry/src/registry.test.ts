@@ -260,6 +260,36 @@ describe('Registry', () => {
     expect(events).toEqual(['child', 'parent'])
   })
 
+  it('deactivates every runtime before awaiting asynchronous finalizers', async () => {
+    const slot = new Slot()
+    const release = deferred()
+    const events: string[] = []
+    const synchronous = defineRegistryItemFactory(() => {
+      return { item: { dispose: () => events.push('sync') } }
+    }, 'mixed-disposal.sync')
+    const asynchronous = defineRegistryItemFactory(() => {
+      return {
+        item: {
+          dispose: async () => {
+            events.push('async:start')
+            await release.promise
+            events.push('async:end')
+          },
+        },
+      }
+    }, 'mixed-disposal.async')
+    const container = new Registry()
+    container.configure([slot.of(synchronous, asynchronous)])
+    container.inspect()
+
+    const disposed = container.reconfigureAsync(slot, [])
+
+    expect(events).toEqual(['async:start', 'sync'])
+    release.resolve()
+    await disposed
+    expect(events).toEqual(['async:start', 'sync', 'async:end'])
+  })
+
   it('disposes dependent runtime instances before their providers', async () => {
     const events: string[] = []
     const child = defineRegistryItemFactory(() => {

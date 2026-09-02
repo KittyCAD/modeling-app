@@ -544,22 +544,38 @@ export class Registry implements ValueSpecReader, ServiceReader {
   private async disposeBatch(
     disposers: readonly (() => unknown)[]
   ): Promise<void> {
-    const errors: unknown[] = []
-    for (const dispose of disposers) {
+    const failures: Array<{ readonly index: number; readonly error: unknown }> =
+      []
+    const pending: Promise<void>[] = []
+
+    for (let index = 0; index < disposers.length; index++) {
+      const dispose = disposers[index]
       try {
         const result = dispose()
-        // Keep legacy synchronous disposal synchronous until an actual async
-        // boundary is encountered. This preserves shutdown ordering for
-        // existing owners while awaited APIs still sequence async finalizers.
-        if (isPromiseLike(result)) await result
+        if (isPromiseLike(result)) {
+          pending.push(
+            Promise.resolve(result).then(
+              () => undefined,
+              (error) => {
+                failures.push({ index, error })
+              }
+            )
+          )
+        }
       } catch (error) {
-        errors.push(error)
+        failures.push({ index, error })
       }
     }
 
-    if (errors.length > 0) {
+    // Every runtime is deactivated in reverse construction order before an
+    // asynchronous finalizer can yield. This prevents queued work from
+    // observing half-mounted sibling runtimes during teardown.
+    await Promise.all(pending)
+
+    if (failures.length > 0) {
+      failures.sort((left, right) => left.index - right.index)
       throw new AggregateError(
-        errors,
+        failures.map((failure) => failure.error),
         'One or more registry runtime instances failed to dispose.'
       )
     }
