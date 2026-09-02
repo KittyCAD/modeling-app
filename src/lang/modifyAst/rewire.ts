@@ -137,11 +137,14 @@ export function rewireAfterDelete(
   const rewiredAst = structuredClone(afterDeleteAst)
   let didRewire = false
   const scopeFrames: ScopeFrame[] = []
-  // KCL 3.0: declarations whose binding takes effect on leave. See below.
+  // Declarations whose binding takes effect on leave. See below.
   const pendingBindings: {
     declaration: Node<VariableDeclaration>
     frame: ScopeFrame
   }[] = []
+
+  const isShadowed = (name: string): boolean =>
+    scopeFrames.some((frame) => frame.bindings.has(name))
 
   // First pass is intentionally generic: if a deleted feature had a parent
   // reference, every unshadowed downstream reference gets rebound through that
@@ -179,19 +182,17 @@ export function rewireAfterDelete(
       // Top-level declarations are deliberately left unregistered: they are
       // the rewire targets themselves, not shadows.
       if (node.type === 'VariableDeclaration' && scopeFrames.length > 0) {
-        const frame = scopeFrames[scopeFrames.length - 1]
-        if (useV3ArmScoping) {
-          // KCL 3.0: a binding is in scope only from its declaration onward,
-          // so the declaration's own initializer still sees the enclosing
-          // scope and must be rewired (`deleted001 = deleted001 + 1` becomes
-          // `deleted001 = parent001 + 1`). Register on leave, after the
-          // initializer subtree has been visited. This intentionally applies
-          // to function bodies too, not just arm bodies, matching runtime
-          // evaluation order.
-          pendingBindings.push({ declaration: node, frame })
-        } else {
-          frame.bindings.add(node.declaration.id.name)
-        }
+        // A binding is in scope only from its declaration onward: function
+        // bodies, sketch blocks, and (under KCL 3.0) arm bodies all evaluate
+        // the initializer in the enclosing scope before binding the name, in
+        // every KCL version. So the declaration's own initializer still sees
+        // the deleted feature and must be rewired (`deleted001 = deleted001 + 1`
+        // becomes `deleted001 = parent001 + 1`). Register on leave, after the
+        // initializer subtree has been visited.
+        pendingBindings.push({
+          declaration: node,
+          frame: scopeFrames[scopeFrames.length - 1],
+        })
         return
       }
 
@@ -207,7 +208,7 @@ export function rewireAfterDelete(
       if (pathToNode[pathToNode.length - 1]?.[0] === 'callee') {
         return
       }
-      if (scopeFrames.some((frame) => frame.bindings.has(node.name.name))) {
+      if (isShadowed(node.name.name)) {
         return
       }
 
@@ -216,6 +217,13 @@ export function rewireAfterDelete(
         deletedToParentMap
       )
       if (!replacement || replacement === node.name.name) {
+        return
+      }
+      // The replacement must resolve to the surviving top-level declaration
+      // at this site. If an enclosing scope binds the same name, writing it
+      // here would capture that local value and silently change the model,
+      // so leave the reference alone and let execution report the problem.
+      if (isShadowed(replacement)) {
         return
       }
 

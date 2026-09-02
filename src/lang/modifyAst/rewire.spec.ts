@@ -489,8 +489,8 @@ output = build()`)
     })
 
     it("rewires a function-body shadow declaration's own initializer", () => {
-      // Pins the KCL 3.0 declaration timing outside arms: the binding takes
-      // effect after its initializer, in function bodies too.
+      // The binding takes effect after its initializer in function bodies
+      // too, with arm scoping enabled.
       const code = `fn build() {
   deleted001 = deleted001 + 1
   return deleted001
@@ -578,7 +578,10 @@ fn build() {
       )
     })
 
-    it("does not rewire a function-body shadow declaration's own initializer", () => {
+    it("rewires a function-body shadow declaration's own initializer", () => {
+      // Function bodies are a fresh scope in every KCL version, so the local
+      // binding is not in scope in its own initializer: that reference is to
+      // the deleted top-level feature and must be rewired.
       const beforeDeleteAst = parseProgram(`parent001 = 1
 deleted001 = parent001 + 1
 fn build() {
@@ -595,7 +598,7 @@ fn build() {
       const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
 
       expect(recast(rewiredAst, getInstance())).toContain(
-        'deleted001 = deleted001 + 1'
+        'deleted001 = parent001 + 1'
       )
     })
   })
