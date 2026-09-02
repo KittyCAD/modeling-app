@@ -109,8 +109,13 @@ test(
     )}/onboarding/desktop/conclusion`
     await page.evaluate((url) => window.location.replace(url), conclusionUrl)
     await expect(page).toHaveURL(/\/onboarding\/desktop\/conclusion$/)
-    await page.getByTestId('onboarding-next').click()
-    await expect(page).toHaveURL(/\/home$/)
+    await expect(
+      page.getByRole('heading', { name: 'Time to start building' })
+    ).toBeVisible({ timeout: 15_000 })
+    await Promise.all([
+      page.waitForURL(/\/home$/, { timeout: 15_000 }),
+      page.getByRole('button', { name: /Finish$/ }).click(),
+    ])
     await expectBackDoesNotReopenOnboarding(page)
     await expect(
       page.getByRole('heading', {
