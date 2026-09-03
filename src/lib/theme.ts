@@ -75,6 +75,12 @@ export function getThemeColorForEngine(theme: Themes) {
     : { r: light, g: light, b: light, a: 1 }
 }
 
+/** Same edge color regardless of theme */
+export function edgeColor() {
+  const light = 28 / 255
+  return { r: light, g: light, b: light, a: 1 }
+}
+
 /**
  * ThreeJS uses hex values for colors
  * @param theme
