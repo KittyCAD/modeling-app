@@ -1,1 +1,4 @@
 export const LOCAL_WEBGPU_RENDERING_ENABLED = true
+export const LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT = true
+export const LOCAL_WEBGPU_GTAO_USE_DENOISE = true
+export const LOCAL_WEBGPU_GTAO_SAMPLES = 16

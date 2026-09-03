@@ -1,5 +1,10 @@
 import type { GetSketchModePlane } from '@kittycad/lib'
-import { LOCAL_WEBGPU_RENDERING_ENABLED } from '@src/clientSideScene/localRenderer/config'
+import {
+  LOCAL_WEBGPU_GTAO_SAMPLES,
+  LOCAL_WEBGPU_GTAO_USE_DENOISE,
+  LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT,
+  LOCAL_WEBGPU_RENDERING_ENABLED,
+} from '@src/clientSideScene/localRenderer/config'
 import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import {
@@ -55,12 +60,14 @@ import {
   PerspectiveCamera,
   Scene,
   ShapeUtils,
+  type Texture,
   Vector2,
   Vector3,
 } from 'three'
+import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
-import { pass, vec3, vec4 } from 'three/tsl'
-import { RenderPipeline, WebGPURenderer } from 'three/webgpu'
+import { mrt, normalView, output, pass, vec3, vec4 } from 'three/tsl'
+import { type Node, RenderPipeline, WebGPURenderer } from 'three/webgpu'
 
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
@@ -70,6 +77,7 @@ const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / GLTF_METERS_TO_ENGINE_MILLIMETERS
 
 type AoFactory = typeof ao
 type AmbientOcclusionPass = ReturnType<AoFactory> & { dispose: () => void }
+type AmbientOcclusionDenoisePass = ReturnType<typeof denoise>
 type CreateAmbientOcclusion = (
   depthNode: Parameters<AoFactory>[0],
   normalNode: Parameters<AoFactory>[1] | null,
@@ -80,6 +88,8 @@ type AmbientOcclusionPipeline = {
   pipeline: RenderPipeline
   scenePass: ReturnType<typeof pass>
   aoPass: AmbientOcclusionPass
+  denoisePass: AmbientOcclusionDenoisePass | null
+  denoiseNoiseTexture: Texture | null
 }
 type DisposableGpuDevice = {
   destroy: () => void
@@ -515,17 +525,26 @@ export class LocalRenderer {
     reportRejection(error)
   }
 
-  private configureAmbientOcclusion(aoPass: AmbientOcclusionPass) {
+  private configureAmbientOcclusion(
+    aoPass: AmbientOcclusionPass,
+    denoisePass?: AmbientOcclusionDenoisePass | null
+  ) {
     aoPass.radius.value = this.ambientOcclusionRadius
     aoPass.thickness.value = this.ambientOcclusionRadius * 3
     aoPass.distanceFallOff.value = 0.5
     aoPass.scale.value = 1
+    aoPass.samples.value = LOCAL_WEBGPU_GTAO_SAMPLES
+    if (denoisePass) {
+      denoisePass.depthPhi.value = this.ambientOcclusionRadius * 3
+    }
   }
 
   private disposeAmbientOcclusionPipeline() {
     this.ambientOcclusionPipeline?.pipeline.dispose()
     this.ambientOcclusionPipeline?.scenePass.dispose()
     this.ambientOcclusionPipeline?.aoPass.dispose()
+    this.ambientOcclusionPipeline?.denoiseNoiseTexture?.dispose()
+    this.ambientOcclusionPipeline?.denoisePass?.dispose()
     this.ambientOcclusionPipeline = null
   }
 
@@ -544,7 +563,10 @@ export class LocalRenderer {
     // proportional to the part instead of GTAO's room-scale default.
     this.ambientOcclusionRadius = Math.max(modelScale * 0.05, 0.00001)
     if (this.ambientOcclusionPipeline) {
-      this.configureAmbientOcclusion(this.ambientOcclusionPipeline.aoPass)
+      this.configureAmbientOcclusion(
+        this.ambientOcclusionPipeline.aoPass,
+        this.ambientOcclusionPipeline.denoisePass
+      )
     }
   }
 
@@ -578,19 +600,47 @@ export class LocalRenderer {
           const scenePass = pass(scene, previewCamera, {
             samples: 0,
           })
-          const scenePassColor = scenePass.getTextureNode()
+          if (LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT) {
+            scenePass.setMRT(
+              mrt({
+                output,
+                normal: normalView,
+              })
+            )
+          }
+          const scenePassColor = LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT
+            ? scenePass.getTextureNode('output')
+            : scenePass.getTextureNode()
+          const scenePassNormal = LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT
+            ? scenePass.getTextureNode('normal')
+            : null
           const scenePassDepth = scenePass.getTextureNode('depth')
           const aoPass = (ao as CreateAmbientOcclusion)(
             scenePassDepth,
-            null,
+            scenePassNormal,
             previewCamera
           )
           aoPass.resolutionScale = 0.5
-          this.configureAmbientOcclusion(aoPass)
+          const denoisePass = LOCAL_WEBGPU_GTAO_USE_DENOISE
+            ? denoise(
+                aoPass.getTextureNode(),
+                scenePassDepth,
+                scenePassNormal as Parameters<typeof denoise>[2],
+                previewCamera
+              )
+            : null
+          const denoiseNoiseTexture = denoisePass
+            ? (denoisePass.noiseNode as unknown as { value: Texture }).value
+            : null
+          this.configureAmbientOcclusion(aoPass, denoisePass)
 
           const pipeline = new RenderPipeline(renderer)
           pipeline.outputColorTransform = false
-          const aoOutput = aoPass.getTextureNode()
+          // DenoiseNode produces vec4, but the bundled declaration omits its
+          // TempNode output type.
+          const aoOutput = denoisePass
+            ? vec4(denoisePass as unknown as Node<'vec4'>)
+            : aoPass.getTextureNode()
           // Preserve some indirect light even at maximum occlusion while leaving
           // enough contrast to make the setting visibly effective.
           const ambientOcclusion = aoOutput.r.mul(0.8).add(0.2)
@@ -603,6 +653,8 @@ export class LocalRenderer {
             pipeline,
             scenePass,
             aoPass,
+            denoisePass,
+            denoiseNoiseTexture,
           }
         }
 
