@@ -1,4 +1,5 @@
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
+import path from 'node:path'
 import {
   clickElectronNativeMenuById,
   findElectronNativeMenuById,
@@ -150,6 +151,66 @@ test.describe(
         // const signIn = page.getByTestId('sign-in-button')
         // await expect(signIn).toBeVisible()
       })
+    })
+    test('STEP import is available from native and project File menus', async ({
+      tronApp,
+      cmdBar,
+      page,
+      homePage,
+      scene,
+    }) => {
+      if (!tronApp) {
+        throwTronAppMissing()
+        return
+      }
+
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await scene.connectionEstablished()
+      await scene.isNativeFileMenuCreated()
+
+      const nativeMenuItem = await tronApp.electron.evaluate(
+        async ({ app }) => {
+          const item = app.applicationMenu?.getMenuItemById(
+            'File.Import STEP as editable KCL'
+          )
+          return item
+            ? {
+                label: item.label,
+                enabled: item.enabled,
+                visible: item.visible,
+              }
+            : null
+        }
+      )
+      expect(nativeMenuItem).toEqual({
+        label: 'Import STEP as Editable KCL… (Experimental)',
+        enabled: true,
+        visible: true,
+      })
+
+      const projectMenuToggle = page.getByTestId('project-sidebar-toggle')
+      await projectMenuToggle.click()
+      await expect(page.getByTestId('step-to-kcl-import-button')).toBeVisible()
+      await projectMenuToggle.click()
+
+      const fileChooserPromise = page.waitForEvent('filechooser')
+      await clickElectronNativeMenuById(
+        tronApp,
+        'File.Import STEP as editable KCL'
+      )
+      const fileChooser = await fileChooserPromise
+      const stepFileName = '1614A11_swinging-bar-latch.stp'
+      await fileChooser.setFiles(
+        path.resolve('public/kcl-samples/dog-house-great-dane', stepFileName)
+      )
+
+      await expect(
+        page.getByTestId('ml-ephant-conversation-input')
+      ).toHaveValue(
+        new RegExp(`Reconstruct the attached STEP model.*${stepFileName}`, 's')
+      )
+      await expect(page.getByText(stepFileName, { exact: true })).toBeVisible()
     })
     test('Modeling page', async ({
       tronApp,

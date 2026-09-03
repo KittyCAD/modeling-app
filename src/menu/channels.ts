@@ -25,6 +25,7 @@ export type MenuLabels =
   | 'File.Create new file'
   | 'File.Create new folder'
   | 'File.Add file to project'
+  | 'File.Import STEP as editable KCL'
   | 'File.Export current part'
   | 'File.Preferences.Project settings'
   | 'Design.Start sketch'

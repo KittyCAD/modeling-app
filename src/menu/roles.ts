@@ -26,6 +26,7 @@ type FileRoleLabel =
   | 'Share Part via Zoo Link'
   | 'Project Settings'
   | 'Add File to Project'
+  | 'Import STEP as Editable KCL… (Experimental)'
   | 'User Default Units'
 
 type EditRoleLabel =

@@ -11,6 +11,7 @@ import { Logo } from '@src/components/Logo'
 import { useLspContext } from '@src/components/LspProvider'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useMenuListener } from '@src/hooks/useMenu'
 import usePlatform from '@src/hooks/usePlatform'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
@@ -123,6 +124,12 @@ function ProjectMenuPopover({
   const commandList = useSelector(commands.actor, commandsSelector)
   const stepFileInputRef = useRef<HTMLInputElement>(null)
 
+  useMenuListener((data) => {
+    if (data.menuLabel === 'File.Import STEP as editable KCL') {
+      stepFileInputRef.current?.click()
+    }
+  })
+
   const stageStepToKclDraft = (file: File) => {
     if (!isStepFileName(file.name)) {
       toast.error('Choose a STEP file with a .step or .stp extension.')
@@ -199,9 +206,10 @@ function ProjectMenuPopover({
         {
           id: 'convertStepToKcl',
           Element: 'button',
+          'data-testid': 'step-to-kcl-import-button',
           children: (
             <>
-              <span className="flex-1">Convert STEP to editable KCL...</span>
+              <span className="flex-1">Import STEP as editable KCL…</span>
               <span className="text-[10px] text-chalkboard-70 dark:text-chalkboard-40">
                 Experimental
               </span>
