@@ -53,9 +53,7 @@ test.describe(
               }
             }
 
-            override send(
-              data: string | ArrayBufferLike | Blob | ArrayBufferView
-            ) {
+            override send(data: string | Blob | BufferSource) {
               let outgoing = data
               if (this.isZookeeperContractSocket && typeof data === 'string') {
                 try {
@@ -70,7 +68,7 @@ test.describe(
                   // Non-JSON messages should pass through unchanged.
                 }
               }
-              super.send(outgoing)
+              NativeWebSocket.prototype.send.call(this, outgoing)
             }
           }
 
