@@ -1364,16 +1364,29 @@ description: Result of parsing sketch_on_chamfer_two_times_different_order_v3.kc
                       "commentStart": 0,
                       "elements": [
                         {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "69.1",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 69.1,
+                            "suffix": "None"
+                          }
+                        },
+                        {
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "raw": "69.1",
+                            "raw": "277.34",
                             "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
-                              "value": 69.1,
+                              "value": 277.34,
                               "suffix": "None"
                             }
                           },
@@ -1384,19 +1397,6 @@ description: Result of parsing sketch_on_chamfer_two_times_different_order_v3.kc
                           "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "277.34",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 277.34,
-                            "suffix": "None"
-                          }
                         }
                       ],
                       "end": 0,
@@ -1448,12 +1448,12 @@ description: Result of parsing sketch_on_chamfer_two_times_different_order_v3.kc
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0",
+                      "raw": "180",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 0.0,
+                        "value": 180.0,
                         "suffix": "None"
                       }
                     }
@@ -2112,30 +2112,48 @@ description: Result of parsing sketch_on_chamfer_two_times_different_order_v3.kc
                       "commentStart": 0,
                       "elements": [
                         {
+                          "argument": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "raw": "159.25",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 159.25,
+                              "suffix": "None"
+                            }
+                          },
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "159.25",
+                          "operator": "-",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 159.25,
-                            "suffix": "None"
-                          }
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
                         },
                         {
+                          "argument": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "raw": "278.35",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 278.35,
+                              "suffix": "None"
+                            }
+                          },
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "278.35",
+                          "operator": "-",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 278.35,
-                            "suffix": "None"
-                          }
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
                         }
                       ],
                       "end": 0,
@@ -2187,12 +2205,12 @@ description: Result of parsing sketch_on_chamfer_two_times_different_order_v3.kc
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0",
+                      "raw": "180",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 0.0,
+                        "value": 180.0,
                         "suffix": "None"
                       }
                     }
@@ -2858,7 +2876,11 @@ description: Result of parsing sketch_on_chamfer_two_times_different_order_v3.kc
         "preComments": [
           "// KCL 3.0 copy of sketch-on-chamfer-two-times-different-order. Fillets and",
           "// chamfers are sent to the engine immediately, so the opposite edge of seg01",
-          "// must be looked up before the fillet that consumes seg01."
+          "// must be looked up before the fillet that consumes seg01.",
+          "// The KCL 3.0 default edge-cut algorithm also flips the coordinate system of",
+          "// a chamfer face, so the sketches on the chamfer faces negate their",
+          "// coordinates: the profile start point is negated and the first absolute",
+          "// angle is rotated by 180 degrees."
         ],
         "properties": [
           {

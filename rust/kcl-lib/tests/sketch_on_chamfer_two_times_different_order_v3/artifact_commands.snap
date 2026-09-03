@@ -343,8 +343,8 @@ description: Artifact commands sketch_on_chamfer_two_times_different_order_v3.kc
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -69.1,
-          "y": 277.34,
+          "x": 69.1,
+          "y": -277.34,
           "z": 0.0
         }
       }
@@ -365,8 +365,8 @@ description: Artifact commands sketch_on_chamfer_two_times_different_order_v3.kc
         "segment": {
           "type": "line",
           "end": {
-            "x": 41.48,
-            "y": 0.0,
+            "x": -41.48,
+            "y": 0.0000000000000050798349228632206,
             "z": 0.0
           },
           "relative": true
@@ -383,7 +383,7 @@ description: Artifact commands sketch_on_chamfer_two_times_different_order_v3.kc
           "type": "line",
           "end": {
             "x": 0.0000000000000064171492275321306,
-            "y": -104.8,
+            "y": 104.8,
             "z": 0.0
           },
           "relative": true
@@ -399,8 +399,8 @@ description: Artifact commands sketch_on_chamfer_two_times_different_order_v3.kc
         "segment": {
           "type": "line",
           "end": {
-            "x": -41.48,
-            "y": -0.0,
+            "x": 41.48,
+            "y": -0.0000000000000050798349228632206,
             "z": 0.0
           },
           "relative": true
@@ -416,8 +416,8 @@ description: Artifact commands sketch_on_chamfer_two_times_different_order_v3.kc
         "segment": {
           "type": "line",
           "end": {
-            "x": -69.1,
-            "y": 277.34,
+            "x": 69.1,
+            "y": -277.34,
             "z": 0.0
           },
           "relative": false
@@ -458,8 +458,8 @@ description: Artifact commands sketch_on_chamfer_two_times_different_order_v3.kc
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 159.25,
-          "y": 278.35,
+          "x": -159.25,
+          "y": -278.35,
           "z": 0.0
         }
       }
@@ -480,8 +480,8 @@ description: Artifact commands sketch_on_chamfer_two_times_different_order_v3.kc
         "segment": {
           "type": "line",
           "end": {
-            "x": 40.82,
-            "y": 0.0,
+            "x": -40.82,
+            "y": 0.000000000000004999008234119496,
             "z": 0.0
           },
           "relative": true
@@ -498,7 +498,7 @@ description: Artifact commands sketch_on_chamfer_two_times_different_order_v3.kc
           "type": "line",
           "end": {
             "x": 0.000000000000008099201606161021,
-            "y": -132.27,
+            "y": 132.27,
             "z": 0.0
           },
           "relative": true
@@ -514,8 +514,8 @@ description: Artifact commands sketch_on_chamfer_two_times_different_order_v3.kc
         "segment": {
           "type": "line",
           "end": {
-            "x": -40.81999999999999,
-            "y": -0.0,
+            "x": 40.81999999999999,
+            "y": -0.000000000000004999008234119495,
             "z": 0.0
           },
           "relative": true
@@ -531,8 +531,8 @@ description: Artifact commands sketch_on_chamfer_two_times_different_order_v3.kc
         "segment": {
           "type": "line",
           "end": {
-            "x": 159.25,
-            "y": 278.35,
+            "x": -159.25,
+            "y": -278.35,
             "z": 0.0
           },
           "relative": false

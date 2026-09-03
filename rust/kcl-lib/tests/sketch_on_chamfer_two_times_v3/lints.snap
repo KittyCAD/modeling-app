@@ -13,8 +13,8 @@ description: Lints sketch_on_chamfer_two_times_v3.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      802,
-      837,
+      1059,
+      1094,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints sketch_on_chamfer_two_times_v3.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      843,
-      893,
+      1100,
+      1150,
       0
     ],
     "overridden": false,
@@ -47,8 +47,8 @@ description: Lints sketch_on_chamfer_two_times_v3.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      899,
-      961,
+      1156,
+      1218,
       0
     ],
     "overridden": false,

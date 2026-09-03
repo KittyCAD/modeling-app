@@ -15,10 +15,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 385,
-            "end": 406,
+            "commentStart": 642,
+            "end": 663,
             "moduleId": 0,
-            "start": 385,
+            "start": 642,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -29,10 +29,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 490,
-            "end": 496,
+            "commentStart": 747,
+            "end": 753,
             "moduleId": 0,
-            "start": 490,
+            "start": 747,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -50,10 +50,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 660,
-            "end": 666,
+            "commentStart": 917,
+            "end": 923,
             "moduleId": 0,
-            "start": 660,
+            "start": 917,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -75,10 +75,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
               317.2
             ],
             "tag": {
-              "commentStart": 385,
-              "end": 406,
+              "commentStart": 642,
+              "end": 663,
               "moduleId": 0,
-              "start": 385,
+              "start": 642,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -99,10 +99,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
               317.2
             ],
             "tag": {
-              "commentStart": 490,
-              "end": 496,
+              "commentStart": 747,
+              "end": 753,
               "moduleId": 0,
-              "start": 490,
+              "start": 747,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -140,10 +140,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
               99.94
             ],
             "tag": {
-              "commentStart": 660,
-              "end": 666,
+              "commentStart": 917,
+              "end": 923,
               "moduleId": 0,
-              "start": 660,
+              "start": 917,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -238,10 +238,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 385,
-            "end": 406,
+            "commentStart": 642,
+            "end": 663,
             "moduleId": 0,
-            "start": 385,
+            "start": 642,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -252,10 +252,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 490,
-            "end": 496,
+            "commentStart": 747,
+            "end": 753,
             "moduleId": 0,
-            "start": 490,
+            "start": 747,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -273,10 +273,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 660,
-            "end": 666,
+            "commentStart": 917,
+            "end": 923,
             "moduleId": 0,
-            "start": 660,
+            "start": 917,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -287,10 +287,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 886,
-            "end": 892,
+            "commentStart": 1143,
+            "end": 1149,
             "moduleId": 0,
-            "start": 886,
+            "start": 1143,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -301,10 +301,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 954,
-            "end": 960,
+            "commentStart": 1211,
+            "end": 1217,
             "moduleId": 0,
-            "start": 954,
+            "start": 1211,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -336,10 +336,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
               317.2
             ],
             "tag": {
-              "commentStart": 385,
-              "end": 406,
+              "commentStart": 642,
+              "end": 663,
               "moduleId": 0,
-              "start": 385,
+              "start": 642,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -360,10 +360,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
               317.2
             ],
             "tag": {
-              "commentStart": 490,
-              "end": 496,
+              "commentStart": 747,
+              "end": 753,
               "moduleId": 0,
-              "start": 490,
+              "start": 747,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -401,10 +401,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
               99.94
             ],
             "tag": {
-              "commentStart": 660,
-              "end": 666,
+              "commentStart": 917,
+              "end": 923,
               "moduleId": 0,
-              "start": 660,
+              "start": 917,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -519,10 +519,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           },
           "edgeId": "[uuid]",
           "tag": {
-            "commentStart": 886,
-            "end": 892,
+            "commentStart": 1143,
+            "end": 1149,
             "moduleId": 0,
-            "start": 886,
+            "start": 1143,
             "type": "TagDeclarator",
             "value": "seg04"
           }
@@ -540,10 +540,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           },
           "edgeId": "[uuid]",
           "tag": {
-            "commentStart": 954,
-            "end": 960,
+            "commentStart": 1211,
+            "end": 1217,
             "moduleId": 0,
-            "start": 954,
+            "start": 1211,
             "type": "TagDeclarator",
             "value": "seg03"
           }
@@ -565,10 +565,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1572,
-            "end": 1593,
+            "commentStart": 1835,
+            "end": 1856,
             "moduleId": 0,
-            "start": 1572,
+            "start": 1835,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -579,10 +579,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1677,
-            "end": 1698,
+            "commentStart": 1940,
+            "end": 1961,
             "moduleId": 0,
-            "start": 1677,
+            "start": 1940,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -593,10 +593,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1800,
-            "end": 1821,
+            "commentStart": 2063,
+            "end": 2084,
             "moduleId": 0,
-            "start": 1800,
+            "start": 2063,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -621,20 +621,20 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
               "sourceRange": []
             },
             "from": [
-              159.25,
-              278.35
+              -159.25,
+              -278.35
             ],
             "tag": {
-              "commentStart": 1572,
-              "end": 1593,
+              "commentStart": 1835,
+              "end": 1856,
               "moduleId": 0,
-              "start": 1572,
+              "start": 1835,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
             "to": [
-              200.07,
-              278.35
+              -200.07,
+              -278.35
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -645,20 +645,20 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
               "sourceRange": []
             },
             "from": [
-              200.07,
-              278.35
+              -200.07,
+              -278.35
             ],
             "tag": {
-              "commentStart": 1677,
-              "end": 1698,
+              "commentStart": 1940,
+              "end": 1961,
               "moduleId": 0,
-              "start": 1677,
+              "start": 1940,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
             "to": [
-              200.07,
-              146.08
+              -200.07,
+              -146.08
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -669,20 +669,20 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
               "sourceRange": []
             },
             "from": [
-              200.07,
-              146.08
+              -200.07,
+              -146.08
             ],
             "tag": {
-              "commentStart": 1800,
-              "end": 1821,
+              "commentStart": 2063,
+              "end": 2084,
               "moduleId": 0,
-              "start": 1800,
+              "start": 2063,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
             "to": [
-              159.25,
-              146.08
+              -159.25,
+              -146.08
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -693,13 +693,13 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
               "sourceRange": []
             },
             "from": [
-              159.25,
-              146.08
+              -159.25,
+              -146.08
             ],
             "tag": null,
             "to": [
-              159.25,
-              278.35
+              -159.25,
+              -278.35
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -737,12 +737,12 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
         },
         "start": {
           "from": [
-            159.25,
-            278.35
+            -159.25,
+            -278.35
           ],
           "to": [
-            159.25,
-            278.35
+            -159.25,
+            -278.35
           ],
           "units": "mm",
           "tag": null,
@@ -769,7 +769,7 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": "[uuid]",
+      "startCapId": null,
       "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
@@ -850,10 +850,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             317.2
           ],
           "tag": {
-            "commentStart": 385,
-            "end": 406,
+            "commentStart": 642,
+            "end": 663,
             "moduleId": 0,
-            "start": 385,
+            "start": 642,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -874,10 +874,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             317.2
           ],
           "tag": {
-            "commentStart": 490,
-            "end": 496,
+            "commentStart": 747,
+            "end": 753,
             "moduleId": 0,
-            "start": 490,
+            "start": 747,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -915,10 +915,10 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             99.94
           ],
           "tag": {
-            "commentStart": 660,
-            "end": 666,
+            "commentStart": 917,
+            "end": 923,
             "moduleId": 0,
-            "start": 660,
+            "start": 917,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1016,20 +1016,20 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             "sourceRange": []
           },
           "from": [
-            159.25,
-            278.35
+            -159.25,
+            -278.35
           ],
           "tag": {
-            "commentStart": 1572,
-            "end": 1593,
+            "commentStart": 1835,
+            "end": 1856,
             "moduleId": 0,
-            "start": 1572,
+            "start": 1835,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
           "to": [
-            200.07,
-            278.35
+            -200.07,
+            -278.35
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1040,20 +1040,20 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             "sourceRange": []
           },
           "from": [
-            200.07,
-            278.35
+            -200.07,
+            -278.35
           ],
           "tag": {
-            "commentStart": 1677,
-            "end": 1698,
+            "commentStart": 1940,
+            "end": 1961,
             "moduleId": 0,
-            "start": 1677,
+            "start": 1940,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
           "to": [
-            200.07,
-            146.08
+            -200.07,
+            -146.08
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1064,20 +1064,20 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             "sourceRange": []
           },
           "from": [
-            200.07,
-            146.08
+            -200.07,
+            -146.08
           ],
           "tag": {
-            "commentStart": 1800,
-            "end": 1821,
+            "commentStart": 2063,
+            "end": 2084,
             "moduleId": 0,
-            "start": 1800,
+            "start": 2063,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
           "to": [
-            159.25,
-            146.08
+            -159.25,
+            -146.08
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1088,13 +1088,13 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             "sourceRange": []
           },
           "from": [
-            159.25,
-            146.08
+            -159.25,
+            -146.08
           ],
           "tag": null,
           "to": [
-            159.25,
-            278.35
+            -159.25,
+            -278.35
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1132,12 +1132,12 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
       },
       "start": {
         "from": [
-          159.25,
-          278.35
+          -159.25,
+          -278.35
         ],
         "to": [
-          159.25,
-          278.35
+          -159.25,
+          -278.35
         ],
         "units": "mm",
         "tag": null,
@@ -1177,20 +1177,20 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             "sourceRange": []
           },
           "from": [
-            -69.1,
-            277.34
+            69.1,
+            -277.34
           ],
           "tag": {
-            "commentStart": 1104,
-            "end": 1125,
+            "commentStart": 1363,
+            "end": 1384,
             "moduleId": 0,
-            "start": 1104,
+            "start": 1363,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
           "to": [
-            -27.619999999999997,
-            277.34
+            27.619999999999997,
+            -277.34
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1201,20 +1201,20 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             "sourceRange": []
           },
           "from": [
-            -27.619999999999997,
-            277.34
+            27.619999999999997,
+            -277.34
           ],
           "tag": {
-            "commentStart": 1208,
-            "end": 1229,
+            "commentStart": 1467,
+            "end": 1488,
             "moduleId": 0,
-            "start": 1208,
+            "start": 1467,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
           "to": [
-            -27.61999999999999,
-            172.53999999999996
+            27.620000000000005,
+            -172.53999999999996
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1225,20 +1225,20 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             "sourceRange": []
           },
           "from": [
-            -27.61999999999999,
-            172.53999999999996
+            27.620000000000005,
+            -172.53999999999996
           ],
           "tag": {
-            "commentStart": 1331,
-            "end": 1352,
+            "commentStart": 1590,
+            "end": 1611,
             "moduleId": 0,
-            "start": 1331,
+            "start": 1590,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
           "to": [
-            -69.1,
-            172.53999999999996
+            69.1,
+            -172.53999999999996
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1249,13 +1249,13 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
             "sourceRange": []
           },
           "from": [
-            -69.1,
-            172.53999999999996
+            69.1,
+            -172.53999999999996
           ],
           "tag": null,
           "to": [
-            -69.1,
-            277.34
+            69.1,
+            -277.34
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1293,12 +1293,12 @@ description: Variables in memory after executing sketch_on_chamfer_two_times_v3.
       },
       "start": {
         "from": [
-          -69.1,
-          277.34
+          69.1,
+          -277.34
         ],
         "to": [
-          -69.1,
-          277.34
+          69.1,
+          -277.34
         ],
         "units": "mm",
         "tag": null,
