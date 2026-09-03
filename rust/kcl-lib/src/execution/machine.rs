@@ -29,9 +29,11 @@
 //! byte-for-byte -- including evaluation order (ids and engine commands are
 //! order-dependent), the operations log, ambient-state save/restore, error
 //! paths (including their historical asymmetries), and the version-gated
-//! `return` semantics (write-and-continue before KCL 3.0; early return under
-//! it). The simulation-test suite runs under both executors and requires
-//! identical snapshots.
+//! semantics: `return` (write-and-continue before KCL 3.0; early return under
+//! it), if-arm scoping (KCL 3.0 only), and member-expression evaluation order
+//! (object before property under KCL 3.0; property first before it). The
+//! simulation-test suite runs under both executors and requires identical
+//! snapshots.
 //!
 //! Bounded native re-entry still exists in two places, by design:
 //! - Module execution (imports, module-value results) runs the module body in
@@ -66,9 +68,10 @@
 //! ```
 //!
 //! Core transitions. The long tail of evaluation frames (Unary, ArrayElems,
-//! ObjectProps, RangeStartDone/RangeEndDone, LegacyMemberPropDone/LegacyMemberObjDone,
-//! AscribeDone, LabelDone, CallArgs, SketchArgs) follows the same
-//! left-to-right pattern as the binary-operator rules and is omitted.
+//! ObjectProps, RangeStartDone/RangeEndDone, AscribeDone, LabelDone,
+//! CallArgs, SketchArgs) follows the same left-to-right pattern as the
+//! binary-operator rules and is omitted. Member access is spelled out because
+//! its evaluation order is version-gated.
 //!
 //! ```text
 //! Atoms and names
@@ -79,6 +82,18 @@
 //!   ⟨e₁ ⊕ e₂, ρ, κ⟩                   ↦  ⟨e₁, ρ, BinaryLhsDone(⊕, e₂) :: κ⟩
 //!   ⟨v₁, BinaryLhsDone(⊕, e₂) :: κ⟩   ↦  ⟨e₂, ρ, BinaryRhsDone(⊕, v₁) :: κ⟩
 //!   ⟨v₂, BinaryRhsDone(⊕, v₁) :: κ⟩   ↦  ⟨v₁ ⊕ v₂, κ⟩
+//!
+//! Member access (source order: the object before the property)
+//!   ⟨e₁[e₂], ρ, κ⟩                    ↦  ⟨e₁, ρ, MemberObjDone([e₂]) :: κ⟩
+//!   ⟨v₁, MemberObjDone([e₂]) :: κ⟩    ↦  ⟨e₂, ρ, MemberPropDone(v₁) :: κ⟩
+//!   ⟨v₂, MemberPropDone(v₁) :: κ⟩     ↦  ⟨v₁[v₂], κ⟩
+//!   ⟨e₁.x, ρ, κ⟩                      ↦  ⟨e₁, ρ, MemberObjDone(.x) :: κ⟩
+//!   ⟨v₁, MemberObjDone(.x) :: κ⟩      ↦  ⟨v₁.x, κ⟩   x is a name, never evaluated
+//!                                        pre-KCL-3.0: e₂ is evaluated before e₁
+//!                                        (LegacyMemberPropDone, then
+//!                                        LegacyMemberObjDone(v₂) evaluates e₁);
+//!                                        kept for old programs because ids and
+//!                                        engine commands depend on the order
 //!
 //! Blocks (statement sequencing; `last` is the trailing expression value)
 //!   ⟨{s₁ … sₙ}, ρ, κ⟩                 ↦  ⟨s₁, ρ, BlockSeq₁ :: κ⟩
