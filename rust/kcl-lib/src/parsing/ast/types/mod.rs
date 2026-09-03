@@ -4376,6 +4376,15 @@ pub struct Parameter {
     /// downstream code reparses it into a `VersionConstraint`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub deprecated_since: Option<VersionConstraint>,
+    /// If set, this parameter is removed as of the given KCL version (e.g.,
+    /// "3.0"). On that version or later, passing the parameter is an error,
+    /// exactly as if the function did not declare it, and the function body
+    /// sees the parameter's default value. The parser requires a removed
+    /// parameter to be optional. A pre-release version such as "3.0-preview"
+    /// counts as the release it precedes. May be combined with `deprecated` or
+    /// `deprecated_since`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub removed_since: Option<VersionConstraint>,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -5190,6 +5199,7 @@ cylinder = startSketchOn(-XZ)
                         experimental: Default::default(),
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -5213,6 +5223,7 @@ cylinder = startSketchOn(-XZ)
                         experimental: Default::default(),
                         deprecated: false,
                         deprecated_since: None,
+                        removed_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -5237,6 +5248,7 @@ cylinder = startSketchOn(-XZ)
                             experimental: Default::default(),
                             deprecated: false,
                             deprecated_since: None,
+                            removed_since: None,
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -5250,6 +5262,7 @@ cylinder = startSketchOn(-XZ)
                             experimental: Default::default(),
                             deprecated: false,
                             deprecated_since: None,
+                            removed_since: None,
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,
