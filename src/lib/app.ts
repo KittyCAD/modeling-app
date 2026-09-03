@@ -467,7 +467,7 @@ export class App implements AppSubsystems {
   /** Stop the app and await registry-owned runtime resources. */
   async disposeAsync() {
     this.stopSubsystems()
-    await this.registry[Symbol.asyncDispose]()
+    await this.registry.disposeAsync()
   }
 
   closeProject() {

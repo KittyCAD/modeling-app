@@ -43,15 +43,12 @@ export function unwrapMaybeSignal<T>(value: MaybeSignal<T>): T {
   return isReadonlySignal<T>(value) ? value.value : value
 }
 
-/** Normalize every supported cleanup protocol while preserving sync cleanup. */
+/** Normalize function-based and Symbol.dispose-based cleanup into one shape. */
 export function normalizeDisposer(
   dispose?: RegistryDisposer
 ): (() => unknown) | undefined {
   if (!dispose) return undefined
   if (typeof dispose === 'function') return dispose
-  if (Symbol.asyncDispose in dispose) {
-    return () => dispose[Symbol.asyncDispose]()
-  }
   return () => dispose[Symbol.dispose]()
 }
 

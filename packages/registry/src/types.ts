@@ -14,16 +14,8 @@ export interface DisposableLike {
   [Symbol.dispose](): void
 }
 
-/** Async cleanup protocol for runtime-owned resources such as Effect scopes. */
-export interface AsyncDisposableLike {
-  [Symbol.asyncDispose](): PromiseLike<void>
-}
-
 /** Every cleanup shape accepted from a runtime registry item. */
-export type RegistryDisposer =
-  | DisposableLike
-  | AsyncDisposableLike
-  | (() => unknown)
+export type RegistryDisposer = DisposableLike | (() => unknown)
 
 /**
  * Value-spec contributions may be static values or live reactive values.
@@ -213,8 +205,9 @@ export class SlotInstance {
  *
  * The concrete implementation lives in registry.ts.
  */
-export interface RegistryLike extends DisposableLike, AsyncDisposableLike {
+export interface RegistryLike extends DisposableLike {
   configureAsync(items: readonly RegistryItem[]): Promise<void>
+  disposeAsync(): Promise<void>
   get<T>(service: Service<T>): T
   get<I, O>(valueSpec: ValueSpec<I, O>): O
   signal<T>(service: Service<T>): ReadonlyPreactSignal<T | undefined>

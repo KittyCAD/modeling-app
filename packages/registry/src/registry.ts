@@ -213,18 +213,6 @@ export class Registry implements ValueSpecReader, ServiceReader {
 
   /** Replace the content of one slot while preserving unrelated runtime state. */
   reconfigure(slot: Slot, items: readonly RegistryItem[]): void {
-    void this.applyReconfiguration(slot, items)
-  }
-
-  /** Replace one slot and await every runtime instance it unmounts. */
-  reconfigureAsync(slot: Slot, items: readonly RegistryItem[]): Promise<void> {
-    return this.applyReconfiguration(slot, items)
-  }
-
-  private applyReconfiguration(
-    slot: Slot,
-    items: readonly RegistryItem[]
-  ): Promise<void> {
     if (this.flattenDepth > 0) {
       throw new ReconfigurationError(
         'Cannot reconfigure a slot while building the registry graph.'
@@ -242,8 +230,13 @@ export class Registry implements ValueSpecReader, ServiceReader {
       holder = signal(items)
       this.slotContent.set(slot.id, holder)
     }
-    this.latestReconciliation = Promise.resolve()
     holder.value = items
+  }
+
+  /** Replace one slot and await every runtime instance it unmounts. */
+  reconfigureAsync(slot: Slot, items: readonly RegistryItem[]): Promise<void> {
+    this.latestReconciliation = Promise.resolve()
+    this.reconfigure(slot, items)
     // Flattening is otherwise lazy. Force this transition so inactive runtime
     // instances begin disposal even when no value-spec or service is read next.
     void this.flat.value
@@ -596,13 +589,27 @@ export class Registry implements ValueSpecReader, ServiceReader {
     return this.shutdownPromise
   }
 
-  /** Begin container cleanup for legacy synchronous owners. */
+  /** Dispose the container and all active runtime instances synchronously. */
   [Symbol.dispose](): void {
-    void this.beginShutdown().catch(() => undefined)
+    for (const [, instance] of this.runtimeInstances) {
+      try {
+        instance.dispose?.()
+      } catch {
+        // ignore cleanup failures during shutdown
+      }
+    }
+
+    this.runtimeInstances.clear()
+    this.roots.value = []
+    this.slotContent.clear()
+    this.registryValueSpecSignals.clear()
+    this.debugValueSpecItems.clear()
+    this.serviceSignals.clear()
+    this.debugServiceItems.clear()
   }
 
   /** Dispose the container and await all active runtime finalizers. */
-  [Symbol.asyncDispose](): Promise<void> {
+  disposeAsync(): Promise<void> {
     return this.beginShutdown()
   }
 }
