@@ -924,7 +924,13 @@ export class LocalRenderer {
 
     let device: GPUDevice
     try {
-      device = await adapter.requestDevice()
+      device = await adapter.requestDevice({
+        requiredLimits: {
+          // TODO: Chunk RenderPacket geometry so large models work on
+          // adapters with lower per-buffer limits.
+          maxBufferSize: adapter.limits.maxBufferSize,
+        },
+      })
     } catch (error) {
       logLocalWebGpuPreview('device request failed', {
         error,
