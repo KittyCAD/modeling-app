@@ -761,38 +761,6 @@ function getTagsExprsFromSelection(
       tagsExprs.push(createLocalName(variable.variableDeclarator.id.name))
     }
 
-    if (
-      edge.artifact?.type === 'sweepEdge' &&
-      edge.artifact.subType === 'opposite'
-    ) {
-      const edgeContext = resolveEdgeSelectionContext(
-        modifiedAst,
-        edge,
-        artifactGraph,
-        wasmInstance,
-        nodeToEdit
-      )
-      if (
-        !err(edgeContext) &&
-        edgeContext.selectedBody.type === 'compositeSolid' &&
-        !edgeContext.isClone
-      ) {
-        // KCL 2.0 cannot reliably rebuild this mapped edge from cap faces after
-        // a boolean, so preserve the source region's direct edge reference.
-        const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
-          edgeContext.sourceSweep,
-          edge.artifact,
-          artifactGraph,
-          modifiedAst,
-          wasmInstance
-        )
-        if (regionSketchTagExpr) {
-          tagsExprs.push(getEdgeTagCall(regionSketchTagExpr, edge.artifact))
-          continue
-        }
-      }
-    }
-
     const result = modifyAstWithTagsForSelection(
       modifiedAst,
       edge,

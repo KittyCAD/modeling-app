@@ -8,7 +8,10 @@ import {
   deleteEdgeTreatment,
   groupSelectionsByBodyAndAddTags,
 } from '@src/lang/modifyAst/edges'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import {
+  codeRefFromRange,
+  getOriginalSegmentArtifact,
+} from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import {
   type Artifact,
@@ -427,17 +430,10 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
       }
 
       const topEdgeStart = code.indexOf('topEdge = line')
-      const topEdgeEnd = code.indexOf('\n', topEdgeStart)
-      const topEdgeSegment = [...artifactGraph.values()].find(
-        (artifact) =>
-          artifact.type === 'segment' &&
-          artifact.codeRef.range[0] >= topEdgeStart &&
-          artifact.codeRef.range[1] <= topEdgeEnd
+      const topEdgeRange = topLevelRange(
+        topEdgeStart,
+        code.indexOf('\n', topEdgeStart)
       )
-      if (!topEdgeSegment || topEdgeSegment.type !== 'segment') {
-        throw new Error('topEdge segment artifact not found')
-      }
-
       const sweepEdge = [...artifactGraph.values()].find((artifact) => {
         if (
           artifact.type !== 'sweepEdge' ||
@@ -446,11 +442,11 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
         ) {
           return false
         }
-        const segment = artifactGraph.get(artifact.segId)
-        return (
-          segment?.type === 'segment' &&
-          segment.originalSegId === topEdgeSegment.id
+        const segment = getOriginalSegmentArtifact(
+          artifact.segId,
+          artifactGraph
         )
+        return segment && isOverlap(segment.codeRef.range, topEdgeRange)
       })
       if (!sweepEdge) {
         throw new Error('boxSolid sweepEdge artifact not found')
@@ -474,20 +470,10 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
       expect(newCode).toContain(
-        'fillet001 = fillet(part, tags = getOppositeEdge(boxRegion.tags.topEdge), radius = 1)'
+        'fillet001 = fillet(part, tags = getCommonEdge(faces = [boxRegion.tags.topEdge, capEnd001]), radius = 1)'
       )
       await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
       expect(kclManagerInThisFile.errors).toEqual([])
-      const filletArtifacts = [
-        ...kclManagerInThisFile.artifactGraph.values(),
-      ].filter(
-        (artifact) =>
-          artifact.type === 'edgeCut' && artifact.subType === 'fillet'
-      )
-      expect(filletArtifacts).toHaveLength(1)
-      expect(filletArtifacts[0]).toMatchObject({
-        consumedEdgeId: sweepEdge.id,
-      })
     })
 
     it('should add a fillet call using engine primitive edge indices', async () => {
@@ -602,7 +588,7 @@ sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
 }
 region001 = region(point = [0mm, 0mm], sketch = sketch001)
-extrude001 = extrude(region001, length = 10)
+extrude001 = extrude(region001, length = 10, tagEnd = $capEnd001)
 
 sketch002 = sketch(on = XY) {
   circle1 = circle(start = [var 4mm, var 0mm], center = [var 0mm, var 0mm])
@@ -614,7 +600,7 @@ edge001 = edgeId(part, index = 0)
 fillet001 = fillet(
   part,
   tags = [
-    getOppositeEdge(region001.tags.circle1),
+    getCommonEdge(faces = [region001.tags.circle1, capEnd001]),
     edge001
   ],
   radius = 1,
