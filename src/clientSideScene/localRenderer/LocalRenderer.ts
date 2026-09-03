@@ -4,6 +4,7 @@ import {
   LOCAL_WEBGPU_GTAO_USE_DENOISE,
   LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT,
   LOCAL_WEBGPU_RENDERING_ENABLED,
+  LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX,
 } from '@src/clientSideScene/localRenderer/config'
 import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
@@ -49,8 +50,6 @@ import {
   Group,
   InterleavedBuffer,
   InterleavedBufferAttribute,
-  Line,
-  LineBasicMaterial,
   type Material,
   Mesh,
   MeshBasicMaterial,
@@ -64,10 +63,17 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
+import { Line2 } from 'three/examples/jsm/lines/webgpu/Line2.js'
 import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { ao } from 'three/examples/jsm/tsl/display/GTAONode.js'
 import { mrt, normalView, output, pass, vec3, vec4 } from 'three/tsl'
-import { type Node, RenderPipeline, WebGPURenderer } from 'three/webgpu'
+import {
+  Line2NodeMaterial,
+  type Node,
+  RenderPipeline,
+  WebGPURenderer,
+} from 'three/webgpu'
 
 const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
@@ -819,10 +825,7 @@ export class LocalRenderer {
         return
       }
 
-      if (
-        renderPacket &&
-        (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
-      ) {
+      if (hasRenderableContent(renderPacket)) {
         break
       }
 
@@ -835,10 +838,7 @@ export class LocalRenderer {
       return
     }
 
-    if (
-      renderPacket &&
-      (renderPacket.primitives.length > 0 || renderPacket.edges.length > 0)
-    ) {
+    if (hasRenderableContent(renderPacket)) {
       this.clearModel()
       const surfaceResources = createWebGpuSurfaceResources(
         renderPacket.primitives,
@@ -1488,6 +1488,18 @@ function summarizeRenderPacketTrimModes(
   return stats
 }
 
+function hasRenderableContent(
+  packet: LocalRenderPacket | undefined
+): packet is LocalRenderPacket {
+  return Boolean(
+    packet &&
+      (packet.primitives.length > 0 ||
+        packet.edges.length > 0 ||
+        packet.sketches.length > 0 ||
+        packet.regions.length > 0)
+  )
+}
+
 function buildRenderPacketModel(
   packet: LocalRenderPacket,
   surfaceResources: WebGpuSurfaceResources,
@@ -1621,19 +1633,20 @@ function buildRenderPacketModel(
       return
     }
 
-    const geometry = new BufferGeometry()
-    geometry.setAttribute('position', new BufferAttribute(segment.positions, 3))
+    const geometry = new LineGeometry()
+    geometry.setPositions(segment.positions)
+    const material = new Line2NodeMaterial({
+      color: 0xf2f3f5,
+      linewidth: LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX,
+    })
+    material.worldUnits = false
+    material.transparent = true
+    material.opacity = 0.95
 
-    const line = new Line(
-      geometry,
-      new LineBasicMaterial({
-        color: 0xf2f3f5,
-        transparent: true,
-        opacity: 0.95,
-      })
-    )
+    const line = new Line2(geometry, material)
     line.name = `sketch_${segment.sketchId}_${segment.holeIndex ?? 'path'}_${segment.segmentIndex}`
     line.renderOrder = 3
+    previewObjects.add(line)
     const source = { type: 'sketch', packetIndex } as const
     selectionEntries.push({ object: line, source })
     root.add(line)

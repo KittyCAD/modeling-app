@@ -1,10 +1,10 @@
+import { LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX } from '@src/clientSideScene/localRenderer/config'
 import type { LocalRenderPacketEdge } from '@src/clientSideScene/localRenderer/renderPacketBinary'
 import { Color, Group, Object3D } from 'three'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { Line2NodeMaterial } from 'three/webgpu'
 
-const EDGE_LINE_WIDTH_PX = 2
 const LIGHT_THEME_EDGE_COLOR = new Color(0x1c1c1c)
 const DARK_THEME_EDGE_COLOR = new Color(0xf9f9f9)
 
@@ -31,7 +31,7 @@ export class EdgeRenderer {
   constructor(backgroundColor: string, visible = true) {
     this.material = new Line2NodeMaterial({
       color: getEdgeColorForBackground(backgroundColor),
-      linewidth: EDGE_LINE_WIDTH_PX,
+      linewidth: LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX,
     })
     this.material.worldUnits = false
     this.material.transparent = false
