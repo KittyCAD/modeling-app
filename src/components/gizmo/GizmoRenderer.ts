@@ -318,6 +318,7 @@ export default class GizmoRenderer {
   }
 
   public dispose() {
+    this.sceneInfra.camControls.hoverPickingDisabled = false
     this.canvas.removeEventListener('mousemove', this.onMouseMove)
     this.canvas.removeEventListener('mouseleave', this.onMouseLeaveCanvas)
     this.canvas.removeEventListener('mousedown', this.onMouseDown)
@@ -406,6 +407,7 @@ export default class GizmoRenderer {
     const btnNames = btnName(event)
     if (btnNames.right || btnNames.left) {
       this.isDragging = true
+      this.sceneInfra.camControls.hoverPickingDisabled = true
       this.didDrag = false
       this.dragLast = new Vector2(event.clientX, event.clientY)
       window.addEventListener('mousemove', this.onWindowMouseMove)
@@ -416,6 +418,7 @@ export default class GizmoRenderer {
   private onMouseUp = (_e: MouseEvent) => {
     this.isDragging = false
     this.dragLast = null
+    this.sceneInfra.camControls.hoverPickingDisabled = false
     this.sceneInfra.camControls.wasDragging = false
 
     window.removeEventListener('mousemove', this.onWindowMouseMove)
@@ -450,9 +453,12 @@ export default class GizmoRenderer {
     const pickedName = obj?.name || this.hoveringMesh.name
     const targetQuat = orientationQuaternionForName(pickedName)
     if (targetQuat) {
-      animateCameraToQuaternion(targetQuat, this.sceneInfra).catch(
-        reportRejection
-      )
+      this.sceneInfra.camControls.hoverPickingDisabled = true
+      animateCameraToQuaternion(targetQuat, this.sceneInfra)
+        .catch(reportRejection)
+        .finally(() => {
+          this.sceneInfra.camControls.hoverPickingDisabled = false
+        })
     }
   }
 

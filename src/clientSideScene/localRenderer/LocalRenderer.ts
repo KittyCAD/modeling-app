@@ -314,10 +314,14 @@ export class LocalRenderer {
   }
 
   private readonly syncPreviewCameraFromShared = () => {
-    const sharedCamera = this.kclManager.sceneInfra.camControls.camera
-    const sharedTarget = this.kclManager.sceneInfra.camControls.target
+    const cameraControls = this.kclManager.sceneInfra.camControls
+    const sharedCamera = cameraControls.camera
+    const sharedTarget = cameraControls.target
     if (!this.previewCamera) {
       return
+    }
+    if (cameraControls.hoverPickingDisabled) {
+      this.clearHover()
     }
 
     this.convertedSharedPosition.copy(
@@ -1036,6 +1040,18 @@ export class LocalRenderer {
               if (!this.commandProxyEnabled) {
                 return null
               }
+              if (kclManager.sceneInfra.camControls.hoverPickingDisabled) {
+                this.clearHover()
+                return {
+                  unreliableModelingResponse: {
+                    type: 'highlight_set_entity',
+                    data: {
+                      entity_id: '',
+                      sequence: 'sequence' in cmd ? cmd.sequence : undefined,
+                    },
+                  },
+                }
+              }
               const pickStartedAt = performance.now()
               const pickResult = await this.pickRenderableFromWindowCoordinates(
                 {
@@ -1046,7 +1062,10 @@ export class LocalRenderer {
                 }
               )
               const pickDurationMs = performance.now() - pickStartedAt
-              const pickTarget = pickResult?.target ?? null
+              const pickTarget = kclManager.sceneInfra.camControls
+                .hoverPickingDisabled
+                ? null
+                : (pickResult?.target ?? null)
               this.updateHoverFromTarget(pickTarget)
               const selectionTarget = this.getSelectionTarget(pickTarget)
               console.info(

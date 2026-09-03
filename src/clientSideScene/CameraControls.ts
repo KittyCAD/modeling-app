@@ -118,6 +118,7 @@ export class CameraControls {
   domElement: HTMLCanvasElement
   isDragging: boolean
   wasDragging: boolean
+  hoverPickingDisabled = false
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
   worldDownPosition: Vector3
@@ -541,6 +542,9 @@ export class CameraControls {
 
   onMouseMove = (event: PointerEvent) => {
     if (event.pointerType === 'touch') {
+      return
+    }
+    if (this.hoverPickingDisabled) {
       return
     }
 
