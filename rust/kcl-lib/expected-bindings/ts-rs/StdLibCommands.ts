@@ -831,7 +831,7 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the fillet algorithm to use. Defaults to 1. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets).",
+        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. Removed as of KCL 3.0: the newest algorithm is always used, and specifying this argument is an error.",
         "required": false,
         "special": false,
         "experimental": true,
@@ -2058,6 +2058,16 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
       }
     ]
   },
@@ -2136,6 +2146,16 @@ export default {
         "name": "fontSize",
         "ty": "number(Length)",
         "docs": "The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2229,6 +2249,16 @@ export default {
         "name": "fontSize",
         "ty": "number(Length)",
         "docs": "The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2337,6 +2367,16 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
       }
     ]
   },
@@ -2430,6 +2470,16 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
       }
     ]
   },
@@ -2503,6 +2553,16 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
       }
     ]
   },
@@ -2520,8 +2580,8 @@ export default {
       {
         "name": "tolerance",
         "ty": "number(Length)",
-        "docs": "The acceptable distance tolerance.",
-        "required": true,
+        "docs": "The acceptable distance tolerance. If not given, or 0, tolerance will not be shown.",
+        "required": false,
         "special": false,
         "experimental": false,
         "deprecated": false,
@@ -2601,6 +2661,16 @@ export default {
         "name": "fontSize",
         "ty": "number(Length)",
         "docs": "The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2689,6 +2759,16 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
       }
     ]
   },
@@ -2737,6 +2817,16 @@ export default {
         "name": "fontSize",
         "ty": "number(Length)",
         "docs": "The model-space height to use for the note text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2845,6 +2935,16 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
       }
     ]
   },
@@ -2943,6 +3043,16 @@ export default {
         "name": "fontSize",
         "ty": "number(Length)",
         "docs": "The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3051,6 +3161,16 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
       }
     ]
   },
@@ -3154,6 +3274,16 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
       }
     ]
   },
@@ -3247,6 +3377,16 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
       }
     ]
   },
@@ -3335,6 +3475,16 @@ export default {
         "name": "fontSize",
         "ty": "number(Length)",
         "docs": "The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3443,6 +3593,16 @@ export default {
         "experimental": false,
         "deprecated": false,
         "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
       }
     ]
   },
@@ -3531,6 +3691,16 @@ export default {
         "name": "fontSize",
         "ty": "number(Length)",
         "docs": "The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3634,6 +3804,16 @@ export default {
         "name": "fontSize",
         "ty": "number(Length)",
         "docs": "The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      },
+      {
+        "name": "annotationName",
+        "ty": "string",
+        "docs": "Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -7498,6 +7678,29 @@ export default {
         "name": "input",
         "ty": "[Segment; 2+]",
         "docs": "Two or more arc or circle segments that should share the same radius.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "deprecated": false,
+        "deprecatedSince": null
+      }
+    ]
+  },
+  "solver::fixed": {
+    "name": "fixed",
+    "preferredName": "solver::fixed",
+    "qualName": "std::solver::fixed",
+    "moduleName": "solver",
+    "returnType": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "points",
+        "ty": "[Segment | Point2d; 2+]",
+        "docs": "Two or more sketch entities that should be coincident. When more than two inputs are provided, each item must be a point or `ORIGIN`.",
         "required": true,
         "special": true,
         "experimental": false,

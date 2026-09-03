@@ -2,6 +2,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createArrayExpression,
+  createAnnotation,
   createCallExpressionStdLibKw,
   createIdentifier,
   createLabeledArg,
@@ -14,6 +15,7 @@ import {
   findUniqueName,
 } from '@src/lang/create'
 import {
+  addModuleImport,
   addSketchTo,
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
@@ -112,6 +114,17 @@ describe('Testing createIdentifier', () => {
     const result = createIdentifier('myVar')
     expect(result.type).toBe('Identifier')
     expect(result.name).toBe('myVar')
+  })
+})
+describe('Testing createAnnotation', () => {
+  it('should create an anonymous annotation', () => {
+    const result = createAnnotation({
+      targetRepresentation: createLocalName('mesh'),
+    })
+    expect(result.type).toBe('Annotation')
+    expect(result.name).toBeNull()
+    expect(result.properties?.[0].key.name).toBe('targetRepresentation')
+    expect(result.properties?.[0].value).toEqual(createLocalName('mesh'))
   })
 })
 describe('Testing createObjectExpression', () => {
@@ -288,6 +301,26 @@ describe('Testing addSketchTo', () => {
   |> line(end = "default")
 `)
   })
+})
+
+describe('Testing addModuleImport', () => {
+  const emptyProgram = () => assertParse('', instanceInThisFile)
+
+  it.each(['mesh', 'brep'] as const)(
+    'adds the %s STEP representation annotation',
+    (representation) => {
+      const result = addModuleImport({
+        ast: emptyProgram(),
+        path: 'cube.step',
+        localName: 'cube',
+        representation,
+      })
+
+      expect(recast(result.modifiedAst, instanceInThisFile)).toBe(
+        `@(targetRepresentation = ${representation})\nimport "cube.step" as cube\n`
+      )
+    }
+  )
 })
 
 function giveSketchFnCallTagTestHelper(
@@ -820,6 +853,51 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
     if (err(result)) throw result
     const newCode = recast(result, instanceInThisFile)
     expect(newCode).not.toContain('extrude001 = extrude')
+  })
+
+  it('deletes a KCL named view selected from the feature tree operation range', async () => {
+    const codeBefore = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+}
+region001 = region(segments = [sketch001.line1])
+extrude001 = extrude(region001, length = 5mm)
+generatedTopView = view::named(
+  "Generated top",
+  camera = view::oriented(view::Orientation::Top, distance = 200mm),
+  baseline = view::Visibility::Show,
+)`
+    const ast = assertParse(codeBefore, instanceInThisFile)
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
+    const namedViewOperation = getAllOperations(execState.operations).find(
+      (op) => op.type === 'StdLibCall' && op.name === 'view::named'
+    )
+    if (!namedViewOperation || namedViewOperation.type !== 'StdLibCall') {
+      throw new Error('Could not find named view operation')
+    }
+    const artifact =
+      getArtifactFromRange(
+        namedViewOperation.sourceRange,
+        execState.artifactGraph
+      ) ?? undefined
+    expect(artifact?.type).toBe('namedView')
+
+    const result = await deleteFromSelection(
+      ast,
+      {
+        codeRef: codeRefFromRange(namedViewOperation.sourceRange, ast),
+        artifact,
+      },
+      execState.variables,
+      execState.artifactGraph,
+      instanceInThisFile
+    )
+    if (err(result)) throw result
+    const newCode = recast(result, instanceInThisFile)
+    expect(newCode).toContain('extrude001 = extrude')
+    expect(newCode).not.toContain('generatedTopView = view::named')
+    expect(newCode).not.toContain('"Generated top"')
   })
 
   it.each([

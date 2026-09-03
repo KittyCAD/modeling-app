@@ -296,7 +296,8 @@ description: Artifact commands gdt_face_api_edge_specifier.kcl
             "font_point_size": 36,
             "leader_scale": 5.0
           },
-          "feature_tag": null
+          "feature_tag": null,
+          "name": "sample GD&T annotation"
         },
         "clobber": false,
         "annotation_type": "t3d"

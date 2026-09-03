@@ -1,6 +1,6 @@
 // Pipe
 // Piping for the pipe flange assembly
-// Categories: Construction, Manufacturing
+// Categories: Architecture & Construction; Mechanical Components
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 2.0)

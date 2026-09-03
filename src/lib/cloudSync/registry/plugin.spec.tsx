@@ -19,6 +19,7 @@ import {
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
+import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import type { Project } from '@src/lib/project'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
@@ -243,6 +244,7 @@ function createCloudSyncService(): CloudSyncRegistryService {
     retry: vi.fn(),
     setOpenedProject: vi.fn(),
     startProjectSync: vi.fn().mockResolvedValue(undefined),
+    syncNow: vi.fn().mockResolvedValue({ remoteProjectId: 'remote-123' }),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
     deleteRemoteProject: vi.fn().mockResolvedValue(undefined),
     deleteLocalProjectRealizations: vi.fn().mockResolvedValue(undefined),
@@ -587,6 +589,63 @@ describe('cloud sync library home summary', () => {
       expect(cloudConflictDialogMocks.dialogProjectPaths).not.toContain(
         '/some/path/other'
       )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('keeps the project title when conflict metadata uses the directory name', async () => {
+    const projectPath = projectWellFormed.path
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'conflict',
+      pendingCount: 0,
+      activeProjectPath: projectPath,
+    }
+    cloudConflictDialogMocks.conflicts = [
+      {
+        localProjectPath: projectPath,
+        projectName: projectWellFormed.name,
+      },
+    ]
+    const registry = new Registry()
+
+    registry.configure([cloudSyncProjectLibraryType, cloudSyncPlugin])
+    enableCloudSyncPlugin(registry)
+
+    try {
+      const cloudLibraryType = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)
+      const HomeSummary = cloudLibraryType?.homeSummary
+      expect(HomeSummary).toBeDefined()
+      if (!HomeSummary) {
+        return
+      }
+
+      const cloudLibrary = {
+        ...getDefaultCloudProjectLibrarySetting(),
+        id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
+      }
+      const project = {
+        ...homeProjectEntryFromProject(projectWellFormed),
+        id: `local:${projectPath}`,
+        libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+        status: 'conflicted',
+        conflict: {},
+      } satisfies HomeProjectEntry
+      renderWithRouter(
+        <HomeSummary library={cloudLibrary} projects={[project]} />
+      )
+
+      fireEvent.click(screen.getByTestId('cloud-library-sync-status'))
+
+      expect(
+        await screen.findByRole('button', { name: projectWellFormed.title })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: projectWellFormed.name })
+      ).not.toBeInTheDocument()
     } finally {
       registry[Symbol.dispose]()
     }
@@ -1095,6 +1154,80 @@ describe('cloud sync project library', () => {
       ).toEqual({ defaultFile: '/cloud/moved-project/main.kcl' })
       expect(cloudLibraryType.operations?.moveProjectFrom).toBeDefined()
       expect(cloudLibraryType.operations?.moveProjectTo).toBeDefined()
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('uses the project title for a moved cloud directory', async () => {
+    const registry = new Registry()
+    registry.configure([cloudSyncProjectLibraryType])
+    vi.spyOn(fsZds, 'readFile').mockResolvedValue(
+      'title = "Aquarium Test Project"\n' as never
+    )
+    vi.spyOn(fsZds, 'readdir').mockResolvedValue([])
+    vi.spyOn(fsZds, 'mkdir').mockResolvedValue(undefined)
+    vi.spyOn(fsZds, 'join').mockImplementation((...parts) =>
+      webSafeJoin(parts).replace(/\/{2,}/g, '/')
+    )
+    vi.spyOn(fsZds, 'dirname').mockImplementation((path) =>
+      webSafeJoin(webSafePathSplit(path).slice(0, -1))
+    )
+    vi.spyOn(fsZds, 'relative').mockReturnValue('main.kcl')
+    vi.spyOn(fsZds, 'resolve').mockImplementation((path) => `/${path}`)
+    const rename = vi.spyOn(fsZds, 'rename').mockResolvedValue(undefined)
+
+    try {
+      const cloudLibrary = {
+        id: 'personal-cloud-test',
+        title: 'Personal Cloud',
+        path: '/cloud',
+        type: CLOUD_PROJECT_LIBRARY_TYPE,
+        order: 0,
+      }
+      const moveProjectTo = registry
+        .get(projectLibraryTypesValueSpec)
+        .get(CLOUD_PROJECT_LIBRARY_TYPE)?.operations?.moveProjectTo
+      expect(moveProjectTo).toBeDefined()
+      if (!moveProjectTo) {
+        return
+      }
+
+      await expect(
+        moveProjectTo.run({
+          library: cloudLibrary,
+          sourceLibrary: {
+            id: 'directory-test',
+            title: 'Directory',
+            path: '/projects',
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+            order: 0,
+          },
+          project: {
+            id: 'local:/projects/untitled-3',
+            source: 'local',
+            status: 'local',
+            libraryIds: ['directory-test'],
+            name: 'untitled-3',
+            localProjectPath: '/projects/untitled-3',
+            localProjectName: 'untitled-3',
+            defaultFile: '/projects/untitled-3/main.kcl',
+            readWriteAccess: true,
+          },
+          source: {
+            localProjectPath: '/projects/untitled-3',
+            localProjectName: 'untitled-3',
+            defaultFile: '/projects/untitled-3/main.kcl',
+          },
+        })
+      ).resolves.toEqual({
+        localProjectPath: '/cloud/aquarium-test-project',
+        defaultFile: '/cloud/aquarium-test-project/main.kcl',
+      })
+      expect(rename).toHaveBeenCalledWith(
+        '/projects/untitled-3',
+        '/cloud/aquarium-test-project'
+      )
     } finally {
       registry[Symbol.dispose]()
     }

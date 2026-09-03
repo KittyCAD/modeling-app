@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties gridfinity-baseplate.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 42.0,
+      "y": 38.1425,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 84.57,
+      "y": 176.285,
+      "z": 100.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 13132.680770084447
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 7.365330838523595
+  }
+}

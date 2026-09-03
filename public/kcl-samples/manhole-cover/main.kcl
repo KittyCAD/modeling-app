@@ -1,6 +1,6 @@
 // Vented Manhole Cover
 // A cast-iron cover with traffic-safe ventilation slots and a side pick hole.
-// Categories: Construction
+// Categories: Architecture & Construction
 
 @settings(defaultLengthUnit = in, kclVersion = 2.0)
 

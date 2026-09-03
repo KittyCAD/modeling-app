@@ -93,10 +93,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 372,
-            "end": 383,
+            "commentStart": 395,
+            "end": 406,
             "moduleId": 0,
-            "start": 372,
+            "start": 395,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -107,10 +107,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 545,
-            "end": 556,
+            "commentStart": 568,
+            "end": 579,
             "moduleId": 0,
-            "start": 545,
+            "start": 568,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -138,10 +138,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
             ],
             "radius": 10.0,
             "tag": {
-              "commentStart": 372,
-              "end": 383,
+              "commentStart": 395,
+              "end": 406,
               "moduleId": 0,
-              "start": 372,
+              "start": 395,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -168,10 +168,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 545,
-              "end": 556,
+              "commentStart": 568,
+              "end": 579,
               "moduleId": 0,
-              "start": 545,
+              "start": 568,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -273,10 +273,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
           ],
           "radius": 10.0,
           "tag": {
-            "commentStart": 372,
-            "end": 383,
+            "commentStart": 395,
+            "end": 406,
             "moduleId": 0,
-            "start": 372,
+            "start": 395,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -303,10 +303,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
           ],
           "radius": 5.0,
           "tag": {
-            "commentStart": 545,
-            "end": 556,
+            "commentStart": 568,
+            "end": 579,
             "moduleId": 0,
-            "start": 545,
+            "start": 568,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -529,10 +529,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
                   ],
                   "radius": 10.0,
                   "tag": {
-                    "commentStart": 372,
-                    "end": 383,
+                    "commentStart": 395,
+                    "end": 406,
                     "moduleId": 0,
-                    "start": 372,
+                    "start": 395,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -576,10 +576,10 @@ description: Variables in memory after executing pipe-with-bend.kcl
                   ],
                   "radius": 5.0,
                   "tag": {
-                    "commentStart": 545,
-                    "end": 556,
+                    "commentStart": 568,
+                    "end": 579,
                     "moduleId": 0,
-                    "start": 545,
+                    "start": 568,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },

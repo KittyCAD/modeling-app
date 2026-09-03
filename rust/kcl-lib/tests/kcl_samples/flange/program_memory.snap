@@ -877,10 +877,10 @@ description: Variables in memory after executing flange.kcl
                   ],
                   "radius": 2.3125000004375,
                   "tag": {
-                    "commentStart": 1025,
-                    "end": 1036,
+                    "commentStart": 1063,
+                    "end": 1074,
                     "moduleId": 0,
-                    "start": 1025,
+                    "start": 1063,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -924,10 +924,10 @@ description: Variables in memory after executing flange.kcl
                   ],
                   "radius": 0.3125000001874998,
                   "tag": {
-                    "commentStart": 2111,
-                    "end": 2120,
+                    "commentStart": 2149,
+                    "end": 2158,
                     "moduleId": 0,
-                    "start": 2111,
+                    "start": 2149,
                     "type": "TagDeclarator",
                     "value": "rightHole"
                   },
@@ -971,10 +971,10 @@ description: Variables in memory after executing flange.kcl
                   ],
                   "radius": 0.3125000001874998,
                   "tag": {
-                    "commentStart": 2194,
-                    "end": 2201,
+                    "commentStart": 2232,
+                    "end": 2239,
                     "moduleId": 0,
-                    "start": 2194,
+                    "start": 2232,
                     "type": "TagDeclarator",
                     "value": "topHole"
                   },
@@ -1018,10 +1018,10 @@ description: Variables in memory after executing flange.kcl
                   ],
                   "radius": 0.3125000001874998,
                   "tag": {
-                    "commentStart": 2275,
-                    "end": 2283,
+                    "commentStart": 2313,
+                    "end": 2321,
                     "moduleId": 0,
-                    "start": 2275,
+                    "start": 2313,
                     "type": "TagDeclarator",
                     "value": "leftHole"
                   },
@@ -1065,10 +1065,10 @@ description: Variables in memory after executing flange.kcl
                   ],
                   "radius": 0.3125000001874998,
                   "tag": {
-                    "commentStart": 2359,
-                    "end": 2369,
+                    "commentStart": 2397,
+                    "end": 2407,
                     "moduleId": 0,
-                    "start": 2359,
+                    "start": 2397,
                     "type": "TagDeclarator",
                     "value": "bottomHole"
                   },
@@ -2157,10 +2157,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 2.3125000004375,
           "tag": {
-            "commentStart": 1025,
-            "end": 1036,
+            "commentStart": 1063,
+            "end": 1074,
             "moduleId": 0,
-            "start": 1025,
+            "start": 1063,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -2187,10 +2187,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 0.3125000001874998,
           "tag": {
-            "commentStart": 2111,
-            "end": 2120,
+            "commentStart": 2149,
+            "end": 2158,
             "moduleId": 0,
-            "start": 2111,
+            "start": 2149,
             "type": "TagDeclarator",
             "value": "rightHole"
           },
@@ -2217,10 +2217,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 0.3125000001874998,
           "tag": {
-            "commentStart": 2194,
-            "end": 2201,
+            "commentStart": 2232,
+            "end": 2239,
             "moduleId": 0,
-            "start": 2194,
+            "start": 2232,
             "type": "TagDeclarator",
             "value": "topHole"
           },
@@ -2247,10 +2247,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 0.3125000001874998,
           "tag": {
-            "commentStart": 2275,
-            "end": 2283,
+            "commentStart": 2313,
+            "end": 2321,
             "moduleId": 0,
-            "start": 2275,
+            "start": 2313,
             "type": "TagDeclarator",
             "value": "leftHole"
           },
@@ -2277,10 +2277,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 0.3125000001874998,
           "tag": {
-            "commentStart": 2359,
-            "end": 2369,
+            "commentStart": 2397,
+            "end": 2407,
             "moduleId": 0,
-            "start": 2359,
+            "start": 2397,
             "type": "TagDeclarator",
             "value": "bottomHole"
           },
@@ -2518,10 +2518,10 @@ description: Variables in memory after executing flange.kcl
                   ],
                   "radius": 1.25000000025,
                   "tag": {
-                    "commentStart": 5612,
-                    "end": 5619,
+                    "commentStart": 5650,
+                    "end": 5657,
                     "moduleId": 0,
-                    "start": 5612,
+                    "start": 5650,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -2729,10 +2729,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 1.25000000025,
           "tag": {
-            "commentStart": 5612,
-            "end": 5619,
+            "commentStart": 5650,
+            "end": 5657,
             "moduleId": 0,
-            "start": 5612,
+            "start": 5650,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2846,10 +2846,10 @@ description: Variables in memory after executing flange.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5612,
-            "end": 5619,
+            "commentStart": 5650,
+            "end": 5657,
             "moduleId": 0,
-            "start": 5612,
+            "start": 5650,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -2877,10 +2877,10 @@ description: Variables in memory after executing flange.kcl
             ],
             "radius": 1.25000000025,
             "tag": {
-              "commentStart": 5612,
-              "end": 5619,
+              "commentStart": 5650,
+              "end": 5657,
               "moduleId": 0,
-              "start": 5612,
+              "start": 5650,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -2962,10 +2962,10 @@ description: Variables in memory after executing flange.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1025,
-            "end": 1036,
+            "commentStart": 1063,
+            "end": 1074,
             "moduleId": 0,
-            "start": 1025,
+            "start": 1063,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -2976,10 +2976,10 @@ description: Variables in memory after executing flange.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2111,
-            "end": 2120,
+            "commentStart": 2149,
+            "end": 2158,
             "moduleId": 0,
-            "start": 2111,
+            "start": 2149,
             "type": "TagDeclarator",
             "value": "rightHole"
           },
@@ -2990,10 +2990,10 @@ description: Variables in memory after executing flange.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2194,
-            "end": 2201,
+            "commentStart": 2232,
+            "end": 2239,
             "moduleId": 0,
-            "start": 2194,
+            "start": 2232,
             "type": "TagDeclarator",
             "value": "topHole"
           },
@@ -3004,10 +3004,10 @@ description: Variables in memory after executing flange.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2275,
-            "end": 2283,
+            "commentStart": 2313,
+            "end": 2321,
             "moduleId": 0,
-            "start": 2275,
+            "start": 2313,
             "type": "TagDeclarator",
             "value": "leftHole"
           },
@@ -3018,10 +3018,10 @@ description: Variables in memory after executing flange.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2359,
-            "end": 2369,
+            "commentStart": 2397,
+            "end": 2407,
             "moduleId": 0,
-            "start": 2359,
+            "start": 2397,
             "type": "TagDeclarator",
             "value": "bottomHole"
           },
@@ -3049,10 +3049,10 @@ description: Variables in memory after executing flange.kcl
             ],
             "radius": 2.3125000004375,
             "tag": {
-              "commentStart": 1025,
-              "end": 1036,
+              "commentStart": 1063,
+              "end": 1074,
               "moduleId": 0,
-              "start": 1025,
+              "start": 1063,
               "type": "TagDeclarator",
               "value": "outerCircle"
             },
@@ -3079,10 +3079,10 @@ description: Variables in memory after executing flange.kcl
             ],
             "radius": 0.3125000001874998,
             "tag": {
-              "commentStart": 2111,
-              "end": 2120,
+              "commentStart": 2149,
+              "end": 2158,
               "moduleId": 0,
-              "start": 2111,
+              "start": 2149,
               "type": "TagDeclarator",
               "value": "rightHole"
             },
@@ -3109,10 +3109,10 @@ description: Variables in memory after executing flange.kcl
             ],
             "radius": 0.3125000001874998,
             "tag": {
-              "commentStart": 2194,
-              "end": 2201,
+              "commentStart": 2232,
+              "end": 2239,
               "moduleId": 0,
-              "start": 2194,
+              "start": 2232,
               "type": "TagDeclarator",
               "value": "topHole"
             },
@@ -3139,10 +3139,10 @@ description: Variables in memory after executing flange.kcl
             ],
             "radius": 0.3125000001874998,
             "tag": {
-              "commentStart": 2275,
-              "end": 2283,
+              "commentStart": 2313,
+              "end": 2321,
               "moduleId": 0,
-              "start": 2275,
+              "start": 2313,
               "type": "TagDeclarator",
               "value": "leftHole"
             },
@@ -3169,10 +3169,10 @@ description: Variables in memory after executing flange.kcl
             ],
             "radius": 0.3125000001874998,
             "tag": {
-              "commentStart": 2359,
-              "end": 2369,
+              "commentStart": 2397,
+              "end": 2407,
               "moduleId": 0,
-              "start": 2359,
+              "start": 2397,
               "type": "TagDeclarator",
               "value": "bottomHole"
             },
@@ -3276,10 +3276,10 @@ description: Variables in memory after executing flange.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5612,
-            "end": 5619,
+            "commentStart": 5650,
+            "end": 5657,
             "moduleId": 0,
-            "start": 5612,
+            "start": 5650,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3307,10 +3307,10 @@ description: Variables in memory after executing flange.kcl
             ],
             "radius": 1.25000000025,
             "tag": {
-              "commentStart": 5612,
-              "end": 5619,
+              "commentStart": 5650,
+              "end": 5657,
               "moduleId": 0,
-              "start": 5612,
+              "start": 5650,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -3392,10 +3392,10 @@ description: Variables in memory after executing flange.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4901,
-            "end": 4908,
+            "commentStart": 4939,
+            "end": 4946,
             "moduleId": 0,
-            "start": 4901,
+            "start": 4939,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3423,10 +3423,10 @@ description: Variables in memory after executing flange.kcl
             ],
             "radius": 1.1565000002175,
             "tag": {
-              "commentStart": 4901,
-              "end": 4908,
+              "commentStart": 4939,
+              "end": 4946,
               "moduleId": 0,
-              "start": 4901,
+              "start": 4939,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -3518,10 +3518,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 2.3125000004375,
           "tag": {
-            "commentStart": 1025,
-            "end": 1036,
+            "commentStart": 1063,
+            "end": 1074,
             "moduleId": 0,
-            "start": 1025,
+            "start": 1063,
             "type": "TagDeclarator",
             "value": "outerCircle"
           },
@@ -3565,10 +3565,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 0.3125000001874998,
           "tag": {
-            "commentStart": 2111,
-            "end": 2120,
+            "commentStart": 2149,
+            "end": 2158,
             "moduleId": 0,
-            "start": 2111,
+            "start": 2149,
             "type": "TagDeclarator",
             "value": "rightHole"
           },
@@ -3612,10 +3612,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 0.3125000001874998,
           "tag": {
-            "commentStart": 2194,
-            "end": 2201,
+            "commentStart": 2232,
+            "end": 2239,
             "moduleId": 0,
-            "start": 2194,
+            "start": 2232,
             "type": "TagDeclarator",
             "value": "topHole"
           },
@@ -3659,10 +3659,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 0.3125000001874998,
           "tag": {
-            "commentStart": 2275,
-            "end": 2283,
+            "commentStart": 2313,
+            "end": 2321,
             "moduleId": 0,
-            "start": 2275,
+            "start": 2313,
             "type": "TagDeclarator",
             "value": "leftHole"
           },
@@ -3706,10 +3706,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 0.3125000001874998,
           "tag": {
-            "commentStart": 2359,
-            "end": 2369,
+            "commentStart": 2397,
+            "end": 2407,
             "moduleId": 0,
-            "start": 2359,
+            "start": 2397,
             "type": "TagDeclarator",
             "value": "bottomHole"
           },
@@ -3818,10 +3818,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 1.25000000025,
           "tag": {
-            "commentStart": 5612,
-            "end": 5619,
+            "commentStart": 5650,
+            "end": 5657,
             "moduleId": 0,
-            "start": 5612,
+            "start": 5650,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3908,10 +3908,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 0.625000000375,
           "tag": {
-            "commentStart": 6326,
-            "end": 6333,
+            "commentStart": 6364,
+            "end": 6371,
             "moduleId": 0,
-            "start": 6326,
+            "start": 6364,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -3998,10 +3998,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 1.1565000002175,
           "tag": {
-            "commentStart": 4901,
-            "end": 4908,
+            "commentStart": 4939,
+            "end": 4946,
             "moduleId": 0,
-            "start": 4901,
+            "start": 4939,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -4142,10 +4142,10 @@ description: Variables in memory after executing flange.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6326,
-            "end": 6333,
+            "commentStart": 6364,
+            "end": 6371,
             "moduleId": 0,
-            "start": 6326,
+            "start": 6364,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -4173,10 +4173,10 @@ description: Variables in memory after executing flange.kcl
             ],
             "radius": 0.625000000375,
             "tag": {
-              "commentStart": 6326,
-              "end": 6333,
+              "commentStart": 6364,
+              "end": 6371,
               "moduleId": 0,
-              "start": 6326,
+              "start": 6364,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -4388,10 +4388,10 @@ description: Variables in memory after executing flange.kcl
                   ],
                   "radius": 0.625000000375,
                   "tag": {
-                    "commentStart": 6326,
-                    "end": 6333,
+                    "commentStart": 6364,
+                    "end": 6371,
                     "moduleId": 0,
-                    "start": 6326,
+                    "start": 6364,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -4599,10 +4599,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 0.625000000375,
           "tag": {
-            "commentStart": 6326,
-            "end": 6333,
+            "commentStart": 6364,
+            "end": 6371,
             "moduleId": 0,
-            "start": 6326,
+            "start": 6364,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -4823,10 +4823,10 @@ description: Variables in memory after executing flange.kcl
                   ],
                   "radius": 1.1565000002175,
                   "tag": {
-                    "commentStart": 4901,
-                    "end": 4908,
+                    "commentStart": 4939,
+                    "end": 4946,
                     "moduleId": 0,
-                    "start": 4901,
+                    "start": 4939,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -5034,10 +5034,10 @@ description: Variables in memory after executing flange.kcl
           ],
           "radius": 1.1565000002175,
           "tag": {
-            "commentStart": 4901,
-            "end": 4908,
+            "commentStart": 4939,
+            "end": 4946,
             "moduleId": 0,
-            "start": 4901,
+            "start": 4939,
             "type": "TagDeclarator",
             "value": "circle1"
           },

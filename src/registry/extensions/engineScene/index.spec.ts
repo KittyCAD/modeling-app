@@ -6,7 +6,11 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import { commandsValueSpec } from '@src/registry/contracts/commands'
+import {
+  FILE_COMMAND_SCOPES,
+  MODE_MODELING_COMMAND_SCOPE,
+  commandsValueSpec,
+} from '@src/registry/contracts/commands'
 import {
   type EngineSceneExtensionContext,
   engineSceneStreamClassNamesValueSpec,
@@ -17,10 +21,7 @@ import {
 } from '@src/registry/contracts/engineScene'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import {
-  MODE_MODELING_KEYMAP_SCOPE,
-  keymapValueSpec,
-} from '@src/registry/contracts/keymap'
+import { keymapValueSpec } from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import {
   statusBarGlobalItemsValueSpec,
@@ -155,10 +156,11 @@ describe('engineScene extension', () => {
       displayName: 'Open measure tool',
       icon: 'ruler',
       needsReview: false,
+      scopes: [MODE_MODELING_COMMAND_SCOPE],
     })
     expect(keymapItem).toMatchObject({
       title: 'Open measure tool',
-      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+      scopes: [MODE_MODELING_COMMAND_SCOPE],
       keystrokes: ['shift+m'],
       command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
     })
@@ -189,10 +191,11 @@ describe('engineScene extension', () => {
       displayName: 'Open physical analysis tool',
       icon: 'scales',
       needsReview: false,
+      scopes: [MODE_MODELING_COMMAND_SCOPE],
     })
     expect(keymapItem).toMatchObject({
       title: 'Open physical analysis tool',
-      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+      scopes: [MODE_MODELING_COMMAND_SCOPE],
       keystrokes: ['shift+p'],
       command: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
     })
@@ -220,6 +223,7 @@ describe('engineScene extension', () => {
       description: 'Save the current modeling viewport as a PNG image.',
       icon: 'camera',
       needsReview: false,
+      scopes: FILE_COMMAND_SCOPES,
       onSubmit: saveViewportScreenshot,
     })
     expect(command?.hideFromSearch).not.toBe(true)

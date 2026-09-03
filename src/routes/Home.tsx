@@ -56,9 +56,9 @@ import {
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import { homeSidebarItemsValueSpec } from '@src/registry/contracts/homeSidebar'
+import { HOME_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import {
   findKeymapItemForCommand,
-  HOME_KEYMAP_SCOPE,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
@@ -300,10 +300,10 @@ const Home = () => {
       return
     }
 
-    keymap.applyScope(HOME_KEYMAP_SCOPE)
+    keymap.applyScope(HOME_COMMAND_SCOPE)
 
     return () => {
-      keymap.removeScope(HOME_KEYMAP_SCOPE)
+      keymap.removeScope(HOME_COMMAND_SCOPE)
     }
   }, [keymap])
 
@@ -373,7 +373,7 @@ const Home = () => {
       ? findKeymapItemForCommand(
           keymap.keymap.value,
           APP_COMMAND_IDS.search.focusProjects,
-          [HOME_KEYMAP_SCOPE],
+          [HOME_COMMAND_SCOPE],
           registry.signal(keymapScopesValueSpec).value
         )?.keystrokes
       : undefined,
@@ -430,7 +430,8 @@ const Home = () => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
       navigate,
       location,
-      ''
+      '',
+      [HOME_COMMAND_SCOPE]
     )
 
     commands.send({
