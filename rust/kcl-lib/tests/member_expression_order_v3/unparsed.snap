@@ -1,0 +1,36 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing member_expression_order_v3.kcl
+---
+// Under KCL 3.0, a member expression evaluates its object before its
+// property: in `boxes()[chooseIndex()]`, boxes() runs first. Both functions
+// send engine commands, so the evaluation order is visible in the recorded
+// operations and artifact commands.
+@settings(kclVersion = "3.0-preview")
+
+fn boxes() {
+  small = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 0])
+    |> line(end = [0, 5])
+    |> line(end = [-5, 0])
+    |> close()
+    |> extrude(length = 5)
+  large = startSketchOn(XY)
+    |> startProfile(at = [20, 0])
+    |> line(end = [10, 0])
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+    |> extrude(length = 10)
+  return [small, large]
+}
+
+fn chooseIndex() {
+  marker = startSketchOn(XY)
+    |> circle(center = [-20, 0], radius = 3)
+    |> extrude(length = 1)
+  return 1
+}
+
+picked = boxes()[chooseIndex()]

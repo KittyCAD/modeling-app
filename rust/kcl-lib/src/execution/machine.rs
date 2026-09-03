@@ -540,17 +540,29 @@ enum Kont {
     },
 
     // ---- access / control / pipes ----
-    /// Legacy member access order: a computed property is evaluated before
-    /// the object, replicating the recursive executor's historical
+    /// Pre-KCL-3.0 member access order: a computed property is evaluated
+    /// before the object, replicating the recursive executor's historical
     /// evaluation order.
     LegacyMemberPropDone {
         node: Arc<Node<MemberExpression>>,
     },
-    /// Legacy member access order: the object is evaluated after the
+    /// Pre-KCL-3.0 member access order: the object is evaluated after the
     /// property; apply the access.
     LegacyMemberObjDone {
         node: Arc<Node<MemberExpression>>,
         property: Property,
+    },
+    /// KCL 3.0 member access in source order: the object is evaluated
+    /// first. A computed property is evaluated next; a static property name
+    /// (`obj.name`) applies immediately.
+    MemberObjDone {
+        node: Arc<Node<MemberExpression>>,
+    },
+    /// KCL 3.0 member access in source order: the computed property is
+    /// evaluated after the object; apply the access.
+    MemberPropDone {
+        node: Arc<Node<MemberExpression>>,
+        object: KclValue,
     },
     IfCondDone {
         node: Arc<Node<IfExpression>>,
@@ -1064,6 +1076,8 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) -> Result<(), KclError> {
         | Kont::RangeEndDone { .. }
         | Kont::LegacyMemberPropDone { .. }
         | Kont::LegacyMemberObjDone { .. }
+        | Kont::MemberObjDone { .. }
+        | Kont::MemberPropDone { .. }
         | Kont::IfCondDone { .. }
         | Kont::AscribeDone { .. }
         | Kont::LabelDone { .. }
@@ -1255,21 +1269,22 @@ async fn step_eval(
         // ---- access / control ----
         Expr::MemberExpression(node) => {
             let node = node.arc();
-            if node.computed {
+            if exec_state.entry_point_version_is_v3_or_higher() {
+                // KCL 3.0: evaluate in source order, the object before the
+                // property.
+                let object = EvalRequest::expr(&node.object);
+                konts.push(Kont::MemberObjDone { node });
+                Ok(Control::Eval(Box::new(object)))
+            } else if node.computed {
+                // Pre-KCL-3.0: the property is evaluated before the object.
+                // Preserved because ids and engine commands are
+                // order-dependent.
                 let prop = EvalRequest::expr(&node.property);
                 konts.push(Kont::LegacyMemberPropDone { node });
                 Ok(Control::Eval(Box::new(prop)))
             } else {
                 // Non-computed properties are identifier names, not evaluated.
-                let Expr::Name(identifier) = &node.property else {
-                    // Should actually be impossible because the parser would reject it.
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
-                            .to_owned(),
-                        vec![SourceRange::from(node.as_ref())],
-                    )));
-                };
-                let property = Property::String(identifier.to_string());
+                let property = Property::from_static_name(&node.property, SourceRange::from(node.as_ref()))?;
                 let object = EvalRequest::expr(&node.object);
                 konts.push(Kont::LegacyMemberObjDone { node, property });
                 Ok(Control::Eval(Box::new(object)))
@@ -1438,6 +1453,26 @@ async fn step_apply(
         }
         Kont::LegacyMemberObjDone { node, property } => {
             let object = applied.expect_value()?;
+            let cf = node.apply_member(object, property, exec_state, ctx).await?;
+            // apply_member only ever produces Continue values.
+            Ok(Control::Apply(Applied::Value(cf.into_value())))
+        }
+        Kont::MemberObjDone { node } => {
+            let object = applied.expect_value()?;
+            if node.computed {
+                let prop = EvalRequest::expr(&node.property);
+                konts.push(Kont::MemberPropDone { node, object });
+                Ok(Control::Eval(Box::new(prop)))
+            } else {
+                // Non-computed properties are identifier names, not evaluated.
+                let property = Property::from_static_name(&node.property, SourceRange::from(node.as_ref()))?;
+                let cf = node.apply_member(object, property, exec_state, ctx).await?;
+                Ok(Control::Apply(Applied::Value(cf.into_value())))
+            }
+        }
+        Kont::MemberPropDone { node, object } => {
+            let prop_value = applied.expect_value()?;
+            let property = Property::from_value(prop_value, SourceRange::from(node.as_ref()))?;
             let cf = node.apply_member(object, property, exec_state, ctx).await?;
             // apply_member only ever produces Continue values.
             Ok(Control::Apply(Applied::Value(cf.into_value())))
