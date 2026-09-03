@@ -196,18 +196,24 @@ export class ZookeeperFileRequestProcessor {
           let dispatched = false
           let settled = false
           let historyCompleted = !shouldRecordHistory
-          let postWriteCompleted = !shouldRecordHistory
+          let postWriteCompleted =
+            !shouldRecordHistory && !shouldRefreshActiveEditor
           const requestCanFinish = () =>
             dispatched
               ? requestProjectIsCurrent() && this.deps.isEditorCurrent()
               : requestIsCurrent()
 
-          const settle = () => {
+          function settle() {
             if (settled || !historyCompleted || !postWriteCompleted) {
               return
             }
             settled = true
+            abortSignal.removeEventListener('abort', cancelPostWrite)
             resolve()
+          }
+          function cancelPostWrite() {
+            postWriteCompleted = true
+            settle()
           }
           const cancelHistory = () => {
             if (historyCanceled || (!historyReserved && !historyStarted)) {
@@ -301,6 +307,15 @@ export class ZookeeperFileRequestProcessor {
                     return
                   }
                   historyRecorded = true
+                  if (!postWriteCompleted) {
+                    if (abortSignal.aborted) {
+                      cancelPostWrite()
+                    } else {
+                      abortSignal.addEventListener('abort', cancelPostWrite, {
+                        once: true,
+                      })
+                    }
+                  }
 
                   if (
                     shouldRecordHistory &&
@@ -352,13 +367,15 @@ export class ZookeeperFileRequestProcessor {
                   }
 
                   historyCompleted = true
-                  postWriteCompleted = true
+                  if (!shouldRefreshActiveEditor) {
+                    postWriteCompleted = true
+                  }
                   settle()
                 },
                 ...(shouldRecordHistory || shouldRefreshActiveEditor
                   ? {
                       onSuccess: () => {
-                        if (!requestCanFinish()) {
+                        if (settled || !requestCanFinish()) {
                           postWriteCompleted = true
                           settle()
                           return

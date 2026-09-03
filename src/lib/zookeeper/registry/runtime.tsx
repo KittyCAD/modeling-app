@@ -77,6 +77,8 @@ type ZookeeperActivation = {
 const loadZookeeperSessionController = () =>
   import('@src/lib/zookeeper/registry/controller')
 
+const CONTROLLER_LOAD_RETRY_DELAY_MS = 1_000
+
 const pendingSessionDisposals = new Map<string, Promise<void>>()
 
 function trackSessionDisposal(projectPath: string, disposal: Promise<void>) {
@@ -111,6 +113,17 @@ export function createZookeeperRuntime(
   let disposed = false
   let stopObserver: (() => void) | undefined
   let waitingForDisposal: Promise<void> | undefined
+  let controllerLoadRetry: ReturnType<typeof setTimeout> | undefined
+
+  const scheduleControllerLoadRetry = () => {
+    if (controllerLoadRetry !== undefined) {
+      return
+    }
+    controllerLoadRetry = setTimeout(() => {
+      controllerLoadRetry = undefined
+      reconcile()
+    }, CONTROLLER_LOAD_RETRY_DELAY_MS)
+  }
 
   const deactivate = () => {
     const previous = activation
@@ -247,6 +260,7 @@ export function createZookeeperRuntime(
         }
         activation = undefined
         console.error('Failed to start the Zookeeper session.', error)
+        scheduleControllerLoadRetry()
       })
   }
 
@@ -269,6 +283,7 @@ export function createZookeeperRuntime(
       }
       disposed = true
       stopObserver?.()
+      clearTimeout(controllerLoadRetry)
       deactivate()
     },
   }

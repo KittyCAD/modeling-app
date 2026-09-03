@@ -199,6 +199,40 @@ describe('ZookeeperEditPatchHistory', () => {
     expect(state.zookeeperHistoryRecordingInProgress).toBe(false)
   })
 
+  it('preserves completed snapshots when a later write is cancelled', async () => {
+    const { manager, state } = createKclManager()
+    const history = new ZookeeperEditPatchHistory(manager)
+    const laterPatch: ZookeeperEditPatch = {
+      run_id: patch.run_id,
+      changed_files: [
+        {
+          path: 'later.kcl',
+          status: 'created',
+          contents: 'later contents',
+        },
+      ],
+    }
+
+    history.reserve({ activeFilePath, exchangeId: 0, projectPath })
+    await completeWrite(history)
+    history.reserve({ activeFilePath, exchangeId: 0, projectPath })
+    await history.begin({
+      activeFilePath,
+      exchangeId: 0,
+      patch: laterPatch,
+      projectPath,
+      reserved: true,
+    })
+    history.cancel({ exchangeId: 0 })
+    history.handleActorSnapshot(endOfStreamSnapshot(1))
+
+    expect(state.addGlobalHistoryEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        snapshotFiles: [expect.objectContaining({ relativePath: 'main.kcl' })],
+      })
+    )
+  })
+
   it('releases a reservation when the request becomes stale', async () => {
     const { manager, state } = createKclManager()
     const history = new ZookeeperEditPatchHistory(manager)

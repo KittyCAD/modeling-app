@@ -1,3 +1,4 @@
+import type { MlToolResult } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
 import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
@@ -66,7 +67,7 @@ const systemIOActor = {
   send: mocks.systemIOSend,
 } as unknown as SystemIOActor
 
-function patchBackedZookeeperEdit(code: string) {
+function patchBackedZookeeperEdit(code: string): MlToolResult {
   return {
     type: 'edit_kcl_code',
     status_code: 201,
@@ -87,10 +88,22 @@ function patchBackedZookeeperEdit(code: string) {
   }
 }
 
+function zookeeperEditWithoutPatch(code: string): MlToolResult {
+  return {
+    type: 'edit_kcl_code',
+    status_code: 201,
+    project_name: 'demo',
+    outputs: {
+      'main.kcl': code,
+    },
+  }
+}
+
 function emitZookeeperFileRequest(
   processor: ZookeeperFileRequestProcessor,
   code: string,
-  messageId: number
+  messageId: number,
+  toolOutput: MlToolResult = patchBackedZookeeperEdit(code)
 ) {
   processor.handleActorSnapshot({
     context: {
@@ -100,7 +113,7 @@ function emitZookeeperFileRequest(
             responses: [
               {
                 tool_output: {
-                  result: patchBackedZookeeperEdit(code),
+                  result: toolOutput,
                 },
               },
             ],
@@ -174,6 +187,36 @@ describe('ZookeeperFileRequestProcessor', () => {
     })
   })
 
+  test('waits for an editor refresh when an edit has no history patch', async () => {
+    const processor = createProcessor()
+
+    emitZookeeperFileRequest(
+      processor,
+      'edit without history',
+      1,
+      zookeeperEditWithoutPatch('edit without history')
+    )
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+
+    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    firstRequest.onFileSystemSuccess()
+    emitZookeeperFileRequest(processor, 'next edit', 2)
+    await Promise.resolve()
+
+    expect(mocks.systemIOSend).toHaveBeenCalledOnce()
+
+    firstRequest.onSuccess()
+
+    expect(mocks.updateCodeEditor).toHaveBeenCalledWith(
+      'edit without history',
+      expect.objectContaining({
+        shouldClearHistory: true,
+        shouldWriteToDisk: true,
+      })
+    )
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+  })
+
   test('does not refresh an inactive file or stall the next edit', async () => {
     const processor = createProcessor()
 
@@ -217,6 +260,65 @@ describe('ZookeeperFileRequestProcessor', () => {
     expect(kclManagerState.zookeeperHistoryRecordingInProgress).toBe(false)
   })
 
+  test('does not wait for a missing navigation callback on disposal', async () => {
+    let finishHistory: () => void = () => undefined
+    mocks.historyComplete.mockImplementationOnce(
+      () =>
+        new Promise<undefined>((resolve) => {
+          finishHistory = () => resolve(undefined)
+        })
+    )
+    const processor = createProcessor()
+
+    emitZookeeperFileRequest(processor, 'written before disposal', 1)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+
+    request.onFileSystemSuccess()
+    let disposed = false
+    const disposal = processor.dispose().then(() => {
+      disposed = true
+    })
+
+    await Promise.resolve()
+    expect(disposed).toBe(false)
+
+    finishHistory()
+    await disposal
+
+    expect(mocks.historyComplete).toHaveBeenCalledOnce()
+    expect(mocks.updateCodeEditor).not.toHaveBeenCalled()
+
+    request.onSuccess()
+    expect(mocks.updateCodeEditor).not.toHaveBeenCalled()
+  })
+
+  test('waits for a dispatched write before disposing an edit without a patch', async () => {
+    const processor = createProcessor()
+
+    emitZookeeperFileRequest(
+      processor,
+      'edit without history',
+      1,
+      zookeeperEditWithoutPatch('edit without history')
+    )
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+
+    let disposed = false
+    const disposal = processor.dispose().then(() => {
+      disposed = true
+    })
+    await Promise.resolve()
+
+    expect(disposed).toBe(false)
+
+    request.onFileSystemSuccess()
+    await disposal
+
+    expect(mocks.updateCodeEditor).not.toHaveBeenCalled()
+  })
+
   test('finishes a dispatched edit before resetting for a new conversation', async () => {
     const processor = createProcessor()
 
@@ -235,6 +337,23 @@ describe('ZookeeperFileRequestProcessor', () => {
       'completed while resetting',
       expect.objectContaining({ shouldClearHistory: false })
     )
+  })
+
+  test('does not wait for a missing navigation callback when resetting', async () => {
+    const processor = createProcessor()
+
+    emitZookeeperFileRequest(processor, 'written before reset', 1)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+
+    request.onFileSystemSuccess()
+    await processor.reset()
+
+    expect(mocks.historyComplete).toHaveBeenCalledOnce()
+    expect(mocks.updateCodeEditor).not.toHaveBeenCalled()
+
+    request.onSuccess()
+    expect(mocks.updateCodeEditor).not.toHaveBeenCalled()
   })
 
   test('does not finish a dispatched edit against a replaced editor', async () => {
