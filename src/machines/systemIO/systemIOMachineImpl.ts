@@ -18,6 +18,7 @@ import {
   getUniqueProjectName,
   interpolateProjectNameWithIndex,
 } from '@src/lib/desktopFS'
+import { FileAlreadyExists } from '@src/lib/fileSystem/fileSystem'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
@@ -50,12 +51,16 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { fromPromise } from 'xstate'
 
 export {
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
 } from '@src/lib/projectLibraries/directoryScanner'
+
+const fileOperations = (context: SystemIOContext) =>
+  context.app.registry.get(fileOperationsService)
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
@@ -587,14 +592,11 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         }
 
-        await fsZds.rm(
+        await fileOperations(input.context).remove(
           fsZds.join(
             input.context.projectDirectoryPath,
             input.requestedProjectName
-          ),
-          {
-            recursive: true,
-          }
+          )
         )
 
         return {
@@ -695,7 +697,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input.requestedProjectName,
           input.requestedFileName
         )
-        await fsZds.rm(path)
+        await fileOperations(input.context).remove(path)
         return {
           message: 'File deleted successfully',
           projectName: input.requestedProjectName,
@@ -929,7 +931,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }
 
-      await fsZds.rename(oldPath, newPath)
+      await fileOperations(input.context).rename(oldPath, newPath)
 
       // TODO: remove duplicate state, make `app.project` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
@@ -998,7 +1000,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }
 
-      await fsZds.rename(oldPath, newPath)
+      await fileOperations(input.context).rename(oldPath, newPath)
 
       // TODO: remove duplicate state, make `app.project` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
@@ -1028,7 +1030,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName?: string | undefined
         }
       }) => {
-        await fsZds.rm(input.requestedPath, { recursive: true })
+        await fileOperations(input.context).remove(input.requestedPath)
         const response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
@@ -1049,18 +1051,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         const fileNameWithExtension = getStringAfterLastSeparator(
           input.requestedAbsolutePath
         )
-        try {
-          const result = await fsZds.stat(input.requestedAbsolutePath)
-          if (result) {
-            return Promise.reject(
-              new ExpectedSystemIOError(
-                `File ${fileNameWithExtension} already exists`
-              )
-            )
-          }
-        } catch (e) {
-          console.error(e)
-        }
         let fileContents = new Uint8Array()
         if (fsZds.extname(input.requestedAbsolutePath) === FILE_EXT) {
           const wasmInstance = await input.context.wasmInstancePromise
@@ -1079,7 +1069,21 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           }
           fileContents = new TextEncoder().encode(codeToWrite)
         }
-        await fsZds.writeFile(input.requestedAbsolutePath, fileContents)
+        try {
+          await fileOperations(input.context).createFile(
+            input.requestedAbsolutePath,
+            fileContents
+          )
+        } catch (error) {
+          if (error instanceof FileAlreadyExists) {
+            return Promise.reject(
+              new ExpectedSystemIOError(
+                `File ${fileNameWithExtension} already exists`
+              )
+            )
+          }
+          return Promise.reject(error)
+        }
         return {
           message: `File ${fileNameWithExtension} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
@@ -1099,25 +1103,17 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input.requestedAbsolutePath
         )
         try {
-          const result = await fsZds.stat(input.requestedAbsolutePath)
-          if (result) {
+          await fileOperations(input.context).createDirectory(
+            input.requestedAbsolutePath
+          )
+        } catch (error) {
+          if (error instanceof FileAlreadyExists) {
             return Promise.reject(
               new ExpectedSystemIOError(`Folder ${folderName} already exists`)
             )
           }
-        } catch (e) {
-          if (e === 'ENOENT') {
-            console.warn(
-              `checking if folder is created, ${input.requestedAbsolutePath}`
-            )
-            console.warn(e)
-          } else {
-            console.error(e)
-          }
+          return Promise.reject(error)
         }
-        await fsZds.mkdir(input.requestedAbsolutePath, {
-          recursive: true,
-        })
         return {
           message: `Folder ${folderName} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
