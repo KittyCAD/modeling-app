@@ -195,6 +195,7 @@ export class ZookeeperFileRequestProcessor {
           let historyCanceled = false
           let dispatched = false
           let settled = false
+          let fileSystemCompleted = false
           let historyCompleted = !shouldRecordHistory
           let postWriteCompleted =
             !shouldRecordHistory && !shouldRefreshActiveEditor
@@ -245,7 +246,6 @@ export class ZookeeperFileRequestProcessor {
           }
 
           void (async () => {
-            let historyRecorded = false
             if (
               shouldRecordHistory &&
               requestProjectPath &&
@@ -285,6 +285,11 @@ export class ZookeeperFileRequestProcessor {
                 requestedFileNameWithExtension:
                   payload.requestedFileNameWithExtension ?? '',
                 onFileSystemError: () => {
+                  if (fileSystemCompleted) {
+                    cancelPostWrite()
+                    return
+                  }
+                  fileSystemCompleted = true
                   if (stopIfStale({ fileSystemWriteFinished: true })) {
                     return
                   }
@@ -294,6 +299,10 @@ export class ZookeeperFileRequestProcessor {
                   settle()
                 },
                 onFileSystemSuccess: () => {
+                  if (fileSystemCompleted) {
+                    return
+                  }
+                  fileSystemCompleted = true
                   if (
                     stopIfStale({
                       fileSystemWriteFinished: true,
@@ -301,12 +310,6 @@ export class ZookeeperFileRequestProcessor {
                   ) {
                     return
                   }
-                  if (historyRecorded) {
-                    historyCompleted = true
-                    settle()
-                    return
-                  }
-                  historyRecorded = true
                   if (!postWriteCompleted) {
                     if (abortSignal.aborted) {
                       cancelPostWrite()
@@ -375,31 +378,32 @@ export class ZookeeperFileRequestProcessor {
                 ...(shouldRecordHistory || shouldRefreshActiveEditor
                   ? {
                       onSuccess: () => {
-                        if (settled || !requestCanFinish()) {
+                        try {
+                          if (settled || !requestCanFinish()) {
+                            return
+                          }
+                          if (
+                            shouldRefreshActiveEditor &&
+                            activeFileOutput &&
+                            kclManager.path === activeFilePath &&
+                            kclManager.code !== activeFileOutput.requestedCode
+                          ) {
+                            kclManager.updateCodeEditor(
+                              activeFileOutput.requestedCode,
+                              {
+                                shouldAddToHistory: false,
+                                shouldClearHistory:
+                                  !shouldRecordHistory || !requestCanFinish(),
+                                shouldExecute: true,
+                                shouldResetCamera: true,
+                                shouldWriteToDisk: !shouldRecordHistory,
+                              }
+                            )
+                          }
+                        } finally {
                           postWriteCompleted = true
                           settle()
-                          return
                         }
-                        if (
-                          shouldRefreshActiveEditor &&
-                          activeFileOutput &&
-                          kclManager.path === activeFilePath &&
-                          kclManager.code !== activeFileOutput.requestedCode
-                        ) {
-                          kclManager.updateCodeEditor(
-                            activeFileOutput.requestedCode,
-                            {
-                              shouldAddToHistory: false,
-                              shouldClearHistory:
-                                !shouldRecordHistory || !requestCanFinish(),
-                              shouldExecute: true,
-                              shouldResetCamera: true,
-                              shouldWriteToDisk: !shouldRecordHistory,
-                            }
-                          )
-                        }
-                        postWriteCompleted = true
-                        settle()
                       },
                     }
                   : {}),

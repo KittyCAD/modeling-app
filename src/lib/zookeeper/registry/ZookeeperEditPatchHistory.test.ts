@@ -1,7 +1,11 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
-import type { ZookeeperEditPatch } from '@src/lib/zookeeper/zookeeperEditPatch'
+import type {
+  ZookeeperEditPatch,
+  ZookeeperEditPatchFile,
+} from '@src/lib/zookeeper/zookeeperEditPatch'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import { createTwoFilesPatch } from 'diff'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -37,12 +41,31 @@ const patch: ZookeeperEditPatch = {
   ],
 }
 
+function modifiedFile(
+  path: string,
+  previousContent: string,
+  nextContent: string
+): ZookeeperEditPatchFile {
+  return {
+    path,
+    status: 'modified',
+    diff: createTwoFilesPatch(
+      `a/${path}`,
+      `b/${path}`,
+      previousContent,
+      nextContent
+    ),
+  }
+}
+
 function createKclManager() {
   const state = {
     addGlobalHistoryEvent: vi.fn(),
     addGlobalHistoryEventWithCodeChange: vi.fn(),
+    captureEditorHistoryState: vi.fn(() => undefined),
     code: 'editor contents',
     path: `${projectPath}/other.kcl`,
+    restoreEditorHistoryState: vi.fn(),
     zookeeperHistoryRecordingInProgress: false,
   }
 
@@ -231,6 +254,119 @@ describe('ZookeeperEditPatchHistory', () => {
         snapshotFiles: [expect.objectContaining({ relativePath: 'main.kcl' })],
       })
     )
+  })
+
+  it('falls back to the patch when a previous-content snapshot fails', async () => {
+    const { manager, state } = createKclManager()
+    const history = new ZookeeperEditPatchHistory(manager)
+    const previousCode = 'before = 1\n'
+    const requestedCode = 'after = 2\n'
+    const editPatch: ZookeeperEditPatch = {
+      run_id: patch.run_id,
+      changed_files: [
+        modifiedFile('main.kcl', previousCode, requestedCode),
+        modifiedFile('side.kcl', 'side = 1\n', 'side = 2\n'),
+      ],
+    }
+    const readError = new Error('snapshot read failed')
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    state.path = activeFilePath
+    state.code = previousCode
+    mocks.readFile.mockRejectedValueOnce(readError)
+
+    history.reserve({ activeFilePath, exchangeId: 0, projectPath })
+    await history.begin({
+      activeFilePath,
+      exchangeId: 0,
+      patch: editPatch,
+      projectPath,
+      reserved: true,
+    })
+    state.code = requestedCode
+    await history.complete({
+      activeFileDeleted: false,
+      activeFilePath,
+      activeFileRequestedCode: requestedCode,
+      exchangeId: 0,
+      patch: editPatch,
+      projectPath,
+      requestIsCurrent: () => true,
+    })
+    history.handleActorSnapshot(endOfStreamSnapshot(1))
+
+    expect(mocks.readFile).toHaveBeenCalledOnce()
+    expect(consoleError).toHaveBeenCalledWith(
+      'Failed to capture Zookeeper history snapshots.',
+      readError
+    )
+    expect(state.addGlobalHistoryEventWithCodeChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        patch: editPatch,
+        snapshotFiles: [],
+      }),
+      requestedCode,
+      previousCode
+    )
+    consoleError.mockRestore()
+  })
+
+  it('falls back to the full patch instead of replaying partial snapshots', async () => {
+    const { manager, state } = createKclManager()
+    const history = new ZookeeperEditPatchHistory(manager)
+    const firstPatch: ZookeeperEditPatch = {
+      run_id: patch.run_id,
+      changed_files: [modifiedFile('first.kcl', 'first = 1\n', 'first = 2\n')],
+    }
+    const secondPatch: ZookeeperEditPatch = {
+      run_id: patch.run_id,
+      changed_files: [
+        modifiedFile('second.kcl', 'second = 1\n', 'second = 2\n'),
+      ],
+    }
+    const readError = new Error('next snapshot read failed')
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    mocks.readFile
+      .mockResolvedValueOnce('first = 1\n')
+      .mockResolvedValueOnce('first = 2\n')
+      .mockResolvedValueOnce('second = 1\n')
+      .mockRejectedValueOnce(readError)
+
+    history.reserve({ activeFilePath, exchangeId: 0, projectPath })
+    await history.begin({
+      activeFilePath,
+      exchangeId: 0,
+      patch: firstPatch,
+      projectPath,
+      reserved: true,
+    })
+    await completeWrite(history, firstPatch)
+    history.reserve({ activeFilePath, exchangeId: 0, projectPath })
+    await history.begin({
+      activeFilePath,
+      exchangeId: 0,
+      patch: secondPatch,
+      projectPath,
+      reserved: true,
+    })
+    await completeWrite(history, secondPatch)
+    history.handleActorSnapshot(endOfStreamSnapshot(1))
+
+    expect(consoleError).toHaveBeenCalledWith(
+      'Failed to capture Zookeeper history snapshots.',
+      readError
+    )
+    expect(state.addGlobalHistoryEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        patch: expect.objectContaining({
+          changed_files: expect.arrayContaining([
+            expect.objectContaining({ path: 'first.kcl' }),
+            expect.objectContaining({ path: 'second.kcl' }),
+          ]),
+        }),
+        snapshotFiles: [],
+      })
+    )
+    consoleError.mockRestore()
   })
 
   it('releases a reservation when the request becomes stale', async () => {

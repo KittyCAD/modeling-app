@@ -10,6 +10,8 @@ import {
   signal,
 } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { Spinner } from '@src/components/Spinner'
 import type { KclManager, ZDSProject } from '@src/lang/KclManager'
 import type { BillingRegistryService } from '@src/lib/billing'
 import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
@@ -80,22 +82,27 @@ const loadZookeeperSessionController = () =>
 const CONTROLLER_LOAD_RETRY_DELAY_MS = 1_000
 
 const pendingSessionDisposals = new Map<string, Promise<void>>()
+const pendingEditorDisposals = new WeakMap<KclManager, Promise<void>>()
 
-function trackSessionDisposal(projectPath: string, disposal: Promise<void>) {
+function trackSessionDisposal(
+  projectPath: string,
+  kclManager: KclManager,
+  disposal: Promise<void>
+) {
   pendingSessionDisposals.set(projectPath, disposal)
-  void disposal.then(
-    () => {
-      if (pendingSessionDisposals.get(projectPath) === disposal) {
-        pendingSessionDisposals.delete(projectPath)
-      }
-    },
-    (error: unknown) => {
-      console.error('Failed to finish stopping the Zookeeper session.', error)
-      if (pendingSessionDisposals.get(projectPath) === disposal) {
-        pendingSessionDisposals.delete(projectPath)
-      }
+  pendingEditorDisposals.set(kclManager, disposal)
+  const finish = () => {
+    if (pendingSessionDisposals.get(projectPath) === disposal) {
+      pendingSessionDisposals.delete(projectPath)
     }
-  )
+    if (pendingEditorDisposals.get(kclManager) === disposal) {
+      pendingEditorDisposals.delete(kclManager)
+    }
+  }
+  void disposal.then(finish, (error: unknown) => {
+    console.error('Failed to finish stopping the Zookeeper session.', error)
+    finish()
+  })
 }
 
 export function createZookeeperRuntime(
@@ -131,12 +138,17 @@ export function createZookeeperRuntime(
     session.value = undefined
     if (previous?.controller) {
       const disposal = previous.controller.dispose()
-      trackSessionDisposal(previous.projectPath, disposal)
+      trackSessionDisposal(previous.projectPath, previous.kclManager, disposal)
     }
   }
 
-  const waitForSessionDisposal = (projectPath: string) => {
-    const disposal = pendingSessionDisposals.get(projectPath)
+  const waitForSessionDisposal = (
+    projectPath: string,
+    kclManager: KclManager | null | undefined
+  ) => {
+    const disposal =
+      pendingSessionDisposals.get(projectPath) ??
+      (kclManager ? pendingEditorDisposals.get(kclManager) : undefined)
     if (!disposal) {
       waitingForDisposal = undefined
       return false
@@ -205,7 +217,7 @@ export function createZookeeperRuntime(
       return
     }
 
-    if (projectPath && waitForSessionDisposal(projectPath)) {
+    if (projectPath && waitForSessionDisposal(projectPath, kclManager)) {
       return
     }
 
@@ -248,7 +260,11 @@ export function createZookeeperRuntime(
           systemIO,
         })
         if (disposed || activation !== next) {
-          trackSessionDisposal(next.projectPath, controller.dispose())
+          trackSessionDisposal(
+            next.projectPath,
+            next.kclManager,
+            controller.dispose()
+          )
           return
         }
         next.controller = controller
@@ -289,7 +305,31 @@ export function createZookeeperRuntime(
   }
 }
 
-function ZookeeperPaneOutlet({
+function ZookeeperPaneLoading({
+  layout,
+  onClose,
+}: Pick<AreaTypeComponentProps, 'layout' | 'onClose'>) {
+  return (
+    <LayoutPanel
+      title={layout.label}
+      id={`${layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={layout.id}
+        icon="sparkles"
+        title="Zookeeper"
+        onClose={onClose}
+      />
+      <output className="flex flex-1 flex-col items-center justify-center text-primary">
+        <Spinner />
+        <p className="mt-4 text-base">Starting Zookeeper...</p>
+      </output>
+    </LayoutPanel>
+  )
+}
+
+export function ZookeeperPaneOutlet({
   areaConfig,
   layout,
   onClose,
@@ -301,11 +341,13 @@ function ZookeeperPaneOutlet({
   const projectPath = project?.path
 
   if (!project || !controller || controller.projectPath !== projectPath) {
-    return null
+    return <ZookeeperPaneLoading layout={layout} onClose={onClose} />
   }
 
   return (
-    <Suspense fallback={null}>
+    <Suspense
+      fallback={<ZookeeperPaneLoading layout={layout} onClose={onClose} />}
+    >
       <ZookeeperConversationPaneWrapper
         areaConfig={areaConfig}
         layout={layout}

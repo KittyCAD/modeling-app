@@ -187,6 +187,55 @@ describe('ZookeeperFileRequestProcessor', () => {
     })
   })
 
+  test('waits for history when navigation fails after a successful write', async () => {
+    let finishHistory: () => void = () => undefined
+    mocks.historyComplete.mockImplementationOnce(
+      () =>
+        new Promise<undefined>((resolve) => {
+          finishHistory = () => resolve(undefined)
+        })
+    )
+    const processor = createProcessor()
+
+    emitZookeeperFileRequest(processor, 'intermediate code', 1)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+
+    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    firstRequest.onFileSystemSuccess()
+    firstRequest.onFileSystemError()
+
+    emitZookeeperFileRequest(processor, 'final code', 2)
+    await Promise.resolve()
+
+    expect(mocks.historyCancel).not.toHaveBeenCalled()
+    expect(mocks.systemIOSend).toHaveBeenCalledOnce()
+
+    finishHistory()
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+  })
+
+  test('settles an editor refresh callback that throws', async () => {
+    mocks.updateCodeEditor.mockImplementationOnce(() => {
+      throw new Error('editor refresh failed')
+    })
+    const processor = createProcessor()
+
+    emitZookeeperFileRequest(
+      processor,
+      'edit without history',
+      1,
+      zookeeperEditWithoutPatch('edit without history')
+    )
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+
+    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    firstRequest.onFileSystemSuccess()
+    expect(() => firstRequest.onSuccess()).toThrow('editor refresh failed')
+
+    emitZookeeperFileRequest(processor, 'next edit', 2)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+  })
+
   test('waits for an editor refresh when an edit has no history patch', async () => {
     const processor = createProcessor()
 

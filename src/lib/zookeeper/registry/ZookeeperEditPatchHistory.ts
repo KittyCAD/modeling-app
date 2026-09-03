@@ -103,20 +103,22 @@ export class ZookeeperEditPatchHistory {
     this.captureActiveEditorState(pending, activeFilePath)
     this.pendingByExchange.set(exchangeId, pending)
     this.kclManager.zookeeperHistoryRecordingInProgress = true
-    pending.snapshotFilesBeforeCurrentWrite = cloneZookeeperSnapshotFiles(
-      pending.snapshotFilesByRelativePath
-    )
+    if (!pending.snapshotCaptureFailed) {
+      pending.snapshotFilesBeforeCurrentWrite = cloneZookeeperSnapshotFiles(
+        pending.snapshotFilesByRelativePath
+      )
 
-    try {
-      await captureZookeeperSnapshotPreviousContents({
-        kclManager: this.kclManager,
-        patch,
-        pending,
-        projectPath,
-      })
-    } catch (error: unknown) {
-      console.error('Failed to capture Zookeeper history snapshots.', error)
-      restoreZookeeperSnapshotFilesBeforeCurrentWrite(pending)
+      try {
+        await captureZookeeperSnapshotPreviousContents({
+          kclManager: this.kclManager,
+          patch,
+          pending,
+          projectPath,
+        })
+      } catch (error: unknown) {
+        console.error('Failed to capture Zookeeper history snapshots.', error)
+        invalidateZookeeperSnapshotFiles(pending)
+      }
     }
   }
 
@@ -170,15 +172,17 @@ export class ZookeeperEditPatchHistory {
       return
     }
 
-    try {
-      await captureZookeeperSnapshotNextContents({
-        patch,
-        pending,
-        projectPath,
-      })
-    } catch (error: unknown) {
-      console.error('Failed to capture Zookeeper history snapshots.', error)
-      restoreZookeeperSnapshotFilesBeforeCurrentWrite(pending)
+    if (!pending.snapshotCaptureFailed) {
+      try {
+        await captureZookeeperSnapshotNextContents({
+          patch,
+          pending,
+          projectPath,
+        })
+      } catch (error: unknown) {
+        console.error('Failed to capture Zookeeper history snapshots.', error)
+        invalidateZookeeperSnapshotFiles(pending)
+      }
     }
 
     if (this.disposed) {
@@ -563,6 +567,10 @@ async function captureZookeeperSnapshotNextContents({
 function getReadyZookeeperSnapshotFiles(
   pending: PendingZookeeperHistory
 ): ZookeeperSnapshotFileReplay[] {
+  if (pending.snapshotCaptureFailed) {
+    return []
+  }
+
   const snapshotFiles: ZookeeperSnapshotFileReplay[] = []
 
   for (const snapshotFile of pending.snapshotFilesByRelativePath.values()) {
@@ -636,6 +644,7 @@ type PendingZookeeperHistory = {
   projectPath?: string
   snapshotFilesByRelativePath: Map<string, PendingZookeeperSnapshotFile>
   snapshotFilesBeforeCurrentWrite?: Map<string, PendingZookeeperSnapshotFile>
+  snapshotCaptureFailed: boolean
   streamEnded: boolean
 }
 
@@ -655,6 +664,7 @@ function createPendingZookeeperHistory(): PendingZookeeperHistory {
   return {
     activeFileDeleted: false,
     outstandingWrites: 0,
+    snapshotCaptureFailed: false,
     snapshotFilesByRelativePath: new Map(),
     streamEnded: false,
   }
@@ -679,4 +689,10 @@ function restoreZookeeperSnapshotFilesBeforeCurrentWrite(
       pending.snapshotFilesBeforeCurrentWrite
     )
   }
+}
+
+function invalidateZookeeperSnapshotFiles(pending: PendingZookeeperHistory) {
+  pending.snapshotCaptureFailed = true
+  pending.snapshotFilesByRelativePath.clear()
+  pending.snapshotFilesBeforeCurrentWrite = undefined
 }

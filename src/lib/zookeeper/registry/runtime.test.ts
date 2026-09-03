@@ -98,11 +98,16 @@ function createController(
   return { controller, dispose, updateAuthToken }
 }
 
-function createControllerLoader() {
+function createControllerLoader(
+  getDisposal: (index: number) => Promise<void> = () => Promise.resolve()
+) {
   const controllers: ReturnType<typeof createController>[] = []
   const createZookeeperSessionController = vi.fn(
     (deps: ZookeeperSessionControllerDependencies) => {
-      const controller = createController(deps.projectPath)
+      const controller = createController(
+        deps.projectPath,
+        getDisposal(controllers.length)
+      )
       controllers.push(controller)
       return controller.controller
     }
@@ -404,6 +409,43 @@ describe('Zookeeper runtime', () => {
 
     runtime.dispose()
     expect(controllers[1]?.dispose).toHaveBeenCalledOnce()
+  })
+
+  it('waits for a shared editor to drain before starting another project', async () => {
+    const { currentProject, projectFixture, services } = createServices({
+      projectPath: '/first',
+    })
+    const drain = deferred<undefined>()
+    const { controllers, createZookeeperSessionController, loadController } =
+      createControllerLoader((index) =>
+        index === 0 ? drain.promise : Promise.resolve()
+      )
+    const runtime = createZookeeperRuntime(services, loadController)
+
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    })
+
+    projectFixture.kclManager.path = '/second/main.kcl'
+    currentProject.value = createProject(
+      '/second',
+      true,
+      projectFixture.kclManager
+    ).project
+
+    await vi.waitFor(() => {
+      expect(controllers[0]?.dispose).toHaveBeenCalledOnce()
+    })
+    expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    expect(runtime.session.value).toBeUndefined()
+
+    drain.resolve(undefined)
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledTimes(2)
+    })
+    expect(runtime.session.value).toBe(controllers[1]?.controller)
+
+    runtime.dispose()
   })
 
   it('does not create a controller when disposed during its lazy load', async () => {

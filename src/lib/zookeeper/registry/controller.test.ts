@@ -342,6 +342,44 @@ describe('Zookeeper session controller', () => {
     ])
   })
 
+  it.each([
+    {
+      errorMessage: 'Failed to update Zookeeper history.',
+      getWorker: () => workerMocks.histories[0],
+    },
+    {
+      errorMessage: 'Failed to process Zookeeper file updates.',
+      getWorker: () => workerMocks.processors[0],
+    },
+  ])(
+    'continues snapshot reconciliation when a worker fails',
+    async ({ errorMessage, getWorker }) => {
+      const consoleError = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {})
+      const { actor, billingSend, controller } = createHarness()
+
+      actor.emit('other', { awaitingResponse: true })
+      controller.sendOrQueue('send after worker failure', undefined, [])
+      getWorker()?.handleActorSnapshot.mockImplementationOnce(() => {
+        throw new Error('worker failed')
+      })
+
+      actor.emit('ready-await', { awaitingResponse: false })
+
+      expect(consoleError).toHaveBeenCalledWith(errorMessage, expect.any(Error))
+      expect(billingSend).toHaveBeenCalledWith({
+        type: BillingTransition.UsageEnded,
+      })
+      expect(zookeeperPromptRunningSignal.value).toBe(false)
+      await vi.waitFor(() => {
+        expect(
+          sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+        ).toHaveLength(1)
+      })
+    }
+  )
+
   it('submits a queued prompt when the persistent actor becomes ready', async () => {
     const { actor, controller, kclManager, project } = createHarness({
       actorContext: { awaitingResponse: true },

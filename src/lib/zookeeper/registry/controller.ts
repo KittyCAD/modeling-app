@@ -547,8 +547,16 @@ class SessionController implements ZookeeperSessionController {
       return
     }
 
-    this.history.handleActorSnapshot(snapshot)
-    this.fileRequestProcessor.handleActorSnapshot(snapshot)
+    try {
+      this.history.handleActorSnapshot(snapshot)
+    } catch (error: unknown) {
+      console.error('Failed to update Zookeeper history.', error)
+    }
+    try {
+      this.fileRequestProcessor.handleActorSnapshot(snapshot)
+    } catch (error: unknown) {
+      console.error('Failed to process Zookeeper file updates.', error)
+    }
     this.updateBilling(snapshot.context.awaitingResponse)
     this.saveConversationId(snapshot)
     this.continueCheck(snapshot)
