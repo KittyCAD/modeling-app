@@ -54,5 +54,10 @@ Valid properties are:
     - Each `if`/`else if`/`else` branch body introduces its own scope: a variable declared
       inside a branch is visible from its declaration to the branch's closing brace, never
       outside it, and may shadow a variable from an enclosing scope.
+    - `fillet` and `chamfer` are sent to the engine immediately, in order with other
+      modeling commands, instead of being deferred until the end of the file. The engine
+      replaces a cut edge with a new face, so look up an edge (for example with
+      `getOppositeEdge` or `getNextAdjacentEdge`) before the `fillet` or `chamfer` that
+      consumes it, and store the result in a variable.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).
