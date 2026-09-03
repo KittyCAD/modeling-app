@@ -44,6 +44,9 @@ const getFirstParentReference = (
   return parent
 }
 
+// TODO: Also track tag declarators (`$tag`) and labelled expressions
+// (`expr as label`) removed along with a deleted declaration. References to
+// those names dangle the same way but are not detected or rewired yet.
 type Deletions = {
   // Every top-level declaration removed by the delete.
   deletedNames: Set<string>
