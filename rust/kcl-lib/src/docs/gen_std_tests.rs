@@ -444,6 +444,7 @@ fn generate_function_from_kcl(
                 "experimental": arg.experimental,
                 "deprecated": arg.deprecated,
                 "deprecated_since": arg.deprecated_since.as_ref().map(ToString::to_string),
+                "removed_since": arg.removed_since.as_ref().map(ToString::to_string),
             })
         })
         .collect::<Vec<_>>();
