@@ -103,6 +103,9 @@ export class ZookeeperEditPatchHistory {
     this.captureActiveEditorState(pending, activeFilePath)
     this.pendingByExchange.set(exchangeId, pending)
     this.kclManager.zookeeperHistoryRecordingInProgress = true
+    pending.snapshotFilesBeforeCurrentWrite = cloneZookeeperSnapshotFiles(
+      pending.snapshotFilesByRelativePath
+    )
 
     try {
       await captureZookeeperSnapshotPreviousContents({
@@ -113,7 +116,7 @@ export class ZookeeperEditPatchHistory {
       })
     } catch (error: unknown) {
       console.error('Failed to capture Zookeeper history snapshots.', error)
-      pending.snapshotFilesByRelativePath.clear()
+      restoreZookeeperSnapshotFilesBeforeCurrentWrite(pending)
     }
   }
 
@@ -128,7 +131,7 @@ export class ZookeeperEditPatchHistory {
       return
     }
 
-    pending.snapshotFilesByRelativePath.clear()
+    restoreZookeeperSnapshotFilesBeforeCurrentWrite(pending)
     pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
     if (
       pending.outstandingWrites === 0 &&
@@ -175,7 +178,7 @@ export class ZookeeperEditPatchHistory {
       })
     } catch (error: unknown) {
       console.error('Failed to capture Zookeeper history snapshots.', error)
-      pending.snapshotFilesByRelativePath.clear()
+      restoreZookeeperSnapshotFilesBeforeCurrentWrite(pending)
     }
 
     if (this.disposed) {
@@ -197,6 +200,7 @@ export class ZookeeperEditPatchHistory {
     pending.patch = pending.patch
       ? mergeZookeeperEditPatches(pending.patch, patch)
       : patch
+    pending.snapshotFilesBeforeCurrentWrite = undefined
 
     pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
     this.pendingByExchange.set(exchangeId, pending)
@@ -631,6 +635,7 @@ type PendingZookeeperHistory = {
   patch?: ZookeeperEditPatch
   projectPath?: string
   snapshotFilesByRelativePath: Map<string, PendingZookeeperSnapshotFile>
+  snapshotFilesBeforeCurrentWrite?: Map<string, PendingZookeeperSnapshotFile>
   streamEnded: boolean
 }
 
@@ -652,5 +657,26 @@ function createPendingZookeeperHistory(): PendingZookeeperHistory {
     outstandingWrites: 0,
     snapshotFilesByRelativePath: new Map(),
     streamEnded: false,
+  }
+}
+
+function cloneZookeeperSnapshotFiles(
+  snapshotFiles: ReadonlyMap<string, PendingZookeeperSnapshotFile>
+) {
+  return new Map(
+    Array.from(snapshotFiles, ([relativePath, snapshotFile]) => [
+      relativePath,
+      { ...snapshotFile },
+    ])
+  )
+}
+
+function restoreZookeeperSnapshotFilesBeforeCurrentWrite(
+  pending: PendingZookeeperHistory
+) {
+  if (pending.snapshotFilesBeforeCurrentWrite) {
+    pending.snapshotFilesByRelativePath = cloneZookeeperSnapshotFiles(
+      pending.snapshotFilesBeforeCurrentWrite
+    )
   }
 }

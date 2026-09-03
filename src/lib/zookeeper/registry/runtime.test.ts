@@ -432,6 +432,64 @@ describe('Zookeeper runtime', () => {
     expect(runtime.session.value).toBeUndefined()
   })
 
+  it('retries a failed controller load after a delay', async () => {
+    vi.useFakeTimers()
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    try {
+      const { services } = createServices()
+      const { controller } = createController('/project')
+      const createZookeeperSessionController = vi.fn(() => controller)
+      const loadController = vi
+        .fn()
+        .mockRejectedValueOnce(new Error('first load failed'))
+        .mockRejectedValueOnce(new Error('second load failed'))
+        .mockResolvedValue({ createZookeeperSessionController })
+      const runtime = createZookeeperRuntime(services, loadController)
+
+      await vi.advanceTimersByTimeAsync(0)
+      expect(loadController).toHaveBeenCalledOnce()
+
+      await vi.advanceTimersByTimeAsync(999)
+      expect(loadController).toHaveBeenCalledOnce()
+
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(loadController).toHaveBeenCalledTimes(2)
+
+      await vi.advanceTimersByTimeAsync(1)
+      expect(loadController).toHaveBeenCalledTimes(3)
+      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+      expect(runtime.session.value).toBe(controller)
+
+      runtime.dispose()
+    } finally {
+      consoleError.mockRestore()
+      vi.useRealTimers()
+    }
+  })
+
+  it('cancels a pending controller load retry when disposed', async () => {
+    vi.useFakeTimers()
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    try {
+      const { services } = createServices()
+      const loadController = vi.fn().mockRejectedValue(new Error('load failed'))
+      const runtime = createZookeeperRuntime(services, loadController)
+
+      await vi.advanceTimersByTimeAsync(0)
+      expect(loadController).toHaveBeenCalledOnce()
+
+      runtime.dispose()
+      await vi.runAllTimersAsync()
+
+      expect(loadController).toHaveBeenCalledOnce()
+    } finally {
+      consoleError.mockRestore()
+      vi.useRealTimers()
+    }
+  })
+
   it('waits for the previous runtime to drain before restarting a project session', async () => {
     const { services } = createServices()
     const drain = deferred<undefined>()
