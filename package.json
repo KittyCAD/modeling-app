@@ -49,6 +49,7 @@
     "codemirror": "^6.0.2",
     "decamelize": "^6.0.1",
     "diff": "^9.0.0",
+    "effect": "^3.22.1",
     "electron-updater": "^6.8.9",
     "fuse.js": "^7.4.2",
     "hammerjs": "^2.0.8",
