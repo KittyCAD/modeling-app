@@ -72,10 +72,16 @@ test(
     })
 
     await setup(context, page, testInfo, [OPFS_CLOUD_FEATURE_FLAG])
-    const createWritableType = await page.evaluate(
-      () => typeof globalThis.FileSystemFileHandle?.prototype.createWritable
-    )
-    expect(createWritableType).toBe('undefined')
+    const fallbackSupport = await page.evaluate(() => ({
+      hasFileHandleConstructor:
+        typeof globalThis.FileSystemFileHandle === 'function',
+      createWritableType:
+        typeof globalThis.FileSystemFileHandle?.prototype.createWritable,
+    }))
+    expect(fallbackSupport).toEqual({
+      hasFileHandleConstructor: true,
+      createWritableType: 'undefined',
+    })
     await expectCloudFeatureEnabled(page)
     await expectCloudSyncHomeReady(page)
     await openHomeProject(page, remoteProject.title)
