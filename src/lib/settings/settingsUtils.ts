@@ -1149,7 +1149,11 @@ export async function loadAndValidateSettings(
       projectSettingsDirty = true
     }
 
-    // Migrate project-level KCL version from main.kcl (or assume legacy 1.0).
+    // Resolve the project-level KCL version from main.kcl (or assume legacy
+    // 1.0). This is deliberately not persisted here: writing project.toml on
+    // load makes cloud sync see a freshly materialized project as locally
+    // diverged, which puts it into a conflict state. The resolved version is
+    // written on the next real settings save instead.
     let projectKclVersion = projectSettings.settings?.modeling?.kcl_version
     if (!projectKclVersion) {
       projectKclVersion =
@@ -1159,7 +1163,6 @@ export async function loadAndValidateSettings(
         projectSettings,
         projectKclVersion
       )
-      projectSettingsDirty = true
     }
 
     if (projectSettingsDirty) {
