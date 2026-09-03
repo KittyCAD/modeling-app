@@ -2,30 +2,42 @@
 // property: in `boxes()[chooseIndex()]`, boxes() runs first. Both functions
 // send engine commands, so the evaluation order is visible in the recorded
 // operations and artifact commands.
-@settings(kclVersion = "3.0-preview")
+@settings(defaultLengthUnit = mm, kclVersion = "3.0-preview")
 
 fn boxes() {
-  small = startSketchOn(XY)
-    |> startProfile(at = [0, 0])
-    |> line(end = [5, 0])
-    |> line(end = [0, 5])
-    |> line(end = [-5, 0])
-    |> close()
-    |> extrude(length = 5)
-  large = startSketchOn(XY)
-    |> startProfile(at = [20, 0])
-    |> line(end = [10, 0])
-    |> line(end = [0, 10])
-    |> line(end = [-10, 0])
-    |> close()
-    |> extrude(length = 10)
+  smallProfile = sketch(on = XY) {
+    bottom = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+    right = line(start = [var 5mm, var 0mm], end = [var 5mm, var 5mm])
+    top = line(start = [var 5mm, var 5mm], end = [var 0mm, var 5mm])
+    left = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+  }
+  smallRegion = region(segments = [
+    smallProfile.bottom,
+    smallProfile.right
+  ])
+  small = extrude(smallRegion, length = 5mm)
+
+  largeProfile = sketch(on = XY) {
+    bottom = line(start = [var 20mm, var 0mm], end = [var 30mm, var 0mm])
+    right = line(start = [var 30mm, var 0mm], end = [var 30mm, var 10mm])
+    top = line(start = [var 30mm, var 10mm], end = [var 20mm, var 10mm])
+    left = line(start = [var 20mm, var 10mm], end = [var 20mm, var 0mm])
+  }
+  largeRegion = region(segments = [
+    largeProfile.bottom,
+    largeProfile.right
+  ])
+  large = extrude(largeRegion, length = 10mm)
+
   return [small, large]
 }
 
 fn chooseIndex() {
-  marker = startSketchOn(XY)
-    |> circle(center = [-20, 0], radius = 3)
-    |> extrude(length = 1)
+  markerProfile = sketch(on = XY) {
+    perimeter = circle(start = [var -17mm, var 0mm], center = [var -20mm, var 0mm])
+  }
+  markerRegion = region(segments = [markerProfile.perimeter])
+  marker = extrude(markerRegion, length = 1mm)
   return 1
 }
 
