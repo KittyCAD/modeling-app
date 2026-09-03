@@ -15,7 +15,7 @@ export interface DisposableLike {
 }
 
 /** Every cleanup shape accepted from a runtime registry item. */
-export type RegistryDisposer = DisposableLike | (() => unknown)
+export type RegistryDisposer = DisposableLike | (() => void | PromiseLike<void>)
 
 /**
  * Value-spec contributions may be static values or live reactive values.
